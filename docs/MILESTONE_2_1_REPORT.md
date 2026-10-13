@@ -16,6 +16,9 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - Added engine RPC operations to list, save and remove database connections; test a connection; list schemas,
   tables and columns; and preview bounded result sets. Passwords are submitted separately and delegated to the
   OS credential vault. Responses omit secrets.
+- Added a desktop connection manager, drag-and-drop database extension tools, and a Database Input inspector for
+  saved-connection selection, schema/table browsing, read-only SQL entry and live preview. Database writes now
+  require a per-run confirmation in addition to the connection's write setting.
 - Corrected database preview to describe and execute the selected query, not the metadata probe query.
 - Added real PostgreSQL 16 and SQL Server 2022 integration tests for metadata, preview, Unicode, cross-database
   joining, refresh-on-rerun, read-only SQL rejection and password-free connection persistence.
@@ -31,12 +34,14 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
   preserved nulls, Unicode, decimals and binary data; a 41-row PostgreSQL Customers table and
   120-row SQL Server Orders table were read and joined locally; a new SQL Server row was visible on the next run.
 - TypeScript type-check: passed. Vitest: **10 passed**. Playwright: **9 passed**.
+- After adding the connection UI, Playwright: **10 passed**, including the manager and database extension palette.
 - Rust tests were not run because `cargo` is not installed in this environment.
 
 ## Remaining milestone work
 
-- **Desktop connection manager and database-input authoring:** no connection UI or canvas configuration flow is
-  wired yet. The engine RPC is available, but the required drag-and-configure experience is incomplete.
+- **Database authoring:** initial connection manager and Database Input authoring are implemented. Need real
+  desktop validation against fixture servers, edit-existing-connection credential UX review, and Database Output
+  authoring UX.
 - **Pushdown:** dialect translation and planning code exists in Claude's work, but `run_workflow` does not invoke
   it. SQL execution pushdown, fallback diagnostics in run results, transfer-volume measurements and explain-plan
   inspection are therefore not claimed as delivered.
@@ -46,8 +51,9 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - **Installer:** current NSIS package still launches a system Python. Managed runtime bundling, clean-machine
   installation, installer/uninstaller checks and signing readiness remain outstanding.
 - **R:** pinned R runtime/package environment and real R CI execution remain outstanding.
-- **Acceptance demo:** the full PostgreSQL Customers + SQL Server Orders → Join → Filter → Formula → Summarize →
-  Results Grid → CSV/Parquet workflow has not been demonstrated in the actual desktop app.
+- **Results/export and acceptance demo:** Parquet export from the desktop results grid and the full PostgreSQL
+  Customers + SQL Server Orders → Join → Filter → Formula → Summarize → Results Grid → CSV/Parquet workflow have
+  not been demonstrated in the actual desktop app.
 
 No compatibility or coverage claims were changed by this work. E1/E2 profiles and the known Sort collation
 difference remain as recorded in `docs/COVERAGE.md`.

@@ -24,6 +24,11 @@ browser build used for automated UI tests). Source: `desktop/`.
 * **Files:** open/save `*.flow.json`; import `.yxmd/.yxmc/.yxwz/.yxzp` (report shown); export `.yxmd` for
   supported tools (lists what cannot be exported).
 * **Safety:** workflows containing Python, R or Run Command tools ask for permission before each run.
+* **Databases (Milestone 2.1, in progress):** manage PostgreSQL and SQL Server connection settings, test
+  connections, save credentials in the operating-system vault, drag Database Input onto the canvas, browse
+  schemas/tables, enter read-only SQL and preview live records. Database Output requires both connection-level
+  write enablement and a per-run confirmation. SQL query pushdown and Parquet export from the results grid are
+  not yet wired into the desktop workflow.
 
 ## Keyboard
 

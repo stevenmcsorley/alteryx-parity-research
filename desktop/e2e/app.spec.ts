@@ -216,3 +216,16 @@ test('code tools run only after the user allows them', async ({ page }) => {
   await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 60_000 });
   await expect(page.getByTestId('rows-py-output1')).toHaveText('2');
 });
+
+test('database extensions are available and the connection manager opens', async ({ page }) => {
+  await ready(page);
+  await expect(page.getByTestId('palette-extension-core.db_input')).toContainText('Database Input');
+  await page.getByRole('toolbar').getByRole('button', { name: 'Databases' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Database connections' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText('No database connections yet.')).toBeVisible();
+  await dialog.getByRole('button', { name: 'New connection' }).click();
+  await expect(dialog.getByLabel('Database type')).toHaveValue('postgresql');
+  await dialog.getByRole('button', { name: 'Close' }).click();
+  await expect(dialog).toHaveCount(0);
+});

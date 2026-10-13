@@ -146,8 +146,12 @@ class DatabaseIntegrationTests(unittest.TestCase):
 
     def test_read_only_guard_rejects_write_and_password_never_persisted(self):
         from flowengine.db.dialects import ReadOnlyViolation, check_read_only_sql
+        from flowengine.errors import ConfigError
         with self.assertRaises(ReadOnlyViolation):
             check_read_only_sql('WITH x AS (DELETE FROM sales.customers RETURNING *) SELECT * FROM x')
+        with self.assertRaises(ConfigError):
+            ConnectionStore().save({'id': 'nested_secret', 'name': 'invalid', 'dialect': 'postgresql', 'host': 'h',
+                'port': 5432, 'database': 'd', 'user': 'u', 'options': {'driver': {'password': 'must-not-persist'}}})
         raw = (self.home / 'connections.json').read_text(encoding='utf-8')
         self.assertNotIn('password', raw.lower())
         self.assertNotIn('FLOWBENCH_SECRET', raw)

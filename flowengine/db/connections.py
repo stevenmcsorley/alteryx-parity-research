@@ -21,6 +21,23 @@ TLS_MODES = ('disable', 'prefer', 'require', 'verify-full')
 _SECRET_KEYS = re.compile(r'pass|secret|token|pwd', re.I)
 
 
+def _secret_key_path(value, path=''):
+    if isinstance(value, dict):
+        for key, child in value.items():
+            here = f'{path}.{key}' if path else str(key)
+            if _SECRET_KEYS.search(str(key)) and key != 'allow_writes':
+                return here
+            nested = _secret_key_path(child, here)
+            if nested:
+                return nested
+    elif isinstance(value, (list, tuple)):
+        for i, child in enumerate(value):
+            nested = _secret_key_path(child, f'{path}[{i}]')
+            if nested:
+                return nested
+    return None
+
+
 @dataclass
 class Connection:
     id: str
@@ -46,8 +63,9 @@ class Connection:
             raise ConfigError('host, database and user are required')
         if not (0 < int(self.port) < 65536):
             raise ConfigError('port must be 1-65535')
-        if any(_SECRET_KEYS.search(k) for k in self.options):
-            raise ConfigError('Connection options may not contain secrets; passwords go to the credential vault')
+        secret_path = _secret_key_path(self.options)
+        if secret_path:
+            raise ConfigError(f'Connection option {secret_path!r} may not contain secrets; use the credential vault')
         if not re.fullmatch(r'[A-Za-z0-9_.-]{1,64}', self.id):
             raise ConfigError('Invalid connection id')
         return self
@@ -88,8 +106,9 @@ class ConnectionStore:
 
     def save(self, data: dict, password: str | None = None) -> Connection:
         data = dict(data)
-        if any(_SECRET_KEYS.search(k) for k in data if k not in ('allow_writes',)):
-            raise ConfigError('Pass the password separately; it is stored only in the credential vault')
+        secret_path = _secret_key_path(data)
+        if secret_path:
+            raise ConfigError(f'Connection field {secret_path!r} may not contain secrets; pass the password separately')
         data.setdefault('id', uuid.uuid4().hex[:12])
         conn = Connection(**data).validate()
         from .vault import vault

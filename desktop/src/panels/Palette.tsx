@@ -43,6 +43,9 @@ export function Palette() {
   }, [filtered]);
   const implemented = catalog.filter((c) => c.kernel && c.implementation_status === 'implemented').length;
   const activeEntry = catalog.find((c) => c.id === active);
+  const extensions = ['core.db_input', 'core.db_output'].filter((id) => tools[id] &&
+    (!q.trim() || tools[id].display_name.toLowerCase().includes(q.trim().toLowerCase()) ||
+      tools[id].description.toLowerCase().includes(q.trim().toLowerCase())));
 
   const addAtCentre = (kernel: string) => {
     // place to the right of the selected (or most recently added) top-level tool, else at the view centre
@@ -110,7 +113,17 @@ export function Palette() {
                 })}
               </div>
             ))}
-            {!grouped.length && <div className="empty">No tools match.</div>}
+            {extensions.length > 0 && <div>
+              <div className="cat-head"><span>Database extensions</span><span>{extensions.length}</span></div>
+              {extensions.map((id) => <div key={id} data-testid={`palette-extension-${id}`} className={`db-tool-item ${active === id ? 'active' : ''}`} role="button" tabIndex={0}
+                draggable onDragStart={(e) => { e.dataTransfer.setData(TOOL_MIME, id); e.dataTransfer.effectAllowed = 'copy'; }}
+                onClick={() => setActive(id)} onDoubleClick={() => addAtCentre(id)}
+                onKeyDown={(e) => e.key === 'Enter' && addAtCentre(id)}>
+                <span className="cat-dot" style={{ background: '#277da1' }} aria-hidden />
+                <span className="tool-name">{tools[id].display_name}</span><span className="badge ready">Ready</span>
+              </div>)}
+            </div>}
+            {!grouped.length && !extensions.length && <div className="empty">No tools match.</div>}
           </div>
           {activeEntry && <ToolDetail entry={activeEntry} onAdd={addAtCentre} />}
         </>

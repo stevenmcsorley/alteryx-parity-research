@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useEditor } from '../state/store';
 import { cancelRun, exportYxmd, openWorkflow, runWorkflow, saveWorkflow, describe } from '../state/engineActions';
 import { promptPath } from '../ui/dialogs';
 import { notify } from '../ui/toast';
+import { DatabaseConnections } from './DatabaseConnections';
 
 export async function doSave(forceAs = false) {
   const s = useEditor.getState();
@@ -49,6 +51,7 @@ export function doNew() {
 }
 
 export function Toolbar() {
+  const [dbOpen, setDbOpen] = useState(false);
   const name = useEditor((s) => s.name);
   const dirty = useEditor((s) => s.dirty);
   const canUndo = useEditor((s) => s.past.length > 0);
@@ -70,6 +73,7 @@ export function Toolbar() {
       <button onClick={doOpen} title="Open (Ctrl+O)">Open</button>
       <button onClick={() => doSave()} title="Save (Ctrl+S)" data-testid="save">Save</button>
       <button onClick={() => doExport()} title="Export supported tools as .yxmd">Export</button>
+      <button onClick={() => setDbOpen(true)} title="Manage PostgreSQL and SQL Server connections">Databases</button>
       <span className="sep" />
       <button className="icon" onClick={() => useEditor.getState().undo()} disabled={!canUndo} title="Undo (Ctrl+Z)" aria-label="Undo">↶</button>
       <button className="icon" onClick={() => useEditor.getState().redo()} disabled={!canRedo} title="Redo (Ctrl+Y)" aria-label="Redo">↷</button>
@@ -90,6 +94,7 @@ export function Toolbar() {
             : hasTools ? <span className="status-pill ok" data-testid="valid">valid</span> : null}
       {running && <span className="status-pill run">running</span>}
       {info && <span style={{ color: 'var(--text-3)', fontSize: 11 }} title={`Python ${info.python}`}>engine {info.version}</span>}
+      {dbOpen && <DatabaseConnections close={() => setDbOpen(false)} />}
     </header>
   );
 }

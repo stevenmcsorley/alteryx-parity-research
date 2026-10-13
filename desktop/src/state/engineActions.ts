@@ -83,10 +83,18 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
       + `(${codeTools.map((n) => n.id).join(', ')}). Only allow this for workflows you trust. Allow for this run?`);
     if (!allow) return;
   }
+  const dbWriters = s.nodes.filter((n) => n.data.kind === 'tool' && n.data.tool === 'core.db_output');
+  let allowDatabaseWrites = false;
+  if (dbWriters.length) {
+    allowDatabaseWrites = window.confirm(`This workflow can write to a database (${dbWriters.map((n) => n.id).join(', ')}). `
+      + 'Continue only if the selected connection is configured for writes and you trust the workflow. Allow database writes for this run?');
+    if (!allowDatabaseWrites) return;
+  }
   try {
     const res = await engine().request<{ run_id: string; status: string; problems?: any[] }>('run.start', {
       workflow: toDocument(graphOf(s)), base_dir: s.baseDir, profile: s.profile, preview_rows: 500,
       workers: options.workers ?? 2, allow_processes: allow,
+      allow_database_writes: allowDatabaseWrites,
       ...(options.batch_rows ? { batch_rows: options.batch_rows } : {}) });
     if (res.status === 'invalid') {
       useEditor.getState().runInvalid(res.problems ?? []);

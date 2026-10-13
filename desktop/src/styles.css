@@ -109,6 +109,9 @@ label { color: var(--text-2); font-size: 12px; }
 .tool-item.active { background: var(--accent-soft); border-color: var(--accent-soft); }
 .tool-item.unavailable .tool-name { color: var(--text-3); }
 .tool-item[draggable='true'] { cursor: grab; }
+.db-tool-item { display: flex; align-items: center; gap: 8px; padding: 4px 10px; cursor: grab; border: 1px solid transparent; }
+.db-tool-item:hover { background: var(--panel-2); }
+.db-tool-item.active { background: var(--accent-soft); border-color: var(--accent-soft); }
 .tool-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .badge { font-size: 10.5px; padding: 1px 6px; border-radius: 8px; white-space: nowrap; font-weight: 600; }
 .badge.ready { background: var(--ok-soft); color: var(--ok); }
@@ -118,6 +121,29 @@ label { color: var(--text-2); font-size: 12px; }
 .badge.refdiff { background: var(--err-soft); color: var(--err); }
 .tool-detail { border-top: 1px solid var(--border); padding: 10px; background: var(--panel-2); font-size: 12px; max-height: 42%; overflow: auto; }
 .tool-detail h4 { margin: 0 0 4px; font-size: 13px; }
+.db-modal-backdrop { position: fixed; inset: 0; z-index: 1000; background: #0009; display: grid; place-items: center; padding: 20px; }
+.db-modal { width: min(900px, 96vw); max-height: 92vh; overflow: hidden; display: flex; flex-direction: column; background: var(--panel);
+  border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 18px 60px #0008; }
+.db-modal > header { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid var(--border); }
+.db-modal > header h2 { font-size: 16px; }
+.db-modal-body { display: grid; grid-template-columns: minmax(210px, 0.8fr) minmax(330px, 1.2fr); gap: 18px; padding: 16px; overflow: auto; }
+.db-connection-list { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+.db-connection-row { display: flex; gap: 4px; border: 1px solid var(--border); border-radius: 6px; padding: 4px; }
+.db-connection-select { flex: 1; text-align: left; display: flex; flex-direction: column; gap: 3px; }
+.db-connection-select small { color: var(--text-3); }
+.db-connection-form { display: grid; gap: 8px; align-content: start; }
+.db-connection-form label { display: grid; gap: 4px; }
+.db-connection-form .db-check { display: flex; align-items: center; gap: 8px; }
+.db-connection-form .db-check input { width: auto; }
+.db-input-form { display: grid; gap: 8px; }
+.db-input-form label { display: grid; gap: 4px; }
+.db-preview { overflow: hidden; font-size: 11px; }
+.db-preview-table { max-height: 180px; overflow: auto; margin-top: 5px; border: 1px solid var(--border); }
+.db-preview-table > div { display: flex; }
+.db-preview-table span { min-width: 90px; max-width: 150px; padding: 3px 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-right: 1px solid var(--border); }
+.db-actions { display: flex; gap: 8px; }
+.db-message { padding: 7px; border-radius: 5px; background: var(--accent-soft); }
+@media (max-width: 650px) { .db-modal-body { grid-template-columns: 1fr; } }
 .tool-detail p { margin: 4px 0; color: var(--text-2); }
 .cat-dot { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
 

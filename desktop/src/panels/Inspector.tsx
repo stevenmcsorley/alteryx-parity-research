@@ -1,9 +1,10 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useEditor } from '../state/store';
 import type { FieldDef } from '../engine/types';
 import type { CanvasNode, ToolNodeData } from '../model/workflow';
 import { SchemaForm, type FieldContext } from './SchemaForm';
 import { categoryColor, glyph } from '../ui/categories';
+import { engine, describe } from '../state/engineActions';
 
 export function Inspector() {
   const selected = useEditor((s) => s.nodes.filter((n) => n.selected));
@@ -133,6 +134,8 @@ function ToolInspector({ node }: { node: CanvasNode }) {
         <h3>Configuration</h3>
         {manifest.tool_id === 'core.text_input'
           ? <TextInputEditor value={d.config} onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />
+          : manifest.tool_id === 'core.db_input'
+            ? <DatabaseInputForm value={d.config} onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />
           : <SchemaForm schema={manifest.config_schema} value={d.config} fields={fields} idPrefix={`cfg-${node.id}`}
             onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />}
         <p className="help" style={{ color: 'var(--text-3)', fontSize: 11 }}>{manifest.description}</p>
@@ -157,6 +160,59 @@ function ToolInspector({ node }: { node: CanvasNode }) {
       <SchemaPreview title="Outgoing fields" groups={outSchemas ?? {}} emptyText="Not known until upstream inputs are valid (or data-dependent)." />
     </div>
   );
+}
+
+type DbConnection = { id: string; name: string; dialect: string };
+type DbTable = { name: string; kind: string };
+function DatabaseInputForm({ value, onBeginEdit, onChange }: { value: Record<string, unknown>; onBeginEdit: () => void;
+  onChange: (v: Record<string, unknown>) => void }) {
+  const [connections, setConnections] = useState<DbConnection[]>([]);
+  const [schemas, setSchemas] = useState<string[]>([]);
+  const [tables, setTables] = useState<DbTable[]>([]);
+  const [preview, setPreview] = useState<any>(null);
+  const [error, setError] = useState('');
+  const connection = String(value.connection_id ?? '');
+  const schema = String(value.schema ?? '');
+  const mode = String(value.mode ?? 'table');
+  useEffect(() => { void engine().request<DbConnection[]>('database.connections.list').then(setConnections).catch((e) => setError(describe(e))); }, []);
+  useEffect(() => {
+    if (!connection) { setSchemas([]); setTables([]); return; }
+    void engine().request<string[]>('database.schemas', { connection_id: connection }).then((x) => {
+      setSchemas(x); if (!x.includes(schema)) setTables([]);
+    }).catch((e) => setError(describe(e)));
+  }, [connection]);
+  useEffect(() => {
+    if (!connection || !schema) { setTables([]); return; }
+    void engine().request<DbTable[]>('database.tables', { connection_id: connection, schema }).then(setTables).catch((e) => setError(describe(e)));
+  }, [connection, schema]);
+  const change = (patch: Record<string, unknown>) => {
+    onBeginEdit(); onChange({ ...value, mode: patch.mode ?? value.mode ?? 'table', ...patch }); setPreview(null); setError('');
+  };
+  const loadPreview = async () => {
+    setError('');
+    try { setPreview(await engine().request('database.preview', { connection_id: connection, mode,
+      schema: value.schema, table: value.table, query: value.query, params: value.params ?? [], limit: 100 })); }
+    catch (e) { setError(describe(e)); }
+  };
+  return <div className="section db-input-form">
+    <label>Connection<select value={connection} onFocus={onBeginEdit} onChange={(e) => change({ connection_id: e.target.value, schema: null, table: undefined })}>
+      <option value="">Choose a saved connection</option>{connections.map((c) => <option key={c.id} value={c.id}>{c.name} ({c.dialect})</option>)}
+    </select></label>
+    <label>Source<select value={mode} onFocus={onBeginEdit} onChange={(e) => change({ mode: e.target.value, ...(e.target.value === 'query' ? {} : { query: undefined }) })}>
+      <option value="table">Table or view</option><option value="query">Read-only SQL query</option></select></label>
+    {mode === 'table' ? <>
+      <label>Schema<select value={schema} onFocus={onBeginEdit} onChange={(e) => change({ schema: e.target.value || null, table: undefined })}>
+        <option value="">Default schema</option>{schemas.map((s) => <option key={s}>{s}</option>)}</select></label>
+      <label>Table or view<select value={String(value.table ?? '')} onFocus={onBeginEdit} onChange={(e) => change({ table: e.target.value })}>
+        <option value="">Choose a table or view</option>{tables.map((t) => <option key={t.name} value={t.name}>{t.name} ({t.kind})</option>)}</select></label>
+    </> : <label>Read-only SQL<textarea rows={7} value={String(value.query ?? '')} onFocus={onBeginEdit}
+      onChange={(e) => change({ query: e.target.value })} placeholder="SELECT …" /></label>}
+    <button onClick={() => void loadPreview()} disabled={!connection || (mode === 'table' ? !value.table : !value.query)}>Preview live data</button>
+    {error && <div className="problem" role="alert">{error}</div>}
+    {preview && <div className="db-preview"><strong>{preview.total_rows} row(s) · {preview.fields.map((f: FieldDef) => f.name).join(', ')}</strong>
+      <div className="db-preview-table">{preview.rows.map((r: unknown[], i: number) => <div key={i}>{r.map((x, j) => <span key={j}>{x == null ? '∅' : String(x)}</span>)}</div>)}</div></div>}
+    <p className="help">Rows are fetched from the database each time the workflow runs. Read-only SQL accepts one SELECT statement with parameter placeholders.</p>
+  </div>;
 }
 
 function SchemaPreview({ title, groups, emptyText }: { title: string; groups: Record<string, FieldDef[]>; emptyText?: string }) {
