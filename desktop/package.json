@@ -1,0 +1,35 @@
+{
+  "name": "flowengine-desktop",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.12.3",
+    "@tauri-apps/plugin-dialog": "^2.8.2",
+    "@xyflow/react": "^12.12.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^4.5.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.48",
+    "@tauri-apps/cli": "^2.12.2",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "jsdom": "^25.0.1",
+    "typescript": "5.6",
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9"
+  }
+}

@@ -80,6 +80,18 @@ class ValidationTests(unittest.TestCase):
         self.assertEqual(p, [])
         self.assertEqual(plan.schemas[('f', 'output')].names, ['a', 'b'])
 
+    def test_validation_never_executes_generators(self):
+        # regression: schema inference used to run Generate Rows' loop for input-less sources
+        import time
+        doc = workflow([{'id': 'g', 'tool': 'core.generate_rows', 'config': {
+            'field': 'n', 'type': 'int64', 'init': '1', 'condition': '[n] <= 50000000', 'loop': '[n] + 1',
+            'max_rows_per_record': 50000001}}], [])
+        t0 = time.perf_counter()
+        plan, problems = plan_workflow(doc, base_dir=ROOT)
+        self.assertEqual(problems, [])
+        self.assertLess(time.perf_counter() - t0, 2.0)
+        self.assertEqual(plan.schemas[('g', 'output')].names, ['n'])
+
     def test_tool_version_mismatch(self):
         p = problems_of(workflow([dict(SRC, toolVersion='2.0')], []))
         self.assertEqual(p[0]['code'], 'tool-version-mismatch')

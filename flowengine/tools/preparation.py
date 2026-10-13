@@ -454,7 +454,9 @@ class GenerateRows(Tool):
         ec = _eval_ctx(ctx)
         limit = cfg['max_rows_per_record']
         out_rows = []
-        for row in base_rows if src is None or len(src) else []:
+        if ctx.dry_run:  # schema inference only: never generate data (a source with no input would loop)
+            base_rows = []
+        for row in base_rows:
             value, _ = _cast(init.evaluate(row, ec), target)
             count = 0
             while True:

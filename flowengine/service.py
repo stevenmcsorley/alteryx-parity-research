@@ -9,7 +9,8 @@ Requests: engine.info, tools.list, catalog.list, profiles.list,
 workflow.validate {workflow, base_dir, profile?}, workflow.run {...} (synchronous),
 run.start {workflow, base_dir, profile?, workers?, batch_rows?, memory_budget?, preview_rows?, clock?} -> {run_id},
 run.cancel {run_id}, run.result {run_id}, history.list {limit?}, history.get {run_id},
-file.write_text {path, text} / file.read_text {path} (workflow documents only, *.flow.json).
+file.write_text {path, text} / file.read_text {path} (workflow documents only, *.flow.json),
+file.write_export {path, text} (.csv/.tsv/.json/.txt only).
 
 Notifications (server -> client): ``run.event`` (every engine event, live) and
 ``run.finished`` {run_id, status}. All errors are JSON-RPC errors with ``data.code``.
@@ -18,6 +19,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import json
+import os
 import sys
 import threading
 from pathlib import Path
@@ -80,7 +82,7 @@ class EngineService:
         reg = default_registry()
         if method == 'engine.info':
             return {'engine': 'flowengine', 'version': __version__, 'protocol': PROTOCOL,
-                    'python': sys.version.split()[0], 'history': bool(self.history)}
+                    'python': sys.version.split()[0], 'history': bool(self.history), 'cwd': os.getcwd()}
         if method == 'tools.list':
             return [t.manifest.to_dict() for t in reg.tools()]
         if method == 'profiles.list':
@@ -130,6 +132,13 @@ class EngineService:
             return self.history.get(params['run_id']) if self.history else None
         if method == 'file.write_text':
             p = _workflow_path(params['path'])
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(params['text'], encoding='utf-8')
+            return {'path': str(p)}
+        if method == 'file.write_export':
+            p = Path(params['path'])
+            if p.suffix.lower() not in ('.csv', '.tsv', '.json', '.txt'):
+                raise EngineError('Exports must be .csv, .tsv, .json or .txt', code='bad-request')
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(params['text'], encoding='utf-8')
             return {'path': str(p)}
