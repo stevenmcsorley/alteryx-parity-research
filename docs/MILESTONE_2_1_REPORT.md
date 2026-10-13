@@ -40,8 +40,9 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - Added real DB coverage for least-privilege writes, rollback after a failed batch, authentication failure,
   PostgreSQL certificate and hostname verification, credential rotation, query timeout, cancellation,
   terminated connections, 200,000-row batched reads, typed exports, and both-dialect join parity.
-- Added a pinned CRAN R 4.6.0 CI job for the existing R kernel test. R remains an explicit external runtime for
-  end users and is not included in the Windows package.
+- Added a pinned CRAN R 4.6.0 CI job for the existing R kernel test; the job passed on commit `8696d2d`
+  ([Actions run 38448953296](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38448953296)).
+  R remains an explicit external runtime for end users and is not included in the Windows package.
 - Added a Windows runtime staging script, pinned dependency manifest, managed CPython resource lookup, and a
   Windows CI installer smoke step for install/launch/reinstall/uninstall with system developer tools removed
   from `PATH`. This new packaging path is pending its first successful CI run and is not yet verified.
@@ -52,7 +53,7 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - Catalogue: **323 category/tool entries**, 321 distinct names; unchanged from the baseline.
 - Implemented catalogue kernels: **58**; full-reference-pass entries: **32**; reference-difference entries: **1**.
 - Python: **147 tests passed, 1 skipped** on this machine; the skip is the existing R runtime test because R is
-  not installed.
+  not installed locally. The R test passed in the pinned R 4.6.0 CI job above.
 - Database: **12 integration tests passed** against local PostgreSQL 16 and SQL Server 2022 fixtures. This
   includes pushed/local Filter → Select → Summarize parity on both engines, same-database Join parity where safe,
   cross-database local Join, reader-role write rejection, Database Output rollback, credential rotation, TLS
@@ -73,9 +74,9 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - **Integration coverage:** nine categories of failure/security/large-data cases are exercised in real databases,
   but driver-specific TLS verification on SQL Server, more adversarial cancellation/network cases and broader
   write permission matrices remain open.
-- **Installer:** managed CPython bundling and clean-runner install/launch/reinstall/uninstall are now wired into
-  Windows CI, but the result is pending. R is not bundled; user machines need a separately installed R 4.6.x
-  runtime (CI pins 4.6.0).
+- **Installer:** managed CPython bundling and clean-runner install/launch/reinstall/uninstall are wired into
+  Windows CI. Installer build and smoke results are still pending. R is not bundled; user machines need a
+  separately installed R 4.6.x runtime (CI pins 4.6.0).
 - **Acceptance demo:** despite working UI editors, live engine export and real-engine workflow tests, the complete
   PostgreSQL Customers + SQL Server Orders → Join → Filter → Formula → Summarize → Results Grid → CSV/Parquet
   sequence has not been run in the actual Tauri desktop UI. This milestone remains incomplete until that and the
