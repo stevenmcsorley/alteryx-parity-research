@@ -299,3 +299,27 @@ class UserCodeTools(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class ManagedEnvironmentTests(unittest.TestCase):
+    def test_python_tool_runs_in_a_named_isolated_environment(self):
+        import os
+        from flowengine import runtimes
+        with tempfile.TemporaryDirectory() as home:
+            old = os.environ.get('FLOWENGINE_HOME')
+            os.environ['FLOWENGINE_HOME'] = home
+            try:
+                manifest = runtimes.create_env('ci-env', [])
+                self.assertTrue(manifest['python'].startswith('3.'))
+                self.assertIn('ci-env', [e['name'] for e in runtimes.list_envs()])
+                code = ('import sys\nfrom flowbench_io import write_output\n'
+                        'write_output(1, [{"prefix": sys.prefix}])')
+                doc = workflow([{'id': 'py', 'tool': 'core.python', 'config': {'code': code, 'environment': 'ci-env'}}], [])
+                r = run_workflow(doc, base_dir=ROOT, limits={'allow_processes': True})
+                self.assertTrue(r.ok, r.error)
+                self.assertIn('ci-env', r.output('py', 'output1').column('prefix')[0])
+            finally:
+                if old is None:
+                    os.environ.pop('FLOWENGINE_HOME', None)
+                else:
+                    os.environ['FLOWENGINE_HOME'] = old

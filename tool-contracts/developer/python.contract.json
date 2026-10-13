@@ -140,9 +140,10 @@
     ]
   },
   "independent_tests": {
-    "count": 3,
-    "passing": 3,
+    "count": 4,
+    "passing": 4,
     "tests": [
+      "test_fe_tools_wave2.ManagedEnvironmentTests.test_python_tool_runs_in_a_named_isolated_environment",
       "test_fe_tools_wave2.UserCodeTools.test_python_errors_timeouts_and_environment",
       "test_fe_tools_wave2.UserCodeTools.test_python_tool_requires_permission",
       "test_fe_tools_wave2.UserCodeTools.test_python_tool_runs_isolated_code_with_typed_exchange"

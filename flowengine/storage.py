@@ -32,6 +32,31 @@ def estimate_bytes(t: Table) -> int:
     return n * _BYTES_PER_VALUE + text
 
 
+_CHUNK = 20_000
+
+
+def _write_spill(path, table: Table):
+    """Schema, then column slices of _CHUNK rows: each pickle call has a small memo, so writing a spill does
+    not transiently duplicate the whole table in memory."""
+    with open(path, 'wb') as fh:
+        pickle.dump((tuple(table.schema), len(table)), fh, protocol=pickle.HIGHEST_PROTOCOL)
+        for i in range(0, len(table), _CHUNK):
+            pickle.dump([c[i:i + _CHUNK] for c in table.columns], fh, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def _read_spill(path) -> Table:
+    with open(path, 'rb') as fh:
+        schema, n = pickle.load(fh)
+        cols = [[] for _ in schema]
+        read = 0
+        while read < n:
+            part = pickle.load(fh)
+            for c, p in zip(cols, part):
+                c.extend(p)
+            read += len(part[0]) if part else n
+    return Table(schema, cols) if schema else Table([], [])
+
+
 class TableStore:
     def __init__(self, budget_bytes: int | None, emit=None, spill_root: Path | None = None):
         self.budget = budget_bytes
@@ -61,8 +86,7 @@ class TableStore:
             if key in self._resident:
                 return self._resident[key]
             path = self._spilled.pop(key)
-            with open(path, 'rb') as fh:
-                table = pickle.load(fh)
+            table = _read_spill(path)
             os.unlink(path)
             self._resident[key] = table
             self._emit('info', message=f'reloaded spilled table {key[0]}.{key[1]}', spill='reload')
@@ -92,8 +116,7 @@ class TableStore:
             if self._dir is None:
                 self._dir = Path(tempfile.mkdtemp(prefix='flowengine-spill-', dir=self._root))
             path = self._dir / f'{len(self._spilled)}-{self.spill_count}.pkl'
-            with open(path, 'wb') as fh:
-                pickle.dump(self._resident.pop(victim), fh, protocol=pickle.HIGHEST_PROTOCOL)
+            _write_spill(path, self._resident.pop(victim))
             self._spilled[victim] = path
             self.spill_count += 1
             self.spilled_bytes += self._sizes[victim]

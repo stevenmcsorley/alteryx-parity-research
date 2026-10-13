@@ -6499,7 +6499,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 3,
+      "independent_tests": 4,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for developer:python)"

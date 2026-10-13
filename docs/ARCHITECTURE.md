@@ -3,7 +3,7 @@
 Status legend: **[built]** implemented and tested in this repository; **[planned]** designed here, not yet built.
 
 ```text
-┌──────────────────────── Desktop editor [planned] ────────────────────────┐
+┌──────────────────────── Desktop editor [built: desktop/] ─────────────────┐
 │ Tauri shell · React/TypeScript · canvas (pan/zoom, anchors, wires)        │
 │ palette ← tools.list/catalog.list · property panel ← JSON Schema forms    │
 │ results grid ← previews · run log ← events · problems ← workflow.validate │
@@ -19,12 +19,13 @@ Status legend: **[built]** implemented and tested in this repository; **[planned
 │ plugin registry: manifests (anchors, JSON-Schema config, side effects,   │
 │          determinism, dependencies) · catalogue mapping ·                 │
 │          entry-point discovery for third-party tools          [built]     │
-│ kernels: 26 reference kernels (pure Python, columnar Table)  [built]      │
+│ kernels: 59 kernels (pure Python, columnar Table)            [built]      │
 │ formula language: lexer/parser/type-checker/compiler          [built]     │
 └──────────────────────────────────────────────────────────────────────────┘
         │                       │                          │
-  file adapters [built:    accelerated backend        external adapters [planned]
-  CSV/TSV/JSON/JSONL]      (Arrow/DataFusion) [planned] DB, cloud, R/Python, geo
+  file adapters [built:    Arrow interop, streaming,  user code [built: Python/R/commands,
+  CSV/JSON/Parquet/Arrow/  spill, parallel, history,  isolated processes]; DB, cloud,
+  yxdb-in]                 profiles [built]           geo adapters [planned]
 ```
 
 ## Decisions (ADRs)
@@ -61,7 +62,7 @@ A tool is a class with a `ToolManifest` and `run(ctx, config, inputs) -> {anchor
 
 Events (`run-started`, `node-started`, `node-completed`, `node-skipped`, `node-failed`, `warning`, `info`, `run-cancelled`, `run-completed`) are kept in the result, mirrored to an optional JSONL file, the `flowengine` logger and an optional listener. The run manifest records engine/Python versions, workflow digest, per-node per-anchor row counts, field lists and canonical output digests, warnings and the error. Errors have stable codes: `document-invalid`, `tool-unavailable`, `config-invalid`, `schema-invalid`, `expression-error`, `anchor-*`, `cycle`, `data-error`, `cancelled`, `internal-error`.
 
-## Visual editor (planned, interface built)
+## Visual editor (built; see docs/DESKTOP.md)
 
 - **Shell:** Tauri (Rust) hosting a React/TypeScript UI; the engine runs as a sidecar process (`flowengine serve`).
 - **Canvas:** node graph with typed anchors from manifests; connection validation mirrors planner rules (single vs multiple anchors); keyboard-first selection/move/connect; undo/redo as a command log over the workflow document.
@@ -74,3 +75,15 @@ Events (`run-started`, `node-started`, `node-completed`, `node-skipped`, `node-f
 ## Planned scale-out
 
 Arrow-backed `Table` and DataFusion/Polars kernels for relational tools; spill-to-disk for sort/join/summarise; streaming executor for unbounded inputs; process-sandboxed R/Python adapters; database pushdown for In-Database tools; credential vault (OS keychain) for connectors. Each replacement must pass the same unit tests and differential cases.
+
+## Milestone 2 additions (built)
+
+| ID | Decision |
+|---|---|
+| ADR-011 | Compatibility profiles (`flowengine/profiles.py`) name a reference build and engine mode; kernels branch only on evidenced switches; the profile is recorded per run |
+| ADR-012 | Streaming executes eligible linear segments in batches through the same kernels (row-local or explicit stateful streams); manifests are identical to batch runs |
+| ADR-013 | Intermediate tables live in a `TableStore` with a memory budget and chunked spill files; peak memory is still bounded below by the largest single operation (external algorithms are future work) |
+| ADR-014 | Parallelism batches ready nodes; outputs are identical for any worker count and event order is deterministic per worker count |
+| ADR-015 | User code runs in separate processes with explicit per-run permission (`allow_processes`), scrubbed environments, time limits and named pinned Python environments |
+| ADR-016 | Desktop: Tauri shell + React UI; engine as a JSON-RPC sidecar; stdio in the app, loopback HTTP/SSE for browser tests |
+| ADR-017 | Interop is lossless by construction: unknown nodes and settings are preserved with their original XML and surfaced in reports and validation |

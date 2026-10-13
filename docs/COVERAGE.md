@@ -22,7 +22,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 146 run, 0 failed |
+| Unit/integration tests in last ledger build | 147 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -84,7 +84,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `developer:field-info` | `core.field_info` | 1 | 1/1 | partial |
 | `developer:json-parse` | `core.json_parse` | 1 | 2/2 | partial |
 | `developer:message` | `core.message` | 1 | 0/0 | not-tested |
-| `developer:python` | `core.python` | 3 | 0/0 | not-tested |
+| `developer:python` | `core.python` | 4 | 0/0 | not-tested |
 | `developer:r` | `core.r` | 0 | 0/0 | not-tested |
 | `developer:run-command` | `core.run_command` | 1 | 0/0 | not-tested |
 | `developer:test` | `core.test` | 1 | 0/0 | not-tested |

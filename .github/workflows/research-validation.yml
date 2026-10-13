@@ -1,9 +1,9 @@
-name: Validation, engine tests, status ledger and coverage
+name: Engine, desktop and evidence ledger
 on:
   push:
   pull_request:
 jobs:
-  validate:
+  engine:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,14 +14,18 @@ jobs:
         run: python -m pip install -r requirements-dev.txt
       - name: Validate catalogue records
         run: python scripts/validate_repository.py
-      - name: Unit, property, integration and golden end-to-end tests
+      - name: Unit, property, integration, interop, service and golden tests
         run: python -m unittest discover -s tests -v
-      - name: Workflow validation and real end-to-end run (CLI)
+      - name: Real end-to-end run through the CLI (golden outputs)
         run: |
           python -m flowengine validate examples/sales/monthly_sales.flow.json
           python -m flowengine run examples/sales/monthly_sales.flow.json --clock 2026-01-15T09:30:00 --log run-events.jsonl --manifest run-manifest.json
           diff examples/sales/out/monthly_sales.csv tests/golden/monthly_sales/monthly_sales.csv
           diff examples/sales/out/unmatched_orders.csv tests/golden/monthly_sales/unmatched_orders.csv
+          python -m flowengine run examples/sales/monthly_sales.flow.json --clock 2026-01-15T09:30:00 --batch-rows 3 --workers 2
+          diff examples/sales/out/monthly_sales.csv tests/golden/monthly_sales/monthly_sales.csv
+      - name: Import an original .yxmd fixture
+        run: python -m flowengine import tests/fixtures/yxmd/regional_sales.yxmd -o imported.flow.json
       - name: Legacy testbed smoke test
         run: python -m engine.independent_engine examples/customer_reconciliation.json
       - name: Status ledger and contracts are reproducible from evidence
@@ -38,3 +42,43 @@ jobs:
           path: |
             run-events.jsonl
             run-manifest.json
+
+  desktop:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - run: python -m pip install -r ../requirements.txt
+      - run: npm ci
+      - name: Type-check and unit tests
+        run: |
+          npx tsc --noEmit -p .
+          npx vitest run
+      - name: End-to-end UI tests against the real engine
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test app.spec
+
+  desktop-shell:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Rust shell tests (sidecar protocol incl. real engine round trip)
+        working-directory: desktop/src-tauri
+        run: |
+          New-Item -ItemType Directory -Force ..\dist | Out-Null
+          cargo test

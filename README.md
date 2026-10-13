@@ -4,17 +4,24 @@
 
 > Research baseline: 13 October 2026. Pinned reference release: **Designer 2026.1.4.126** (30 September 2026). The official `/current/` documentation is a moving target; contents need comparison with the actual pinned installation. This repository does **not** contain Alteryx software, private code, installation media, copied icons, customer datasets, credentials, licence circumvention instructions, or any completed tool implementations.
 
-## What is here now (milestone 1, 13 October 2026)
+## What is here now (Milestone 2)
 
-- **Catalogue refreshed against the official tool list** (live sync 13 Oct 2026): 323 entries / 321 names / 29 categories, all 323 per-tool help URLs resolved, one XML identifier drift corrected (Survival Analysis). Metadata-only audit of all 321 unique help pages in `data/public-doc-audit.json`.
-- **323 machine-readable tool contracts** (`tool-contracts/**/*.contract.json`) with anchors, configuration, dependencies, tests, conformance cases and open questions — all generated from evidence by `scripts/build_status.py`.
-- **`flowengine`** — an original, typed workflow engine: JSON workflow format with schema validation, plugin registry with JSON-Schema-configured tool manifests, planner with static schema inference, deterministic executor with structured JSONL events, cancellation and reproducibility manifests, an independent formula language, a CLI and a JSON-RPC editor service.
-- **26 tool kernels implemented and tested** (In/Out, Preparation, Join, Parse, Transform). Every other catalogue entry fails validation with `tool-unavailable` — nothing is stubbed.
-- **Differential conformance harness** against an authorised local reference install (build 2026.2.0.8): **48/48 cases pass across 17 catalogue tools** after adopting the observed semantics, each cited in code (`docs/ENGINE_SEMANTICS.md`).
-- **End-to-end example** `examples/sales/monthly_sales.flow.json` (two typed CSV inputs → cleanse → unique → filter → formula → join → summarise → sort → CSV outputs) with golden outputs and a reproducibility test.
-- 98 unit/property/integration/golden/service tests; CI reproduces the status ledger.
+- **Flowbench desktop app** (`desktop/`): Tauri + React + TypeScript. Workflow canvas, palette for all 323
+  catalogue entries with evidence-based status, schema-driven configuration, live runs, results, history,
+  `.yxmd` import/export. See [docs/DESKTOP.md](docs/DESKTOP.md).
+- **flowengine**: typed columnar engine with Arrow/Parquet, streaming, spilling, parallel scheduling, run history,
+  E1/E2 compatibility profiles, isolated Python/R/command runtimes and a JSON-RPC service.
+- **58 kernels implemented** (Parse 4/4, Preparation 20/21, Transform 7/8, Join 6/7, In/Out 6/8, Developer 15/30);
+  every other entry fails validation with `tool-unavailable`, and nothing is stubbed.
+- **Conformance against Alteryx Designer 2026.2.0.8**: 74/75 differential cases in both E1 and E2; holdout runs
+  of the install's shipped sample workflows match on 15–16 of 31 workflows (87–88 of 126 outputs). 32 entries
+  pass all their reference cases; 0 are claimed fully verified.
+- 323 machine-readable contracts and an evidence ledger reproduced in CI.
 
-See [`docs/COVERAGE.md`](docs/COVERAGE.md) for the separate metrics and [`docs/MILESTONE_1_REPORT.md`](docs/MILESTONE_1_REPORT.md) for the full report. `engine/independent_engine` is the superseded five-operator testbed, kept for history.
+Reports: [docs/COVERAGE.md](docs/COVERAGE.md), [docs/MILESTONE_2_REPORT.md](docs/MILESTONE_2_REPORT.md),
+[docs/MILESTONE_1_REPORT.md](docs/MILESTONE_1_REPORT.md). Design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md),
+[docs/ENGINE_SEMANTICS.md](docs/ENGINE_SEMANTICS.md), [docs/COMPATIBILITY_PROFILES.md](docs/COMPATIBILITY_PROFILES.md),
+[docs/INTEROP.md](docs/INTEROP.md), [docs/RUNTIMES.md](docs/RUNTIMES.md), [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
 
 ## Decisions
 
@@ -59,7 +66,11 @@ python -m unittest discover -s tests -v
 python -m flowengine validate examples/sales/monthly_sales.flow.json
 python -m flowengine run examples/sales/monthly_sales.flow.json --log run.jsonl --manifest run.json
 python -m flowengine tools
+python -m flowengine import tests/fixtures/yxmd/regional_sales.yxmd -o imported.flow.json
 python scripts/build_status.py          # regenerate contracts + status ledger from evidence
+
+# Desktop app (see docs/DESKTOP.md)
+cd desktop; npm ci; npx tauri dev
 python scripts/coverage_report.py
 
 # Online, metadata only:
@@ -68,7 +79,8 @@ python scripts/audit_public_sources.py --max-pages 400 --cache-dir $env:TEMP\doc
 
 # With an authorised reference install (see docs/AUTHORISATION.md):
 python conformance/reference/scan_reference_workflows.py
-python conformance/harness.py
+python conformance/harness.py --mode e1      # and --mode e2
+python conformance/reference/holdout_samples.py --mode e1
 ```
 
 **Do not extend reference investigation beyond the scope recorded in [`docs/AUTHORISATION.md`](docs/AUTHORISATION.md).** REA is a research tool; it does not confer rights to use the target software or reproduce copyrighted implementation.
