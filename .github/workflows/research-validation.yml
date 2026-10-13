@@ -132,3 +132,10 @@ jobs:
       - name: Install, launch without system runtimes, upgrade and uninstall
         shell: pwsh
         run: ./desktop/scripts/windows_installer_smoke.ps1
+      - name: Publish clean-runner installer evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: flowbench-windows-installer
+          path: desktop/src-tauri/target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error
+          retention-days: 7
