@@ -12,9 +12,15 @@ function Install-Flowbench {
 }
 
 Install-Flowbench
-$App = Join-Path $InstallDir 'Flowbench.exe'
-$Python = Join-Path $InstallDir 'resources\runtime\python.exe'
-if (-not (Test-Path $App) -or -not (Test-Path $Python)) { throw 'Installed app or managed Python runtime is missing.' }
+$App = Get-ChildItem -LiteralPath $InstallDir -Filter 'flowbench.exe' -File -Recurse |
+  Select-Object -First 1 -ExpandProperty FullName
+$Python = Get-ChildItem -LiteralPath $InstallDir -Filter 'python.exe' -File -Recurse |
+  Where-Object { $_.FullName -match '[\\/]runtime[\\/]python\.exe$' } |
+  Select-Object -First 1 -ExpandProperty FullName
+if (-not $App -or -not $Python) {
+  $tree = Get-ChildItem -LiteralPath $InstallDir -Force -Recurse | Select-Object -ExpandProperty FullName
+  throw "Installed app or managed Python runtime is missing under $InstallDir. Contents: $($tree -join '; ')"
+}
 & $Python -m flowengine --help | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'Bundled engine failed to start without PATH Python.' }
 & $Python -c 'import jsonschema, numpy, pyarrow, psycopg, pymssql, yxdb'
@@ -39,5 +45,5 @@ Install-Flowbench # same-version reinstall exercises NSIS upgrade-in-place handl
 $Uninstaller = Join-Path $InstallDir 'uninstall.exe'
 if (-not (Test-Path $Uninstaller)) { throw 'NSIS uninstaller is missing.' }
 $uninstall = Start-Process -FilePath $Uninstaller -ArgumentList '/S' -Wait -PassThru
-if ($uninstall.ExitCode -ne 0 -or (Test-Path $App)) { throw 'Silent uninstall did not remove the installed application.' }
+if ($uninstall.ExitCode -ne 0 -or (Test-Path -LiteralPath $App)) { throw 'Silent uninstall did not remove the installed application.' }
 Write-Host 'Clean-runner install, managed runtime launch, same-version reinstall, and uninstall passed.'
