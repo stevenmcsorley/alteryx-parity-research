@@ -45,7 +45,9 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
   R remains an explicit external runtime for end users and is not included in the Windows package.
 - Added a Windows runtime staging script, pinned dependency manifest, managed CPython resource lookup, and a
   Windows CI installer smoke step for install/launch/reinstall/uninstall with system developer tools removed
-  from `PATH`. This new packaging path is pending its first successful CI run and is not yet verified.
+  from `PATH`. Startup now checks `engine.info` and all 323 `catalog.list` records over the installed sidecar
+  protocol; CI smoke mode also runs the shipped deterministic sales workflow through that installed engine.
+  The installer artifact is retained by CI for local Tauri acceptance testing.
 - Added pinned-major driver constraints and a CI job that provisions and removes isolated database fixtures.
 
 ## Verified evidence
@@ -77,9 +79,14 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - **Installer:** the clean Windows runner successfully built the NSIS installer and installed the app and
   managed runtime. The smoke test then found that Tauri did not start the engine sidecar under the initial
   resource-root assumption ([failed clean-runner run 38452070385](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38452070385)).
-  Commit `b8f4740` handles both resource-root layouts and adds a Rust path-discovery regression test; its CI
-  verification is pending. Installer acceptance is not yet passed. R is not bundled; user machines need a
-  separately installed R 4.6.x runtime (CI pins 4.6.0).
+  Commit `b8f4740` handles both resource-root layouts. Commit `11f649d` added actual engine RPC health probes,
+  a credential-free startup log, and a small installed-engine workflow run; `11f649d` CI ([run
+  38458416706](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38458416706)) caught a
+  Rust reader compile error, corrected in `a52c8d8`. No CI run has yet verified that correction: the
+  [`f9aad00` run](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38453879717) and
+  [`98bdf85` run](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38459099387) were
+  cancelled. Installer acceptance is not yet passed. R is not bundled; user machines need a separately
+  installed R 4.6.x runtime (CI pins 4.6.0).
 - **Acceptance demo:** despite working UI editors, live engine export and real-engine workflow tests, the complete
   PostgreSQL Customers + SQL Server Orders → Join → Filter → Formula → Summarize → Results Grid → CSV/Parquet
   sequence has not been run in the actual Tauri desktop UI. This milestone remains incomplete until that and the
