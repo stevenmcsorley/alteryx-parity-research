@@ -5,7 +5,7 @@
   "flowengine_profile": "ayx-2026.2-e1",
   "holdout": false,
   "authorisation": "docs/AUTHORISATION.md",
-  "executed_utc": "2026-10-13T10:04:51+00:00",
+  "executed_utc": "2026-10-13T10:54:12+00:00",
   "flowengine_clock": "2026-01-15T09:30:00",
   "limits": [
     "CSV output cannot distinguish null from empty string",
@@ -78,6 +78,70 @@
       "failed": 0
     },
     "preparation:multi-row-formula": {
+      "passed": 1,
+      "failed": 0
+    },
+    "preparation:auto-field": {
+      "passed": 1,
+      "failed": 0
+    },
+    "preparation:multi-field-formula": {
+      "passed": 1,
+      "failed": 0
+    },
+    "preparation:tile": {
+      "passed": 1,
+      "failed": 0
+    },
+    "join:find-replace": {
+      "passed": 1,
+      "failed": 0
+    },
+    "join:make-group": {
+      "passed": 1,
+      "failed": 0
+    },
+    "parse:datetime": {
+      "passed": 8,
+      "failed": 0
+    },
+    "parse:xml-parse": {
+      "passed": 1,
+      "failed": 0
+    },
+    "transform:make-columns": {
+      "passed": 1,
+      "failed": 0
+    },
+    "developer:field-info": {
+      "passed": 1,
+      "failed": 0
+    },
+    "developer:json-parse": {
+      "passed": 2,
+      "failed": 0
+    },
+    "developer:dynamic-rename": {
+      "passed": 1,
+      "failed": 0
+    },
+    "developer:dynamic-select": {
+      "passed": 1,
+      "failed": 0
+    },
+    "transform:count-records": {
+      "passed": 1,
+      "failed": 0
+    },
+    "transform:weighted-average": {
+      "passed": 1,
+      "failed": 0
+    },
+    "preparation:select-records": {
+      "passed": 1,
+      "failed": 0
+    },
+    "preparation:imputation": {
       "passed": 1,
       "failed": 0
     }
@@ -1495,6 +1559,695 @@
         "messages": [],
         "digests": {
           "output": "a25955a4d4d3c7b11283e4324dba525f02f987e809ff6f3caff36efbc521a0b6"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "autofield-types",
+      "catalog_id": "preparation:auto-field",
+      "description": "smallest type for numeric/date/text columns",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "1fbdb26ba05997643aebc5ed1d715f6e298dffd86ef2ed578e94c93010268379",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "5acf0d8f41985b923cfcefdcae025e62cb1fb9ccb604008220d32c520bcfbee0"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: The FieldType of \"i\" changed to: Byte",
+          "ToolId 900: The FieldType of \"big\" changed to: Int32",
+          "ToolId 900: The FieldType of \"d\" changed to: Double",
+          "ToolId 900: The FieldType of \"dt\" changed to: Date",
+          "ToolId 900: The FieldType of \"s\" changed to: String(3)"
+        ],
+        "digests": {
+          "output": "5acf0d8f41985b923cfcefdcae025e62cb1fb9ccb604008220d32c520bcfbee0"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "multi-field-formula-upper",
+      "catalog_id": "preparation:multi-field-formula",
+      "description": "expression over a text field incl. null",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "db5c468feb2d2d3265af2d46b8526cf1b024d0d31606a37fd49f9adcce66aee8",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "85fa8ced373eaf972f393c005ae83f666c9aae6e10cdb0ba2fc9d565678510e2"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "85fa8ced373eaf972f393c005ae83f666c9aae6e10cdb0ba2fc9d565678510e2"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "tile-equal-records",
+      "catalog_id": "preparation:tile",
+      "description": "equal-record tiles: 6 records into 4 tiles",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "b34b16e20174baaf0cfde87bee47a87dfb3497b8d570af48b3952923ec49caf2",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "dbadb27af69dce1e02578cbc86b82ee95782654ef7a3ea30199ac70aa6d41875"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 4 tiles were generated."
+        ],
+        "digests": {
+          "output": "dbadb27af69dce1e02578cbc86b82ee95782654ef7a3ea30199ac70aa6d41875"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "find-replace-any",
+      "catalog_id": "join:find-replace",
+      "description": "replace any-part matches, case-insensitive",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "041955f63de919af764e2018572aafdf22408e017432436cdb86f4ec81099620",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "380b8c6b57a0a52856c8daee20639bc6ec2893296158ac09de78f81d8613cdf8"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 2 records were found and 2 records were not found."
+        ],
+        "digests": {
+          "output": "48124df014264d373cca6394ed8f11e12f81a407b62418e26ff765c0b781888d"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "make-group-components",
+      "catalog_id": "join:make-group",
+      "description": "connected components of key pairs",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "b1ee8df9c89ba15f8b3e770c3ec219d9c1d02551d82cb1ac86a920cbdf30e93b",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "1558431cd65f5b5c194490ca70d0cf3ef827f10959955b03ab29e7c0b862ccfa"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 3 groups created from 4 input records"
+        ],
+        "digests": {
+          "output": "1558431cd65f5b5c194490ca70d0cf3ef827f10959955b03ab29e7c0b862ccfa"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "datetime-month-name",
+      "catalog_id": "parse:datetime",
+      "description": "parse \"Month dd, yyyy\" text incl. invalid text",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "f317fbf632c5c8f1b4a72d384cf42485c4bf11b9ff3d575c568a02b99a4e252c",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "c09db311215f771424c509f2c25b37846959d33ec2f1abc074373a064133107b"
+        }
+      },
+      "reference": {
+        "exit_code": 1,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "c09db311215f771424c509f2c25b37846959d33ec2f1abc074373a064133107b"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "xml-parse-children",
+      "catalog_id": "parse:xml-parse",
+      "description": "child values of repeated elements",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "67be00f27966eada795fd5d971be03ed1e5d47a59dae087c89aae243b5f6145f",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "dee355ff250a50f582745a309428ef466a7132a919d7e34e31884318472e4a8e"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "dee355ff250a50f582745a309428ef466a7132a919d7e34e31884318472e4a8e"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "make-columns-horizontal",
+      "catalog_id": "transform:make-columns",
+      "description": "five records into two columns",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "e83aa1070e430095b021808a41980f1b149a0373091983d52808440271c2845c",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "f08ed68ebaae7d63bd84d9fbed1362a082f4747c7306fae4a74b6fdfe3e0f475"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "f08ed68ebaae7d63bd84d9fbed1362a082f4747c7306fae4a74b6fdfe3e0f475"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "field-info-basic",
+      "catalog_id": "developer:field-info",
+      "description": "schema description records",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "5928b02113187f3b4d8ecf4f55a380333cdfb1017ffc77f0985a1a9b65531ae9",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true,
+        "ignore_fields": [
+          "Source"
+        ],
+        "ignore_reason": "Source reflects harness-specific upstream tools"
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "00da14d4dd59ab014c1311584c8745c49da311a584205444035be950c88ff79b"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "dbc60db009cc6cef94021eee729b7c8c689dc4e0ef3be5f00bce2ed78a2fe54e"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "json-parse-single",
+      "catalog_id": "developer:json-parse",
+      "description": "flatten nested JSON to name/value",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "0b5b740d00243c53ee95f4268003440aac1c96c03dc525330b0215e8d3b4bd0b",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "d356c75b5981a78be6d20961770812fd0e790ea82c8bbe066a3456827d169b40"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "d356c75b5981a78be6d20961770812fd0e790ea82c8bbe066a3456827d169b40"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "dynamic-rename-first-row",
+      "catalog_id": "developer:dynamic-rename",
+      "description": "take field names from the first row",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "91d944f0e48634587d138dc510e778af6086ab9d0beb3fe32e483ab28cd3cada",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "095740c334931dfe921466ead26cc4000c9e8183e64d6be9481873eaae74ec0c"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "095740c334931dfe921466ead26cc4000c9e8183e64d6be9481873eaae74ec0c"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "dynamic-select-types",
+      "catalog_id": "developer:dynamic-select",
+      "description": "keep double fields",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "efb17b113fb49010a9519a7a28d7e09f1b3e7848be2661cd95076e0d07e23d8c",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "927af77d162c02c1973b00dd169acb5283e1f3216fa0db99b71273144e9fd60f"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "927af77d162c02c1973b00dd169acb5283e1f3216fa0db99b71273144e9fd60f"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "count-records-macro",
+      "catalog_id": "transform:count-records",
+      "description": "count via the bundled macro",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "0086dfb807a2972a395dad30a3e842ea4b3eb781fd9b381091f19535ef3576e5",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "5716c4e5b0bdc405c3e3aed5257a1230807b880c463af63fc40dcfc44be21b1a"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "5716c4e5b0bdc405c3e3aed5257a1230807b880c463af63fc40dcfc44be21b1a"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "weighted-average-macro",
+      "catalog_id": "transform:weighted-average",
+      "description": "weighted average without groups",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "3747c28b99d9094ee941dd5aaedaefcdb00f4294a7f9284ba713c77b7a2951d9",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true,
+        "tolerance": 1e-12
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "2ca635730d198652b49bd97934e5341a09d94fe57e42ebd0533cc225ce863320"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "2ca635730d198652b49bd97934e5341a09d94fe57e42ebd0533cc225ce863320"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "select-records-macro",
+      "catalog_id": "preparation:select-records",
+      "description": "record ranges",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "662c211153a1571c2473fc7e4bae932d8e318038e74b22dfa3f31048f9392d8d",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "2b2dc36371772caccc756336d7acb2d7a587512486694425e06636a7c03fba39"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "2b2dc36371772caccc756336d7acb2d7a587512486694425e06636a7c03fba39"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "imputation-mean-macro",
+      "catalog_id": "preparation:imputation",
+      "description": "replace null with the mean",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "be047c99ca28688be82126d1f9382c6cd475e2f39379ae512605f47b2a98e54b",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "0f45ac1b9c5279255ef335fc363d1858e5acdca715d0803cf596c7b8f84a43e1"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "0f45ac1b9c5279255ef335fc363d1858e5acdca715d0803cf596c7b8f84a43e1"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-datetime-format-0",
+      "catalog_id": "parse:datetime",
+      "description": "probe format 'yyyy-MM-dd'",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "bf176f1aa957993b6775d61d00ad93fa7373c377c3aa6e244286968f4f2a5555",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "d840b8c29dc41c0d491765b4a1bd8f384538ff0364d786fc893827ebe67fc8fa"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "d840b8c29dc41c0d491765b4a1bd8f384538ff0364d786fc893827ebe67fc8fa"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-datetime-format-1",
+      "catalog_id": "parse:datetime",
+      "description": "probe format 'dd/MM/yyyy'",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "7863c76373bd459123d174bd1b83ca178485f7783ac787637074fc6c912d4d99",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "2714641da02b00ac7e8712551b12dc3b6689e1e8d7aa5fb4558fbd8990d277aa"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "2714641da02b00ac7e8712551b12dc3b6689e1e8d7aa5fb4558fbd8990d277aa"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-datetime-format-2",
+      "catalog_id": "parse:datetime",
+      "description": "probe format 'MMMM dd, yyyy'",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "84b6671fead6b7b11c45b81b365131bdb8c307158e74aa98151e74cc922d4e0b",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "f9c592281ea285e678fe45c6fba52cb0f61850151c7eb5738d627ed17f032275"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "f9c592281ea285e678fe45c6fba52cb0f61850151c7eb5738d627ed17f032275"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-datetime-format-3",
+      "catalog_id": "parse:datetime",
+      "description": "probe format 'MMM d, yyyy'",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "b99ca23638633078bd3840b8ae610c30e39e60345d1f9e43d0ebc6476ac67d04",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "06f8aa2a3697adfb2d09b1c6da34c0fb09567f59666004d85aa9e62bd490a202"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "06f8aa2a3697adfb2d09b1c6da34c0fb09567f59666004d85aa9e62bd490a202"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-datetime-format-4",
+      "catalog_id": "parse:datetime",
+      "description": "probe format 'Month dd, yyyy'",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "6ba1cfdf577309e5a03516998cbb296a0a92e0e026ca210e5bcf88902872bee5",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "f9c592281ea285e678fe45c6fba52cb0f61850151c7eb5738d627ed17f032275"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "f9c592281ea285e678fe45c6fba52cb0f61850151c7eb5738d627ed17f032275"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-datetime-format-5",
+      "catalog_id": "parse:datetime",
+      "description": "probe format 'Month d, yyyy'",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "09e86e2aab0fd383aed10a6797b05d8fc0cc98fc590ff4297378492ce52a3d97",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "8275c6e1bad6139bd207a1d7552801e35ee25d8d286ddf1fc7a70d2e87c1069d"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "8275c6e1bad6139bd207a1d7552801e35ee25d8d286ddf1fc7a70d2e87c1069d"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-json-false-null",
+      "catalog_id": "developer:json-parse",
+      "description": "false and null leaves",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "5b41cbd97caf43e51ce56669dca5be6f3f9c0e3f53dc4347527d6b9157d9cc46",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "d8d62606444661f193279d8a3cc36caebf0dab381fc709467b70ac1b7d963803"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "d8d62606444661f193279d8a3cc36caebf0dab381fc709467b70ac1b7d963803"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "datetime-to-text",
+      "catalog_id": "parse:datetime",
+      "description": "date to text with a custom pattern",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "2ea47e2637a7c15cf9a0ecee83f9a6cfab85009bf028bb329a075b71eaac1a10",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "1ab6e31685b0566a93a204bb84063a1b01c8db0e9e08af983abebac4f98e9dd3"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "1ab6e31685b0566a93a204bb84063a1b01c8db0e9e08af983abebac4f98e9dd3"
         },
         "observed": null
       }

@@ -6,83 +6,94 @@
   "xml_tool_name": "AlteryxBasePluginsGui.DynamicRename.DynamicRename",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/dynamic-rename-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
-  "verification_status": "not-tested",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
   "inputs": [
     {
-      "name": "Action",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Targets"
     },
     {
-      "name": "Source",
+      "name": "names",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
-    },
-    {
-      "name": "Targets",
-      "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "AddPrefixSuffix",
-      "AddPrefixSuffix/Text",
-      "AddPrefixSuffix/Type",
-      "Expression",
-      "Fields",
-      "Fields/Field",
-      "FirstRow",
-      "FirstRow/OnError",
-      "NamesFromMetadata",
-      "NamesFromMetadata/ChangeFields",
-      "NamesFromMetadata/OnError",
-      "NamesFromRows",
-      "NamesFromRows/InputMode",
-      "NamesFromRows/NewName",
-      "NamesFromRows/OldName",
-      "NamesFromRows/OnError",
-      "RemovePrefixSuffix",
-      "RemovePrefixSuffix/OnError",
-      "RemovePrefixSuffix/Text",
-      "RemovePrefixSuffix/Type",
-      "RenameMode"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "mode"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Formula",
-      "Add Prefix/Suffix",
-      "Remove Prefix/Suffix",
-      "Take Field Names from First Row of Data",
-      "Take Field Name from Right Input Metadata",
-      "Take Field Names from Right Input Rows",
-      "Take Field Descriptions from Right Input Metadata",
-      "Take Field Descriptions from Right Input Rows",
-      "Troubleshoot"
-    ]
+    "properties": {
+      "mode": {
+        "enum": [
+          "first_row",
+          "add_prefix",
+          "add_suffix",
+          "remove_prefix",
+          "remove_suffix",
+          "formula",
+          "right_input"
+        ]
+      },
+      "fields": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string"
+        },
+        "default": null,
+        "description": "Fields to rename (null = all)"
+      },
+      "text": {
+        "type": "string",
+        "default": ""
+      },
+      "expression": {
+        "type": "string"
+      },
+      "old_name_field": {
+        "type": "string",
+        "default": "Old"
+      },
+      "new_name_field": {
+        "type": "string",
+        "default": "New"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "licensed-dataset (public-doc keyword signal; unreviewed)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.dynamic_rename",
+    "version": "1.0.0",
+    "module": "flowengine.tools.developer",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -143,9 +154,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.DeveloperWave2.test_dynamic_rename_modes"
+    ]
   },
   "sources": [
     {
@@ -164,8 +177,25 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
-  ]
+  "cases": [
+    {
+      "case_id": "dynamic-rename-first-row",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#dynamic-rename-first-row",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 91d944f0e48634587d138dc510e778af6086ab9d0beb3fe32e483ab28cd3cada"
+      ]
+    },
+    {
+      "case_id": "dynamic-rename-first-row",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#dynamic-rename-first-row",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 91d944f0e48634587d138dc510e778af6086ab9d0beb3fe32e483ab28cd3cada"
+      ]
+    }
+  ],
+  "unresolved": []
 }

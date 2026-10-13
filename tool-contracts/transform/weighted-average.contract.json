@@ -6,41 +6,68 @@
   "xml_tool_name": "WeightedAvg.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/transform/weighted-average-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
-  "verification_status": "not-tested",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Value"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "value",
+      "weight"
     ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "properties": {
+      "value": {
+        "type": "string"
+      },
+      "weight": {
+        "type": "string"
+      },
+      "output_field": {
+        "type": "string",
+        "minLength": 1,
+        "default": "WeightedAverage"
+      },
+      "group_by": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.weighted_average",
+    "version": "1.0.0",
+    "module": "flowengine.tools.join_parse_extra",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -70,9 +97,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.JoinParseTransformWave2.test_make_columns_and_weighted_average"
+    ]
   },
   "sources": [
     {
@@ -91,8 +120,25 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
-  ]
+  "cases": [
+    {
+      "case_id": "weighted-average-macro",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#weighted-average-macro",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 3747c28b99d9094ee941dd5aaedaefcdb00f4294a7f9284ba713c77b7a2951d9"
+      ]
+    },
+    {
+      "case_id": "weighted-average-macro",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#weighted-average-macro",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 3747c28b99d9094ee941dd5aaedaefcdb00f4294a7f9284ba713c77b7a2951d9"
+      ]
+    }
+  ],
+  "unresolved": []
 }

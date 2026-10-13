@@ -6,43 +6,56 @@
   "xml_tool_name": "AlteryxBasePluginsGui.MakeGroup.MakeGroup",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/join/make-group-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
-  "verification_status": "not-tested",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Key1st",
-      "Key2nd"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "key1",
+      "key2"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Make Group Logic"
-    ]
+    "properties": {
+      "key1": {
+        "type": "string"
+      },
+      "key2": {
+        "type": "string"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.make_group",
+    "version": "1.0.0",
+    "module": "flowengine.tools.join_parse_extra",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -74,9 +87,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.JoinParseTransformWave2.test_make_group"
+    ]
   },
   "sources": [
     {
@@ -95,8 +110,25 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
-  ]
+  "cases": [
+    {
+      "case_id": "make-group-components",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#make-group-components",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 b1ee8df9c89ba15f8b3e770c3ec219d9c1d02551d82cb1ac86a920cbdf30e93b"
+      ]
+    },
+    {
+      "case_id": "make-group-components",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#make-group-components",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 b1ee8df9c89ba15f8b3e770c3ec219d9c1d02551d82cb1ac86a920cbdf30e93b"
+      ]
+    }
+  ],
+  "unresolved": []
 }

@@ -144,15 +144,20 @@
     ]
   },
   "independent_tests": {
-    "count": 6,
-    "passing": 6,
+    "count": 11,
+    "passing": 11,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.ValidationTests.test_static_schemas_propagate",
+      "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
+      "test_fe_scale.StreamingTests.test_streamed_equals_batch",
+      "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",
+      "test_fe_service.ServiceTests.test_cancel_running_workflow",
       "test_fe_service.ServiceTests.test_validate_returns_schemas_and_problems",
       "test_fe_tools.PreparationTests.test_formula_conversion_policy",
-      "test_fe_tools.PreparationTests.test_formula_sequential_and_types"
+      "test_fe_tools.PreparationTests.test_formula_sequential_and_types",
+      "test_fe_tools_wave2.DeveloperWave2.test_detour_and_block_until_done"
     ]
   },
   "sources": [

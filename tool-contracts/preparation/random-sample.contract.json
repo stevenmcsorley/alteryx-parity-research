@@ -6,47 +6,64 @@
   "xml_tool_name": "RandomRecords.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/random---sample-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Action",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
-    },
-    {
-      "name": "Input",
-      "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Value"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "mode",
+      "n"
     ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "properties": {
+      "mode": {
+        "enum": [
+          "count",
+          "percent"
+        ]
+      },
+      "n": {
+        "type": "number",
+        "minimum": 0
+      },
+      "seed": {
+        "type": "integer",
+        "default": 1
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.random_sample",
+    "version": "1.0.0",
+    "module": "flowengine.tools.prep_extra",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -77,9 +94,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.PreparationWave2.test_random_samples_are_seeded_and_reproducible"
+    ]
   },
   "sources": [
     {
@@ -100,6 +119,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

@@ -46,11 +46,12 @@ PROFILES: dict[str, Profile] = {
                              grouped_output_order='unspecified', join_output_order='unspecified',
                              double_text='shortest',
                              order_unspecified=('join:join', 'transform:summarize', 'transform:cross-tab',
-                                                'transform:running-total', 'preparation:sample[grouped]'),
+                                                'transform:running-total', 'preparation:sample[grouped]',
+                                                'preparation:imputation'),
                              notes=('AMP engine. Switches differ from E1 only where E2 differential cases show it: '
                                     'doubles render shortest round-trip [ref:e2/formula-rounding]; group and join output '
                                     'order follows no stable rule [ref:e2/summarize-basic, e2/join-many-to-many-nulls, '
-                                    'e2/probe-join-unjoined-order, e2/sample-first-grouped]. flowengine still emits key order (a valid instance '
+                                    'e2/probe-join-unjoined-order, e2/sample-first-grouped, e2/imputation-mean-macro]. flowengine still emits key order (a valid instance '
                                     'of an unspecified order) so its own runs stay deterministic.',),
                              evidence={'results': 'conformance/results/2026.2.0.8/e2/results.json'}),
     'ayx-2026.1-e1': replace(_E1, name='ayx-2026.1-e1', product_build='2026.1.4.126', status='inherited-unverified',

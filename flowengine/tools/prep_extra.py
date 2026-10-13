@@ -416,11 +416,18 @@ class Imputation(Tool):
             hit = [v is None for v in col] if cfg['replace'] == 'null' else [v == cfg['replace_value'] for v in col]
             base = [float(v) for v, h in zip(col, hit) if v is not None and not h]
             how = cfg['with']
+            # output type is static (never data-dependent): floating fields keep their type, mean/median of
+            # other numeric fields produce double, mode/value keep the field's own type
+            if f.type in (FieldType.DOUBLE, FieldType.FLOAT) or how in ('mode', 'value'):
+                target = f
+            else:
+                target = Field(name, FieldType.DOUBLE)
+            fill = None
             if how == 'value':
                 fill = cfg['with_value']
             elif not base:
-                ctx.warn(f'No values available to compute the {how} of {name!r}; left unchanged')
-                continue
+                if len(col):
+                    ctx.warn(f'No values available to compute the {how} of {name!r}; left unchanged')
             elif how == 'mean':
                 fill = math.fsum(base) / len(base)
             elif how == 'median':
@@ -430,9 +437,7 @@ class Imputation(Tool):
                 for v in base:
                     counts[v] = counts.get(v, 0) + 1
                 fill = min(v for v, c in counts.items() if c == max(counts.values()))
-            target = f if f.type in (FieldType.DOUBLE, FieldType.FLOAT) or (how == 'value' and float(fill).is_integer()) \
-                else Field(name, FieldType.DOUBLE)
-            new = [fill if h else v for v, h in zip(col, hit)]
+            new = [fill if h and fill is not None else v for v, h in zip(col, hit)]
             out = out.with_column(target, cast_column(new, target, ctx, 'error'))
             if cfg['indicator']:
                 out = out.with_column(Field(f'{name}_Indicator', FieldType.INT32), [1 if h else 0 for h in hit])

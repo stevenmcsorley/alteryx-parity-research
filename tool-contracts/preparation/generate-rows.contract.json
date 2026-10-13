@@ -134,9 +134,11 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
+    "count": 3,
+    "passing": 3,
     "tests": [
+      "test_fe_executor.ValidationTests.test_validation_never_executes_generators",
+      "test_fe_service.ServiceTests.test_cancel_running_workflow",
       "test_fe_tools.PreparationTests.test_generate_rows"
     ]
   },

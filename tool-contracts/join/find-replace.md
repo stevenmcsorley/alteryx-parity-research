@@ -1,6 +1,6 @@
 # Find Replace
 
-> **Research record; NOT a working tool implementation or verified specification.**
+> **Research record.** An independent kernel exists and its evidence is in the contract JSON; this brief is NOT a verified specification or a parity claim.
 
 ## Identity
 
@@ -11,9 +11,9 @@
 - Reference build: Designer 2026.1.4.126 (installed-build comparison outstanding)
 - Official catalogue: https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html
 - Specific reference: **NOT YET VERIFIED** — run public catalogue sync
-- Implementation: **not-started**
+- Implementation: **implemented**
 - Machine-readable contract: `find-replace.contract.json`
-- Conformance verification: **not-tested**
+- Conformance verification: **partial**
 
 ## Research to complete (do not infer)
 

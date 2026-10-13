@@ -344,3 +344,8 @@ formula_case('probe-contains-flag-and-codepoints', 'third Contains argument; cha
     ('c0', 'Contains([a], "ABC", 0)', 'Bool', 1), ('c1', 'Contains([a], "ABC", 1)', 'Bool', 1),
     ('s0', 'StartsWith([a], "AB")', 'Bool', 1), ('cp', 'ToString(CharToInt(Substring([a], 2, 1)))', 'V_WString', 10),
     ('ln', 'Length([a])', 'Int64', 8)])
+
+
+# wave-2 cases live in their own module
+from cases_wave2 import CASES_WAVE2  # noqa: E402
+CASES.extend(CASES_WAVE2)

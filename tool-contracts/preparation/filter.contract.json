@@ -163,14 +163,17 @@
     ]
   },
   "independent_tests": {
-    "count": 7,
-    "passing": 7,
+    "count": 10,
+    "passing": 10,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.PropertyTests.test_invariants",
       "test_fe_executor.ValidationTests.test_graph_problems",
       "test_fe_executor.ValidationTests.test_static_schema_errors_detected_before_running",
+      "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
+      "test_fe_scale.StreamingTests.test_streamed_equals_batch",
+      "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",
       "test_fe_tools.PreparationTests.test_filter_basic_and_custom_partition",
       "test_fe_tools.PreparationTests.test_filter_rejects_non_boolean_and_bad_config"
     ]

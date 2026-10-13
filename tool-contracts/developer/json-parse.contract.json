@@ -6,47 +6,65 @@
   "xml_tool_name": "AlteryxBasePluginsGui.JSONParse.JSONParse",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/json-parse-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
-  "verification_status": "not-tested",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "IncludeInOutput",
-      "JSON_Field",
-      "SingleField"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "field"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Output Values into Single String Field",
-      "Output Values into Data Type Specific Fields",
-      "Unnest JSON Field (AMP Only)",
-      "Flatten Array (AMP Only)"
-    ]
+    "properties": {
+      "field": {
+        "type": "string"
+      },
+      "include_input_fields": {
+        "type": "boolean",
+        "default": false
+      },
+      "single_field": {
+        "type": "boolean",
+        "default": true,
+        "description": "Values in one text field; otherwise String/Int/Float/Bool columns"
+      },
+      "ignore_errors": {
+        "type": "boolean",
+        "default": false
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.json_parse",
+    "version": "1.0.0",
+    "module": "flowengine.tools.developer",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -82,9 +100,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.DeveloperWave2.test_json_parse"
+    ]
   },
   "sources": [
     {
@@ -103,8 +123,43 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
-  ]
+  "cases": [
+    {
+      "case_id": "json-parse-single",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#json-parse-single",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 0b5b740d00243c53ee95f4268003440aac1c96c03dc525330b0215e8d3b4bd0b"
+      ]
+    },
+    {
+      "case_id": "probe-json-false-null",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#probe-json-false-null",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 5b41cbd97caf43e51ce56669dca5be6f3f9c0e3f53dc4347527d6b9157d9cc46"
+      ]
+    },
+    {
+      "case_id": "json-parse-single",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#json-parse-single",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 0b5b740d00243c53ee95f4268003440aac1c96c03dc525330b0215e8d3b4bd0b"
+      ]
+    },
+    {
+      "case_id": "probe-json-false-null",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-json-false-null",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 5b41cbd97caf43e51ce56669dca5be6f3f9c0e3f53dc4347527d6b9157d9cc46"
+      ]
+    }
+  ],
+  "unresolved": []
 }

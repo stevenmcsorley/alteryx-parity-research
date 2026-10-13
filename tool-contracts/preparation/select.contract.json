@@ -163,12 +163,15 @@
     ]
   },
   "independent_tests": {
-    "count": 4,
-    "passing": 4,
+    "count": 7,
+    "passing": 7,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.ExecutionTests.test_failure_reports_node_and_skips_downstream",
+      "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
+      "test_fe_scale.StreamingTests.test_streamed_equals_batch",
+      "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",
       "test_fe_tools.PreparationTests.test_select_rename_retype_reorder_unknown"
     ]
   },

@@ -6,42 +6,57 @@
   "xml_tool_name": "AlteryxBasePluginsGui.AutoField.AutoField",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/auto-field-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
-  "verification_status": "not-tested",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Fields",
-      "Fields/Field"
-    ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "fields": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string"
+        },
+        "default": null,
+        "description": "Text fields to examine (null = every text field)"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.auto_field",
+    "version": "1.0.0",
+    "module": "flowengine.tools.prep_extra",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -72,9 +87,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.PreparationWave2.test_auto_field_picks_smallest_types"
+    ]
   },
   "sources": [
     {
@@ -93,8 +110,25 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
-  ]
+  "cases": [
+    {
+      "case_id": "autofield-types",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#autofield-types",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 1fbdb26ba05997643aebc5ed1d715f6e298dffd86ef2ed578e94c93010268379"
+      ]
+    },
+    {
+      "case_id": "autofield-types",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#autofield-types",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 1fbdb26ba05997643aebc5ed1d715f6e298dffd86ef2ed578e94c93010268379"
+      ]
+    }
+  ],
+  "unresolved": []
 }

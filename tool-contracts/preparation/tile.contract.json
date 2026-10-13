@@ -6,75 +6,81 @@
   "xml_tool_name": "AlteryxBasePluginsGui.Tile.Tile",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/tile-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
-  "verification_status": "not-tested",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
   "inputs": [
     {
-      "name": "Action",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
-    },
-    {
-      "name": "Input",
-      "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "EqualRecords",
-      "EqualRecords/EqualRecordsGroupField",
-      "EqualRecords/EqualRecordsSortField",
-      "EqualRecords/NumTiles",
-      "EqualSum",
-      "EqualSum/NumTiles",
-      "EqualSum/SumField",
-      "GroupFields",
-      "GroupFields/Field",
-      "Manual",
-      "Manual/Cutoffs",
-      "Manual/Field",
-      "Method",
-      "SmartTile",
-      "SmartTile/Field",
-      "SmartTile/NameField",
-      "UniqueValue",
-      "UniqueValue/DontSort",
-      "UniqueValue/UniqueFields"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "method"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Equal Sum",
-      "Create Tiles with Equal Total Values",
-      "Equal Records",
-      "Divide Records Equally",
-      "Smart Tile",
-      "Sort Records by Variance from the Average",
-      "Unique Value",
-      "Create Tiles for Unique Values",
-      "Manual",
-      "Set Up Rules Manually"
-    ]
+    "properties": {
+      "method": {
+        "enum": [
+          "equal_records",
+          "equal_sum",
+          "manual",
+          "unique_value"
+        ]
+      },
+      "tiles": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 4
+      },
+      "field": {
+        "type": "string",
+        "description": "Field for equal_sum / manual / unique_value"
+      },
+      "cutoffs": {
+        "type": "array",
+        "items": {
+          "type": "number"
+        },
+        "default": [],
+        "description": "Manual: ascending upper bounds of each tile"
+      },
+      "group_by": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.tile",
+    "version": "1.0.0",
+    "module": "flowengine.tools.prep_extra",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -133,9 +139,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.PreparationWave2.test_tile_methods"
+    ]
   },
   "sources": [
     {
@@ -154,8 +162,25 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
-  ]
+  "cases": [
+    {
+      "case_id": "tile-equal-records",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#tile-equal-records",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 b34b16e20174baaf0cfde87bee47a87dfb3497b8d570af48b3952923ec49caf2"
+      ]
+    },
+    {
+      "case_id": "tile-equal-records",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#tile-equal-records",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 b34b16e20174baaf0cfde87bee47a87dfb3497b8d570af48b3952923ec49caf2"
+      ]
+    }
+  ],
+  "unresolved": []
 }

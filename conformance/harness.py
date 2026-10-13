@@ -58,7 +58,10 @@ def default_engine() -> Path:
 
 # =========================================================================== reference document
 
-def _node(tool_id, plugin, dll, entry, config_xml, x):
+def _node(tool_id, plugin, dll, entry, config_xml, x, macro=None):
+    if macro:  # macro tools: no plugin; the engine loads the bundled macro by name
+        return (f'<Node ToolID="{tool_id}"><GuiSettings><Position x="{x}" y="60" /></GuiSettings>'
+                f'<Properties>{config_xml}</Properties><EngineSettings Macro={quoteattr(macro)} /></Node>')
     return (f'<Node ToolID="{tool_id}"><GuiSettings Plugin={quoteattr(plugin)}><Position x="{x}" y="60" />'
             f'</GuiSettings><Properties>{config_xml}</Properties>'
             f'<EngineSettings EngineDll={quoteattr(dll)} EngineDllEntryPoint={quoteattr(entry)} /></Node>')
@@ -117,7 +120,8 @@ def build_reference_document(case: dict, outdir: Path, mode: str = 'e1') -> tupl
             # multi-connection anchors carry ordered connection names "#1", "#2", ... (observed format)
             conns.append((last, 'Output', subject, ref['input_anchors'][anchor], f'#{k + 1}' if len(specs) > 1 else None))
             next_id += 10
-    nodes.append(_node(subject, ref['plugin'], ref['engine_dll'], ref['entry_point'], ref['configuration'], 400))
+    nodes.append(_node(subject, ref.get('plugin'), ref.get('engine_dll'), ref.get('entry_point'), ref['configuration'], 400,
+                       macro=ref.get('macro')))
     outputs = {}
     for k, (ours, theirs) in enumerate(sorted(case['outputs'].items())):
         path = outdir / f'{case["case_id"]}__{ours}.csv'
@@ -210,6 +214,10 @@ def compare(ours, theirs, rule: dict) -> list[str]:
         diffs.append(f'header: ours={ours[0]} ref={theirs[0]}')
         return diffs
     a, b = ours[1:], theirs[1:]
+    ignore = [ours[0].index(f) for f in rule.get('ignore_fields', []) if f in ours[0]]
+    if ignore:
+        a = [[v for i, v in enumerate(r) if i not in ignore] for r in a]
+        b = [[v for i, v in enumerate(r) if i not in ignore] for r in b]
     if not rule.get('ordered', True):
         a, b = sorted(a), sorted(b)
     if len(a) != len(b):

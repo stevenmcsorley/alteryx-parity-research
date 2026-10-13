@@ -6,37 +6,69 @@
   "xml_tool_name": "MultiFieldBinning_v2.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/multi-field-binning-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Value"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "fields"
     ],
-    "public_doc_sections": [
-      "Version Warning",
-      "Configure the Tool",
-      "View the Output"
-    ]
+    "properties": {
+      "fields": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "string"
+        }
+      },
+      "method": {
+        "enum": [
+          "equal_records",
+          "equal_interval"
+        ],
+        "default": "equal_records"
+      },
+      "bins": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 5
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime (public-doc keyword signal; unreviewed)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.multi_field_binning",
+    "version": "1.0.0",
+    "module": "flowengine.tools.prep_extra",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -66,9 +98,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.PreparationWave2.test_imputation_and_binning"
+    ]
   },
   "sources": [
     {
@@ -89,6 +123,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

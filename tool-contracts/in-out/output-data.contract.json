@@ -37,7 +37,9 @@
           "tsv",
           "delimited",
           "json",
-          "jsonl"
+          "jsonl",
+          "parquet",
+          "arrow"
         ],
         "default": "auto"
       },
@@ -149,11 +151,16 @@
     ]
   },
   "independent_tests": {
-    "count": 3,
-    "passing": 3,
+    "count": 8,
+    "passing": 8,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
+      "test_fe_scale.ArrowTests.test_parquet_and_ipc_io_through_tools",
+      "test_fe_scale.HistoryAndProfileTests.test_profiles_change_only_evidenced_behaviour",
+      "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
+      "test_fe_scale.StreamingTests.test_streamed_equals_batch",
+      "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",
       "test_fe_tools.InOutTests.test_output_roundtrip_csv_json_and_if_exists"
     ]
   },

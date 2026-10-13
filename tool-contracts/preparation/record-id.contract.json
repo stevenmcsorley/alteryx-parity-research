@@ -120,9 +120,12 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
+    "count": 4,
+    "passing": 4,
     "tests": [
+      "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
+      "test_fe_scale.StreamingTests.test_streamed_equals_batch",
+      "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",
       "test_fe_tools.PreparationTests.test_record_id_variants"
     ]
   },

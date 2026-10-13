@@ -117,8 +117,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/auto-field-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "preparation:create-samples",
@@ -129,7 +129,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/create-samples-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -201,8 +201,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/imputation-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "preparation:multi-field-binning",
@@ -213,7 +213,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/multi-field-binning-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -225,8 +225,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/multi-field-formula-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "preparation:multi-row-formula",
@@ -249,7 +249,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/oversample-field-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -261,7 +261,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/random---sample-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -273,7 +273,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/rank-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -321,8 +321,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/select-records-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "preparation:sort",
@@ -345,8 +345,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/tile-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "preparation:unique",
@@ -381,8 +381,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/join/find-replace-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "join:fuzzy-match",
@@ -417,7 +417,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/join/join-multiple-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -429,8 +429,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/join/make-group-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "join:union",
@@ -453,8 +453,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/parse/datetime-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "parse:regex",
@@ -489,8 +489,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/parse/xml-parse-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "transform:arrange",
@@ -514,7 +514,7 @@
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
       "implementation_status": "implemented",
-      "verification_status": "not-tested"
+      "verification_status": "partial"
     },
     {
       "id": "transform:cross-tab",
@@ -537,8 +537,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/transform/make-columns-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "transform:running-total",
@@ -585,8 +585,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/transform/weighted-average-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "in-database:browse-in-db",
@@ -3009,7 +3009,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/base64-encoder-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3021,7 +3021,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/blob-convert-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3057,7 +3057,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/block-until-done-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3081,7 +3081,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/detour-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3093,7 +3093,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/detour-end-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3129,8 +3129,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/dynamic-rename-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "developer:dynamic-replace",
@@ -3153,8 +3153,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/dynamic-select-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "developer:expect-equals",
@@ -3165,7 +3165,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/expect-equal-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3177,8 +3177,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/field-info-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "developer:github-commit",
@@ -3213,8 +3213,8 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/json-parse-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested"
+      "implementation_status": "implemented",
+      "verification_status": "partial"
     },
     {
       "id": "developer:json-schema",
@@ -3249,7 +3249,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/message-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3261,7 +3261,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/python-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3273,7 +3273,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/r-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested"
     },
     {
@@ -3285,7 +3285,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/run-command-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3321,7 +3321,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/test-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3333,7 +3333,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/throttle-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
