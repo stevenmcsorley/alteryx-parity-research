@@ -87,9 +87,11 @@
     ]
   },
   "independent_tests": {
-    "count": 10,
-    "passing": 10,
+    "count": 12,
+    "passing": 12,
     "tests": [
+      "integration.test_database_integration.DatabaseIntegrationTests.test_live_cross_database_join_and_rerun_refresh",
+      "integration.test_database_integration.DatabaseIntegrationTests.test_type_matrix_preserves_null_unicode_decimal_and_binary_values",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",

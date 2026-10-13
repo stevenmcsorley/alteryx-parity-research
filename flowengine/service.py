@@ -88,6 +88,8 @@ class EngineService:
             return [t.manifest.to_dict() for t in reg.tools()]
         if method == 'profiles.list':
             return [p.to_dict() for p in PROFILES.values()]
+        if method.startswith('database.'):
+            return self._database(method, params)
         if method == 'catalog.list':
             cmap = reg.catalog_map()
             status = _load_status()
@@ -162,6 +164,58 @@ class EngineService:
             return {'path': str(p)}
         if method == 'file.read_text':
             return {'path': str(_workflow_path(params['path'])), 'text': _workflow_path(params['path']).read_text(encoding='utf-8')}
+        raise KeyError(method)
+
+    def _database(self, method, params):
+        """Connection management and metadata operations; passwords never appear in responses."""
+        from .db.connections import ConnectionStore
+        from .db.dialects import Query
+        from .tools.database import open_dialect
+        store = ConnectionStore()
+        if method == 'database.connections.list':
+            return [c.public() for c in store.list()]
+        if method == 'database.connections.save':
+            cfg = dict(params.get('connection') or {})
+            password = params.get('password')
+            c = store.save(cfg, password=password)
+            return {'connection': c.public(), 'credential_saved': password is not None}
+        if method == 'database.connections.delete':
+            store.delete(params['connection_id'])
+            return {'deleted': True}
+        if method == 'database.test':
+            cfg, d = open_dialect(params['connection_id'])
+            conn = d.connect(read_only=True)
+            try:
+                cur = conn.cursor()
+                cur.execute('SELECT 1')
+                cur.fetchone()
+            finally:
+                conn.rollback()
+                conn.close()
+            return {'ok': True, 'dialect': d.name, 'database': cfg.database}
+        cfg, d = open_dialect(params['connection_id'])
+        if method == 'database.preview':
+            from .tools.database import source_sql
+            mode = params.get('mode', 'table')
+            src_cfg = {'mode': mode, 'schema': params.get('schema'), 'table': params.get('table'),
+                       'columns': params.get('columns'), 'query': params.get('query'),
+                       'params': params.get('params', []), 'order_by': [], 'max_rows': None}
+            sql, values = source_sql(d, src_cfg)
+            limit = min(max(int(params.get('limit', 100)), 1), 1000)
+            with Query(d, d.limit(sql, limit), values) as q:
+                fields = q.describe()
+                rows = [row for batch in q.batches(fields, limit) for row in batch]
+                from .table import Table
+                from .types import Schema
+                table = Table.from_rows(Schema(fields), rows)
+                return _preview(table, len(table))
+        with Query(d, 'SELECT 1') as q:
+            if method == 'database.schemas':
+                return d.schemas(q.conn)
+            if method == 'database.tables':
+                return d.tables(q.conn, params['schema'])
+            if method == 'database.columns':
+                return [f.to_dict() for f in d.columns(q.conn, params.get('schema'), params['table'])]
         raise KeyError(method)
 
     def _start(self, params):

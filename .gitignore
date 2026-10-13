@@ -35,3 +35,4 @@ examples/*/out/
 conformance/work/
 .flowbench/
 !tests/fixtures/yxmd/*.yxmd
+tests/integration/.db_env.json

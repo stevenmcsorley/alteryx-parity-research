@@ -3,6 +3,23 @@ on:
   push:
   pull_request:
 jobs:
+  database-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install database drivers and engine dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Start isolated PostgreSQL and SQL Server fixtures
+        run: python tests/integration/db_env.py up
+      - name: Exercise real database connectivity and cross-engine workflows
+        run: python -m unittest discover -s tests/integration -p 'test_database_integration.py' -v
+      - name: Remove database containers
+        if: always()
+        run: python tests/integration/db_env.py down
+
   engine:
     runs-on: ubuntu-latest
     steps:
