@@ -41,6 +41,7 @@ class Relation:
     nodes: list             # node ids folded into this relation (source first)
     source: str             # Database Input node id
     steps: list = field(default_factory=list)  # human-readable description of each folded step
+    output_anchor: str = 'output'
 
 
 @dataclass
@@ -184,9 +185,34 @@ class _Expr:
         if kind == 'string':
             a = f'LOWER({a}) {self.d.binary_collation}'
             b = f'LOWER({b})'
+        # Comparisons with a non-null literal need only one bound occurrence. This
+        # preserves Flowbench's NULL != value behavior without duplicating %s binds.
+        if isinstance(right, Literal) and right.value is None:
+            if op not in ('=', '!='):
+                return '(1 = 0)'
+            return f'({a} IS {"NULL" if op == "=" else "NOT NULL"})'
+        if isinstance(left, Literal) and left.value is None:
+            if op not in ('=', '!='):
+                return '(1 = 0)'
+            return f'({b} IS {"NULL" if op == "=" else "NOT NULL"})'
+        literal_nonnull = ((isinstance(right, Literal) and right.value is not None) or
+                           (isinstance(left, Literal) and left.value is not None))
+        if op in ('=', '!=') and literal_nonnull:
+            if op == '=':
+                return self.P(f'{a} = {b}')
+            nullable = a if isinstance(right, Literal) else b
+            return self.P(f'({nullable} IS NULL OR {a} <> {b})')
         if op == '=':
+            if self.d.name == 'postgresql':
+                return self.P(f'{a} IS NOT DISTINCT FROM {b}')
+            if '%s' in a or '%s' in b:
+                raise NotPushable('null-safe equality with parameterized operands needs local evaluation')
             return self.P(f'({a} = {b} OR ({a} IS NULL AND {b} IS NULL))')
         if op == '!=':
+            if self.d.name == 'postgresql':
+                return self.P(f'{a} IS DISTINCT FROM {b}')
+            if '%s' in a or '%s' in b:
+                raise NotPushable('null-safe inequality with parameterized operands needs local evaluation')
             return f'(NOT {self.P(f"({a} = {b} OR ({a} IS NULL AND {b} IS NULL))")})'
         return self.P(f'{a} {op} {b}')
 
@@ -223,6 +249,12 @@ def plan_pushdown(plan, profile=None) -> Pushdown:
             continue
         tid = pn.tool.manifest.tool_id
         if tid == 'core.db_input':
+            # An ordered Database Input is a materialized ordering boundary. SQL does not
+            # preserve an ORDER BY through derived tables, and SQL Server rejects that
+            # shape without a paging clause. Leave the source and its consumers local.
+            if pn.config.get('order_by'):
+                fallbacks.append({'node': nid, 'reason': 'ordered Database Input is an execution boundary'})
+                continue
             try:
                 conn_cfg, d = open_dialect(pn.config['connection_id'])
             except Exception:
@@ -250,6 +282,18 @@ def plan_pushdown(plan, profile=None) -> Pushdown:
         except NotPushable as e:
             fallbacks.append({'node': nid, 'reason': str(e)})
             continue
+        # Filter and Join have additional output anchors. Folding is only valid when every
+        # non-selected output is genuinely unused by the workflow.
+        used = {anchor}
+        for out in pn.tool.manifest.outputs:
+            if out.name not in used and consumers.get((nid, out.name)):
+                raise_or_record = f'{out.name} output is consumed; this multi-output operation must run locally'
+                fallbacks.append({'node': nid, 'reason': raise_or_record})
+                new = None
+                break
+        if new is None:
+            continue
+        new.output_anchor = anchor
         for _, u, _ in ups:
             absorbed[u] = nid
             del rel[u]

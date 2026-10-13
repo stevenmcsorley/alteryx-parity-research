@@ -290,7 +290,8 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                  limits: dict | None = None, run_id: str | None = None,
                  event_time: Callable[[], float] = time.time, listener=None,
                  profile: str | None = None, workers: int = 1, memory_budget: int | None = None,
-                 history=None, spill_dir: Path | None = None, batch_rows: int | None = None) -> RunResult:
+                 history=None, spill_dir: Path | None = None, batch_rows: int | None = None,
+                 enable_pushdown: bool = True) -> RunResult:
     """Validate then execute ``doc``. Raises WorkflowValidationError if invalid.
 
     ``retain``: 'all' keeps every output table; 'preview' keeps the first 1000 rows of each;
@@ -325,6 +326,20 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
     clock = clock or _dt.datetime.now
     cancel_token = cancel_token or CancelToken()
     elog = _EventLog(run_id, log_path, event_time, listener)
+    from .db.pushdown import plan_pushdown
+    db_plan = plan_pushdown(plan, prof) if enable_pushdown else None
+    push_segments = {}
+    push_starts = {}
+    push_disabled = set()
+    if db_plan:
+        positions = {node: i for i, node in enumerate(plan.order)}
+        for head, relation in db_plan.heads.items():
+            if len(relation.nodes) < 2:
+                continue
+            members = tuple(dict.fromkeys(relation.nodes))
+            start = min(members, key=positions.__getitem__)
+            push_segments[head] = (relation, members)
+            push_starts[start] = head
     store = TableStore(memory_budget, emit=lambda t, **d: elog.emit(t, None, **d), spill_root=spill_dir)
     remaining = dict(plan.consumers)
     retained: dict[str, dict[str, Table]] = {}
@@ -347,6 +362,11 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                           constants=dict(doc.get('constants', {})), profile=prof)
     elog.emit('run-started', engine_version=__version__, workflow_digest=workflow_digest(doc), profile=prof.name,
               node_count=len(plan.order), workers=workers, memory_budget=memory_budget)
+    if db_plan:
+        for item in db_plan.fallbacks:
+            elog.emit('pushdown-fallback', item['node'], message=item['reason'], reason=item['reason'])
+
+    database_queries = []
 
     def execute(nid, inputs):
         pn = plan.nodes[nid]
@@ -379,6 +399,84 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                 nxt = next(n for n in plan.order if n not in done)
                 raise CancelledError('Run cancelled before node started', node_id=nxt)
             ready = [n for n in plan.order if n not in done and upstream[n] <= done][:workers]
+            start_node = ready[0]
+            push_head = push_starts.get(start_node)
+            if push_head is not None and push_head not in push_disabled:
+                relation, members = push_segments[push_head]
+                try:
+                    from .db.dialects import Query
+                    from .tools.database import _cast_row, open_dialect
+                    from .types import Schema
+                    conn_cfg, dialect = open_dialect(relation.conn_id)
+                    started = time.perf_counter()
+                    fields = list(relation.fields)
+                    chunks = []
+                    transferred = 0
+                    with Query(dialect, relation.sql, relation.params, cancel_token=cancel_token) as query:
+                        actual_fields = query.describe()
+                        target = Schema(fields)
+                        for batch in query.batches(actual_fields, 10000):
+                            casted = [_cast_row(row, target) for row in batch]
+                            for row in casted:
+                                transferred += sum(len(v) if isinstance(v, bytes) else len(str(v).encode('utf-8'))
+                                                   for v in row if v is not None)
+                            chunks.extend(casted)
+                        result_table = Table.from_rows(target, chunks)
+                        db_metric = {'head': push_head, 'connection': conn_cfg.name, 'dialect': dialect.name,
+                                     'sql': relation.sql,
+                                     'parameters': [{'index': i, 'value': '<redacted>'}
+                                                    for i, _ in enumerate(relation.params)],
+                                     'parameter_count': len(relation.params), 'steps': relation.steps,
+                                     'nodes': list(members), 'duration_ms': round((time.perf_counter() - started) * 1000, 3),
+                                     'rows': len(result_table), 'transferred_bytes_estimate': transferred,
+                                     'digest': result_table.canonical_digest(), 'status': 'succeeded'}
+                    database_queries.append(db_metric)
+                    for node_id in members:
+                        pn = plan.nodes[node_id]
+                        input_rows = {anchor: sum(node_stats.get(u, {}).get('outputs', {}).get(ua, {}).get('rows', 0)
+                                                  or 0 for u, ua in ups)
+                                      for anchor, ups in pn.inputs.items()}
+                        elog.emit('node-started', node_id, tool=pn.tool.manifest.tool_id,
+                                  tool_version=pn.tool.manifest.version, input_rows=input_rows, pushed=True)
+                    elog.emit('database-pushdown', push_head, **db_metric)
+                    head_anchor = relation.output_anchor
+                    for node_id in members:
+                        pn = plan.nodes[node_id]
+                        is_head = node_id == push_head
+                        outs = {head_anchor: result_table} if is_head else {}
+                        if is_head:
+                            if remaining.get((node_id, head_anchor), 0):
+                                store.put((node_id, head_anchor), result_table)
+                            if retain == 'all':
+                                retained[node_id] = outs
+                            elif retain == 'preview':
+                                retained[node_id] = {head_anchor: result_table if len(result_table) <= PREVIEW_ROWS
+                                                     else result_table.take(range(PREVIEW_ROWS))}
+                        node_stats[node_id] = {'tool': pn.tool.manifest.tool_id,
+                            'tool_version': pn.tool.manifest.version, 'pushed_to_database': True,
+                            'pushdown_head': push_head,
+                            'duration_ms': db_metric['duration_ms'] if is_head else 0,
+                            'outputs': {a: {'rows': len(t), 'fields': t.schema.to_list(),
+                                            'digest': t.canonical_digest()} for a, t in outs.items()}}
+                        elog.emit('node-completed', node_id, duration_ms=node_stats[node_id]['duration_ms'],
+                                  pushed=True, pushdown_head=push_head,
+                                  output_rows={a: len(t) for a, t in outs.items()})
+                        done.add(node_id)
+                    continue
+                except CancelledError:
+                    raise
+                except EngineError as e:
+                    # Read-only SQL that fails at the server may safely fall back to the
+                    # original local kernels. Connection/time-limit failures remain failures.
+                    if e.code in ('database-timeout', 'database-connect-error'):
+                        raise
+                    push_disabled.add(push_head)
+                    elog.emit('pushdown-fallback', push_head, message=f'{e.message}; executing locally',
+                              reason=e.message, sql=relation.sql)
+                except Exception as e:
+                    push_disabled.add(push_head)
+                    elog.emit('pushdown-fallback', push_head,
+                              message=f'{type(e).__name__}: {e}; executing locally', reason=str(e), sql=relation.sql)
             if ready[0] in seg_heads:
                 chain = seg_heads[ready[0]]
                 t0 = time.perf_counter()
@@ -471,7 +569,7 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
     manifest = {
         'run_id': run_id, 'status': status, 'engine': 'flowengine', 'engine_version': __version__,
         'python': platform.python_version(), 'workflow_digest': workflow_digest(doc), 'profile': prof.to_dict(),
-        'nodes': node_stats, 'error': error,
+        'nodes': node_stats, 'database_queries': database_queries, 'error': error,
         'warnings': [{k: ev[k] for k in ('node_id', 'message')} for ev in elog.events if ev['type'] == 'warning'],
         'stats': {'wall_ms': round((time.perf_counter() - wall_start) * 1000, 3), 'workers': workers,
                   'memory_budget': memory_budget, 'spills': store.spill_count,

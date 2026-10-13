@@ -99,6 +99,7 @@ class DatabaseIntegrationTests(unittest.TestCase):
         self.assertTrue(first.ok, first.error)
         joined = first.browse['browse']
         self.assertEqual(len(joined), 110)
+        self.assertEqual(first.manifest['database_queries'], [])
         self.assertIn('Zoë Ünïcode', [r[1] for r in joined.rows()])
         conn = d.connect(read_only=False)
         try:
@@ -143,6 +144,63 @@ class DatabaseIntegrationTests(unittest.TestCase):
             decimals = [t.column(n)[0] for n in t.schema.names if n in ('dec', 'd')]
             self.assertEqual(str(decimals[0]), '12345678.1234')
             self.assertIsNone(t.column('i16')[1] if dialect == 'postgresql' else t.column('tiny')[1])
+
+    def test_real_filter_select_and_summarize_sql_executes_and_matches_local(self):
+        conn = self.connections['postgresql']
+        doc = {'format': 'flowengine.workflow', 'formatVersion': 1, 'nodes': [
+            {'id': 'source', 'tool': 'core.db_input', 'config': {'connection_id': conn.id, 'mode': 'table',
+             'schema': 'sales', 'table': 'customers'}},
+            {'id': 'select', 'tool': 'core.select', 'config': {'fields': [
+             {'field': 'customer_id'}, {'field': 'region'}, {'field': 'credit'}], 'unknown_fields': 'exclude'}},
+            {'id': 'filter', 'tool': 'core.filter', 'config': {'expression': '[region] = "North"'}},
+            {'id': 'sum', 'tool': 'core.summarize', 'config': {'actions': [
+             {'field': 'region', 'op': 'group_by'}, {'field': 'credit', 'op': 'sum', 'output': 'credit_total'},
+             {'field': 'customer_id', 'op': 'count', 'output': 'customers'}]}},
+            {'id': 'browse', 'tool': 'core.browse', 'config': {}}],
+            'edges': [
+                {'from': {'node': 'source', 'anchor': 'output'}, 'to': {'node': 'select', 'anchor': 'input'}},
+                {'from': {'node': 'select', 'anchor': 'output'}, 'to': {'node': 'filter', 'anchor': 'input'}},
+                {'from': {'node': 'filter', 'anchor': 'true'}, 'to': {'node': 'sum', 'anchor': 'input'}},
+                {'from': {'node': 'sum', 'anchor': 'output'}, 'to': {'node': 'browse', 'anchor': 'input'}}]}
+        pushed = run_workflow(doc, base_dir=self.home, retain='all', enable_pushdown=True)
+        local = run_workflow(doc, base_dir=self.home, retain='all', enable_pushdown=False)
+        self.assertTrue(pushed.ok, pushed.error)
+        self.assertTrue(local.ok, local.error)
+        self.assertEqual(pushed.browse['browse'], local.browse['browse'])
+        self.assertEqual(len(pushed.manifest['database_queries']), 1, repr(pushed.events))
+        query = pushed.manifest['database_queries'][0]
+        self.assertEqual(query['nodes'], ['source', 'select', 'filter', 'sum'])
+        self.assertEqual(query['status'], 'succeeded')
+        self.assertTrue(query['transferred_bytes_estimate'] > 0)
+        self.assertTrue(all(node_stats['pushed_to_database'] for node_stats in
+                            (pushed.manifest['nodes'][n] for n in query['nodes'])))
+        self.assertTrue(any(event['type'] == 'database-pushdown' for event in pushed.events))
+        self.assertTrue(pushed.manifest['nodes']['sum']['outputs']['output']['digest'])
+
+    def test_sqlserver_filter_select_and_summarize_pushdown_matches_local(self):
+        conn = self.connections['sqlserver']
+        doc = {'format': 'flowengine.workflow', 'formatVersion': 1, 'nodes': [
+            {'id': 'source', 'tool': 'core.db_input', 'config': {'connection_id': conn.id, 'mode': 'table',
+             'schema': 'ops', 'table': 'type_matrix'}},
+            {'id': 'select', 'tool': 'core.select', 'config': {'fields': [
+             {'field': 'id'}, {'field': 'nv'}, {'field': 'd'}], 'unknown_fields': 'exclude'}},
+            {'id': 'filter', 'tool': 'core.filter', 'config': {'expression': '[nv] = "zoë ✓"'}},
+            {'id': 'sum', 'tool': 'core.summarize', 'config': {'actions': [
+             {'field': 'nv', 'op': 'group_by'}, {'field': 'd', 'op': 'sum', 'output': 'decimal_total'},
+             {'field': 'id', 'op': 'count', 'output': 'records'}]}},
+            {'id': 'browse', 'tool': 'core.browse', 'config': {}}],
+            'edges': [
+                {'from': {'node': 'source', 'anchor': 'output'}, 'to': {'node': 'select', 'anchor': 'input'}},
+                {'from': {'node': 'select', 'anchor': 'output'}, 'to': {'node': 'filter', 'anchor': 'input'}},
+                {'from': {'node': 'filter', 'anchor': 'true'}, 'to': {'node': 'sum', 'anchor': 'input'}},
+                {'from': {'node': 'sum', 'anchor': 'output'}, 'to': {'node': 'browse', 'anchor': 'input'}}]}
+        pushed = run_workflow(doc, base_dir=self.home, retain='all', enable_pushdown=True)
+        local = run_workflow(doc, base_dir=self.home, retain='all', enable_pushdown=False)
+        self.assertTrue(pushed.ok, pushed.error)
+        self.assertTrue(local.ok, local.error)
+        self.assertEqual(pushed.browse['browse'], local.browse['browse'])
+        self.assertEqual(len(pushed.manifest['database_queries']), 1, repr(pushed.events))
+        self.assertEqual(pushed.manifest['database_queries'][0]['dialect'], 'sqlserver')
 
     def test_read_only_guard_rejects_write_and_password_never_persisted(self):
         from flowengine.db.dialects import ReadOnlyViolation, check_read_only_sql

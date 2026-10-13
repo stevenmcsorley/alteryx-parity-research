@@ -22,6 +22,12 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - Corrected database preview to describe and execute the selected query, not the metadata probe query.
 - Added real PostgreSQL 16 and SQL Server 2022 integration tests for metadata, preview, Unicode, cross-database
   joining, refresh-on-rerun, read-only SQL rejection and password-free connection persistence.
+- Wired the existing SQL planner into workflow execution, cancellation and manifests. PostgreSQL and SQL Server
+  now execute eligible Filter, Select and Summarize chains as one live query; tests compare the pushed results
+  with local execution. Cross-database joins and ordered Database Inputs stop pushdown with explicit reasons.
+- Pushdown manifests/events record executed SQL, redacted bound parameter values, folded operations, duration,
+  result rows, estimated transferred bytes and a reproducible output digest. Unsupported SQL failures return to
+  local execution; connection and timeout failures remain run failures.
 - Added pinned-major driver constraints and a CI job that provisions and removes isolated database fixtures.
 
 ## Verified evidence
@@ -43,10 +49,13 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - **Database authoring:** initial connection manager and Database Input authoring are implemented. Need real
   desktop validation against fixture servers, edit-existing-connection credential UX review, and Database Output
   authoring UX.
-- **Pushdown:** dialect translation and planning code exists in Claude's work, but `run_workflow` does not invoke
-  it. SQL execution pushdown, fallback diagnostics in run results, transfer-volume measurements and explain-plan
-  inspection are therefore not claimed as delivered.
-- **Integration coverage:** CI runs real-engine smoke and cross-database tests. Additional required cases remain:
+- **Pushdown:** actual PostgreSQL 16 and SQL Server 2022 Filter → Select → Summarize queries are executed by
+  `run_workflow` and compared against local results over fixtures containing Unicode, nulls and decimals. A
+  same-database Join translator exists but has not yet passed differential execution tests. Ordered sources and
+  cross-database joins remain local. Database-native explain-plan inspection, full parity across expressions,
+  branch behavior and broad fault-injection tests remain outstanding.
+- **Integration coverage:** six real-engine tests pass locally, including pushdown/local comparisons for both
+  engines. CI runs real-engine smoke and cross-database tests. Additional required cases remain:
   auth failures, TLS validation, SQL Server/PostgreSQL type matrices, large streaming, cancellation, timeouts,
   export correctness and write safeguards.
 - **Installer:** current NSIS package still launches a system Python. Managed runtime bundling, clean-machine
