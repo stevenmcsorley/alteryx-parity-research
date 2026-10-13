@@ -65,7 +65,7 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - Playwright: **11 passed** against the real engine, including database connection manager access and extension
   palette visibility; this is browser-driven UI verification and does not stand in for the Tauri live-database
   acceptance demonstration.
-- Rust tests were not run because `cargo` is not installed in this environment.
+- Rust tests: **3 passed** in the Windows CI job (this workstation does not have `cargo`).
 
 ## Remaining milestone work
 
@@ -76,21 +76,34 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - **Integration coverage:** nine categories of failure/security/large-data cases are exercised in real databases,
   but driver-specific TLS verification on SQL Server, more adversarial cancellation/network cases and broader
   write permission matrices remain open.
-- **Installer:** the clean Windows runner successfully built the NSIS installer and installed the app and
-  managed runtime. The smoke test then found that Tauri did not start the engine sidecar under the initial
-  resource-root assumption ([failed clean-runner run 38452070385](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38452070385)).
-  Commit `b8f4740` handles both resource-root layouts. Commit `11f649d` added actual engine RPC health probes,
-  a credential-free startup log, and a small installed-engine workflow run; `11f649d` CI ([run
-  38458416706](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38458416706)) caught a
-  Rust reader compile error, corrected in `a52c8d8`. No CI run has yet verified that correction: the
-  [`f9aad00` run](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38453879717) and
-  [`98bdf85` run](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38459099387) were
-  cancelled. Installer acceptance is not yet passed. R is not bundled; user machines need a separately
-  installed R 4.6.x runtime (CI pins 4.6.0).
-- **Acceptance demo:** despite working UI editors, live engine export and real-engine workflow tests, the complete
-  PostgreSQL Customers + SQL Server Orders → Join → Filter → Formula → Summarize → Results Grid → CSV/Parquet
-  sequence has not been run in the actual Tauri desktop UI. This milestone remains incomplete until that and the
-  installer verification have reproducible evidence.
+- **Installer:** the clean-runner root cause was missing `venv` in CPython's embeddable distribution. The engine
+  imports it during startup, so the sidecar exited before its health check. Commit `88ad0cc` stages the `venv`
+  and `ensurepip` standard-library modules from exactly pinned CPython 3.12.10, adds `Lib` to the runtime path,
+  validates imports, creates a venv, and invokes its provisioned pip before packaging. The full clean Windows
+  job passed in [Actions run 38460982270](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38460982270):
+  managed runtime staging, three Rust tests (including a real engine round trip), NSIS build, install with
+  system runtimes removed from `PATH`, installed Tauri launch, `engine.info`, `catalog.list` count 323, the
+  configured deterministic startup workflow, same-version reinstall, and uninstall. The installer artifact is
+  available as [flowbench-windows-installer](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38460982270/artifacts/11846361313).
+  I also installed that artifact locally and observed the installed executable start its bundled Python
+  sidecar; its credential-free app-data log records `engine.info` and all 323 catalog entries. R is not bundled;
+  user machines need a separately installed R 4.6.x runtime (CI pins 4.6.0).
+- **Acceptance demo:** the full PostgreSQL Customers + SQL Server Orders → Join → Filter → Formula → Summarize
+  → Results Grid → CSV/Parquet workflow, a database record mutation/rerun, and export validation have not been
+  demonstrated by operating the actual Tauri desktop UI. The installer runs a separate deterministic local
+  workflow smoke RPC, which does not prove this two-database UI flow. The computer-control service in this
+  session returned no native app/window surfaces and its documented native launch API was unavailable, so
+  browser-only or engine-only testing is not represented as acceptance evidence. **Milestone 2.1 remains
+  incomplete** until the live desktop flow is run and reproducible evidence is captured.
 
 No compatibility or coverage claims were changed by this work. E1/E2 profiles and the known Sort collation
 difference remain as recorded in `docs/COVERAGE.md`.
+
+## Latest delivery
+
+- Branch head at this report update: `88ad0cc819b4963cdbddf043919b5e874fd1af30`.
+- PR #2 remains open and based on open PR #1: https://github.com/stevenmcsorley/alteryx-parity-research/pull/2.
+- Latest CI: [run 38460982270](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38460982270);
+  all five jobs passed (engine, database integration, desktop, Windows desktop shell, and R runtime).
+- No Milestone 3 work has started. Resume the existing 323-entry evidence ledger after the remaining actual-desktop
+  acceptance gate passes.
