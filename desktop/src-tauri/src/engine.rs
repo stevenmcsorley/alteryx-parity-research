@@ -6,11 +6,11 @@
 
 use serde_json::{json, Value};
 use std::collections::HashMap;
-use std::io::{BufRead, BufReader, Write};
+use std::io::{BufRead, BufReader, Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, Command, Stdio};
-use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::{Arc, Mutex};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+use std::sync::{mpsc, Arc, Mutex};
 use std::time::Duration;
 use tokio::sync::oneshot;
 
@@ -73,6 +73,8 @@ impl Engine {
     pub fn start(root: &Path, history: &Path, notify: impl Fn(Value) + Send + 'static) -> Engine {
         let pending: Pending = Arc::new(Mutex::new(HashMap::new()));
         let python = python_command(root);
+        let log_dir = history.parent().unwrap_or(root);
+        record_startup(log_dir, &format!("launch root={} python={}", root.display(), python.display()));
         let mut cmd = Command::new(&python);
         cmd.args(["-m", "flowengine", "serve", "--history"])
             .arg(history)
@@ -82,7 +84,7 @@ impl Engine {
             .env("PYTHONUNBUFFERED", "1")
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
-            .stderr(Stdio::inherit());
+            .stderr(Stdio::piped());
         #[cfg(windows)]
         {
             use std::os::windows::process::CommandExt;
@@ -91,14 +93,100 @@ impl Engine {
         }
         match cmd.spawn() {
             Ok(mut child) => {
-                let stdout = child.stdout.take().expect("piped stdout");
-                let stdin = child.stdin.take();
+                let pid = child.id();
+                let stderr_capture = Arc::new(Mutex::new(Vec::new()));
+                let capture_startup = Arc::new(AtomicBool::new(true));
+                if let Some(mut stderr) = child.stderr.take() {
+                    let capture = stderr_capture.clone();
+                    let active = capture_startup.clone();
+                    std::thread::Builder::new().name("engine-startup-stderr".into()).spawn(move || {
+                        let mut chunk = [0_u8; 2048];
+                        loop {
+                            match stderr.read(&mut chunk) {
+                                Ok(0) | Err(_) => break,
+                                Ok(n) if active.load(Ordering::Relaxed) => {
+                                    let mut saved = capture.lock().unwrap();
+                                    let keep = n.min(8192_usize.saturating_sub(saved.len()));
+                                    saved.extend_from_slice(&chunk[..keep]);
+                                }
+                                Ok(_) => {}
+                            }
+                        }
+                    }).expect("spawn stderr reader");
+                }
+                let (line_tx, line_rx) = mpsc::channel::<String>();
+                if let Some(stdout) = child.stdout.take() {
+                    std::thread::Builder::new().name("engine-stdout-reader".into()).spawn(move || {
+                        for line in BufReader::new(stdout).lines() {
+                            match line {
+                                Ok(line) if line_tx.send(line).is_ok() => {}
+                                _ => break,
+                            }
+                        }
+                    }).expect("spawn stdout reader");
+                }
+                let mut stdin = child.stdin.take();
+                let mut health = match stdin.as_mut() {
+                    Some(input) => startup_rpc(input, &line_rx, 1, "engine.info", json!({})),
+                    None => Err("engine stdin was not piped".to_owned()),
+                };
+                health = health.and_then(|info| {
+                    if info.get("engine").and_then(Value::as_str) != Some("flowengine") {
+                        return Err("engine.info returned an unexpected engine identity".to_owned());
+                    }
+                    Ok(info)
+                });
+                if health.is_ok() {
+                    health = match stdin.as_mut() {
+                        Some(input) => startup_rpc(input, &line_rx, 2, "catalog.list", json!({})),
+                        None => Err("engine stdin was not piped".to_owned()),
+                    }.and_then(|catalog| {
+                        let count = catalog.as_array().map(Vec::len).unwrap_or(0);
+                        if count != 323 { return Err(format!("catalog.list returned {count} entries; expected 323")); }
+                        Ok(catalog)
+                    });
+                }
+                if health.is_ok() {
+                    if let Some(workflow_path) = std::env::var_os("FLOWBENCH_STARTUP_SMOKE_WORKFLOW") {
+                        let result = (|| {
+                            let path = PathBuf::from(workflow_path);
+                            let workflow: Value = serde_json::from_slice(&std::fs::read(&path)
+                                .map_err(|e| format!("reading startup smoke workflow: {e}"))?)
+                                .map_err(|e| format!("parsing startup smoke workflow: {e}"))?;
+                            let base_dir = path.parent().unwrap_or(root).to_string_lossy().to_string();
+                            let params = json!({"workflow":workflow,"base_dir":base_dir,
+                                "clock":"2026-01-15T09:30:00"});
+                            let result = startup_rpc(stdin.as_mut().ok_or("engine stdin was not piped")?,
+                                &line_rx, 3, "workflow.run", params)?;
+                            if result.get("status").and_then(Value::as_str) != Some("succeeded") {
+                                return Err(format!("workflow.run did not succeed: {}", result.get("status").unwrap_or(&Value::Null)));
+                            }
+                            Ok(())
+                        })();
+                        health = result.map(|_| json!({"smoke":"succeeded"}));
+                        if health.is_ok() { record_startup(log_dir, "workflow.run succeeded for configured startup smoke workflow"); }
+                    }
+                }
+                let health = health.map(|_| ());
+                capture_startup.store(false, Ordering::Relaxed);
+                if let Err(error) = health {
+                    let stderr = String::from_utf8_lossy(&stderr_capture.lock().unwrap()).to_string();
+                    let _ = child.kill();
+                    let status = child.wait().ok().map(|s| s.to_string()).unwrap_or_else(|| "unknown".into());
+                    let detail = if stderr.trim().is_empty() { String::new() } else { format!("; startup stderr: {}", stderr.trim()) };
+                    let message = format!("engine startup health check failed for {} (pid {pid}, exit {status}): {error}{detail}", python.display());
+                    record_startup(log_dir, &message);
+                    return Engine {
+                        child: Mutex::new(None), stdin: Mutex::new(None), pending,
+                        next_id: AtomicU64::new(3), launch_error: Mutex::new(Some(message)),
+                    };
+                }
+                record_startup(log_dir, &format!("engine.info succeeded; catalog.list entries=323; pid={pid}"));
                 let p = pending.clone();
                 std::thread::Builder::new()
                     .name("engine-reader".into())
                     .spawn(move || {
-                        for line in BufReader::new(stdout).lines() {
-                            let Ok(line) = line else { break };
+                        for line in line_rx {
                             match classify(&line) {
                                 Some(Ok((id, v))) => {
                                     if let Some(tx) = p.lock().unwrap().remove(&id) {
@@ -120,19 +208,15 @@ impl Engine {
                     child: Mutex::new(Some(child)),
                     stdin: Mutex::new(stdin),
                     pending,
-                    next_id: AtomicU64::new(1),
+                    next_id: AtomicU64::new(if std::env::var_os("FLOWBENCH_STARTUP_SMOKE_WORKFLOW").is_some() { 4 } else { 3 }),
                     launch_error: Mutex::new(None),
                 }
             }
-            Err(e) => Engine {
-                child: Mutex::new(None),
-                stdin: Mutex::new(None),
-                pending,
-                next_id: AtomicU64::new(1),
-                launch_error: Mutex::new(Some(format!(
-                    "Could not start the bundled Flowbench engine with '{}': {e}. Reinstall the application or set FLOWENGINE_PYTHON for development.",
-                    python.display()
-                ))),
+            Err(e) => {
+                let message = format!("Could not start the bundled Flowbench engine with '{}': {e}", python.display());
+                record_startup(log_dir, &message);
+                Engine { child: Mutex::new(None), stdin: Mutex::new(None), pending,
+                    next_id: AtomicU64::new(3), launch_error: Mutex::new(Some(message)) }
             },
         }
     }
@@ -173,6 +257,32 @@ impl Engine {
             }
             let _ = child.wait();
         }
+    }
+}
+
+fn record_startup(directory: &Path, message: &str) {
+    use std::fs::OpenOptions;
+    use std::io::Write as _;
+    let path = directory.join("engine-startup.log");
+    if let Ok(mut file) = OpenOptions::new().create(true).append(true).open(path) {
+        let _ = writeln!(file, "{message}");
+    }
+}
+
+fn startup_rpc(input: &mut ChildStdin, output: &mpsc::Receiver<String>, id: u64, method: &str, params: Value) -> Result<Value, String> {
+    let request = json!({"jsonrpc":"2.0", "id":id, "method":method, "params":params}).to_string();
+    input.write_all(request.as_bytes()).and_then(|_| input.write_all(b"\n"))
+        .and_then(|_| input.flush()).map_err(|e| format!("writing {method} startup probe: {e}"))?;
+    loop {
+        let line = output.recv_timeout(Duration::from_secs(30))
+            .map_err(|e| format!("waiting for {method} startup response: {e}"))?;
+        let response: Value = serde_json::from_str(&line)
+            .map_err(|e| format!("invalid JSON from engine during {method}: {e}"))?;
+        if response.get("id").and_then(Value::as_u64) != Some(id) { continue; }
+        if let Some(error) = response.get("error") {
+            return Err(format!("{method} RPC error: {error}"));
+        }
+        return response.get("result").cloned().ok_or_else(|| format!("{method} response had no result"));
     }
 }
 
