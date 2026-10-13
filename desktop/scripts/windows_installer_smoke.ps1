@@ -21,7 +21,13 @@ if (-not $App -or -not $Python) {
   $tree = Get-ChildItem -LiteralPath $InstallDir -Force -Recurse | Select-Object -ExpandProperty FullName
   throw "Installed app or managed Python runtime is missing under $InstallDir. Contents: $($tree -join '; ')"
 }
-& $Python -m flowengine --help | Out-Null
+$ResourcesDir = Split-Path (Split-Path $Python -Parent) -Parent
+$EngineRoot = Join-Path $ResourcesDir 'engine'
+if (-not (Test-Path (Join-Path $EngineRoot 'flowengine\__main__.py'))) {
+  throw "The packaged Flowbench engine is missing from $EngineRoot."
+}
+Push-Location $EngineRoot
+try { & $Python -m flowengine --help | Out-Null } finally { Pop-Location }
 if ($LASTEXITCODE -ne 0) { throw 'Bundled engine failed to start without PATH Python.' }
 & $Python -c 'import jsonschema, numpy, pyarrow, psycopg, pymssql, yxdb'
 if ($LASTEXITCODE -ne 0) { throw 'Installed runtime failed native dependency imports.' }
@@ -31,10 +37,15 @@ try {
   for ($i = 0; $i -lt 40 -and -not $sidecar; $i++) {
     Start-Sleep -Milliseconds 500
     $sidecar = Get-CimInstance Win32_Process | Where-Object {
-      $_.Name -eq 'python.exe' -and $_.ExecutablePath -eq $Python -and $_.ParentProcessId -eq $process.Id
+      $_.CommandLine -match '-m flowengine serve' -and $_.ParentProcessId -eq $process.Id
     } | Select-Object -First 1
   }
-  if (-not $sidecar) { throw 'Desktop failed to launch the bundled engine sidecar with system runtimes removed from PATH.' }
+  if (-not $sidecar) {
+    $appState = Get-Process -Id $process.Id -ErrorAction SilentlyContinue | Select-Object Id,HasExited,Path
+    $engineProcesses = Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'flowengine' } |
+      Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,CommandLine
+    throw "Desktop failed to launch the bundled engine sidecar. App: $($appState | ConvertTo-Json -Compress); engine processes: $($engineProcesses | ConvertTo-Json -Compress)"
+  }
 } finally {
   if (-not $process.HasExited) {
     [void]$process.CloseMainWindow()
