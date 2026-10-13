@@ -1,0 +1,145 @@
+{
+  "id": "spatial:find-nearest",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Find Nearest",
+  "category": "Spatial",
+  "xml_tool_name": "AlteryxSpatialPluginsGui.FindNearest.FindNearest",
+  "user_role": "Full (Data Packages Add-on)",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/find-nearest-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Targets",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    },
+    {
+      "name": "Universe",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Matched",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "DriveTimeDataSet",
+      "HowMany",
+      "Ignore0",
+      "MaxDistance",
+      "MaxDistanceUnits",
+      "SelectConfiguration",
+      "SelectConfiguration/Configuration",
+      "Target",
+      "Universe",
+      "Universe/File",
+      "Universe/Passwords"
+    ],
+    "public_doc_sections": [
+      "Configure the Tool",
+      "Inputs",
+      "How Many Nearest Points to Find",
+      "Maximum Distance",
+      "Modify Incoming Data Stream",
+      "Search Columns",
+      "Select, Deselect, Sort, and Reorder Columns",
+      "Modify Data Type and Size",
+      "Rename a Column or Add a Description",
+      "View More Options"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "spatial-geometry-library",
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxSpatialPluginsGui.FindNearest.FindNearest"
+    ],
+    "input_anchors": [
+      "Targets",
+      "Universe"
+    ],
+    "output_anchors": [
+      "Matched"
+    ],
+    "config_elements": [
+      "DriveTimeDataSet",
+      "HowMany",
+      "Ignore0",
+      "MaxDistance",
+      "MaxDistanceUnits",
+      "SelectConfiguration",
+      "SelectConfiguration/Configuration",
+      "Target",
+      "Universe",
+      "Universe/File",
+      "Universe/Passwords"
+    ],
+    "nodes_observed": 11
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Find Nearest Tool",
+    "sha256": "2317acc235512f443d46fd685595b6d27c44ca1dab0289b7f9c42a1c149e5a80",
+    "retrieved_utc": "2026-10-13T09:33:25.273881+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Inputs",
+      "How Many Nearest Points to Find",
+      "Maximum Distance",
+      "Modify Incoming Data Stream",
+      "Search Columns",
+      "Select, Deselect, Sort, and Reorder Columns",
+      "Modify Data Type and Size",
+      "Rename a Column or Add a Description",
+      "View More Options"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/spatial/find-nearest-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:25.273881+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

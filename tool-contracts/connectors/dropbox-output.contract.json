@@ -1,0 +1,63 @@
+{
+  "id": "connectors:dropbox-output",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Dropbox Output",
+  "category": "Connectors",
+  "xml_tool_name": "DropboxOutput_v1.1.2",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/dropbox-output-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Configure the Tool"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "external-service-account (credentials/API access)"
+  ],
+  "external_prerequisites_blocking": true,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Dropbox Output Tool",
+    "sha256": "c2f9e19e281654cbdd47b0d2b8cdb122affd5fbf724caff2ba6bf74267305c10",
+    "retrieved_utc": "2026-10-13T09:33:23.265711+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/connectors/dropbox-output-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.265711+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+  ]
+}

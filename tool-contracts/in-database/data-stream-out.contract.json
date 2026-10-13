@@ -1,0 +1,64 @@
+{
+  "id": "in-database:data-stream-out",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Data Stream Out",
+  "category": "In-Database",
+  "xml_tool_name": "LockInGui.LockInStreamOut.LockInStreamOut",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/data-stream-out-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Configure the Tool"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "database-connection (SQL pushdown target)",
+    "database-driver (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Data Stream Out Tool",
+    "sha256": "1027f16a8f5732fe083eba4d1d9219c8d79c0be9c9b876681416e30d054ed3b4",
+    "retrieved_utc": "2026-10-13T09:33:24.014936+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/in-database/data-stream-out-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.014936+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+  ]
+}

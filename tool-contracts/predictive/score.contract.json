@@ -1,0 +1,78 @@
+{
+  "id": "predictive:score",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Score",
+  "category": "Predictive",
+  "xml_tool_name": "Score",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive/score-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Model Type",
+      "Configure for Local Model",
+      "Configure the Tool for Standard Processing",
+      "Configure the Tool for In-Database Processing",
+      "Configure for Promote Model",
+      "Promote Credentials",
+      "Model Selection",
+      "Configuration Summary"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "r-runtime (statistical models; vendor ships R-based macros)",
+    "credentials (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Score Tool",
+    "sha256": "5b0392bfe17d9b0983bc40f29e21931b4b0226df7aaf5ed029fa928cbe3c8e22",
+    "retrieved_utc": "2026-10-13T09:33:24.787745+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Model Type",
+      "Configure for Local Model",
+      "Configure the Tool for Standard Processing",
+      "Configure the Tool for In-Database Processing",
+      "Configure for Promote Model",
+      "Promote Credentials",
+      "Model Selection",
+      "Configuration Summary"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/predictive/score-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.787745+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+  ]
+}

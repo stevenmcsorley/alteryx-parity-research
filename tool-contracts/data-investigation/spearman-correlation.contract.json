@@ -1,0 +1,95 @@
+{
+  "id": "data-investigation:spearman-correlation",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Spearman Correlation",
+  "category": "Data Investigation",
+  "xml_tool_name": "SpearmanCorrCoeff.yxmc",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/spearman-correlation-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Field Selection",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "Value"
+    ],
+    "public_doc_sections": [
+      "Configure the Tool",
+      "Field Selection Tab",
+      "Group By (Optional) Tab",
+      "Description Tab"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "SpearmanCorrCoeff.yxmc"
+    ],
+    "input_anchors": [
+      "Field Selection"
+    ],
+    "output_anchors": [],
+    "config_elements": [
+      "Value"
+    ],
+    "nodes_observed": 13
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Spearman Correlation Tool",
+    "sha256": "bc2b324fae5673e085a99d026e09bc4708da260dcf25fff33d3e36097f2cdec5",
+    "retrieved_utc": "2026-10-13T09:33:23.640492+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Field Selection Tab",
+      "Group By (Optional) Tab",
+      "Description Tab"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/spearman-correlation-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.640492+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

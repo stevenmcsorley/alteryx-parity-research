@@ -1,0 +1,103 @@
+{
+  "id": "text-mining:part-of-speech-tagger",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Part-of-Speech Tagger",
+  "category": "Text Mining",
+  "xml_tool_name": "PartOfSpeechTagger",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/part-of-speech-tagger.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Tool Components",
+      "Configure the Tool",
+      "Output",
+      "How to Parse JSON Output",
+      "Dependency Diagram",
+      "FAQ",
+      "How should I use the dependency diagram?",
+      "Does the dependency diagram work with the Reporting tools?",
+      "Why does the Part-of-Speech Tagger tool take several seconds to run?"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "python-nlp-runtime",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Part-of-Speech Tagger",
+    "sha256": "b9b43fe72720dc07f37cc55ba7dea97e97cb5f830105bd575b3ef3180790840e",
+    "retrieved_utc": "2026-10-13T09:33:22.991702+00:00",
+    "anchors_extracted": [
+      {
+        "label": "Input",
+        "letter": null,
+        "direction_guess": "input"
+      },
+      {
+        "label": "Output",
+        "letter": null,
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Output",
+      "How to Parse JSON Output",
+      "Dependency Diagram",
+      "FAQ",
+      "How should I use the dependency diagram?",
+      "Does the dependency diagram work with the Reporting tools?",
+      "Why does the Part-of-Speech Tagger tool take several seconds to run?"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/part-of-speech-tagger.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:22.991702+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

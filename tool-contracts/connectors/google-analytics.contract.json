@@ -1,0 +1,78 @@
+{
+  "id": "connectors:google-analytics",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Google Analytics",
+  "category": "Connectors",
+  "xml_tool_name": "GoogleAnalytics_v8.0.0",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/google-analytics-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Authentication",
+      "Configure the Tool",
+      "View the Output"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "external-service-account (credentials/API access)"
+  ],
+  "external_prerequisites_blocking": true,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Google Analytics Tool",
+    "sha256": "88425548f3ce21f600e5f2ad2f947d5904b117181d278227f57ec2ec876f9ce9",
+    "retrieved_utc": "2026-10-13T09:33:23.290724+00:00",
+    "anchors_extracted": [
+      {
+        "label": "D",
+        "letter": "D",
+        "direction_guess": "unknown"
+      },
+      {
+        "label": "S",
+        "letter": "S",
+        "direction_guess": "unknown"
+      }
+    ],
+    "anchor_extraction": "page-anchor-lines",
+    "section_headings": [
+      "Authentication",
+      "Configure the Tool",
+      "View the Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/connectors/google-analytics-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.290724+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+  ]
+}

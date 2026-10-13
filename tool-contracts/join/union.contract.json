@@ -1,0 +1,159 @@
+{
+  "id": "join:union",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Union",
+  "category": "Join",
+  "xml_tool_name": "AlteryxBasePluginsGui.Union.Union",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/join/union-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "inputs",
+      "direction": "input",
+      "cardinality": "many",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "mode": {
+        "enum": [
+          "name",
+          "position"
+        ],
+        "default": "name"
+      },
+      "missing_fields": {
+        "enum": [
+          "include",
+          "intersection",
+          "error"
+        ],
+        "default": "include",
+        "description": "Fields absent from some inputs: fill with null, drop, or fail"
+      },
+      "case_insensitive_names": {
+        "type": "boolean",
+        "default": false
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.union",
+    "version": "1.0.0",
+    "module": "flowengine.tools.join",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.Union.Union"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "AutoResetMode",
+      "ByName_ErrorMode",
+      "ByName_OutputMode",
+      "Mode",
+      "MultiMetaInfo",
+      "MultiMetaInfo/MetaInfo",
+      "OutputOrder",
+      "OutputOrder/Connection",
+      "SetOutputOrder"
+    ],
+    "nodes_observed": 115
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Union Tool",
+    "sha256": "1a18503424a81322dc0b42f893887790fd91b2f08a231546cc0adadf24095456",
+    "retrieved_utc": "2026-10-13T09:33:24.423220+00:00",
+    "anchors_extracted": [
+      {
+        "label": "Input",
+        "letter": null,
+        "direction_guess": "input"
+      },
+      {
+        "label": "Output",
+        "letter": null,
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Properties: Auto Config",
+      "Properties: Manually Configure Fields",
+      "Output Order",
+      "Understanding the Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_fe_executor.PropertyTests.test_invariants",
+      "test_fe_tools.JoinTests.test_union_by_name_and_position"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/join/union-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.423220+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "union-by-name-missing",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#union-by-name-missing",
+        "reference build 2026.2.0.8",
+        "config sha256 beb3161b7cc20857ab65be232969d84b27a6d9c8ee2883e870caf6442e69a072"
+      ]
+    }
+  ],
+  "unresolved": []
+}

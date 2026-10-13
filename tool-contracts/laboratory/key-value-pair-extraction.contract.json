@@ -1,0 +1,106 @@
+{
+  "id": "laboratory:key-value-pair-extraction",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Key-Value Pair Extraction",
+  "category": "Laboratory",
+  "xml_tool_name": "KeyValuePairExtraction",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/laboratory/key-value-pair-extraction.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "Output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Tool Components",
+      "Configure the Tool",
+      "Output",
+      "FAQ",
+      "Do the keys I choose need to match the document exactly?",
+      "Can my document have a colored background?",
+      "If I use the grayscale option in the Image Processing tool first, will that improve the key-value pair results?",
+      "Can you use the Key-Value Pair Extraction tool with the Image Template tool?",
+      "I am getting the following error in the Results: “This key isn’t supported: None” – what should I do?",
+      "Does the Key-Value Pair Extraction tool work on handwriting? Can I use it on forms with handwritten inputs?",
+      "What does the tool recognize as a key-value pair? How should I format the key-value pairs?"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "experimental-in-reference",
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Key-Value Pair Extraction",
+    "sha256": "4d57a698c78b1b8e3a861d4c66d4b63e73e46a1ceaf77ac1bd340477b568c810",
+    "retrieved_utc": "2026-10-13T09:33:24.446457+00:00",
+    "anchors_extracted": [
+      {
+        "label": "D",
+        "letter": "D",
+        "direction_guess": "unknown"
+      },
+      {
+        "label": "K",
+        "letter": "K",
+        "direction_guess": "unknown"
+      },
+      {
+        "label": "Output",
+        "letter": null,
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Output",
+      "FAQ",
+      "Do the keys I choose need to match the document exactly?",
+      "Can my document have a colored background?",
+      "If I use the grayscale option in the Image Processing tool first, will that improve the key-value pair results?",
+      "Can you use the Key-Value Pair Extraction tool with the Image Template tool?",
+      "I am getting the following error in the Results: “This key isn’t supported: None” – what should I do?",
+      "Does the Key-Value Pair Extraction tool work on handwriting? Can I use it on forms with handwritten inputs?",
+      "What does the tool recognize as a key-value pair? How should I format the key-value pairs?"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/laboratory/key-value-pair-extraction.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.446457+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

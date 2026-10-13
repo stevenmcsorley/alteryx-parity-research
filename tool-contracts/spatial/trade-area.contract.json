@@ -1,0 +1,115 @@
+{
+  "id": "spatial:trade-area",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Trade Area",
+  "category": "Spatial",
+  "xml_tool_name": "AlteryxSpatialPluginsGui.TradeArea.TradeArea",
+  "user_role": "Full (Data Packages Add-on)",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/trade-area-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Action",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    },
+    {
+      "name": "Input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "DriveTimeDataSet",
+      "Radii",
+      "Radius_FromField",
+      "SpatialObj",
+      "Units"
+    ],
+    "public_doc_sections": [
+      "Configure the Tool"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "spatial-geometry-library",
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxSpatialPluginsGui.TradeArea.TradeArea"
+    ],
+    "input_anchors": [
+      "Action",
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "DriveTimeDataSet",
+      "Radii",
+      "Radius_FromField",
+      "SpatialObj",
+      "Units"
+    ],
+    "nodes_observed": 13
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Trade Area Tool",
+    "sha256": "5df69d27506a6c53afa439c24c5dae9b448159fccb5e5a86125666a83beea20e",
+    "retrieved_utc": "2026-10-13T09:33:25.363235+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/spatial/trade-area-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:25.363235+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

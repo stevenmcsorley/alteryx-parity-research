@@ -1,0 +1,137 @@
+{
+  "id": "transform:running-total",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Running Total",
+  "category": "Transform",
+  "xml_tool_name": "AlteryxBasePluginsGui.RunningTotal.RunningTotal",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/transform/running-total-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "fields"
+    ],
+    "properties": {
+      "fields": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "string"
+        }
+      },
+      "group_by": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      },
+      "prefix": {
+        "type": "string",
+        "default": "RunTot_"
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.running_total",
+    "version": "1.0.0",
+    "module": "flowengine.tools.transform",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.RunningTotal.RunningTotal"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "GroupByFields",
+      "GroupByFields/Field",
+      "RunningTotalFields",
+      "RunningTotalFields/Field"
+    ],
+    "nodes_observed": 5
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Running Total Tool",
+    "sha256": "4dc82951006a87a8c326e6fa241ab39c822d9379ca6d718934966f209b6b6187",
+    "retrieved_utc": "2026-10-13T09:33:25.483676+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools.TransformTests.test_running_total"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/transform/running-total-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:25.483676+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "running-total-grouped",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#running-total-grouped",
+        "reference build 2026.2.0.8",
+        "config sha256 12fb3a3ac2a0b6960caa11ddf11d2f89afd1e6b306fa715064fb75b8934f4b6d"
+      ]
+    }
+  ],
+  "unresolved": []
+}

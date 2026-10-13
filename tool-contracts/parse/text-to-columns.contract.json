@@ -1,0 +1,168 @@
+{
+  "id": "parse:text-to-columns",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Text To Columns",
+  "category": "Parse",
+  "xml_tool_name": "AlteryxBasePluginsGui.TextToColumns.TextToColumns",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/parse/text-to-columns-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "field",
+      "delimiters",
+      "mode"
+    ],
+    "properties": {
+      "field": {
+        "type": "string"
+      },
+      "delimiters": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Each character is a delimiter; \\t means tab"
+      },
+      "mode": {
+        "enum": [
+          "columns",
+          "rows"
+        ]
+      },
+      "columns": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000,
+        "default": 2
+      },
+      "extra": {
+        "enum": [
+          "last_column",
+          "drop",
+          "error"
+        ],
+        "default": "last_column",
+        "description": "Columns mode: keep remainder in last column, drop it, or fail"
+      },
+      "output_root": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "skip_empty": {
+        "type": "boolean",
+        "default": false
+      },
+      "quote_aware": {
+        "type": "boolean",
+        "default": false,
+        "description": "Ignore delimiters inside double quotes"
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.text_to_columns",
+    "version": "1.0.0",
+    "module": "flowengine.tools.parse",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.TextToColumns.TextToColumns"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "Delimeters",
+      "ErrorHandling",
+      "Field",
+      "Flags",
+      "NumFields",
+      "RootName"
+    ],
+    "nodes_observed": 29
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Text To Columns Tool",
+    "sha256": "50f0d1827b79f18d0dbc11684e5db7a7ff69b34a36ac74ac882cf00f82c68227",
+    "retrieved_utc": "2026-10-13T09:33:24.502385+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools.ParseTests.test_text_to_columns"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/parse/text-to-columns-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.502385+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "text-to-columns-3",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#text-to-columns-3",
+        "reference build 2026.2.0.8",
+        "config sha256 bf96f8a58264187df54e41bf77e0b85dd471623bdc53dfd03caea078e012dde3"
+      ]
+    }
+  ],
+  "unresolved": []
+}

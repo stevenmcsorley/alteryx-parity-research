@@ -1,0 +1,146 @@
+{
+  "id": "transform:transpose",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Transpose",
+  "category": "Transform",
+  "xml_tool_name": "AlteryxBasePluginsGui.Transpose.Transpose",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/transform/transpose-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "key_fields"
+    ],
+    "properties": {
+      "key_fields": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "data_fields": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string"
+        },
+        "default": null,
+        "description": "null = every non-key field"
+      },
+      "name_field": {
+        "type": "string",
+        "default": "Name"
+      },
+      "value_field": {
+        "type": "string",
+        "default": "Value"
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.transpose",
+    "version": "1.0.0",
+    "module": "flowengine.tools.transform",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.Transpose.Transpose"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "DataFields",
+      "DataFields/Field",
+      "ErrorWarn",
+      "KeyFields",
+      "KeyFields/Field"
+    ],
+    "nodes_observed": 63
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Transpose Tool",
+    "sha256": "033d565089254e43dfc5dee5bb90303be7e03730858939ed2d882af34c5dc2bb",
+    "retrieved_utc": "2026-10-13T09:33:25.505677+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Key Columns Example"
+    ]
+  },
+  "independent_tests": {
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools.TransformTests.test_transpose_and_crosstab_roundtrip"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/transform/transpose-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:25.505677+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "transpose-basic",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#transpose-basic",
+        "reference build 2026.2.0.8",
+        "config sha256 cc1fad3b949cb018b756f18eaad7a4ce92e18651d1321aa391d7527e496c2cb4"
+      ]
+    }
+  ],
+  "unresolved": []
+}

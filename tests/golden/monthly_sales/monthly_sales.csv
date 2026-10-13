@@ -1,0 +1,5 @@
+region,order_month,revenue,orders,customers
+East,2025-08,29.00,2,2
+North,2025-07,89.98,2,1
+South,2025-07,130.50,2,2
+South,2025-08,199.98,1,1

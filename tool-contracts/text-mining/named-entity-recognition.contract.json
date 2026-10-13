@@ -1,0 +1,123 @@
+{
+  "id": "text-mining:named-entity-recognition",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Named Entity Recognition",
+  "category": "Text Mining",
+  "xml_tool_name": "NamedEntityRecognition",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/named-entity-recognition.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Tool Components",
+      "Default Model Configuration",
+      "Configure the Tool",
+      "Default English Entity List",
+      "Custom Entity List Format",
+      "Configure the Tool",
+      "Train Model",
+      "Output",
+      "How to Parse JSON Output",
+      "FAQ",
+      "How is the hierarchy determined when I use a custom entity and label list?",
+      "Are the entities normalized? For example, can the NER tool recognize that Michael Jordan and Air Jordan are the same per",
+      "Does NER support mixed language?"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "python-nlp-runtime",
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Named Entity Recognition",
+    "sha256": "ee795176c584a1660ec4890d26895589d34615f8e70d02bd095fa8b5e0e29759",
+    "retrieved_utc": "2026-10-13T09:33:22.982271+00:00",
+    "anchors_extracted": [
+      {
+        "label": "input",
+        "letter": "D",
+        "direction_guess": "input"
+      },
+      {
+        "label": "output",
+        "letter": "D",
+        "direction_guess": "output"
+      },
+      {
+        "label": "output",
+        "letter": "M",
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Default Model Configuration",
+      "Configure the Tool",
+      "Default English Entity List",
+      "Custom Entity List Format",
+      "Configure the Tool",
+      "Train Model",
+      "Output",
+      "How to Parse JSON Output",
+      "FAQ",
+      "How is the hierarchy determined when I use a custom entity and label list?",
+      "Are the entities normalized? For example, can the NER tool recognize that Michael Jordan and Air Jordan are the same per",
+      "Does NER support mixed language?"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/named-entity-recognition.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:22.982271+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

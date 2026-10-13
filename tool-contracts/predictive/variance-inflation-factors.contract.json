@@ -1,0 +1,91 @@
+{
+  "id": "predictive:variance-inflation-factors",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Variance Inflation Factors",
+  "category": "Predictive",
+  "xml_tool_name": "Variance Inflation Factors.yxmc",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive/variance-inflation-factors-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "D",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "R",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Input",
+      "Configure the Tool",
+      "Output"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "r-runtime (statistical models; vendor ships R-based macros)",
+    "alteryx-server (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Variance Inflation Factors Tool",
+    "sha256": "8e2b0970f446f5b636dc5f2bb6c029bdd82466702fbfddfa6f6f6604c128d16b",
+    "retrieved_utc": "2026-10-13T09:33:24.854943+00:00",
+    "anchors_extracted": [
+      {
+        "label": "D",
+        "letter": "D",
+        "direction_guess": "output"
+      },
+      {
+        "label": "R",
+        "letter": "R",
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "page-anchor-lines",
+    "section_headings": [
+      "Input",
+      "Configure the Tool",
+      "Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/predictive/variance-inflation-factors-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.854943+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

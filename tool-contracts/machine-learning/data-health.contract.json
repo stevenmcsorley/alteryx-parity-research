@@ -1,0 +1,114 @@
+{
+  "id": "machine-learning:data-health",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Data Health",
+  "category": "Machine Learning",
+  "xml_tool_name": "DataHealth",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/data-health.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Configure the Tool",
+      "1. Scale",
+      "2. Output Recommendations Based On Score"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "python-ml-runtime",
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Data Health",
+    "sha256": "52d86df86fff9be3e64c63d276760278ca2d4239d63617d84d43b866598f7cce",
+    "retrieved_utc": "2026-10-13T09:33:22.910176+00:00",
+    "anchors_extracted": [
+      {
+        "label": "Input",
+        "letter": null,
+        "direction_guess": "input"
+      },
+      {
+        "label": "output",
+        "letter": "S",
+        "direction_guess": "output"
+      },
+      {
+        "label": "output",
+        "letter": "R",
+        "direction_guess": "output"
+      },
+      {
+        "label": "output",
+        "letter": "O",
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "page-anchor-lines",
+    "section_headings": [
+      "Configure the Tool",
+      "1. Scale",
+      "2. Output Recommendations Based On Score"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/data-health.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:22.910176+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

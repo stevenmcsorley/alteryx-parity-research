@@ -1,0 +1,119 @@
+{
+  "id": "in-out:directory",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Directory",
+  "category": "In/Out",
+  "xml_tool_name": "AlteryxBasePluginsGui.Directory.Directory",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/directory-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "path"
+    ],
+    "properties": {
+      "path": {
+        "type": "string",
+        "minLength": 1
+      },
+      "pattern": {
+        "type": "string",
+        "default": "*"
+      },
+      "recursive": {
+        "type": "boolean",
+        "default": false
+      },
+      "include_hidden": {
+        "type": "boolean",
+        "default": false
+      }
+    }
+  },
+  "deterministic": false,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.directory",
+    "version": "1.0.0",
+    "module": "flowengine.tools.inout",
+    "side_effects": "reads-files"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.Directory.Directory"
+    ],
+    "input_anchors": [
+      "Action"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "Directory",
+      "FileSpec",
+      "IncludeSubDirs"
+    ],
+    "nodes_observed": 16
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Directory Tool",
+    "sha256": "a6ef85bbb1f497373c6ce0ee499187ecce1f967663cfb43adc90e6382e9f7ce9",
+    "retrieved_utc": "2026-10-13T09:33:24.158588+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "View the Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools.InOutTests.test_directory_listing_sorted_and_filtered"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/directory-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.158588+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No differential conformance case yet."
+  ]
+}

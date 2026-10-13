@@ -1,0 +1,92 @@
+{
+  "id": "ai-tools:synthetic-input",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Synthetic Input",
+  "category": "AI Tools",
+  "xml_tool_name": "Synthetic Generate\\Synthetic_Generate.yxmc",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/ai-tools/synthetic-input-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Tool Components",
+      "Configure the Tool",
+      "Output"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "llm-service (model provider credentials)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": true,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Synthetic Input Tool",
+    "sha256": "aaa03d737774a5d62dfb50d7ec9b5363b90ab56dceb332813f5901218294f57c",
+    "retrieved_utc": "2026-10-13T09:33:22.797336+00:00",
+    "anchors_extracted": [
+      {
+        "label": "input",
+        "letter": "M",
+        "direction_guess": "input"
+      },
+      {
+        "label": "output",
+        "letter": "D",
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/ai-tools/synthetic-input-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:22.797336+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+  ]
+}

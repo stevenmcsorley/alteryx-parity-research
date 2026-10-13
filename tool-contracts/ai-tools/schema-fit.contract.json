@@ -1,0 +1,136 @@
+{
+  "id": "ai-tools:schema-fit",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Schema Fit",
+  "category": "AI Tools",
+  "xml_tool_name": "Schema Fit\\Schema_Fit.yxmc",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/ai-tools/schema-fit-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "LLM Connection",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    },
+    {
+      "name": "Source Schema",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    },
+    {
+      "name": "Target Schema",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "Value"
+    ],
+    "public_doc_sections": [
+      "Tool Components",
+      "Configure the Tool",
+      "Output"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "llm-service (model provider credentials)",
+    "python-runtime (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": true,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "Schema Fit\\Schema_Fit.yxmc"
+    ],
+    "input_anchors": [
+      "LLM Connection",
+      "Source Schema",
+      "Target Schema"
+    ],
+    "output_anchors": [],
+    "config_elements": [
+      "Value"
+    ],
+    "nodes_observed": 3
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Schema Fit Tool",
+    "sha256": "0fc4923909b7d52b61d312eb74eb92300612d6daae386d4d0f1bce64cf8e5d4c",
+    "retrieved_utc": "2026-10-13T09:33:22.791335+00:00",
+    "anchors_extracted": [
+      {
+        "label": "input",
+        "letter": "M",
+        "direction_guess": "input"
+      },
+      {
+        "label": "input",
+        "letter": "T",
+        "direction_guess": "input"
+      },
+      {
+        "label": "input",
+        "letter": "S",
+        "direction_guess": "input"
+      },
+      {
+        "label": "output",
+        "letter": "T",
+        "direction_guess": "output"
+      },
+      {
+        "label": "output",
+        "letter": "D",
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/ai-tools/schema-fit-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:22.791335+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+  ]
+}

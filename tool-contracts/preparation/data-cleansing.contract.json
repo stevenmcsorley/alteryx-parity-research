@@ -1,0 +1,187 @@
+{
+  "id": "preparation:data-cleansing",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Data Cleansing",
+  "category": "Preparation",
+  "xml_tool_name": "Cleanse.yxmc",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/data-cleansing-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "fields": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string"
+        },
+        "default": null,
+        "description": "Fields to cleanse (null = all string and numeric fields)"
+      },
+      "remove_null_rows": {
+        "type": "boolean",
+        "default": false
+      },
+      "remove_null_columns": {
+        "type": "boolean",
+        "default": false
+      },
+      "replace_null_strings": {
+        "type": "boolean",
+        "default": false
+      },
+      "replace_null_numbers": {
+        "type": "boolean",
+        "default": false
+      },
+      "trim_whitespace": {
+        "type": "boolean",
+        "default": false
+      },
+      "collapse_whitespace": {
+        "type": "boolean",
+        "default": false
+      },
+      "remove_tabs_linebreaks": {
+        "type": "boolean",
+        "default": false
+      },
+      "remove_all_whitespace": {
+        "type": "boolean",
+        "default": false
+      },
+      "remove_letters": {
+        "type": "boolean",
+        "default": false
+      },
+      "remove_numbers": {
+        "type": "boolean",
+        "default": false
+      },
+      "remove_punctuation": {
+        "type": "boolean",
+        "default": false
+      },
+      "case": {
+        "enum": [
+          "none",
+          "upper",
+          "lower",
+          "title"
+        ],
+        "default": "none"
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.data_cleansing",
+    "version": "1.0.0",
+    "module": "flowengine.tools.preparation",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "Cleanse.yxmc"
+    ],
+    "input_anchors": [
+      "Input2"
+    ],
+    "output_anchors": [],
+    "config_elements": [
+      "Value"
+    ],
+    "nodes_observed": 4
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Data Cleansing Tool",
+    "sha256": "546c46ccce599d3862add8f6d7a6733b2d70963ce518b4664fc129c40b0da7cc",
+    "retrieved_utc": "2026-10-13T09:33:24.884344+00:00",
+    "anchors_extracted": [
+      {
+        "label": "Input",
+        "letter": null,
+        "direction_guess": "input"
+      },
+      {
+        "label": "Output",
+        "letter": null,
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Remove Null Data",
+      "Select Fields to Cleanse",
+      "Replace Nulls",
+      "Remove Unwanted Characters",
+      "Modify Case",
+      "Known Limitations"
+    ]
+  },
+  "independent_tests": {
+    "count": 3,
+    "passing": 3,
+    "tests": [
+      "test_fe_executor.EndToEndTests.test_golden_outputs",
+      "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
+      "test_fe_tools.PreparationTests.test_data_cleansing"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/preparation/data-cleansing-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.884344+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No differential conformance case yet."
+  ]
+}

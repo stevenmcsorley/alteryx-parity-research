@@ -1,0 +1,86 @@
+{
+  "id": "predictive:linear-regression",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Linear Regression",
+  "category": "Predictive",
+  "xml_tool_name": "Linear Regression",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive/linear-regression-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "R Packages Used by Linear Regression",
+      "Configure the Tool for Standard Processing",
+      "Connect an Input",
+      "Configure the Tool",
+      "Customize the Model",
+      "Customize the Cross-Validation",
+      "Customize the Plots",
+      "View the Output",
+      "Configure the Tool for In-Database Processing",
+      "Connect an Input",
+      "Configuration",
+      "View the Output"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "r-runtime (statistical models; vendor ships R-based macros)",
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Linear Regression Tool",
+    "sha256": "2d6067ea53ecca9298d7d9c692d3aa30ed0152ab27f059e6f405c1814cf1eda8",
+    "retrieved_utc": "2026-10-13T09:33:24.713693+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "R Packages Used by Linear Regression",
+      "Configure the Tool for Standard Processing",
+      "Connect an Input",
+      "Configure the Tool",
+      "Customize the Model",
+      "Customize the Cross-Validation",
+      "Customize the Plots",
+      "View the Output",
+      "Configure the Tool for In-Database Processing",
+      "Connect an Input",
+      "Configuration",
+      "View the Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/predictive/linear-regression-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.713693+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+  ]
+}

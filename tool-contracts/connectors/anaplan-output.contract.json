@@ -1,0 +1,70 @@
+{
+  "id": "connectors:anaplan-output",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Anaplan Output",
+  "category": "Connectors",
+  "xml_tool_name": "AnaplanOutput_1_1_0",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/anaplan-output-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Connector Version 1.0.0",
+      "Sign In to Anaplan",
+      "Select a Destination",
+      "Configure the Tool"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "external-service-account (credentials/API access)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": true,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Anaplan Output Tool",
+    "sha256": "cfed3ee70166319aa24fc3c442b7759ab061cf2478a04576e322597a2f4b969c",
+    "retrieved_utc": "2026-10-13T09:33:23.214634+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Connector Version 1.0.0",
+      "Sign In to Anaplan",
+      "Select a Destination",
+      "Configure the Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/connectors/anaplan-output-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.214634+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+  ]
+}

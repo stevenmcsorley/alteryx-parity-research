@@ -1,0 +1,95 @@
+{
+  "id": "documentation:comment",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Comment",
+  "category": "Documentation",
+  "xml_tool_name": "AlteryxGuiToolkit.TextBox.TextBox",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/documentation/comment-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "BG_Image",
+      "FillColor",
+      "Font",
+      "Justification",
+      "Shape",
+      "Text",
+      "TextColor"
+    ],
+    "public_doc_sections": [
+      "Configure the Tool",
+      "Other Options"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxGuiToolkit.TextBox.TextBox"
+    ],
+    "input_anchors": [],
+    "output_anchors": [],
+    "config_elements": [
+      "BG_Image",
+      "FillColor",
+      "Font",
+      "Justification",
+      "Shape",
+      "Text",
+      "TextColor"
+    ],
+    "nodes_observed": 3557
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Comment Tool",
+    "sha256": "597b56b6a7495b881dfe511ec2815a098cc99fa889a9f2b89a2d5dd638d7decd",
+    "retrieved_utc": "2026-10-13T09:33:23.965256+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Other Options"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/documentation/comment-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.965256+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+  ]
+}

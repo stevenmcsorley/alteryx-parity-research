@@ -1,0 +1,126 @@
+{
+  "id": "address:street-geocoder",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Street Geocoder",
+  "category": "Address",
+  "xml_tool_name": "PortfolioPluginsGui.Geocoder.Geocoder",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/address/street-geocoder-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "InputFields",
+      "InputFields/Address",
+      "InputFields/City",
+      "InputFields/PostCode",
+      "InputFields/SelectedGeocoder",
+      "InputFields/State",
+      "MultipleMatchMode",
+      "OutputFields",
+      "OutputFields/OutputField"
+    ],
+    "public_doc_sections": [
+      "Configure the Tool",
+      "View the Output",
+      "Defaults",
+      "Additional Variables",
+      "US Geocoder Only",
+      "Canadian Geocoder Only"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "licensed-reference-dataset (address/geocoding data)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": true,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "PortfolioPluginsGui.Geocoder.Geocoder"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "InputFields",
+      "InputFields/Address",
+      "InputFields/City",
+      "InputFields/PostCode",
+      "InputFields/SelectedGeocoder",
+      "InputFields/State",
+      "MultipleMatchMode",
+      "OutputFields",
+      "OutputFields/OutputField"
+    ],
+    "nodes_observed": 1
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Street Geocoder Tool",
+    "sha256": "666d7f4fb8647c5dbceb8be8e1550672dd398bb1903537ba944b99c49ab86787",
+    "retrieved_utc": "2026-10-13T09:33:22.731320+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "View the Output",
+      "Defaults",
+      "Additional Variables",
+      "US Geocoder Only",
+      "Canadian Geocoder Only"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/address/street-geocoder-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:22.731320+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "id": "prescriptive:optimization",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Optimization",
+  "category": "Prescriptive",
+  "xml_tool_name": "Optimization",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/prescriptive/optimization-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "O",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "I",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "D",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "S",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "What is Optimization?",
+      "Connect Inputs",
+      "Input Modes",
+      "Select the Model as Matrices",
+      "Enter the Model Manually",
+      "Specify the Model from a File",
+      "View the Output"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "r-runtime",
+    "optimisation-solver",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Optimization Tool",
+    "sha256": "0dbb73f8f8611f880dcbd89e52b59a1027f495cc2b4d31a41e47ce9952d79413",
+    "retrieved_utc": "2026-10-13T09:33:25.051102+00:00",
+    "anchors_extracted": [
+      {
+        "label": "O",
+        "letter": "O",
+        "direction_guess": "input"
+      },
+      {
+        "label": "I",
+        "letter": "I",
+        "direction_guess": "output"
+      },
+      {
+        "label": "D",
+        "letter": "D",
+        "direction_guess": "output"
+      },
+      {
+        "label": "S",
+        "letter": "S",
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "page-anchor-lines",
+    "section_headings": [
+      "What is Optimization?",
+      "Connect Inputs",
+      "Input Modes",
+      "Select the Model as Matrices",
+      "Enter the Model Manually",
+      "Specify the Model from a File",
+      "View the Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/prescriptive/optimization-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:25.051102+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

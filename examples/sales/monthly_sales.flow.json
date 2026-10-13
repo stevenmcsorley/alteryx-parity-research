@@ -1,0 +1,60 @@
+{
+  "format": "flowengine.workflow",
+  "formatVersion": 1,
+  "name": "Monthly sales by region (original sample)",
+  "description": "Independent end-to-end example over original synthetic data. Not an Alteryx workflow and not a conformance claim.",
+  "nodes": [
+    {"id": "customers", "tool": "core.input_data", "config": {
+      "path": "data/customers.csv", "empty_as_null": true,
+      "fields": [{"name": "customer_id", "type": "v_string", "size": 8},
+                 {"name": "name", "type": "v_wstring", "size": 100},
+                 {"name": "region", "type": "v_string", "size": 16},
+                 {"name": "status", "type": "v_string", "size": 16},
+                 {"name": "signup_date", "type": "date"}]}},
+    {"id": "orders", "tool": "core.input_data", "config": {
+      "path": "data/orders.csv", "empty_as_null": true,
+      "fields": [{"name": "order_id", "type": "v_string", "size": 12},
+                 {"name": "customer_id", "type": "v_string", "size": 8},
+                 {"name": "order_date", "type": "date"},
+                 {"name": "unit_price", "type": "fixed_decimal", "size": 12, "scale": 2},
+                 {"name": "qty", "type": "int32"}]}},
+    {"id": "clean_names", "tool": "core.data_cleansing", "config": {
+      "fields": ["name"], "trim_whitespace": true, "collapse_whitespace": true, "case": "title"}},
+    {"id": "first_customer_row", "tool": "core.unique", "config": {"fields": ["customer_id"]}},
+    {"id": "active_only", "tool": "core.filter", "config": {"field": "status", "operator": "=", "value": "active"}},
+    {"id": "line_values", "tool": "core.formula", "config": {"formulas": [
+      {"field": "qty", "expression": "IIF(IsNull([qty]), 0, [qty])"},
+      {"field": "line_total", "expression": "[unit_price] * [qty]", "type": "fixed_decimal", "size": 14, "scale": 2},
+      {"field": "order_month", "expression": "DateTimeFormat([order_date], \"%Y-%m\")", "type": "v_string", "size": 7}]}},
+    {"id": "match_customer", "tool": "core.join", "config": {
+      "by": "fields", "keys": [{"left": "customer_id", "right": "customer_id"}],
+      "drop_right_keys": true, "right_fields": ["customer_id", "region"]}},
+    {"id": "by_region_month", "tool": "core.summarize", "config": {"actions": [
+      {"field": "region", "op": "group_by"},
+      {"field": "order_month", "op": "group_by"},
+      {"field": "line_total", "op": "sum", "output": "revenue"},
+      {"field": "order_id", "op": "count", "output": "orders"},
+      {"field": "customer_id", "op": "count_distinct", "output": "customers"}]}},
+    {"id": "ordered", "tool": "core.sort", "config": {"keys": [{"field": "region"}, {"field": "order_month"}]}},
+    {"id": "write_summary", "tool": "core.output_data", "config": {"path": "out/monthly_sales.csv"}},
+    {"id": "preview", "tool": "core.browse", "config": {}},
+    {"id": "exceptions", "tool": "core.select", "config": {
+      "fields": [{"field": "order_id"}, {"field": "customer_id"}, {"field": "line_total"}],
+      "unknown_fields": "exclude"}},
+    {"id": "write_exceptions", "tool": "core.output_data", "config": {"path": "out/unmatched_orders.csv"}}
+  ],
+  "edges": [
+    {"from": {"node": "customers", "anchor": "output"}, "to": {"node": "clean_names", "anchor": "input"}},
+    {"from": {"node": "clean_names", "anchor": "output"}, "to": {"node": "first_customer_row", "anchor": "input"}},
+    {"from": {"node": "first_customer_row", "anchor": "unique"}, "to": {"node": "active_only", "anchor": "input"}},
+    {"from": {"node": "orders", "anchor": "output"}, "to": {"node": "line_values", "anchor": "input"}},
+    {"from": {"node": "line_values", "anchor": "output"}, "to": {"node": "match_customer", "anchor": "left"}},
+    {"from": {"node": "active_only", "anchor": "true"}, "to": {"node": "match_customer", "anchor": "right"}},
+    {"from": {"node": "match_customer", "anchor": "joined"}, "to": {"node": "by_region_month", "anchor": "input"}},
+    {"from": {"node": "by_region_month", "anchor": "output"}, "to": {"node": "ordered", "anchor": "input"}},
+    {"from": {"node": "ordered", "anchor": "output"}, "to": {"node": "write_summary", "anchor": "input"}},
+    {"from": {"node": "ordered", "anchor": "output"}, "to": {"node": "preview", "anchor": "input"}},
+    {"from": {"node": "match_customer", "anchor": "left_unjoined"}, "to": {"node": "exceptions", "anchor": "input"}},
+    {"from": {"node": "exceptions", "anchor": "output"}, "to": {"node": "write_exceptions", "anchor": "input"}}
+  ]
+}

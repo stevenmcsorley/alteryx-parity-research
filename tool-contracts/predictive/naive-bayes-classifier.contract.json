@@ -1,0 +1,80 @@
+{
+  "id": "predictive:naive-bayes-classifier",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Naive Bayes Classifier",
+  "category": "Predictive",
+  "xml_tool_name": "Predictive Tools\\Naive_Bayes.yxmc",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive/naive-bayes-classifier-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Configure the Tool",
+      "Required Parameters",
+      "Graphics Options",
+      "View the Output"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "r-runtime (statistical models; vendor ships R-based macros)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Naive Bayes Classifier Tool",
+    "sha256": "6e665863fdd4566f260a71b16fe8887e0fc00fb175da2182e0e31162139d538e",
+    "retrieved_utc": "2026-10-13T09:33:24.749229+00:00",
+    "anchors_extracted": [
+      {
+        "label": "O",
+        "letter": "O",
+        "direction_guess": "unknown"
+      },
+      {
+        "label": "R",
+        "letter": "R",
+        "direction_guess": "unknown"
+      }
+    ],
+    "anchor_extraction": "page-anchor-lines",
+    "section_headings": [
+      "Configure the Tool",
+      "Required Parameters",
+      "Graphics Options",
+      "View the Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/predictive/naive-bayes-classifier-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.749229+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+  ]
+}

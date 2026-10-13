@@ -1,0 +1,91 @@
+{
+  "id": "predictive-grouping:multidimensional-scaling",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Multidimensional Scaling",
+  "category": "Predictive Grouping",
+  "xml_tool_name": "Multidimensional Scaling.yxmc",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/multidimensional-scaling-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "P",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Connect an Input",
+      "Configure the Tool",
+      "Model Options Tab",
+      "Plot Options Tab",
+      "Graphics Options Tab",
+      "View the Output"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "r-runtime",
+    "alteryx-server (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Multidimensional Scaling Tool",
+    "sha256": "919deab9aabcb419395b44a43b849c6f7102fb158c74fc1df516dcd3358e2ed4",
+    "retrieved_utc": "2026-10-13T09:33:24.589358+00:00",
+    "anchors_extracted": [
+      {
+        "label": "D",
+        "letter": "D",
+        "direction_guess": "unknown"
+      },
+      {
+        "label": "P",
+        "letter": "P",
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "page-anchor-lines",
+    "section_headings": [
+      "Connect an Input",
+      "Configure the Tool",
+      "Model Options Tab",
+      "Plot Options Tab",
+      "Graphics Options Tab",
+      "View the Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/multidimensional-scaling-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.589358+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

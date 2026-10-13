@@ -1,0 +1,202 @@
+{
+  "id": "parse:regex",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "RegEx",
+  "category": "Parse",
+  "xml_tool_name": "AlteryxBasePluginsGui.RegEx.RegEx",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/parse/regex-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "field",
+      "pattern",
+      "mode"
+    ],
+    "properties": {
+      "field": {
+        "type": "string"
+      },
+      "pattern": {
+        "type": "string",
+        "minLength": 1
+      },
+      "mode": {
+        "enum": [
+          "replace",
+          "match",
+          "parse",
+          "tokenize_columns",
+          "tokenize_rows"
+        ]
+      },
+      "case_insensitive": {
+        "type": "boolean",
+        "default": false
+      },
+      "replacement": {
+        "type": "string",
+        "default": "",
+        "description": "Replace mode: $1..$n refer to capture groups"
+      },
+      "output_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "group_fields": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "columns": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 3
+      },
+      "keep_unmatched": {
+        "type": "boolean",
+        "default": true,
+        "description": "Match mode: keep records that do not match (with False)"
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.regex",
+    "version": "1.0.0",
+    "module": "flowengine.tools.parse",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.RegEx.RegEx"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "CaseInsensitve",
+      "Field",
+      "Match",
+      "Match/ErrorUnmatched",
+      "Match/Field",
+      "Method",
+      "ParseComplex",
+      "ParseComplex/Field",
+      "ParseSimple",
+      "ParseSimple/ErrorHandling",
+      "ParseSimple/NumFields",
+      "ParseSimple/RootName",
+      "ParseSimple/SplitToRows",
+      "RegExExpression",
+      "Replace",
+      "Replace/CopyUnmatched"
+    ],
+    "nodes_observed": 42
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "RegEx Tool",
+    "sha256": "ac6fca4b5fb8d79ef029fb880c507f0cf570906758db68046ca499becf1f3817",
+    "retrieved_utc": "2026-10-13T09:33:24.495383+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "RegEx Support",
+      "Configure the Tool",
+      "Tokenize Method Examples"
+    ]
+  },
+  "independent_tests": {
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools.ParseTests.test_regex_modes"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/parse/regex-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.495383+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "regex-replace",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#regex-replace",
+        "reference build 2026.2.0.8",
+        "config sha256 5ce217fa633d47398cd846995db94999a73a06d34ba9259fea05092dde1f7f1f"
+      ]
+    },
+    {
+      "case_id": "regex-parse-groups",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#regex-parse-groups",
+        "reference build 2026.2.0.8",
+        "config sha256 fa264c4d276345b7bb189c1c7831b40fbd54a47e41c0223b8aac63644ea8c300"
+      ]
+    },
+    {
+      "case_id": "regex-match",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#regex-match",
+        "reference build 2026.2.0.8",
+        "config sha256 3ec396c624ace1278a0debf7b7aee5fc916133f0eebf17dc86e10e7cc9aeeecd"
+      ]
+    }
+  ],
+  "unresolved": []
+}

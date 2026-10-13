@@ -47,3 +47,9 @@ All material is linked, not copied. Checked 13 October 2026. `current` URLs can 
 | `REA` exact repository docs | https://github.com/morluto/rea/blob/main/docs/installation.md |
 
 The repo contains the actual public source links and public metadata, **not an unauthorised download of vendor manuals or application binaries**.
+
+## Retrieval log (13 October 2026)
+
+- Official tool list (`/current/`) fetched and parsed: 323 rows, identical names/categories to the seed; 323 help URLs; one XML identifier change (`Survival Analysis.yxmc`). SHA-256 recorded in `data/catalog.json` metadata.
+- Version-pinned `/20261/` tool list: fetched **once** for comparison (identical to `/current/`). `help.alteryx.com/robots.txt` disallows `/20261/`, so it is not crawled and not used as the audit source.
+- 321 unique per-tool help pages audited from `/current/` (robots-permitted, 1.2 s throttle): titles, headings, anchor labels, dependency keyword signals and hashes only → `data/public-doc-audit.json`. Page bodies are not stored in Git.

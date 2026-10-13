@@ -1,0 +1,115 @@
+{
+  "id": "transform:count-records",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Count Records",
+  "category": "Transform",
+  "xml_tool_name": "CountRecords.yxmc",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/transform/count-records-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "field_name": {
+        "type": "string",
+        "minLength": 1,
+        "default": "Count"
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.count_records",
+    "version": "1.0.0",
+    "module": "flowengine.tools.transform",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "CountRecords.yxmc"
+    ],
+    "input_anchors": [
+      "Input8"
+    ],
+    "output_anchors": [
+      "Output9"
+    ],
+    "config_elements": [
+      "Value"
+    ],
+    "nodes_observed": 10
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Count Records Tool",
+    "sha256": "7030eb0e2814d7d6695ea4be44b509a232bbb61fb06bb8e4f8fca3b944274039",
+    "retrieved_utc": "2026-10-13T09:33:25.456662+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 6,
+    "passing": 6,
+    "tests": [
+      "test_fe_executor.ExecutionTests.test_cancellation",
+      "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
+      "test_fe_executor.ExecutionTests.test_failure_reports_node_and_skips_downstream",
+      "test_fe_executor.ExecutionTests.test_fan_out_and_release",
+      "test_fe_executor.ValidationTests.test_catalog_id_resolves_to_implementation",
+      "test_fe_tools.TransformTests.test_count_records"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/transform/count-records-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:25.456662+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No differential conformance case yet."
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "id": "transform:make-columns",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Make Columns",
+  "category": "Transform",
+  "xml_tool_name": "AlteryxBasePluginsGui.MakeColumns.MakeColumns",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/transform/make-columns-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "GroupFields",
+      "GroupFields/Field",
+      "IsHorizontal",
+      "NumColumns"
+    ],
+    "public_doc_sections": [
+      "Configure the Tool",
+      "Examples",
+      "Ungrouped",
+      "Grouped"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.MakeColumns.MakeColumns"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "GroupFields",
+      "GroupFields/Field",
+      "IsHorizontal",
+      "NumColumns"
+    ],
+    "nodes_observed": 5
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Make Columns Tool",
+    "sha256": "ab99c6397ad43e6e364007d8b4759dba0fd5417495ce35becee636883645b23d",
+    "retrieved_utc": "2026-10-13T09:33:25.477169+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Examples",
+      "Ungrouped",
+      "Grouped"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/transform/make-columns-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:25.477169+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

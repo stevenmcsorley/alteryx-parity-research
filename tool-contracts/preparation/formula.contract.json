@@ -1,0 +1,286 @@
+{
+  "id": "preparation:formula",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Formula",
+  "category": "Preparation",
+  "xml_tool_name": "AlteryxBasePluginsGui.Formula.Formula",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/formula-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "formulas"
+    ],
+    "properties": {
+      "formulas": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "expression"
+          ],
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1
+            },
+            "expression": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": {
+              "enum": [
+                "bool",
+                "byte",
+                "int16",
+                "int32",
+                "int64",
+                "fixed_decimal",
+                "float",
+                "double",
+                "string",
+                "wstring",
+                "v_string",
+                "v_wstring",
+                "date",
+                "time",
+                "datetime",
+                "blob"
+              ]
+            },
+            "size": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "scale": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "on_conversion_error": {
+        "enum": [
+          "error",
+          "null"
+        ],
+        "default": "error",
+        "description": "Conversion failure policy: fail the node, or emit null and a warning"
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.formula",
+    "version": "1.0.0",
+    "module": "flowengine.tools.preparation",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.Formula.Formula"
+    ],
+    "input_anchors": [
+      "Action",
+      "Input",
+      "Question"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "FormulaFields",
+      "FormulaFields/FormulaField"
+    ],
+    "nodes_observed": 375
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Formula Tool",
+    "sha256": "fbeb1013c30f4251b84058ca97137f1d83f27e7aa32b6182f0886384750ed439",
+    "retrieved_utc": "2026-10-13T09:33:24.910425+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Build Expressions",
+      "Add Another Expression",
+      "Reorder Expressions",
+      "Expand and Collapse Expressions",
+      "Disable Individual Expressions"
+    ]
+  },
+  "independent_tests": {
+    "count": 6,
+    "passing": 6,
+    "tests": [
+      "test_fe_executor.EndToEndTests.test_golden_outputs",
+      "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
+      "test_fe_executor.ValidationTests.test_static_schemas_propagate",
+      "test_fe_service.ServiceTests.test_validate_returns_schemas_and_problems",
+      "test_fe_tools.PreparationTests.test_formula_conversion_policy",
+      "test_fe_tools.PreparationTests.test_formula_sequential_and_types"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/preparation/formula-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.910425+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "formula-arithmetic",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#formula-arithmetic",
+        "reference build 2026.2.0.8",
+        "config sha256 ab8da7e01752d3adfe0362e10fe40ee7c10e8c83cd9f4bf16b81ef46f56f04da"
+      ]
+    },
+    {
+      "case_id": "formula-strings",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#formula-strings",
+        "reference build 2026.2.0.8",
+        "config sha256 0de8f839986fef4559971c27eea9b30e93efca1373535eebbcd6e139518d6dbf"
+      ]
+    },
+    {
+      "case_id": "formula-null-concat",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#formula-null-concat",
+        "reference build 2026.2.0.8",
+        "config sha256 d734901c60768a345f8ff68e7cd05bc478664466edc1978743d523e55796ea6e"
+      ]
+    },
+    {
+      "case_id": "formula-conditionals",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#formula-conditionals",
+        "reference build 2026.2.0.8",
+        "config sha256 a12957bf840a8bc82cffde3deeec3660530f8bdeadc3543c7054953030e3a1fb"
+      ]
+    },
+    {
+      "case_id": "formula-dates",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#formula-dates",
+        "reference build 2026.2.0.8",
+        "config sha256 5dc8535fbee12ba449a2cc76f725c658535b1871f52c2f507caab3e81652f70d"
+      ]
+    },
+    {
+      "case_id": "formula-rounding",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#formula-rounding",
+        "reference build 2026.2.0.8",
+        "config sha256 01ce4678fb86b018c729fa65952fc1a7d77efb720aa372496a29791412f19ada"
+      ]
+    },
+    {
+      "case_id": "formula-divide-by-zero",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#formula-divide-by-zero",
+        "reference build 2026.2.0.8",
+        "config sha256 4c57e522b2e401a04a71da92d0780ba41671a929234bae0ec1aa589d84733d2b"
+      ]
+    },
+    {
+      "case_id": "formula-tonumber",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#formula-tonumber",
+        "reference build 2026.2.0.8",
+        "config sha256 4a396c57b69b48f879d65173e2bf051e44f6d1ac2c0271ff1dabd5903dd114a1"
+      ]
+    },
+    {
+      "case_id": "probe-null-string-functions",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#probe-null-string-functions",
+        "reference build 2026.2.0.8",
+        "config sha256 252b93034a524a971687785d22fd7612a4d6c98e02866a3142cbca87fca864c8"
+      ]
+    },
+    {
+      "case_id": "probe-string-ordering",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#probe-string-ordering",
+        "reference build 2026.2.0.8",
+        "config sha256 f24217f3631a5bf3680d7a0553e7fa4d97628410a64363263565706e991d267c"
+      ]
+    },
+    {
+      "case_id": "probe-null-arithmetic-bool",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#probe-null-arithmetic-bool",
+        "reference build 2026.2.0.8",
+        "config sha256 e6b9633ad21b376aaacffa8940e65846737c8a6b64ed2fe945aa660460fe48af"
+      ]
+    },
+    {
+      "case_id": "probe-contains-flag-and-codepoints",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#probe-contains-flag-and-codepoints",
+        "reference build 2026.2.0.8",
+        "config sha256 d309978547424b9f822e93951a366ca83ccbcb306cbdf69f1a1fd266c57ee1a3"
+      ]
+    }
+  ],
+  "unresolved": []
+}

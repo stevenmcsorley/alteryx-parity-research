@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flowengine"
+version = "0.1.0"
+description = "Independent typed workflow execution engine (research project; no vendor code)"
+requires-python = ">=3.11"
+dependencies = ["jsonschema>=4.20,<5"]
+
+[project.scripts]
+flowengine = "flowengine.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["flowengine*"]

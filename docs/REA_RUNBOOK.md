@@ -71,3 +71,12 @@ Implementation state and test report refs:
 ## 6. Replay and acceptance
 
 Commit only original test cases and lawful metadata. A comparison report must identify reference build, engine (AMP/original), deterministic seed, locale/timezone, settings, output SHA256/tolerances, failures and known uncertainties. No binary dumps, unlicensed output samples or secrets in Git.
+
+## 7. Investigations performed
+
+| Date | Scope | Operations | Result | Evidence |
+|---|---|---|---|---|
+| 2026-10-13 | Provenance of reference binaries used by the conformance harness (authorisation: docs/AUTHORISATION.md) | `inspect_pe_resources` on `AlteryxEngineCmd.exe`, `Plugins/AlteryxBasePluginsEngine.dll`, `Plugins/AlteryxSpatialPluginsEngine.dll` | SHA-256 and resource-table inventory recorded | `docs/evidence/rea-2026-10-13.json` |
+| 2026-10-13 | Process-level observation of a black-box engine run | `capture_process_scenario` | **Not available on Windows** (REA: PTY capture cannot verify descendant cleanup); reference product is Windows-only | same file, `not_performed` |
+
+Limitations: REA was used only for static provenance; behavioural evidence comes from the differential harness, not from REA. Managed/native code inspection was deliberately not performed (scope).
