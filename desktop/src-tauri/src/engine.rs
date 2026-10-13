@@ -119,7 +119,9 @@ impl Engine {
                     std::thread::Builder::new().name("engine-stdout-reader".into()).spawn(move || {
                         for line in BufReader::new(stdout).lines() {
                             match line {
-                                Ok(line) if line_tx.send(line).is_ok() => {}
+                                Ok(line) => {
+                                    if line_tx.send(line).is_err() { break; }
+                                }
                                 _ => break,
                             }
                         }
