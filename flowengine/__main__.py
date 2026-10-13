@@ -39,7 +39,13 @@ def _cmd_run(args) -> int:
         fixed = _dt.datetime.fromisoformat(args.clock)
         clock = lambda: fixed
     try:
-        result = run_file(args.workflow, log_path=args.log, clock=clock, retain='none')
+        hist = None
+        if args.history:
+            from .history import RunHistory
+            hist = RunHistory(args.history)
+        result = run_file(args.workflow, log_path=args.log, clock=clock, retain='none', profile=args.profile,
+                          workers=args.workers, batch_rows=args.batch_rows, memory_budget=args.memory_budget,
+                          history=hist)
     except WorkflowValidationError as e:
         for p in e.problems:
             print(f"ERROR [{p.get('node_id') or '-'}] {p['code']}: {p['message']}", file=sys.stderr)
@@ -80,17 +86,39 @@ def main(argv=None) -> int:
     r.add_argument('--log', type=Path, help='Append structured JSONL run events to this file')
     r.add_argument('--manifest', type=Path, help='Write the reproducibility manifest (digests, counts)')
     r.add_argument('--clock', help='Fixed ISO datetime for tools that read the clock')
+    r.add_argument('--profile', help='Compatibility profile (default ayx-2026.2-e1)')
+    r.add_argument('--workers', type=int, default=1, help='Concurrent nodes (outputs identical for any value)')
+    r.add_argument('--batch-rows', type=int, help='Enable streaming of eligible segments in batches of N rows')
+    r.add_argument('--memory-budget', type=int, help='Bytes of intermediate tables kept in memory before spilling')
+    r.add_argument('--history', type=Path, help='Record the run in this SQLite run-history database')
     v = sub.add_parser('validate')
     v.add_argument('workflow', type=Path)
     t = sub.add_parser('tools')
     t.add_argument('--json', action='store_true')
-    sub.add_parser('serve', help='JSON-RPC 2.0 engine service over stdio (editor sidecar)')
+    sv = sub.add_parser('serve', help='JSON-RPC 2.0 engine service (stdio sidecar, or --http for the browser build)')
+    sv.add_argument('--http', type=int, metavar='PORT', help='Serve over loopback HTTP + SSE instead of stdio')
+    sv.add_argument('--history', type=Path, help='SQLite run-history database')
+    h = sub.add_parser('history', help='List or show recorded runs')
+    h.add_argument('--db', type=Path, required=True)
+    h.add_argument('run_id', nargs='?')
     args = p.parse_args(argv)
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING, format='%(levelname)s %(message)s')
     try:
         if args.cmd == 'serve':
-            from .service import serve
-            serve()
+            from .service import serve, serve_http
+            if args.http is not None:
+                serve_http(port=args.http, history_path=args.history)
+            else:
+                serve(history_path=args.history)
+            return 0
+        if args.cmd == 'history':
+            from .history import RunHistory
+            hist = RunHistory(args.db)
+            if args.run_id:
+                print(json.dumps(hist.get(args.run_id), indent=2, default=str))
+            else:
+                for r in hist.list():
+                    print(f"{r['started_utc']}  {r['status']:<10} {r['profile']:<15} {r['run_id']}  {r['workflow_name'] or ''}")
             return 0
         return {'run': _cmd_run, 'validate': _cmd_validate, 'tools': _cmd_tools}[args.cmd](args)
     except EngineError as e:

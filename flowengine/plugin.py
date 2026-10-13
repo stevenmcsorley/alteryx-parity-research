@@ -119,8 +119,16 @@ class RunContext:
 
 
 class Tool:
-    """Base class for tool kernels. Subclasses set ``manifest`` and implement ``run``."""
+    """Base class for tool kernels. Subclasses set ``manifest`` and implement ``run``.
+
+    Streaming (see flowengine/streaming.py): ``streaming = 'row-local'`` means ``run`` may be applied
+    to consecutive batches independently; ``'stateful'`` means the tool implements ``open_stream``.
+    Sources implement ``iter_batches``; sinks implement ``open_sink``."""
     manifest: ToolManifest
+    streaming: str | None = None
+
+    def can_stream(self, config: dict) -> bool:
+        return True
 
     def normalize_config(self, config: dict) -> dict:
         """Validate against the JSON schema, apply defaults, then semantic checks."""

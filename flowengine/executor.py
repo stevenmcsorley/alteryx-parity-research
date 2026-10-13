@@ -281,20 +281,38 @@ class _EventLog:
             self._fh.close()
 
 
+PREVIEW_ROWS = 1000
+
+
 def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                  clock: Callable[[], _dt.datetime] | None = None, retain: str = 'all',
                  log_path: Path | None = None, cancel_token: CancelToken | None = None,
                  limits: dict | None = None, run_id: str | None = None,
                  event_time: Callable[[], float] = time.time, listener=None,
-                 profile: str | None = None) -> RunResult:
+                 profile: str | None = None, workers: int = 1, memory_budget: int | None = None,
+                 history=None, spill_dir: Path | None = None, batch_rows: int | None = None) -> RunResult:
     """Validate then execute ``doc``. Raises WorkflowValidationError if invalid.
 
-    ``retain``: 'all' keeps every output table, 'none' keeps only Browse captures.
+    ``retain``: 'all' keeps every output table; 'preview' keeps the first 1000 rows of each;
+        'none' keeps only Browse captures.
     ``clock``: source of "now" for tools (inject a fixed clock for reproducible runs).
+    ``workers``: maximum nodes executed concurrently. Ready nodes are batched in document order and
+        their events are emitted in that order, so for a given worker count the event sequence is
+        deterministic; outputs and digests are identical for every worker count. Kernels share no
+        mutable state.
+    ``memory_budget``: bytes of intermediate tables kept in memory; larger working sets spill to disk.
+    ``history``: a :class:`flowengine.history.RunHistory` to record the run in.
+    ``batch_rows``: enable streaming; linear source->streamable tools->sink segments are executed in
+        batches of this many rows in bounded memory (flowengine/streaming.py). Streamed nodes have
+        no retained previews; their manifest digests equal those of a batch run.
     """
-    if retain not in ('all', 'none'):
-        raise ValueError("retain must be 'all' or 'none'")
+    if retain not in ('all', 'preview', 'none'):
+        raise ValueError("retain must be 'all', 'preview' or 'none'")
+    if workers < 1:
+        raise ValueError('workers must be >= 1')
+    from concurrent.futures import ThreadPoolExecutor
     from .profiles import get_profile
+    from .storage import TableStore
     prof = get_profile(profile or doc.get('metadata', {}).get('profile'))
     registry = registry or default_registry()
     base_dir = Path(base_dir).resolve()
@@ -307,75 +325,146 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
     clock = clock or _dt.datetime.now
     cancel_token = cancel_token or CancelToken()
     elog = _EventLog(run_id, log_path, event_time, listener)
-    tables: dict[tuple[str, str], Table] = {}
+    store = TableStore(memory_budget, emit=lambda t, **d: elog.emit(t, None, **d), spill_root=spill_dir)
     remaining = dict(plan.consumers)
     retained: dict[str, dict[str, Table]] = {}
     browse: dict[str, Table] = {}
     node_stats: dict[str, dict] = {}
     status, error = 'succeeded', None
+    wall_start = time.perf_counter()
+    upstream = {nid: {u for ups in plan.nodes[nid].inputs.values() for u, _ in ups} for nid in plan.order}
+    done: set[str] = set()
+    seg_heads = {}
+    if batch_rows:
+        if batch_rows < 1:
+            raise ValueError('batch_rows must be >= 1')
+        from .streaming import find_segments, run_segment
+        seg_heads = {chain[0]: chain for chain in find_segments(plan)}
+
+    def make_ctx(nid):
+        return RunContext(nid, base_dir, clock, lambda t, **d: elog.emit(t, nid, **d), cancel_token,
+                          limits=dict(limits or {}), browse_sink=lambda n, t: browse.__setitem__(n, t),
+                          constants=dict(doc.get('constants', {})), profile=prof)
     elog.emit('run-started', engine_version=__version__, workflow_digest=workflow_digest(doc), profile=prof.name,
-              node_count=len(plan.order))
+              node_count=len(plan.order), workers=workers, memory_budget=memory_budget)
+
+    def execute(nid, inputs):
+        pn = plan.nodes[nid]
+        buffered = []
+        ctx = RunContext(nid, base_dir, clock, lambda t, **d: buffered.append((t, d)), cancel_token,
+                         limits=dict(limits or {}), browse_sink=lambda n, t: browse.__setitem__(n, t),
+                         constants=dict(doc.get('constants', {})), profile=prof)
+        started = time.perf_counter()
+        try:
+            out = pn.tool.run(ctx, pn.config, inputs)
+            err = None
+        except EngineError as e:
+            e.node_id = e.node_id or nid
+            out, err = None, e
+        except Exception as e:  # kernel bug: surface clearly, never swallow
+            err = EngineError(f'Internal error in {pn.tool.manifest.tool_id}: {type(e).__name__}: {e}',
+                              node_id=nid, code='internal-error')
+            err.__cause__ = e
+            out = None
+        return out, err, buffered, time.perf_counter() - started
+
+    pool = ThreadPoolExecutor(max_workers=workers) if workers > 1 else None
     try:
-        for idx, nid in enumerate(plan.order):
-            pn = plan.nodes[nid]
+        for nid in plan.order:
             if nid in plan.skipped:
                 elog.emit('node-skipped', nid, message='disabled or downstream of a disabled node')
-                continue
+                done.add(nid)
+        while len(done) < len(plan.order):
             if cancel_token.cancelled:
-                raise CancelledError('Run cancelled before node started', node_id=nid)
-            inputs = {}
-            for anchor, ups in pn.inputs.items():
-                tabs = [tables[u] for u in ups]
-                inputs[anchor] = tabs if pn.tool.manifest.input(anchor).multiple else tabs[0]
-            ctx = RunContext(nid, base_dir, clock, lambda t, **d: elog.emit(t, nid, **d), cancel_token,
-                             limits=dict(limits or {}), browse_sink=lambda n, t: browse.__setitem__(n, t),
-                             constants=dict(doc.get('constants', {})), profile=prof)
-            in_rows = {a: (sum(len(t) for t in v) if isinstance(v, list) else len(v)) for a, v in inputs.items()}
-            elog.emit('node-started', nid, tool=pn.tool.manifest.tool_id, tool_version=pn.tool.manifest.version,
-                      input_rows=in_rows)
-            started = time.perf_counter()
-            try:
-                out = pn.tool.run(ctx, pn.config, inputs)
-            except EngineError as e:
-                e.node_id = e.node_id or nid
-                raise
-            except Exception as e:  # kernel bug: surface clearly, never swallow
-                raise EngineError(f'Internal error in {pn.tool.manifest.tool_id}: {type(e).__name__}: {e}',
-                                  node_id=nid, code='internal-error') from e
-            declared = {a.name for a in pn.tool.manifest.outputs}
-            if set(out) != declared or not all(isinstance(t, Table) for t in out.values()):
-                raise EngineError(f'Kernel returned anchors {sorted(out)}; manifest declares {sorted(declared)}',
-                                  node_id=nid, code='internal-error')
-            for anchor, t in out.items():
-                expected = plan.schemas.get((nid, anchor))
-                if expected is not None and tuple(expected) != tuple(t.schema):
-                    raise EngineError(f'Output {anchor!r} schema differs from statically inferred schema',
+                nxt = next(n for n in plan.order if n not in done)
+                raise CancelledError('Run cancelled before node started', node_id=nxt)
+            ready = [n for n in plan.order if n not in done and upstream[n] <= done][:workers]
+            if ready[0] in seg_heads:
+                chain = seg_heads[ready[0]]
+                t0 = time.perf_counter()
+                try:
+                    seg_stats = run_segment(plan, chain, make_ctx, elog.emit, batch_rows)
+                except EngineError as e:
+                    e.node_id = e.node_id or chain[0]
+                    raise
+                except Exception as e:
+                    raise EngineError(f'Internal error while streaming {chain}: {type(e).__name__}: {e}',
+                                      node_id=chain[0], code='internal-error') from e
+                dur = round((time.perf_counter() - t0) * 1000, 3)
+                for n in chain:
+                    pn = plan.nodes[n]
+                    outs = seg_stats.get(n, {})
+                    node_stats[n] = {'tool': pn.tool.manifest.tool_id, 'tool_version': pn.tool.manifest.version,
+                                     'duration_ms': dur, 'streamed': True,
+                                     'outputs': {a: {'rows': rows, 'fields': schema.to_list(), 'digest': dg}
+                                                 for a, (dg, rows, schema) in sorted(outs.items())}}
+                    elog.emit('node-completed', n, duration_ms=dur, streamed=True,
+                              output_rows={a: rows for a, (_, rows, _) in outs.items()})
+                    done.add(n)
+                continue
+            batch = []
+            for nid in ready:
+                pn = plan.nodes[nid]
+                inputs = {}
+                for anchor, ups in pn.inputs.items():
+                    tabs = [store.get(u) for u in ups]
+                    inputs[anchor] = tabs if pn.tool.manifest.input(anchor).multiple else tabs[0]
+                in_rows = {a: (sum(len(t) for t in v) if isinstance(v, list) else len(v)) for a, v in inputs.items()}
+                elog.emit('node-started', nid, tool=pn.tool.manifest.tool_id, tool_version=pn.tool.manifest.version,
+                          input_rows=in_rows)
+                batch.append((nid, inputs))
+            if pool and len(batch) > 1:
+                results = list(pool.map(lambda b: execute(*b), batch))
+            else:
+                results = [execute(*b) for b in batch]
+            for (nid, _), (out, err, buffered, duration) in zip(batch, results):
+                pn = plan.nodes[nid]
+                for t, d in buffered:
+                    elog.emit(t, nid, **d)
+                if err:
+                    raise err
+                declared = {a.name for a in pn.tool.manifest.outputs}
+                if set(out) != declared or not all(isinstance(t, Table) for t in out.values()):
+                    raise EngineError(f'Kernel returned anchors {sorted(out)}; manifest declares {sorted(declared)}',
                                       node_id=nid, code='internal-error')
-                if remaining.get((nid, anchor)):
-                    tables[(nid, anchor)] = t
-            duration = time.perf_counter() - started
-            node_stats[nid] = {'tool': pn.tool.manifest.tool_id, 'tool_version': pn.tool.manifest.version,
-                               'outputs': {a: {'rows': len(t), 'fields': t.schema.to_list(),
-                                               'digest': t.canonical_digest()} for a, t in sorted(out.items())}}
-            elog.emit('node-completed', nid, duration_ms=round(duration * 1000, 3),
-                      output_rows={a: len(t) for a, t in out.items()})
-            if retain == 'all':
-                retained[nid] = out
-            for anchor, ups in pn.inputs.items():
-                for u in ups:
-                    remaining[u] -= 1
-                    if remaining[u] == 0:
-                        tables.pop(u, None)
+                for anchor, t in out.items():
+                    expected = plan.schemas.get((nid, anchor))
+                    if expected is not None and tuple(expected) != tuple(t.schema):
+                        raise EngineError(f'Output {anchor!r} schema differs from statically inferred schema',
+                                          node_id=nid, code='internal-error')
+                for anchor, ups in pn.inputs.items():
+                    for u in ups:
+                        remaining[u] -= 1
+                        if remaining[u] == 0:
+                            store.pop(u)
+                for anchor, t in out.items():
+                    if remaining.get((nid, anchor)):
+                        store.put((nid, anchor), t)
+                node_stats[nid] = {'tool': pn.tool.manifest.tool_id, 'tool_version': pn.tool.manifest.version,
+                                   'duration_ms': round(duration * 1000, 3),
+                                   'outputs': {a: {'rows': len(t), 'fields': t.schema.to_list(),
+                                                   'digest': t.canonical_digest()} for a, t in sorted(out.items())}}
+                elog.emit('node-completed', nid, duration_ms=round(duration * 1000, 3),
+                          output_rows={a: len(t) for a, t in out.items()})
+                if retain == 'all':
+                    retained[nid] = out
+                elif retain == 'preview':
+                    retained[nid] = {a: (t if len(t) <= PREVIEW_ROWS else t.take(range(PREVIEW_ROWS)))
+                                     for a, t in out.items()}
+                done.add(nid)
     except CancelledError as e:
         status, error = 'cancelled', e.to_dict()
         elog.emit('run-cancelled', e.node_id, message=e.message)
     except EngineError as e:
         status, error = 'failed', e.to_dict()
         elog.emit('node-failed', e.node_id, code=e.code, message=e.message)
-        failed_at = plan.order.index(e.node_id) if e.node_id in plan.order else len(plan.order)
-        for later in plan.order[failed_at + 1:]:
-            elog.emit('node-skipped', later, message='not run because an upstream node failed')
+        for later in plan.order:
+            if later not in done and later != e.node_id:
+                elog.emit('node-skipped', later, message='not run because an upstream node failed')
     finally:
+        if pool:
+            pool.shutdown(wait=True)
+        store.close()
         warnings = sum(1 for ev in elog.events if ev['type'] == 'warning')
         elog.emit('run-completed', status=status, warnings=warnings)
         elog.close()
@@ -384,8 +473,14 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
         'python': platform.python_version(), 'workflow_digest': workflow_digest(doc), 'profile': prof.to_dict(),
         'nodes': node_stats, 'error': error,
         'warnings': [{k: ev[k] for k in ('node_id', 'message')} for ev in elog.events if ev['type'] == 'warning'],
+        'stats': {'wall_ms': round((time.perf_counter() - wall_start) * 1000, 3), 'workers': workers,
+                  'memory_budget': memory_budget, 'spills': store.spill_count,
+                  'spilled_bytes_estimate': store.spilled_bytes, 'peak_resident_bytes_estimate': store.peak_resident},
     }
-    return RunResult(run_id, status, elog.events, retained, browse, error, manifest)
+    result = RunResult(run_id, status, elog.events, retained, browse, error, manifest)
+    if history is not None:
+        history.record(doc, result)
+    return result
 
 
 def run_file(path: Path, **kw) -> RunResult:

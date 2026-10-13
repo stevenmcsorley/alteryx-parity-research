@@ -52,6 +52,7 @@ def basic_filter_expression(field: str, op: str, value) -> str:
 
 
 class Filter(Tool):
+    streaming = 'row-local'
     manifest = ToolManifest(
         tool_id='core.filter', version='1.0.0', display_name='Filter',
         catalog_ids=('preparation:filter',),
@@ -89,6 +90,7 @@ class Filter(Tool):
 # =========================================================================== Formula
 
 class Formula(Tool):
+    streaming = 'row-local'
     manifest = ToolManifest(
         tool_id='core.formula', version='1.0.0', display_name='Formula',
         catalog_ids=('preparation:formula',),
@@ -137,6 +139,7 @@ class Formula(Tool):
 # =========================================================================== Select
 
 class Select(Tool):
+    streaming = 'row-local'
     manifest = ToolManifest(
         tool_id='core.select', version='1.0.0', display_name='Select',
         catalog_ids=('preparation:select',),
@@ -257,6 +260,19 @@ class Sort(Tool):
 # =========================================================================== Record ID
 
 class RecordID(Tool):
+    streaming = 'stateful'
+
+    def open_stream(self, ctx, cfg):
+        tool = self
+
+        class _State:
+            def __init__(self):
+                self.counters = {}
+
+            def process(self, batch):
+                return tool._number(ctx, cfg, batch, self.counters)
+        return _State()
+
     manifest = ToolManifest(
         tool_id='core.record_id', version='1.0.0', display_name='Record ID',
         catalog_ids=('preparation:record-id',),
@@ -279,9 +295,13 @@ class RecordID(Tool):
         t: Table = inputs['input']
         if cfg['field_name'] in t.schema:
             raise SchemaError(f"Field {cfg['field_name']!r} already exists")
+        return self._number(ctx, cfg, t, {})
+
+    def _number(self, ctx, cfg, t, counters):
+        if cfg['field_name'] in t.schema:
+            raise SchemaError(f"Field {cfg['field_name']!r} already exists")
         require_fields(t.schema, cfg['group_by'])
         gi = [t.schema.index(g) for g in cfg['group_by']]
-        counters: dict = {}
         ids = []
         for row in t.rows():
             k = tuple(row[i] for i in gi)
@@ -547,6 +567,11 @@ class MultiRowFormula(Tool):
 # =========================================================================== Data Cleansing
 
 class DataCleansing(Tool):
+    streaming = 'row-local'
+
+    def can_stream(self, cfg):
+        return not cfg['remove_null_columns']  # column removal needs the whole table
+
     manifest = ToolManifest(
         tool_id='core.data_cleansing', version='1.0.0', display_name='Data Cleansing',
         catalog_ids=('preparation:data-cleansing',),
