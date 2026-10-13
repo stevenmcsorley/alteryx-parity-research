@@ -101,7 +101,7 @@ difference remain as recorded in `docs/COVERAGE.md`.
 
 ## Latest delivery
 
-- Branch head at this report update: `88ad0cc819b4963cdbddf043919b5e874fd1af30`.
+- Installer fix: `88ad0cc819b4963cdbddf043919b5e874fd1af30`; current report commit: `8714973e9d13ab6b145f0025ef2b779771d0d301`.
 - PR #2 remains open and based on open PR #1: https://github.com/stevenmcsorley/alteryx-parity-research/pull/2.
 - Latest CI: [run 38460982270](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38460982270);
   all five jobs passed (engine, database integration, desktop, Windows desktop shell, and R runtime).
