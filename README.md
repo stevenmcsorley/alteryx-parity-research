@@ -89,14 +89,18 @@ Track independent axes:
 
 No single percentage can honestly represent all five.
 
-## Publishing to GitHub
+## GitHub repository
 
-This package is a real Git working tree with initial commit. The current connector cannot create a new GitHub repository, so it is **not automatically published**. Create a blank, ideally private, repo named `alteryx-parity-research`, then push:
+Published at **https://github.com/stevenmcsorley/alteryx-parity-research**.
+
+To check out this research foundation and run the baseline validation:
 
 ```powershell
-git remote add origin https://github.com/YOUR_USERNAME/alteryx-parity-research.git
-git branch -M main
-git push -u origin main
+git clone https://github.com/stevenmcsorley/alteryx-parity-research.git
+cd alteryx-parity-research
+python -m pip install -r requirements-dev.txt
+python scripts/validate_repository.py
+python -m unittest discover -s tests -v
 ```
 
-Only push the **research files**. Keep licensed software, binary dumps, licensed sample assets and credentials outside Git.
+The public repository intentionally excludes licensed software, binary dumps, protected assets, credentials, and unauthorised analysis. Research coverage does not establish Alteryx functional parity.
