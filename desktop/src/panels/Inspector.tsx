@@ -136,6 +136,8 @@ function ToolInspector({ node }: { node: CanvasNode }) {
           ? <TextInputEditor value={d.config} onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />
           : manifest.tool_id === 'core.db_input'
             ? <DatabaseInputForm value={d.config} onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />
+          : manifest.tool_id === 'core.db_output'
+            ? <DatabaseOutputForm value={d.config} onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />
           : <SchemaForm schema={manifest.config_schema} value={d.config} fields={fields} idPrefix={`cfg-${node.id}`}
             onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />}
         <p className="help" style={{ color: 'var(--text-3)', fontSize: 11 }}>{manifest.description}</p>
@@ -162,7 +164,7 @@ function ToolInspector({ node }: { node: CanvasNode }) {
   );
 }
 
-type DbConnection = { id: string; name: string; dialect: string };
+type DbConnection = { id: string; name: string; dialect: string; allow_writes?: boolean };
 type DbTable = { name: string; kind: string };
 function DatabaseInputForm({ value, onBeginEdit, onChange }: { value: Record<string, unknown>; onBeginEdit: () => void;
   onChange: (v: Record<string, unknown>) => void }) {
@@ -212,6 +214,35 @@ function DatabaseInputForm({ value, onBeginEdit, onChange }: { value: Record<str
     {preview && <div className="db-preview"><strong>{preview.total_rows} row(s) · {preview.fields.map((f: FieldDef) => f.name).join(', ')}</strong>
       <div className="db-preview-table">{preview.rows.map((r: unknown[], i: number) => <div key={i}>{r.map((x, j) => <span key={j}>{x == null ? '∅' : String(x)}</span>)}</div>)}</div></div>}
     <p className="help">Rows are fetched from the database each time the workflow runs. Read-only SQL accepts one SELECT statement with parameter placeholders.</p>
+  </div>;
+}
+
+function DatabaseOutputForm({ value, onBeginEdit, onChange }: { value: Record<string, unknown>; onBeginEdit: () => void;
+  onChange: (v: Record<string, unknown>) => void }) {
+  const [connections, setConnections] = useState<DbConnection[]>([]);
+  const [error, setError] = useState('');
+  useEffect(() => { void engine().request<DbConnection[]>('database.connections.list').then(setConnections)
+    .catch((e) => setError(describe(e))); }, []);
+  const change = (patch: Record<string, unknown>) => { onBeginEdit(); onChange({ ...value, ...patch }); };
+  const connection = connections.find((c) => c.id === value.connection_id);
+  return <div className="section db-output-form">
+    <label>Write-enabled connection<select value={String(value.connection_id ?? '')} onFocus={onBeginEdit}
+      onChange={(e) => change({ connection_id: e.target.value })}>
+      <option value="">Choose a connection</option>{connections.map((c) => <option key={c.id} value={c.id}
+        disabled={!c.allow_writes}>{c.name} ({c.dialect}){c.allow_writes ? '' : ' — read only'}</option>)}
+    </select></label>
+    {connection && !connection.allow_writes && <div className="problem" role="alert">Enable write capability for this connection in Database connections.</div>}
+    <label>Schema<input value={String(value.schema ?? '')} onFocus={onBeginEdit}
+      onChange={(e) => change({ schema: e.target.value || null })} placeholder="Default schema" /></label>
+    <label>Table<input value={String(value.table ?? '')} onFocus={onBeginEdit}
+      onChange={(e) => change({ table: e.target.value })} /></label>
+    <label>Write mode<select value={String(value.mode ?? 'append')} onFocus={onBeginEdit}
+      onChange={(e) => change({ mode: e.target.value })}>
+      <option value="append">Append to existing table</option><option value="create">Create new table</option></select></label>
+    <label>Batch size<input type="number" min={1} value={Number(value.batch_rows ?? 1000)} onFocus={onBeginEdit}
+      onChange={(e) => change({ batch_rows: Number(e.target.value) })} /></label>
+    {error && <div className="problem" role="alert">{error}</div>}
+    <p className="help">Writes run in one transaction and are rolled back on error. The connection must have the database permissions required for this action, and the desktop asks for confirmation on every workflow run.</p>
   </div>;
 }
 

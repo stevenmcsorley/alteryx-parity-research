@@ -103,6 +103,10 @@ def pg_up(cfg):
                   'region varchar(10), credit numeric(10,2), signup_date date, active boolean)')
         c.executemany('INSERT INTO sales.customers VALUES (%s,%s,%s,%s,%s,%s)', customers())
         c.execute('CREATE VIEW sales.active_customers AS SELECT * FROM sales.customers WHERE active')
+        c.execute('CREATE TABLE sales.join_cases (seq integer PRIMARY KEY, k text, amount numeric(8,2))')
+        c.executemany('INSERT INTO sales.join_cases VALUES (%s,%s,%s)',
+                      [(1, 'A', 1.25), (2, 'a', 2.50), (3, None, 3.75), (4, None, 4.00),
+                       (5, 'É', 5.25), (6, 'é', 6.50)])
         c.execute('CREATE TABLE sales.type_matrix (id integer PRIMARY KEY, i16 smallint, i64 bigint, f4 real, '
                   'f8 double precision, dec numeric(12,4), txt text, ts timestamp, tstz timestamptz, '
                   'tm time, bin bytea, flag boolean, uid uuid)')
@@ -121,7 +125,7 @@ def pg_up(cfg):
         c.execute('GRANT USAGE ON SCHEMA sales TO fb_writer')
         c.execute('GRANT SELECT ON ALL TABLES IN SCHEMA sales TO fb_writer')
         c.execute('GRANT USAGE, CREATE ON SCHEMA scratch TO fb_writer')
-        c.execute('GRANT UPDATE ON sales.live_counter TO fb_writer')
+        c.execute('GRANT SELECT, INSERT, UPDATE ON sales.live_counter TO fb_writer')
     conn.close()
     cfg['postgresql'] = {'host': '127.0.0.1', 'port': port, 'database': 'flowbench_test', 'admin_password': admin,
                          'reader': {'user': 'fb_reader', 'password': reader},
@@ -155,6 +159,10 @@ def ms_up(cfg):
     c.execute('CREATE TABLE ops.orders (order_id int PRIMARY KEY, customer_id int NOT NULL, order_date date, '
               'qty smallint, unit_price decimal(9,2), channel nvarchar(10))')
     c.executemany('INSERT INTO ops.orders VALUES (%s,%s,%s,%s,%s,%s)', orders())
+    c.execute('CREATE TABLE ops.join_cases (seq int PRIMARY KEY, k nvarchar(10), amount decimal(8,2))')
+    c.executemany('INSERT INTO ops.join_cases VALUES (%s,%s,%s)',
+                  [(1, 'A', 1.25), (2, 'a', 2.50), (3, None, 3.75), (4, None, 4.00),
+                   (5, 'É', 5.25), (6, 'é', 6.50)])
     c.execute('CREATE TABLE ops.type_matrix (id int PRIMARY KEY, tiny tinyint, big bigint, r real, f float, '
               'd decimal(12,4), nv nvarchar(50), v varchar(20), dt2 datetime2, dto datetimeoffset, tm time, '
               'bin varbinary(10), flag bit, uid uniqueidentifier)')
@@ -174,7 +182,7 @@ def ms_up(cfg):
         c.execute(f'GRANT SELECT ON SCHEMA::ops TO {login}')
     c.execute('GRANT CREATE TABLE TO fb_writer')
     c.execute('GRANT ALTER, INSERT, SELECT ON SCHEMA::scratch TO fb_writer')
-    c.execute('GRANT UPDATE ON ops.live_counter TO fb_writer')
+    c.execute('GRANT SELECT, INSERT, UPDATE ON ops.live_counter TO fb_writer')
     conn.close()
     cfg['sqlserver'] = {'host': '127.0.0.1', 'port': port, 'database': 'flowbench_test', 'admin_password': admin,
                         'reader': {'user': 'fb_reader', 'password': reader},

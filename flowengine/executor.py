@@ -291,7 +291,7 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                  event_time: Callable[[], float] = time.time, listener=None,
                  profile: str | None = None, workers: int = 1, memory_budget: int | None = None,
                  history=None, spill_dir: Path | None = None, batch_rows: int | None = None,
-                 enable_pushdown: bool = True) -> RunResult:
+                 enable_pushdown: bool = True, result_sink=None) -> RunResult:
     """Validate then execute ``doc``. Raises WorkflowValidationError if invalid.
 
     ``retain``: 'all' keeps every output table; 'preview' keeps the first 1000 rows of each;
@@ -350,6 +350,14 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
     upstream = {nid: {u for ups in plan.nodes[nid].inputs.values() for u, _ in ups} for nid in plan.order}
     done: set[str] = set()
     seg_heads = {}
+
+    def capture_browse(nid, table):
+        browse[nid] = table
+        if result_sink is not None:
+            try:
+                result_sink(nid, '(browse)', table)
+            except Exception as e:
+                elog.emit('result-artifact-failed', nid, anchor='(browse)', message=f'{type(e).__name__}: {e}')
     if batch_rows:
         if batch_rows < 1:
             raise ValueError('batch_rows must be >= 1')
@@ -358,7 +366,7 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
 
     def make_ctx(nid):
         return RunContext(nid, base_dir, clock, lambda t, **d: elog.emit(t, nid, **d), cancel_token,
-                          limits=dict(limits or {}), browse_sink=lambda n, t: browse.__setitem__(n, t),
+                          limits=dict(limits or {}), browse_sink=capture_browse,
                           constants=dict(doc.get('constants', {})), profile=prof)
     elog.emit('run-started', engine_version=__version__, workflow_digest=workflow_digest(doc), profile=prof.name,
               node_count=len(plan.order), workers=workers, memory_budget=memory_budget)
@@ -372,7 +380,7 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
         pn = plan.nodes[nid]
         buffered = []
         ctx = RunContext(nid, base_dir, clock, lambda t, **d: buffered.append((t, d)), cancel_token,
-                         limits=dict(limits or {}), browse_sink=lambda n, t: browse.__setitem__(n, t),
+                         limits=dict(limits or {}), browse_sink=capture_browse,
                          constants=dict(doc.get('constants', {})), profile=prof)
         started = time.perf_counter()
         try:
@@ -431,6 +439,12 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                                      'rows': len(result_table), 'transferred_bytes_estimate': transferred,
                                      'digest': result_table.canonical_digest(), 'status': 'succeeded'}
                     database_queries.append(db_metric)
+                    if result_sink is not None:
+                        try:
+                            result_sink(push_head, relation.output_anchor, result_table)
+                        except Exception as e:
+                            elog.emit('result-artifact-failed', push_head, anchor=relation.output_anchor,
+                                      message=f'{type(e).__name__}: {e}')
                     for node_id in members:
                         pn = plan.nodes[node_id]
                         input_rows = {anchor: sum(node_stats.get(u, {}).get('outputs', {}).get(ua, {}).get('rows', 0)
@@ -526,6 +540,12 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                     raise EngineError(f'Kernel returned anchors {sorted(out)}; manifest declares {sorted(declared)}',
                                       node_id=nid, code='internal-error')
                 for anchor, t in out.items():
+                    if result_sink is not None:
+                        try:
+                            result_sink(nid, anchor, t)
+                        except Exception as e:
+                            elog.emit('result-artifact-failed', nid, anchor=anchor,
+                                      message=f'{type(e).__name__}: {e}')
                     expected = plan.schemas.get((nid, anchor))
                     if expected is not None and tuple(expected) != tuple(t.schema):
                         raise EngineError(f'Output {anchor!r} schema differs from statically inferred schema',

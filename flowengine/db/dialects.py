@@ -377,6 +377,17 @@ class Query:
         if self.read_only:
             check_read_only_sql(self.sql)
         self.conn = self.d.connect(read_only=self.read_only)
+        if self.read_only and self.d.name == 'sqlserver':
+            # SQL Server has no session-level READ ONLY transaction mode. Keep the
+            # driver connection in an explicit transaction and unconditionally roll
+            # it back in __exit__; database-user permissions remain the primary guard.
+            try:
+                self.conn.cursor().execute('BEGIN TRANSACTION')
+            except Exception as e:
+                try:
+                    self.conn.close()
+                finally:
+                    raise self._wrap(e) from None
         self._stop = threading.Event()
         self._cancelled = False
         if self.cancel_token is not None:

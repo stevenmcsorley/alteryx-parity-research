@@ -175,6 +175,13 @@ export async function exportText(path: string, text: string): Promise<string> {
   return res.path;
 }
 
+export async function exportRunResult(runId: string, node: string, anchor: string,
+  path: string, format: 'csv' | 'parquet'): Promise<string> {
+  const res = await engine().request<{ path: string }>('run.export', {
+    run_id: runId, node_id: node, anchor, path, format });
+  return res.path;
+}
+
 export function previewToCsv(fields: { name: string }[], rows: (string | null)[][]): string {
   const esc = (v: string | null) => (v === null ? '' : /[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
   return [fields.map((f) => esc(f.name)).join(','), ...rows.map((r) => r.map(esc).join(','))].join('\n') + '\n';

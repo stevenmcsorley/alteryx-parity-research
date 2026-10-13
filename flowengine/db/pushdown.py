@@ -42,6 +42,8 @@ class Relation:
     source: str             # Database Input node id
     steps: list = field(default_factory=list)  # human-readable description of each folded step
     output_anchor: str = 'output'
+    ordered_by: list = field(default_factory=list)
+    foldable: bool = True
 
 
 @dataclass
@@ -249,11 +251,13 @@ def plan_pushdown(plan, profile=None) -> Pushdown:
             continue
         tid = pn.tool.manifest.tool_id
         if tid == 'core.db_input':
-            # An ordered Database Input is a materialized ordering boundary. SQL does not
-            # preserve an ORDER BY through derived tables, and SQL Server rejects that
-            # shape without a paging clause. Leave the source and its consumers local.
-            if pn.config.get('order_by'):
-                fallbacks.append({'node': nid, 'reason': 'ordered Database Input is an execution boundary'})
+            ordered_by = list(pn.config.get('order_by') or [])
+            downstream = consumers.get((nid, 'output'), [])
+            # A join can reproduce explicit input ordering in its final ORDER BY. Other
+            # folds would erase the materialized source order, so keep those local.
+            if ordered_by and (not downstream or any(plan.nodes[n].tool.manifest.tool_id != 'core.join'
+                                                     for n, _ in downstream)):
+                fallbacks.append({'node': nid, 'reason': 'ordered Database Input feeds a non-Join operation'})
                 continue
             try:
                 conn_cfg, d = open_dialect(pn.config['connection_id'])
@@ -262,15 +266,17 @@ def plan_pushdown(plan, profile=None) -> Pushdown:
             schema = plan.schemas.get((nid, 'output'))
             if schema is None:
                 continue
-            sql, params = source_sql(d, pn.config)
+            source_config = dict(pn.config)
+            source_config['order_by'] = []
+            sql, params = source_sql(d, source_config)
             if pn.config.get('max_rows') is not None:
                 sql = d.limit(sql, pn.config['max_rows'])
             rel[nid] = Relation(pn.config['connection_id'], d, sql, list(params), list(schema), [nid], nid,
-                                [f'read {pn.config.get("table") or "query"}'])
+                                [f'read {pn.config.get("table") or "query"}'], ordered_by=ordered_by)
             out_anchor[nid] = 'output'
             continue
         ups = [(a, u, ua) for a, lst in pn.inputs.items() for u, ua in lst]
-        if not ups or not all(u in rel and ua == out_anchor[u] for _, u, ua in ups):
+        if not ups or not all(u in rel and rel[u].foldable and ua == out_anchor[u] for _, u, ua in ups):
             continue
         if any(len(consumers.get((u, ua), [])) != 1 for _, u, ua in ups):
             for _, u, ua in ups:
@@ -294,6 +300,10 @@ def plan_pushdown(plan, profile=None) -> Pushdown:
         if new is None:
             continue
         new.output_anchor = anchor
+        if tid == 'core.join':
+            # The joined output's order is materialized for downstream local kernels;
+            # a derived-table wrapper cannot promise that order in either SQL dialect.
+            new.foldable = False
         for _, u, _ in ups:
             absorbed[u] = nid
             del rel[u]
@@ -390,6 +400,8 @@ def _fold(nid, pn, ups, rel, alias, profile):
             raise NotPushable('inputs come from different connections (joined locally)')
         if cfg['by'] != 'fields' or cfg.get('case_insensitive'):
             raise NotPushable('only case-sensitive joins on key fields are translated')
+        if not lr.ordered_by or not rr.ordered_by:
+            raise NotPushable('Join pushdown requires explicit order_by on both database inputs')
         d = lr.dialect
         out = _local_schema(pn.tool, cfg, {'left': Schema(lr.fields), 'right': Schema(rr.fields)})['joined']
         la, ra = alias(), alias()
@@ -401,18 +413,31 @@ def _fold(nid, pn, ups, rel, alias, profile):
         sources = [(la, n) for n in l_keep] + [(ra, n) for n in r_keep]
         cols = ', '.join(f'{s}.{d.quote(n)} AS {d.quote(f.name)}' for (s, n), f in zip(sources, out))
         lfields = {f.name: f for f in lr.fields}
-        conds, order = [], []
+        rfields = {f.name: f for f in rr.fields}
+        conds, key_order = [], []
         for k in cfg['keys']:
             lc, rc = f'{la}.{d.quote(k["left"])}', f'{ra}.{d.quote(k["right"])}'
-            if lfields[k['left']].type.is_string:
-                conds.append(f'({lc} {d.binary_collation} = {rc} {d.binary_collation} OR ({lc} IS NULL AND {rc} IS NULL))')
-                order.append(f'{lc} {d.binary_collation}')
+            lf, rf = lfields[k['left']], rfields[k['right']]
+            if lf.type.is_string != rf.type.is_string or lf.type.is_numeric != rf.type.is_numeric:
+                raise NotPushable('Join key types are incompatible under local Join rules')
+            if d.name == 'sqlserver' and lf.type.is_string:
+                raise NotPushable('SQL Server string-key ordering differs from the engine code-point ordering')
+            if lf.type.is_string:
+                conds.append(f'({lc} {d.binary_collation} = {rc} {d.binary_collation} OR '
+                             f'({lc} IS NULL AND {rc} IS NULL))')
+                key_order.append(f'{lc} {d.binary_collation}')
             else:
                 conds.append(f'({lc} = {rc} OR ({lc} IS NULL AND {rc} IS NULL))')
-                order.append(lc)
+                key_order.append(lc)
         nulls = ' NULLS FIRST' if d.name == 'postgresql' else ''
+        source_order = []
+        for descriptor in rr.ordered_by:
+            source_order.append(f'{ra}.{d.quote(descriptor["field"])} {"DESC" if descriptor.get("order") == "desc" else "ASC"}')
+        for descriptor in lr.ordered_by:
+            source_order.append(f'{la}.{d.quote(descriptor["field"])} {"DESC" if descriptor.get("order") == "desc" else "ASC"}')
+        order = [f'{k} ASC{nulls}' for k in key_order] + source_order
         sql = (f'SELECT {cols} FROM ({lr.sql}) {la} INNER JOIN ({rr.sql}) {ra} ON {" AND ".join(conds)} '
-               f'ORDER BY {", ".join(o + " ASC" + nulls for o in order)}')
+               f'ORDER BY {", ".join(order)}')
         new = Relation(lr.conn_id, d, sql, lr.params + rr.params, list(out), lr.nodes + rr.nodes + [nid], lr.source,
                        lr.steps + rr.steps + [f'join on {", ".join(k["left"] + "=" + k["right"] for k in cfg["keys"])}'])
         return new, 'joined'

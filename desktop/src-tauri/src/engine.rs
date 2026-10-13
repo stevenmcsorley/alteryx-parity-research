@@ -39,8 +39,17 @@ pub fn engine_root(resource_dir: Option<PathBuf>) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join("..")
 }
 
-pub fn python_command() -> String {
-    std::env::var("FLOWENGINE_PYTHON").unwrap_or_else(|_| "python".to_string())
+pub fn python_command(root: &Path) -> PathBuf {
+    if let Ok(p) = std::env::var("FLOWENGINE_PYTHON") {
+        return PathBuf::from(p);
+    }
+    if let Some(resources) = root.parent() {
+        let bundled = resources.join("runtime").join("python.exe");
+        if bundled.is_file() {
+            return bundled;
+        }
+    }
+    PathBuf::from("python")
 }
 
 /// Parse one stdout line. Returns Some((id, value)) for responses, None + notification otherwise.
@@ -56,10 +65,12 @@ pub fn classify(line: &str) -> Option<Result<(u64, Value), Value>> {
 impl Engine {
     pub fn start(root: &Path, history: &Path, notify: impl Fn(Value) + Send + 'static) -> Engine {
         let pending: Pending = Arc::new(Mutex::new(HashMap::new()));
-        let mut cmd = Command::new(python_command());
+        let python = python_command(root);
+        let mut cmd = Command::new(&python);
         cmd.args(["-m", "flowengine", "serve", "--history"])
             .arg(history)
             .current_dir(root)
+            .env("FLOWENGINE_HOME", history.parent().unwrap_or(root))
             .env("PYTHONIOENCODING", "utf-8")
             .env("PYTHONUNBUFFERED", "1")
             .stdin(Stdio::piped())
@@ -112,8 +123,8 @@ impl Engine {
                 pending,
                 next_id: AtomicU64::new(1),
                 launch_error: Mutex::new(Some(format!(
-                    "Could not start the engine with '{}': {e}. Install Python 3.12 and run 'pip install -r requirements.txt', or set FLOWENGINE_PYTHON.",
-                    python_command()
+                    "Could not start the bundled Flowbench engine with '{}': {e}. Reinstall the application or set FLOWENGINE_PYTHON for development.",
+                    python.display()
                 ))),
             },
         }

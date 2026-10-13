@@ -28,6 +28,23 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - Pushdown manifests/events record executed SQL, redacted bound parameter values, folded operations, duration,
   result rows, estimated transferred bytes and a reproducible output digest. Unsupported SQL failures return to
   local execution; connection and timeout failures remain run failures.
+- Added same-database Join execution tests on PostgreSQL and SQL Server. Join folding requires explicit input
+  ordering and only absorbs the `joined` output when every other output is unused. SQL Server text-key joins
+  remain local because its string ordering does not match Flowbench's Unicode code-point ordering. Duplicate
+  keys, null matching, case-distinct and Unicode keys, column collisions, branch fan-out, and multi-output
+  fallback are compared against local execution.
+- Added engine-side full-result Parquet staging for result outputs and Browse captures. The renderer continues to
+  receive bounded previews; `run.export` streams full CSV from Parquet batches or copies typed Parquet directly.
+  The results panel now offers CSV and Parquet file dialogs. Database Output now has a connection/table/mode
+  editor and continues to require write-enabled connections plus per-run confirmation.
+- Added real DB coverage for least-privilege writes, rollback after a failed batch, authentication failure,
+  PostgreSQL certificate and hostname verification, credential rotation, query timeout, cancellation,
+  terminated connections, 200,000-row batched reads, typed exports, and both-dialect join parity.
+- Added a pinned CRAN R 4.6.0 CI job for the existing R kernel test. R remains an explicit external runtime for
+  end users and is not included in the Windows package.
+- Added a Windows runtime staging script, pinned dependency manifest, managed CPython resource lookup, and a
+  Windows CI installer smoke step for install/launch/reinstall/uninstall with system developer tools removed
+  from `PATH`. This new packaging path is pending its first successful CI run and is not yet verified.
 - Added pinned-major driver constraints and a CI job that provisions and removes isolated database fixtures.
 
 ## Verified evidence
@@ -36,34 +53,33 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - Implemented catalogue kernels: **58**; full-reference-pass entries: **32**; reference-difference entries: **1**.
 - Python: **147 tests passed, 1 skipped** on this machine; the skip is the existing R runtime test because R is
   not installed.
-- Database: **4 separate integration tests passed** against local PostgreSQL 16 and SQL Server 2022. Connection
-  test, metadata and preview succeeded; real PostgreSQL/SQL Server type matrices
-  preserved nulls, Unicode, decimals and binary data; a 41-row PostgreSQL Customers table and
-  120-row SQL Server Orders table were read and joined locally; a new SQL Server row was visible on the next run.
-- TypeScript type-check: passed. Vitest: **10 passed**. Playwright: **10 passed**, including the manager and
-  database extension palette.
+- Database: **12 integration tests passed** against local PostgreSQL 16 and SQL Server 2022 fixtures. This
+  includes pushed/local Filter → Select → Summarize parity on both engines, same-database Join parity where safe,
+  cross-database local Join, reader-role write rejection, Database Output rollback, credential rotation, TLS
+  verification, cancellation, timeout, connection loss, large batched reads and full typed CSV/Parquet export.
+- Desktop TypeScript production build: passed; Vitest: **10 passed**. The actual Tauri desktop acceptance flow
+  using two live database sources has not yet been demonstrated.
+- Playwright: **11 passed** against the real engine, including database connection manager access and extension
+  palette visibility; this is browser-driven UI verification and does not stand in for the Tauri live-database
+  acceptance demonstration.
 - Rust tests were not run because `cargo` is not installed in this environment.
 
 ## Remaining milestone work
 
-- **Database authoring:** initial connection manager and Database Input authoring are implemented. Need real
-  desktop validation against fixture servers, edit-existing-connection credential UX review, and Database Output
-  authoring UX.
-- **Pushdown:** actual PostgreSQL 16 and SQL Server 2022 Filter → Select → Summarize queries are executed by
-  `run_workflow` and compared against local results over fixtures containing Unicode, nulls and decimals. A
-  same-database Join translator exists but has not yet passed differential execution tests. Ordered sources and
-  cross-database joins remain local. Database-native explain-plan inspection, full parity across expressions,
-  branch behavior and broad fault-injection tests remain outstanding.
-- **Integration coverage:** six real-engine tests pass locally, including pushdown/local comparisons for both
-  engines. CI runs real-engine smoke and cross-database tests. Additional required cases remain:
-  auth failures, TLS validation, SQL Server/PostgreSQL type matrices, large streaming, cancellation, timeouts,
-  export correctness and write safeguards.
-- **Installer:** current NSIS package still launches a system Python. Managed runtime bundling, clean-machine
-  installation, installer/uninstaller checks and signing readiness remain outstanding.
-- **R:** pinned R runtime/package environment and real R CI execution remain outstanding.
-- **Results/export and acceptance demo:** Parquet export from the desktop results grid and the full PostgreSQL
-  Customers + SQL Server Orders → Join → Filter → Formula → Summarize → Results Grid → CSV/Parquet workflow have
-  not been demonstrated in the actual desktop app.
+- **Pushdown:** local-vs-pushed Filter/Select/Summarize parity and same-database Join parity are verified for the
+  documented fixtures. Join output branches, SQL Server text-key ordering, unordered sources and cross-database
+  joins intentionally run locally. Native query-plan inspection and broader expression/type conformance remain
+  open.
+- **Integration coverage:** nine categories of failure/security/large-data cases are exercised in real databases,
+  but driver-specific TLS verification on SQL Server, more adversarial cancellation/network cases and broader
+  write permission matrices remain open.
+- **Installer:** managed CPython bundling and clean-runner install/launch/reinstall/uninstall are now wired into
+  Windows CI, but the result is pending. R is not bundled; user machines need a separately installed R 4.6.x
+  runtime (CI pins 4.6.0).
+- **Acceptance demo:** despite working UI editors, live engine export and real-engine workflow tests, the complete
+  PostgreSQL Customers + SQL Server Orders → Join → Filter → Formula → Summarize → Results Grid → CSV/Parquet
+  sequence has not been run in the actual Tauri desktop UI. This milestone remains incomplete until that and the
+  installer verification have reproducible evidence.
 
 No compatibility or coverage claims were changed by this work. E1/E2 profiles and the known Sort collation
 difference remain as recorded in `docs/COVERAGE.md`.

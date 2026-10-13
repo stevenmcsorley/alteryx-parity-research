@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useReactFlow } from '@xyflow/react';
 import { useEditor } from '../state/store';
-import { exportText, previewToCsv } from '../state/engineActions';
+import { exportRunResult } from '../state/engineActions';
 import { ProblemRow } from './Inspector';
 import { notify } from '../ui/toast';
 import { promptPath } from '../ui/dialogs';
@@ -94,12 +94,17 @@ function ResultsGrid() {
   if (!p) return <div className="results-bar"><OutputPicker /><span style={{ color: 'var(--text-3)' }}>No retained output (streamed or failed before producing data).</span></div>;
   const needle = filter.toLowerCase();
   const rows = needle ? p.rows.filter((r) => r.some((v) => v !== null && v.toLowerCase().includes(needle))) : p.rows;
-  const doExport = async () => {
+  const doExport = async (format: 'csv' | 'parquet') => {
     const sel = useEditor.getState().selectedResult!;
-    const path = await promptPath('Export preview rows as CSV', `${useEditor.getState().baseDir}${sep()}${sel.node}_${sel.anchor}.csv`, 'csv');
+    const anchor = sel.anchor === '(browse)' ? '(browse)' : sel.anchor;
+    const ext = format === 'csv' ? 'csv' : 'parquet';
+    const path = await promptPath(`Export complete result as ${ext.toUpperCase()}`,
+      `${useEditor.getState().baseDir}${sep()}${sel.node}_${anchor.replace(/[()]/g, '')}.${ext}`, ext);
     if (!path) return;
     try {
-      notify(`Exported ${p.rows.length} rows to ${await exportText(path, previewToCsv(p.fields, p.rows))}`);
+      const runId = useEditor.getState().run.runId;
+      if (!runId) throw new Error('No completed run is selected.');
+      notify(`Exported ${p.total_rows.toLocaleString()} rows to ${await exportRunResult(runId, sel.node, anchor, path, format)}`);
     } catch (e: any) {
       notify(e.message);
     }
@@ -111,7 +116,8 @@ function ResultsGrid() {
         <span data-testid="result-count">{p.total_rows.toLocaleString()} rows{p.rows.length < p.total_rows ? ` (showing first ${p.rows.length.toLocaleString()})` : ''} · {p.fields.length} fields</span>
         <input type="search" placeholder="Filter rows…" value={filter} onChange={(e) => setFilter(e.target.value)} style={{ width: 180 }} aria-label="Filter rows" />
         <span style={{ flex: 1 }} />
-        <button onClick={doExport} title="Writes the rows shown here; use an Output Data tool to export complete results">Export preview…</button>
+        <button onClick={() => void doExport('csv')} data-testid="export-csv">Export CSV…</button>
+        <button onClick={() => void doExport('parquet')} data-testid="export-parquet">Export Parquet…</button>
       </div>
       <div className="grid-wrap">
         <table className="grid" data-testid="results-grid">

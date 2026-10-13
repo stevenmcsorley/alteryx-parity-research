@@ -26,7 +26,8 @@
       "../../schemas/": "engine/schemas/",
       "../../data/catalog.json": "engine/data/catalog.json",
       "../../data/tool-status.json": "engine/data/tool-status.json",
-      "../../requirements.txt": "engine/requirements.txt"
+      "../../requirements.txt": "engine/requirements.txt",
+      "runtime/": "runtime/"
     },
     "windows": { "nsis": { "installMode": "currentUser" } }
   }

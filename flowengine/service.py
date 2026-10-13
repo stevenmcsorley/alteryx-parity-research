@@ -43,9 +43,15 @@ def _preview(t: Table, n: int, double_text='g15') -> dict:
 
 class EngineService:
     def __init__(self, notify=None, history_path: Path | None = None):
+        import atexit
+        import shutil
+        import uuid
         self.notify = notify or (lambda method, params: None)
         self.runs: dict[str, dict] = {}
         self._lock = threading.Lock()
+        from .runtimes import home
+        self._artifact_root = home() / 'results' / uuid.uuid4().hex
+        atexit.register(shutil.rmtree, self._artifact_root, ignore_errors=True)
         self.history = None
         if history_path:
             from .history import RunHistory
@@ -130,6 +136,8 @@ class EngineService:
             if not run:
                 raise EngineError('Unknown run id', code='bad-request')
             return {'status': run['status'], 'result': run.get('result')}
+        if method == 'run.export':
+            return self._export_result(params)
         if method == 'history.list':
             return self.history.list(int(params.get('limit', 50))) if self.history else []
         if method == 'history.get':
@@ -224,7 +232,7 @@ class EngineService:
         run_id = uuid.uuid4().hex
         token = CancelToken()
         n = int(params.get('preview_rows', 100))
-        entry = {'status': 'running', 'token': token}
+        entry = {'status': 'running', 'token': token, 'artifacts': {}, 'artifact_errors': {}}
         with self._lock:
             self.runs[run_id] = entry
         # validate synchronously so problems are returned to the caller immediately
@@ -239,8 +247,20 @@ class EngineService:
 
         def work():
             try:
+                artifact_dir = self._artifact_root / run_id
+                artifact_dir.mkdir(parents=True, exist_ok=True)
+
+                def capture(node_id, anchor, table):
+                    import hashlib
+                    key = (node_id, anchor)
+                    filename = hashlib.sha256((node_id + '\0' + anchor).encode('utf-8')).hexdigest() + '.parquet'
+                    target = artifact_dir / filename
+                    from .arrow import write_parquet
+                    write_parquet(table, target)
+                    entry['artifacts'][key] = target
+
                 r = run_workflow(params['workflow'], run_id=run_id, cancel_token=token,
-                                 listener=lambda ev: self.notify('run.event', ev), **kw)
+                                 listener=lambda ev: self.notify('run.event', ev), result_sink=capture, **kw)
                 entry['result'] = self._result_payload(r, n)
                 entry['status'] = r.status
             except Exception as e:  # never let a worker thread die silently
@@ -249,6 +269,51 @@ class EngineService:
             self.notify('run.finished', {'run_id': run_id, 'status': entry['status']})
         threading.Thread(target=work, name=f'run-{run_id[:8]}', daemon=True).start()
         return {'run_id': run_id, 'status': 'running'}
+
+    def _export_result(self, params):
+        import csv
+        import os
+        import shutil
+        import uuid
+        from . import arrow
+        from .arrow import pa
+        arrow.require()
+        run = self.runs.get(params.get('run_id'))
+        if not run or run.get('status') == 'running':
+            raise EngineError('Run is not complete or does not exist', code='bad-request')
+        if run.get('status') != 'succeeded':
+            raise EngineError('Only successful workflow results can be exported', code='bad-request')
+        node, anchor = params.get('node_id'), params.get('anchor')
+        source = run.get('artifacts', {}).get((node, anchor))
+        if source is None:
+            raise EngineError('Full result data is unavailable for this output', code='result-unavailable')
+        fmt = str(params.get('format', '')).lower()
+        suffix = {'csv': '.csv', 'parquet': '.parquet'}.get(fmt)
+        target = Path(params.get('path', '')).expanduser().resolve()
+        if not suffix or target.suffix.lower() != suffix:
+            raise EngineError('Export format and file extension must be CSV/.csv or Parquet/.parquet',
+                              code='bad-request')
+        target.parent.mkdir(parents=True, exist_ok=True)
+        temp = target.with_name(f'.{target.name}.{uuid.uuid4().hex}.tmp')
+        try:
+            if fmt == 'parquet':
+                shutil.copyfile(source, temp)
+            else:
+                import pyarrow.parquet as pq
+                from .types import format_value
+                with temp.open('w', encoding='utf-8-sig', newline='') as f:
+                    writer = csv.writer(f, lineterminator='\r\n')
+                    parquet = pq.ParquetFile(source)
+                    writer.writerow(parquet.schema_arrow.names)
+                    for batch in parquet.iter_batches(batch_size=8192):
+                        table = arrow.from_arrow(pa.Table.from_batches([batch]))
+                        for row in table.rows():
+                            writer.writerow(['' if value is None else format_value(value) for value in row])
+            os.replace(temp, target)
+        except BaseException:
+            temp.unlink(missing_ok=True)
+            raise
+        return {'path': str(target), 'format': fmt}
 
     # ------------------------------------------------------------------ JSON-RPC envelope
     def respond(self, line: str) -> str | None:

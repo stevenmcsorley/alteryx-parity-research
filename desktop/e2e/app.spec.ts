@@ -228,4 +228,8 @@ test('database extensions are available and the connection manager opens', async
   await expect(dialog.getByLabel('Database type')).toHaveValue('postgresql');
   await dialog.getByRole('button', { name: 'Close' }).click();
   await expect(dialog).toHaveCount(0);
+  await page.getByTestId('palette-extension-core.db_output').dblclick();
+  await expect(page.getByTestId('inspector')).toContainText('Write-enabled connection');
+  await expect(page.getByTestId('inspector')).toContainText('Append to existing table');
+  await expect(page.getByTestId('inspector')).toContainText('confirmation on every workflow run');
 });
