@@ -74,8 +74,11 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 - **Integration coverage:** nine categories of failure/security/large-data cases are exercised in real databases,
   but driver-specific TLS verification on SQL Server, more adversarial cancellation/network cases and broader
   write permission matrices remain open.
-- **Installer:** managed CPython bundling and clean-runner install/launch/reinstall/uninstall are wired into
-  Windows CI. Installer build and smoke results are still pending. R is not bundled; user machines need a
+- **Installer:** the clean Windows runner successfully built the NSIS installer and installed the app and
+  managed runtime. The smoke test then found that Tauri did not start the engine sidecar under the initial
+  resource-root assumption ([failed clean-runner run 38452070385](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38452070385)).
+  Commit `b8f4740` handles both resource-root layouts and adds a Rust path-discovery regression test; its CI
+  verification is pending. Installer acceptance is not yet passed. R is not bundled; user machines need a
   separately installed R 4.6.x runtime (CI pins 4.6.0).
 - **Acceptance demo:** despite working UI editors, live engine export and real-engine workflow tests, the complete
   PostgreSQL Customers + SQL Server Orders → Join → Filter → Formula → Summarize → Results Grid → CSV/Parquet
