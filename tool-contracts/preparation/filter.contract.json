@@ -197,8 +197,8 @@
       "case_id": "filter-numeric-gt-null",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#filter-numeric-gt-null",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#filter-numeric-gt-null",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 7f90171d94e9eac61e85f215e702dbed243d4e8fdf0bfc03e62467bfa9e1ac37"
       ]
     },
@@ -206,8 +206,8 @@
       "case_id": "filter-string-eq-case",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#filter-string-eq-case",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#filter-string-eq-case",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 9ac41e6163e29c99a8df652eb5127ec4b1d3c7ddd5b44d6727c7376a642607c0"
       ]
     },
@@ -215,8 +215,8 @@
       "case_id": "filter-compound-null",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#filter-compound-null",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#filter-compound-null",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 371c8638135d2c106998cc0794ba7f2e3cb938d7ac94c76eaa5062e8a8919e7e"
       ]
     },
@@ -224,8 +224,8 @@
       "case_id": "filter-date-literal",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#filter-date-literal",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#filter-date-literal",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 8166a6d0c00d8e445289f4c52b42a35079dc864e3b91c0963c453ed5c3ce0ba7"
       ]
     },
@@ -233,8 +233,53 @@
       "case_id": "filter-not-in",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#filter-not-in",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#filter-not-in",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 f57907ea24784f44ab87aab2290a517c40a706bb017107524c3bb32320e2f124"
+      ]
+    },
+    {
+      "case_id": "filter-numeric-gt-null",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#filter-numeric-gt-null",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 7f90171d94e9eac61e85f215e702dbed243d4e8fdf0bfc03e62467bfa9e1ac37"
+      ]
+    },
+    {
+      "case_id": "filter-string-eq-case",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#filter-string-eq-case",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 9ac41e6163e29c99a8df652eb5127ec4b1d3c7ddd5b44d6727c7376a642607c0"
+      ]
+    },
+    {
+      "case_id": "filter-compound-null",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#filter-compound-null",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 371c8638135d2c106998cc0794ba7f2e3cb938d7ac94c76eaa5062e8a8919e7e"
+      ]
+    },
+    {
+      "case_id": "filter-date-literal",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#filter-date-literal",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 8166a6d0c00d8e445289f4c52b42a35079dc864e3b91c0963c453ed5c3ce0ba7"
+      ]
+    },
+    {
+      "case_id": "filter-not-in",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#filter-not-in",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 f57907ea24784f44ab87aab2290a517c40a706bb017107524c3bb32320e2f124"
       ]
     }

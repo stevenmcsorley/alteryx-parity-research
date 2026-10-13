@@ -142,8 +142,8 @@
       "case_id": "sort-multikey-nulls",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#sort-multikey-nulls",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#sort-multikey-nulls",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 3e2c730a67a95a5a01bbc7a2a92db41219a516e0089104bdd6d0f96e9c382aba"
       ]
     },
@@ -151,8 +151,26 @@
       "case_id": "sort-string-case",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#sort-string-case",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#sort-string-case",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 0245c1031ea360d406778f3702009c5a7caf130490d38e4f500766836f91078d"
+      ]
+    },
+    {
+      "case_id": "sort-multikey-nulls",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#sort-multikey-nulls",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 3e2c730a67a95a5a01bbc7a2a92db41219a516e0089104bdd6d0f96e9c382aba"
+      ]
+    },
+    {
+      "case_id": "sort-string-case",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#sort-string-case",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 0245c1031ea360d406778f3702009c5a7caf130490d38e4f500766836f91078d"
       ]
     }

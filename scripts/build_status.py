@@ -140,15 +140,18 @@ def build(check=False):
             obs_by_cid[cid].append(r)
     audit = load_json(ROOT / 'data' / 'public-doc-audit.json', {'pages': []})
     audit_by_url = {p['url']: p for p in audit['pages']}
-    results_files = sorted((ROOT / 'conformance' / 'results').glob('*/results.json'))
-    conf = defaultdict(list)
+    results_files = sorted((ROOT / 'conformance' / 'results').glob('*/*/results.json'))
+    conf = defaultdict(list)       # primary profile (E1, incl. holdout) -> drives verification_status
+    conf_other = defaultdict(list)  # other engine modes, recorded per contract
     conf_builds = []
     for f in results_files:
         doc = json.loads(f.read_text(encoding='utf-8'))
-        conf_builds.append(doc['reference_build'])
+        mode = doc.get('engine_mode', 'e1')
+        conf_builds.append(f"{doc['reference_build']}/{f.parent.name}")
         for r in doc['results']:
-            conf[r['catalog_id']].append({**r, 'build': doc['reference_build'],
-                                          'file': str(f.relative_to(ROOT)).replace('\\', '/')})
+            rec = {**r, 'build': doc['reference_build'], 'mode': f.parent.name,
+                   'file': f.relative_to(ROOT).as_posix()}
+            (conf if mode == 'e1' else conf_other)[r['catalog_id']].append(rec)
     ref_anchor_map = anchor_names_from_cases(CASES)
 
     ledger, changed = [], []
@@ -249,8 +252,8 @@ def build(check=False):
                                   'tests': [t for t, _ in tool_tests]},
             'sources': sources,
             'cases': [{'case_id': c['case_id'], 'status': c['status'],
-                       'evidence': [f"{c['file']}#{c['case_id']}", f"reference build {c['build']}",
-                                    f"config sha256 {c['config_digest']}"]} for c in cases],
+                       'evidence': [f"{c['file']}#{c['case_id']}", f"reference build {c['build']} ({c['mode']})",
+                                    f"config sha256 {c['config_digest']}"]} for c in cases + conf_other.get(cid, [])],
             'unresolved': unresolved,
         }
         path = ROOT / 'tool-contracts' / slug(row['category']) / f"{slug(row['name'])}.contract.json"
@@ -284,6 +287,8 @@ def build(check=False):
                        'independent_tests': contract['independent_tests']['count'],
                        'conformance_cases': len(cases),
                        'conformance_passed': sum(c['status'] == 'passed' for c in cases),
+                       'e2_cases': len(conf_other.get(cid, [])),
+                       'e2_passed': sum(c['status'] == 'passed' for c in conf_other.get(cid, [])),
                        'reference_observed': bool(ref_obs),
                        'anchors_known': bool(inputs or outputs),
                        'external_prerequisites_blocking': blocking})
@@ -316,6 +321,8 @@ def summarize(ledger):
         'reference_observed': sum(l['reference_observed'] for l in ledger),
         'conformance_cases': sum(l['conformance_cases'] for l in ledger),
         'conformance_cases_passed': sum(l['conformance_passed'] for l in ledger),
+        'e2_cases': sum(l['e2_cases'] for l in ledger),
+        'e2_cases_passed': sum(l['e2_passed'] for l in ledger),
         'external_prerequisites_blocking': sum(l['external_prerequisites_blocking'] for l in ledger),
     }
 

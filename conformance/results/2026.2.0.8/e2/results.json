@@ -1,8 +1,11 @@
 {
   "reference_build": "2026.2.0.8",
-  "reference_engine": "AlteryxEngineCmd (E1 engine; RunWithE2=False)",
+  "reference_engine": "AlteryxEngineCmd (E2; RunWithE2=True)",
+  "engine_mode": "e2",
+  "flowengine_profile": "ayx-2026.2-e2",
+  "holdout": false,
   "authorisation": "docs/AUTHORISATION.md",
-  "executed_utc": "2026-10-13T09:44:38+00:00",
+  "executed_utc": "2026-10-13T10:05:05+00:00",
   "flowengine_clock": "2026-01-15T09:30:00",
   "limits": [
     "CSV output cannot distinguish null from empty string",
@@ -394,7 +397,7 @@
       "ours": {
         "status": "succeeded",
         "digests": {
-          "output": "834b07f23051ed001a7b29c11c94e64b62d527d496f4e26a2731c61a7a9e6543"
+          "output": "88457810606ceec5adcf9313570dcf63425f8205ab6f6e30f46b8b736b1d0d87"
         }
       },
       "reference": {
@@ -403,7 +406,7 @@
         "warnings": [],
         "messages": [],
         "digests": {
-          "output": "834b07f23051ed001a7b29c11c94e64b62d527d496f4e26a2731c61a7a9e6543"
+          "output": "88457810606ceec5adcf9313570dcf63425f8205ab6f6e30f46b8b736b1d0d87"
         },
         "observed": null
       }
@@ -429,8 +432,8 @@
         "exit_code": 1,
         "errors": [],
         "warnings": [
-          "Warning - ToolId 900: Divide by 0 error on record #1 in field q",
-          "Warning - ToolId 900: Divide by 0 error on record #2 in field q"
+          "Warning - ToolId 900: Divide By 0 Record #1 in field q",
+          "Warning - ToolId 900: Divide By 0 Record #2 in field q"
         ],
         "messages": [],
         "digests": {
@@ -729,7 +732,7 @@
       "description": "first N per group",
       "status": "passed",
       "differences": [],
-      "config_digest": "6ecd22cfa3adff048dcfb3e00191b93fb987888c0738a8ff06e02c7d4adfc9aa",
+      "config_digest": "477a2f363bb6e98ee0ed639304861bbf53eb977149e822f48270087f4de74111",
       "comparison_rule": {
         "expect": "match",
         "ordered": true
@@ -748,7 +751,7 @@
           "ToolId 900: A total of 4 were output in 4 groups"
         ],
         "digests": {
-          "output": "eca3cd480b3ff15ccc05d46c32c64a6301b2707635616541e7cb967251fc34b1"
+          "output": "00bfd4ddeddcc317dbd2f5912f6b570fbc116b27daf35e3f2a3517219d6ea3f4"
         },
         "observed": null
       }
@@ -806,7 +809,7 @@
           "ToolId 900: 6 records were summarized to 3 groups"
         ],
         "digests": {
-          "output": "54a46013e5cc1e6238f5112bd9bbf641fb62a0ba2b363dee4f0101f759db5527"
+          "output": "eee72c7fd1ff5a04cf36957887f7bb4f325af0b0f863cfa689e36285807b207d"
         },
         "observed": null
       }
@@ -836,7 +839,7 @@
           "ToolId 900: 6 records were summarized to 3 groups"
         ],
         "digests": {
-          "output": "143d18265105f66242e4b9902fa93f2724f0cc2632800708f9a332036a366b63"
+          "output": "f2e4941720043aec900d77d686ca7965da49b24292bd3419cd54fd5345b5287d"
         },
         "observed": null
       }
@@ -856,7 +859,7 @@
       "ours": {
         "status": "succeeded",
         "digests": {
-          "output": "19f3ab67e837aa362c054153e41eb6037b1474e08bd39e8b2e9ea420e0d94e4c"
+          "output": "6cd4bcb614439e3703dbe506681ff5bea250ead80eed4b66dd919d0b6d37434b"
         }
       },
       "reference": {
@@ -867,7 +870,7 @@
           "ToolId 900: 6 records were summarized to 3 groups"
         ],
         "digests": {
-          "output": "19f3ab67e837aa362c054153e41eb6037b1474e08bd39e8b2e9ea420e0d94e4c"
+          "output": "72798f890545cd750ac779c3c757dfce94594a3bb2a4ed0f139cc18398991f9b"
         },
         "observed": null
       }
@@ -929,7 +932,7 @@
           "ToolId 900: 5 records were joined with 2 un-joined left records and 1 un-joined right records"
         ],
         "digests": {
-          "joined": "5d5b8cf81b1f997a2bc417d4c78f15d17ae7eeae7ba17b91e95a8474be7d6417",
+          "joined": "8c86eefc4d4082cdeaf2d82487e7d1c8600b05b58a93099130900ddd7ed398f0",
           "left_unjoined": "720bcf6e45ad54ff9194f55bca08ffab811bd072df0439f760def931c43a8166",
           "right_unjoined": "e4d72dcf950321927a14f3e2b6462364f54b07180234950c00f9ffbeecdd6464"
         },
@@ -1085,7 +1088,7 @@
         "warnings": [],
         "messages": [],
         "digests": {
-          "output": "c1eccdf94f8e7961feb05d4d58fdd2a109d56da21e4f2c3c333ecf5e7f28c2eb"
+          "output": "8bac4f9776b76063112973bed23698e5a1ba70462e28a6b48e63cfcf6f3ddcbf"
         },
         "observed": null
       }
@@ -1141,7 +1144,7 @@
         "warnings": [],
         "messages": [],
         "digests": {
-          "output": "4b4d4fd3efc12cade56ca87ab3518a1c5baf94eed60025c377ee7a8f2bcbc4d0"
+          "output": "acd5e45a3bd9a81579a5139b6ba530be72a458f84993d4d827ebf4b17fc28684"
         },
         "observed": null
       }
@@ -1429,8 +1432,8 @@
           "ToolId 900: 4 records were joined with 2 un-joined left records and 2 un-joined right records"
         ],
         "digests": {
-          "joined": "9175a546969af6365449cf9327ad7e8471951ef89c31ef54437fb68adbce141e",
-          "left_unjoined": "d37142a7d58c438dbbb9028fc2982009a32f5b369e16cea157ea11165759e371",
+          "joined": "a6f53b8275fb1d80aa20fa97c4182761acb935210142ba284e12bff59dfd5fe7",
+          "left_unjoined": "9d8b110301422b5809b497a847b42f52ce67e41cd5d9b1d426ee1428847da66c",
           "right_unjoined": "0d4da28a33cb9975ceaca7d7d950d02eb389d0b4f714224c281655fc6258fb79"
         },
         "observed": null

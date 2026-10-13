@@ -210,8 +210,9 @@ def parse_datetime(text: str) -> _dt.datetime:
         raise CastFailure(f'{text!r}: {e}') from None
 
 
-def format_value(value) -> str | None:
-    """Canonical text rendering used by CSV output and string conversion."""
+def format_value(value, double_text: str = 'g15') -> str | None:
+    """Canonical text rendering used by CSV output and string conversion.
+    ``double_text`` comes from the compatibility profile ('g15' or 'shortest')."""
     if value is None:
         return None
     if isinstance(value, bool):
@@ -223,7 +224,7 @@ def format_value(value) -> str | None:
             return str(int(value))
         # 15 significant digits, as the reference renders doubles [ref:formula-rounding,
         # summarize-statistics]; exponent form beyond that range is engine policy (unverified)
-        return format(value, '.15g')
+        return repr(value) if double_text == 'shortest' else format(value, '.15g')
     if isinstance(value, Decimal):
         return format(value, 'f')
     if isinstance(value, _dt.datetime):

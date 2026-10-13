@@ -136,8 +136,17 @@
       "case_id": "transpose-basic",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#transpose-basic",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#transpose-basic",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 cc1fad3b949cb018b756f18eaad7a4ce92e18651d1321aa391d7527e496c2cb4"
+      ]
+    },
+    {
+      "case_id": "transpose-basic",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#transpose-basic",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 cc1fad3b949cb018b756f18eaad7a4ce92e18651d1321aa391d7527e496c2cb4"
       ]
     }

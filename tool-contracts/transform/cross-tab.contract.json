@@ -148,8 +148,17 @@
       "case_id": "crosstab-sum",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#crosstab-sum",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#crosstab-sum",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 533d1ebd0ee1b38a54058a06d8880cc954829e239b3583fc31da15b39a9fbce0"
+      ]
+    },
+    {
+      "case_id": "crosstab-sum",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#crosstab-sum",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 533d1ebd0ee1b38a54058a06d8880cc954829e239b3583fc31da15b39a9fbce0"
       ]
     }

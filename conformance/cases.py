@@ -163,7 +163,7 @@ for mode, n, ours, cid in [('First', 2, ('first', 2), 'sample-first'), ('Last', 
 case('sample-first-grouped', 'preparation:sample', 'first N per group', {'input': PEOPLE}, 'core.sample',
      {'mode': 'first', 'n': 1, 'group_by': ['region']},
      ref('Sample', '<Mode>First</Mode><N>1</N><GroupFields orderChanged="False">'
-         + fields_xml('Field', ['region']) + '</GroupFields>'), {'output': 'Output'})
+         + '<Field name="region" />' + '</GroupFields>'), {'output': 'Output'})
 case('record-id-default', 'preparation:record-id', 'Int32 ids starting at 10, first position', {'input': SALES},
      'core.record_id', {'field_name': 'RID', 'start': 10, 'type': 'int32'},
      ref('RecordID', '<FieldName>RID</FieldName><StartValue>10</StartValue><FieldType>Int32</FieldType>'

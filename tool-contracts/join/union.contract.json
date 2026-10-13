@@ -149,8 +149,17 @@
       "case_id": "union-by-name-missing",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#union-by-name-missing",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#union-by-name-missing",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 beb3161b7cc20857ab65be232969d84b27a6d9c8ee2883e870caf6442e69a072"
+      ]
+    },
+    {
+      "case_id": "union-by-name-missing",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#union-by-name-missing",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 beb3161b7cc20857ab65be232969d84b27a6d9c8ee2883e870caf6442e69a072"
       ]
     }

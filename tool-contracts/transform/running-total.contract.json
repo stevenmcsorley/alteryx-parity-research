@@ -127,8 +127,17 @@
       "case_id": "running-total-grouped",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#running-total-grouped",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#running-total-grouped",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 12fb3a3ac2a0b6960caa11ddf11d2f89afd1e6b306fa715064fb75b8934f4b6d"
+      ]
+    },
+    {
+      "case_id": "running-total-grouped",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#running-total-grouped",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 12fb3a3ac2a0b6960caa11ddf11d2f89afd1e6b306fa715064fb75b8934f4b6d"
       ]
     }

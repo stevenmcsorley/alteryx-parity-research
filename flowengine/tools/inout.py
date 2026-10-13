@@ -266,8 +266,9 @@ class OutputData(Tool):
                     if cfg['write_header']:
                         w.writerow(table.schema.names)
                     null = cfg['null_text']
+                    dt = ctx.profile.double_text if ctx.profile else 'g15'
                     for i, r in enumerate(table.rows()):
-                        w.writerow([null if v is None else format_value(v) for v in r])
+                        w.writerow([null if v is None else format_value(v, dt) for v in r])
                         if i % 50000 == 0:
                             ctx.check_cancelled()
             os.replace(tmp, path)

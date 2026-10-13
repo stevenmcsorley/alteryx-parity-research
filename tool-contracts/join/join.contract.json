@@ -205,8 +205,8 @@
       "case_id": "join-many-to-many-nulls",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#join-many-to-many-nulls",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#join-many-to-many-nulls",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 e66c09fa3d6bd78b654ca9feff6631741edf2a845a17d12e731702942eb1fb89"
       ]
     },
@@ -214,8 +214,8 @@
       "case_id": "join-by-position",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#join-by-position",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#join-by-position",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 cac542609570adb318c4b091358f0f29ff732bbe8fab02f74d839fae50b9f49e"
       ]
     },
@@ -223,8 +223,8 @@
       "case_id": "join-string-case",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#join-string-case",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#join-string-case",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 052655d64b521eaa5c166f8d7817c11581716bc41298cb7945852b2dc321a92a"
       ]
     },
@@ -232,8 +232,44 @@
       "case_id": "probe-join-unjoined-order",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#probe-join-unjoined-order",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#probe-join-unjoined-order",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 e93d9850c0f8a09671dd53ddae9ce46f9b256cadc4077969f0d5733477314cae"
+      ]
+    },
+    {
+      "case_id": "join-many-to-many-nulls",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#join-many-to-many-nulls",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 e66c09fa3d6bd78b654ca9feff6631741edf2a845a17d12e731702942eb1fb89"
+      ]
+    },
+    {
+      "case_id": "join-by-position",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#join-by-position",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 cac542609570adb318c4b091358f0f29ff732bbe8fab02f74d839fae50b9f49e"
+      ]
+    },
+    {
+      "case_id": "join-string-case",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#join-string-case",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 052655d64b521eaa5c166f8d7817c11581716bc41298cb7945852b2dc321a92a"
+      ]
+    },
+    {
+      "case_id": "probe-join-unjoined-order",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-join-unjoined-order",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 e93d9850c0f8a09671dd53ddae9ce46f9b256cadc4077969f0d5733477314cae"
       ]
     }

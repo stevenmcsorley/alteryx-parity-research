@@ -142,8 +142,8 @@
       "case_id": "unique-case-null",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#unique-case-null",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#unique-case-null",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 988bf5ea5203ee0e03fbe9b2be34767fc6fb8fec3151b9464948fa0c5a69f10f"
       ]
     },
@@ -151,8 +151,26 @@
       "case_id": "probe-unique-order",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#probe-unique-order",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#probe-unique-order",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 6ff193ac1a1fd7cebca4b78c19ebc5d935a1c4c653c3c47e6407a84dd53958f1"
+      ]
+    },
+    {
+      "case_id": "unique-case-null",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#unique-case-null",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 988bf5ea5203ee0e03fbe9b2be34767fc6fb8fec3151b9464948fa0c5a69f10f"
+      ]
+    },
+    {
+      "case_id": "probe-unique-order",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-unique-order",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 6ff193ac1a1fd7cebca4b78c19ebc5d935a1c4c653c3c47e6407a84dd53958f1"
       ]
     }

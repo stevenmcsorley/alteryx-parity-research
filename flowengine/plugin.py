@@ -99,6 +99,7 @@ class RunContext:
     limits: dict = field(default_factory=dict)
     browse_sink: Callable[[str, Table], None] | None = None
     constants: dict = field(default_factory=dict)
+    profile: Any = None  # flowengine.profiles.Profile
 
     def warn(self, message: str, **data):
         self.emit('warning', message=message, **data)

@@ -5,7 +5,8 @@
     "tests_failed": 0
   },
   "conformance_builds": [
-    "2026.2.0.8"
+    "2026.2.0.8/e1",
+    "2026.2.0.8/e2"
   ],
   "totals": {
     "catalogue_entries": 323,
@@ -22,6 +23,8 @@
     "reference_observed": 127,
     "conformance_cases": 48,
     "conformance_cases_passed": 48,
+    "e2_cases": 48,
+    "e2_cases_passed": 48,
     "external_prerequisites_blocking": 78
   },
   "tools": [
@@ -35,6 +38,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -49,6 +54,8 @@
       "independent_tests": 7,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -63,6 +70,8 @@
       "independent_tests": 1,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -77,6 +86,8 @@
       "independent_tests": 1,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -91,6 +102,8 @@
       "independent_tests": 7,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -105,6 +118,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -119,6 +134,8 @@
       "independent_tests": 3,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -133,6 +150,8 @@
       "independent_tests": 41,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -147,6 +166,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -161,6 +182,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -175,6 +198,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -189,6 +214,8 @@
       "independent_tests": 3,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -203,6 +230,8 @@
       "independent_tests": 7,
       "conformance_cases": 5,
       "conformance_passed": 5,
+      "e2_cases": 5,
+      "e2_passed": 5,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -217,6 +246,8 @@
       "independent_tests": 6,
       "conformance_cases": 12,
       "conformance_passed": 12,
+      "e2_cases": 12,
+      "e2_passed": 12,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -231,6 +262,8 @@
       "independent_tests": 1,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -245,6 +278,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -259,6 +294,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -273,6 +310,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -287,6 +326,8 @@
       "independent_tests": 1,
       "conformance_cases": 1,
       "conformance_passed": 1,
+      "e2_cases": 1,
+      "e2_passed": 1,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -301,6 +342,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -315,6 +358,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -329,6 +374,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -343,6 +390,8 @@
       "independent_tests": 1,
       "conformance_cases": 1,
       "conformance_passed": 1,
+      "e2_cases": 1,
+      "e2_passed": 1,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -357,6 +406,8 @@
       "independent_tests": 2,
       "conformance_cases": 6,
       "conformance_passed": 6,
+      "e2_cases": 6,
+      "e2_passed": 6,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -371,6 +422,8 @@
       "independent_tests": 4,
       "conformance_cases": 2,
       "conformance_passed": 2,
+      "e2_cases": 2,
+      "e2_passed": 2,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -385,6 +438,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -399,6 +454,8 @@
       "independent_tests": 6,
       "conformance_cases": 2,
       "conformance_passed": 2,
+      "e2_cases": 2,
+      "e2_passed": 2,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -413,6 +470,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -427,6 +486,8 @@
       "independent_tests": 4,
       "conformance_cases": 2,
       "conformance_passed": 2,
+      "e2_cases": 2,
+      "e2_passed": 2,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -441,6 +502,8 @@
       "independent_tests": 1,
       "conformance_cases": 1,
       "conformance_passed": 1,
+      "e2_cases": 1,
+      "e2_passed": 1,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -455,6 +518,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -469,6 +534,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -483,6 +550,8 @@
       "independent_tests": 6,
       "conformance_cases": 4,
       "conformance_passed": 4,
+      "e2_cases": 4,
+      "e2_passed": 4,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -497,6 +566,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -511,6 +582,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -525,6 +598,8 @@
       "independent_tests": 2,
       "conformance_cases": 1,
       "conformance_passed": 1,
+      "e2_cases": 1,
+      "e2_passed": 1,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -539,6 +614,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -553,6 +630,8 @@
       "independent_tests": 1,
       "conformance_cases": 3,
       "conformance_passed": 3,
+      "e2_cases": 3,
+      "e2_passed": 3,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -567,6 +646,8 @@
       "independent_tests": 1,
       "conformance_cases": 1,
       "conformance_passed": 1,
+      "e2_cases": 1,
+      "e2_passed": 1,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -581,6 +662,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -595,6 +678,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -609,6 +694,8 @@
       "independent_tests": 6,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -623,6 +710,8 @@
       "independent_tests": 1,
       "conformance_cases": 1,
       "conformance_passed": 1,
+      "e2_cases": 1,
+      "e2_passed": 1,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -637,6 +726,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -651,6 +742,8 @@
       "independent_tests": 1,
       "conformance_cases": 1,
       "conformance_passed": 1,
+      "e2_cases": 1,
+      "e2_passed": 1,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -665,6 +758,8 @@
       "independent_tests": 5,
       "conformance_cases": 4,
       "conformance_passed": 4,
+      "e2_cases": 4,
+      "e2_passed": 4,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -679,6 +774,8 @@
       "independent_tests": 1,
       "conformance_cases": 1,
       "conformance_passed": 1,
+      "e2_cases": 1,
+      "e2_passed": 1,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -693,6 +790,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -707,6 +806,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -721,6 +822,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -735,6 +838,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -749,6 +854,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -763,6 +870,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -777,6 +886,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -791,6 +902,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -805,6 +918,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -819,6 +934,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -833,6 +950,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -847,6 +966,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -861,6 +982,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -875,6 +998,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -889,6 +1014,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -903,6 +1030,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -917,6 +1046,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -931,6 +1062,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -945,6 +1078,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -959,6 +1094,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -973,6 +1110,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -987,6 +1126,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1001,6 +1142,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1015,6 +1158,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1029,6 +1174,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1043,6 +1190,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1057,6 +1206,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1071,6 +1222,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1085,6 +1238,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1099,6 +1254,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1113,6 +1270,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1127,6 +1286,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1141,6 +1302,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1155,6 +1318,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1169,6 +1334,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1183,6 +1350,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1197,6 +1366,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1211,6 +1382,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1225,6 +1398,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1239,6 +1414,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1253,6 +1430,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1267,6 +1446,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1281,6 +1462,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1295,6 +1478,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1309,6 +1494,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1323,6 +1510,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1337,6 +1526,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1351,6 +1542,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1365,6 +1558,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1379,6 +1574,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1393,6 +1590,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1407,6 +1606,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1421,6 +1622,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1435,6 +1638,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1449,6 +1654,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1463,6 +1670,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1477,6 +1686,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1491,6 +1702,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1505,6 +1718,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1519,6 +1734,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1533,6 +1750,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1547,6 +1766,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1561,6 +1782,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1575,6 +1798,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1589,6 +1814,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1603,6 +1830,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1617,6 +1846,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1631,6 +1862,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1645,6 +1878,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1659,6 +1894,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1673,6 +1910,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1687,6 +1926,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1701,6 +1942,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1715,6 +1958,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1729,6 +1974,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1743,6 +1990,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1757,6 +2006,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1771,6 +2022,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1785,6 +2038,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1799,6 +2054,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1813,6 +2070,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1827,6 +2086,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1841,6 +2102,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1855,6 +2118,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1869,6 +2134,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1883,6 +2150,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1897,6 +2166,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1911,6 +2182,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1925,6 +2198,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1939,6 +2214,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1953,6 +2230,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1967,6 +2246,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -1981,6 +2262,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -1995,6 +2278,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2009,6 +2294,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2023,6 +2310,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2037,6 +2326,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2051,6 +2342,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2065,6 +2358,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2079,6 +2374,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2093,6 +2390,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2107,6 +2406,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2121,6 +2422,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2135,6 +2438,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2149,6 +2454,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2163,6 +2470,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2177,6 +2486,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2191,6 +2502,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2205,6 +2518,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2219,6 +2534,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2233,6 +2550,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2247,6 +2566,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2261,6 +2582,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2275,6 +2598,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2289,6 +2614,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2303,6 +2630,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2317,6 +2646,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2331,6 +2662,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2345,6 +2678,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2359,6 +2694,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2373,6 +2710,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2387,6 +2726,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2401,6 +2742,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2415,6 +2758,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2429,6 +2774,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2443,6 +2790,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2457,6 +2806,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2471,6 +2822,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2485,6 +2838,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2499,6 +2854,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -2513,6 +2870,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -2527,6 +2886,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2541,6 +2902,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2555,6 +2918,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -2569,6 +2934,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2583,6 +2950,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2597,6 +2966,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2611,6 +2982,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2625,6 +2998,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2639,6 +3014,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2653,6 +3030,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2667,6 +3046,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2681,6 +3062,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2695,6 +3078,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2709,6 +3094,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2723,6 +3110,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2737,6 +3126,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2751,6 +3142,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2765,6 +3158,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2779,6 +3174,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2793,6 +3190,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2807,6 +3206,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2821,6 +3222,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2835,6 +3238,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2849,6 +3254,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2863,6 +3270,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2877,6 +3286,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2891,6 +3302,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2905,6 +3318,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2919,6 +3334,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2933,6 +3350,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2947,6 +3366,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2961,6 +3382,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2975,6 +3398,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -2989,6 +3414,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3003,6 +3430,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3017,6 +3446,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3031,6 +3462,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3045,6 +3478,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3059,6 +3494,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3073,6 +3510,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3087,6 +3526,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3101,6 +3542,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3115,6 +3558,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3129,6 +3574,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3143,6 +3590,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -3157,6 +3606,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3171,6 +3622,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -3185,6 +3638,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -3199,6 +3654,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3213,6 +3670,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3227,6 +3686,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3241,6 +3702,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3255,6 +3718,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3269,6 +3734,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3283,6 +3750,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3297,6 +3766,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3311,6 +3782,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3325,6 +3798,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3339,6 +3814,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3353,6 +3830,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3367,6 +3846,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3381,6 +3862,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3395,6 +3878,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3409,6 +3894,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -3423,6 +3910,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -3437,6 +3926,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -3451,6 +3942,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -3465,6 +3958,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -3479,6 +3974,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -3493,6 +3990,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -3507,6 +4006,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3521,6 +4022,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3535,6 +4038,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3549,6 +4054,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3563,6 +4070,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3577,6 +4086,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3591,6 +4102,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3605,6 +4118,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3619,6 +4134,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3633,6 +4150,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3647,6 +4166,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3661,6 +4182,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3675,6 +4198,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3689,6 +4214,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3703,6 +4230,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3717,6 +4246,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3731,6 +4262,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3745,6 +4278,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3759,6 +4294,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3773,6 +4310,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -3787,6 +4326,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3801,6 +4342,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3815,6 +4358,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3829,6 +4374,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -3843,6 +4390,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3857,6 +4406,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3871,6 +4422,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3885,6 +4438,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3899,6 +4454,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3913,6 +4470,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -3927,6 +4486,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -3941,6 +4502,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -3955,6 +4518,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3969,6 +4534,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -3983,6 +4550,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -3997,6 +4566,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4011,6 +4582,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -4025,6 +4598,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4039,6 +4614,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -4053,6 +4630,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4067,6 +4646,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4081,6 +4662,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -4095,6 +4678,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -4109,6 +4694,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -4123,6 +4710,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -4137,6 +4726,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -4151,6 +4742,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false
@@ -4165,6 +4758,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4179,6 +4774,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4193,6 +4790,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4207,6 +4806,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4221,6 +4822,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4235,6 +4838,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4249,6 +4854,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4263,6 +4870,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4277,6 +4886,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4291,6 +4902,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4305,6 +4918,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4319,6 +4934,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4333,6 +4950,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4347,6 +4966,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4361,6 +4982,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4375,6 +4998,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4389,6 +5014,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4403,6 +5030,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": false
@@ -4417,6 +5046,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -4431,6 +5062,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -4445,6 +5078,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -4459,6 +5094,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -4473,6 +5110,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": true,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -4487,6 +5126,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": true,
       "external_prerequisites_blocking": true
@@ -4501,6 +5142,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -4515,6 +5158,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -4529,6 +5174,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": true
@@ -4543,6 +5190,8 @@
       "independent_tests": 0,
       "conformance_cases": 0,
       "conformance_passed": 0,
+      "e2_cases": 0,
+      "e2_passed": 0,
       "reference_observed": false,
       "anchors_known": false,
       "external_prerequisites_blocking": false

@@ -192,8 +192,8 @@
       "case_id": "summarize-basic",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#summarize-basic",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#summarize-basic",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 2693f7456032e7c41a215869f45afd7acfb59b05da02722db15bd712bbaaecf5"
       ]
     },
@@ -201,8 +201,8 @@
       "case_id": "summarize-text-and-order",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#summarize-text-and-order",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#summarize-text-and-order",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 aceccd5503878a3e25b2c8bda0e18cd72c8771d2d5e8fb8d7442b14f7d6c13b4"
       ]
     },
@@ -210,8 +210,8 @@
       "case_id": "summarize-statistics",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#summarize-statistics",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#summarize-statistics",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 304e946c84400dcd7121eb2902b41f12702db54e590a48c25f4739784a2e68bc"
       ]
     },
@@ -219,8 +219,44 @@
       "case_id": "summarize-no-groupby",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#summarize-no-groupby",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#summarize-no-groupby",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 7b22c41cb4c99b046194b5b38d0e4b0e3848901dcedeb0bb9395d858ab2fb285"
+      ]
+    },
+    {
+      "case_id": "summarize-basic",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#summarize-basic",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 2693f7456032e7c41a215869f45afd7acfb59b05da02722db15bd712bbaaecf5"
+      ]
+    },
+    {
+      "case_id": "summarize-text-and-order",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#summarize-text-and-order",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 aceccd5503878a3e25b2c8bda0e18cd72c8771d2d5e8fb8d7442b14f7d6c13b4"
+      ]
+    },
+    {
+      "case_id": "summarize-statistics",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#summarize-statistics",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 304e946c84400dcd7121eb2902b41f12702db54e590a48c25f4739784a2e68bc"
+      ]
+    },
+    {
+      "case_id": "summarize-no-groupby",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#summarize-no-groupby",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 7b22c41cb4c99b046194b5b38d0e4b0e3848901dcedeb0bb9395d858ab2fb285"
       ]
     }

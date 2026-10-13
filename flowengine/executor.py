@@ -91,7 +91,7 @@ class Plan:
 
 
 def plan_workflow(doc: dict, registry: Registry | None = None, *, base_dir: Path | None = None,
-                  infer_schemas: bool = True) -> tuple[Plan | None, list[dict]]:
+                  infer_schemas: bool = True, profile=None) -> tuple[Plan | None, list[dict]]:
     """Validate a document and build an execution plan. Returns (plan, problems)."""
     registry = registry or default_registry()
     problems = list(_schema_problems(doc))
@@ -192,11 +192,12 @@ def plan_workflow(doc: dict, registry: Registry | None = None, *, base_dir: Path
     if problems:
         return plan, problems
     if infer_schemas:
-        _infer(plan, base_dir or Path.cwd(), problems)
+        from .profiles import get_profile
+        _infer(plan, base_dir or Path.cwd(), problems, profile or get_profile(doc.get('metadata', {}).get('profile')))
     return plan, problems
 
 
-def _infer(plan: Plan, base_dir: Path, problems: list):
+def _infer(plan: Plan, base_dir: Path, problems: list, profile=None):
     """Static schema propagation; stops at nodes whose schema needs runtime data."""
     events = []
     for nid in plan.order:
@@ -214,7 +215,7 @@ def _infer(plan: Plan, base_dir: Path, problems: list):
         if unknown:
             continue
         ctx = RunContext(nid, base_dir, _dt.datetime.now, lambda *a, **k: events.append((a, k)), CancelToken(),
-                         dry_run=True)
+                         dry_run=True, profile=profile)
         try:
             out = pn.tool.infer(ctx, pn.config, ins)
         except (SchemaError, ConfigError, ExpressionError) as e:
@@ -284,7 +285,8 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                  clock: Callable[[], _dt.datetime] | None = None, retain: str = 'all',
                  log_path: Path | None = None, cancel_token: CancelToken | None = None,
                  limits: dict | None = None, run_id: str | None = None,
-                 event_time: Callable[[], float] = time.time, listener=None) -> RunResult:
+                 event_time: Callable[[], float] = time.time, listener=None,
+                 profile: str | None = None) -> RunResult:
     """Validate then execute ``doc``. Raises WorkflowValidationError if invalid.
 
     ``retain``: 'all' keeps every output table, 'none' keeps only Browse captures.
@@ -292,9 +294,11 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
     """
     if retain not in ('all', 'none'):
         raise ValueError("retain must be 'all' or 'none'")
+    from .profiles import get_profile
+    prof = get_profile(profile or doc.get('metadata', {}).get('profile'))
     registry = registry or default_registry()
     base_dir = Path(base_dir).resolve()
-    plan, problems = plan_workflow(doc, registry, base_dir=base_dir)
+    plan, problems = plan_workflow(doc, registry, base_dir=base_dir, profile=prof)
     if problems:
         raise WorkflowValidationError(f'Workflow has {len(problems)} problem(s): '
                                       + '; '.join(f"[{p.get('node_id') or '-'}] {p['message']}" for p in problems[:5]),
@@ -309,7 +313,7 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
     browse: dict[str, Table] = {}
     node_stats: dict[str, dict] = {}
     status, error = 'succeeded', None
-    elog.emit('run-started', engine_version=__version__, workflow_digest=workflow_digest(doc),
+    elog.emit('run-started', engine_version=__version__, workflow_digest=workflow_digest(doc), profile=prof.name,
               node_count=len(plan.order))
     try:
         for idx, nid in enumerate(plan.order):
@@ -325,7 +329,7 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                 inputs[anchor] = tabs if pn.tool.manifest.input(anchor).multiple else tabs[0]
             ctx = RunContext(nid, base_dir, clock, lambda t, **d: elog.emit(t, nid, **d), cancel_token,
                              limits=dict(limits or {}), browse_sink=lambda n, t: browse.__setitem__(n, t),
-                             constants=dict(doc.get('constants', {})))
+                             constants=dict(doc.get('constants', {})), profile=prof)
             in_rows = {a: (sum(len(t) for t in v) if isinstance(v, list) else len(v)) for a, v in inputs.items()}
             elog.emit('node-started', nid, tool=pn.tool.manifest.tool_id, tool_version=pn.tool.manifest.version,
                       input_rows=in_rows)
@@ -377,7 +381,7 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
         elog.close()
     manifest = {
         'run_id': run_id, 'status': status, 'engine': 'flowengine', 'engine_version': __version__,
-        'python': platform.python_version(), 'workflow_digest': workflow_digest(doc),
+        'python': platform.python_version(), 'workflow_digest': workflow_digest(doc), 'profile': prof.to_dict(),
         'nodes': node_stats, 'error': error,
         'warnings': [{k: ev[k] for k in ('node_id', 'message')} for ev in elog.events if ev['type'] == 'warning'],
     }
