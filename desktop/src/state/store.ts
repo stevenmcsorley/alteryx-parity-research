@@ -48,6 +48,7 @@ export type EditorState = {
   selectedResult: { node: string; anchor: string } | null;
   bottomTab: 'results' | 'fields' | 'messages' | 'performance' | 'history';
   loadVersion: number; // increments when a document is loaded/created (canvas re-fits)
+  importReport: any | null; // report from importing a .yxmd/.yxmc/.yxwz/.yxzp document
 
   // actions
   setEngineMeta(m: Partial<Pick<EditorState, 'tools' | 'catalog' | 'profiles' | 'engineInfo' | 'engineError'>>): void;
@@ -122,17 +123,18 @@ export const useEditor = create<EditorState>((set, get) => ({
   selectedResult: null,
   bottomTab: 'results',
   loadVersion: 0,
+  importReport: null,
 
   setEngineMeta: (m) => set(m as any),
 
   loadGraph: (g, filePath = null, baseDir) =>
     set({ nodes: g.nodes, edges: g.edges, name: g.name, description: g.description, profile: g.profile ?? get().profile,
       filePath, baseDir: baseDir ?? get().baseDir, dirty: false, past: [], future: [], run: emptyRun, problems: [],
-      schemas: {}, selectedResult: null, loadVersion: get().loadVersion + 1 }),
+      schemas: {}, selectedResult: null, loadVersion: get().loadVersion + 1, importReport: null }),
 
   newWorkflow: () => set({ nodes: [], edges: [], name: 'Untitled workflow', description: undefined, filePath: null,
     dirty: false, past: [], future: [], run: emptyRun, problems: [], schemas: {}, selectedResult: null,
-    loadVersion: get().loadVersion + 1 }),
+    loadVersion: get().loadVersion + 1, importReport: null }),
 
   checkpoint: () => {
     const s = get();

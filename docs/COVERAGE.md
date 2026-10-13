@@ -13,14 +13,16 @@
 | Entries with known anchors (manifest, reference-observed or public-doc) | 183 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
 | Independent kernels implemented and passing tests | 58 |
-| Entries with differential reference cases, all passing ("partial") | 33 |
-| Entries with failing reference cases | 0 |
-| Reference cases passed / run — E1 (primary profile) | 72 / 72 |
-| Reference cases passed / run — E2 (AMP profile) | 72 / 72 |
+| Entries with differential reference cases, all passing ("partial") | 32 |
+| Entries with failing reference cases | 1 |
+| Reference cases passed / run — E1 (primary profile) | 74 / 75 |
+| Reference cases passed / run — E2 (AMP profile) | 74 / 75 |
+| Holdout: shipped sample workflows fully matching — E1 | 15 / 31 (sinks 87 / 126) |
+| Holdout: shipped sample workflows fully matching — E2 | 16 / 31 (sinks 88 / 126) |
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 139 run, 0 failed |
+| Unit/integration tests in last ledger build | 146 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -28,17 +30,17 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 
 | Catalogue id | Kernel | Tests | Reference cases (passed/run) | Verification |
 |---|---|---:|---:|---|
-| `in-out:browse` | `core.browse` | 7 | 0/0 | not-tested |
+| `in-out:browse` | `core.browse` | 10 | 0/0 | not-tested |
 | `in-out:date-time-now` | `core.date_time_now` | 1 | 0/0 | not-tested |
 | `in-out:directory` | `core.directory` | 1 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 12 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 8 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 70 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 73 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleansing` | `core.data_cleansing` | 3 | 0/0 | not-tested |
-| `preparation:filter` | `core.filter` | 10 | 5/5 | partial |
-| `preparation:formula` | `core.formula` | 11 | 12/12 | partial |
+| `preparation:filter` | `core.filter` | 13 | 5/5 | partial |
+| `preparation:formula` | `core.formula` | 14 | 12/12 | partial |
 | `preparation:generate-rows` | `core.generate_rows` | 3 | 0/0 | not-tested |
 | `preparation:imputation` | `core.imputation` | 1 | 1/1 | partial |
 | `preparation:multi-field-binning` | `core.multi_field_binning` | 1 | 0/0 | not-tested |
@@ -51,7 +53,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `preparation:sample` | `core.sample` | 2 | 6/6 | partial |
 | `preparation:select` | `core.select` | 7 | 2/2 | partial |
 | `preparation:select-records` | `core.select_records` | 1 | 1/1 | partial |
-| `preparation:sort` | `core.sort` | 9 | 2/2 | partial |
+| `preparation:sort` | `core.sort` | 12 | 2/3 | failed |
 | `preparation:tile` | `core.tile` | 1 | 1/1 | partial |
 | `preparation:unique` | `core.unique` | 5 | 2/2 | partial |
 | `join:append-fields` | `core.append_fields` | 1 | 1/1 | partial |
@@ -59,16 +61,16 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `join:join` | `core.join` | 7 | 4/4 | partial |
 | `join:join-multiple` | `core.join_multiple` | 1 | 0/0 | not-tested |
 | `join:make-group` | `core.make_group` | 1 | 1/1 | partial |
-| `join:union` | `core.union` | 2 | 1/1 | partial |
+| `join:union` | `core.union` | 5 | 1/1 | partial |
 | `parse:datetime` | `core.datetime` | 1 | 8/8 | partial |
 | `parse:regex` | `core.regex` | 1 | 3/3 | partial |
 | `parse:text-to-columns` | `core.text_to_columns` | 1 | 1/1 | partial |
 | `parse:xml-parse` | `core.xml_parse` | 1 | 1/1 | partial |
 | `transform:count-records` | `core.count_records` | 7 | 1/1 | partial |
-| `transform:cross-tab` | `core.cross_tab` | 1 | 1/1 | partial |
+| `transform:cross-tab` | `core.cross_tab` | 1 | 3/3 | partial |
 | `transform:make-columns` | `core.make_columns` | 1 | 1/1 | partial |
 | `transform:running-total` | `core.running_total` | 1 | 1/1 | partial |
-| `transform:summarize` | `core.summarize` | 6 | 4/4 | partial |
+| `transform:summarize` | `core.summarize` | 9 | 4/4 | partial |
 | `transform:transpose` | `core.transpose` | 1 | 1/1 | partial |
 | `transform:weighted-average` | `core.weighted_average` | 1 | 1/1 | partial |
 | `developer:base64-encoder` | `core.base64_encoder` | 1 | 0/0 | not-tested |
@@ -113,7 +115,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Parse | 4 | 4 | 4 | 4 | 0 |
 | Predictive | 25 | 0 | 0 | 8 | 0 |
 | Predictive Grouping | 9 | 0 | 0 | 3 | 0 |
-| Preparation | 21 | 20 | 13 | 21 | 0 |
+| Preparation | 21 | 20 | 12 | 21 | 0 |
 | Prescriptive | 4 | 0 | 0 | 3 | 0 |
 | Reporting | 13 | 0 | 0 | 11 | 0 |
 | SDK Examples | 1 | 0 | 0 | 0 | 0 |

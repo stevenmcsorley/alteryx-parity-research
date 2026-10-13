@@ -45,7 +45,7 @@ def _cmd_run(args) -> int:
             hist = RunHistory(args.history)
         result = run_file(args.workflow, log_path=args.log, clock=clock, retain='none', profile=args.profile,
                           workers=args.workers, batch_rows=args.batch_rows, memory_budget=args.memory_budget,
-                          history=hist)
+                          history=hist, limits={'allow_processes': args.allow_processes})
     except WorkflowValidationError as e:
         for p in e.problems:
             print(f"ERROR [{p.get('node_id') or '-'}] {p['code']}: {p['message']}", file=sys.stderr)
@@ -91,6 +91,8 @@ def main(argv=None) -> int:
     r.add_argument('--batch-rows', type=int, help='Enable streaming of eligible segments in batches of N rows')
     r.add_argument('--memory-budget', type=int, help='Bytes of intermediate tables kept in memory before spilling')
     r.add_argument('--history', type=Path, help='Record the run in this SQLite run-history database')
+    r.add_argument('--allow-processes', action='store_true',
+                   help='Allow Python/R/Run Command tools to start processes for this run')
     v = sub.add_parser('validate')
     v.add_argument('workflow', type=Path)
     t = sub.add_parser('tools')
@@ -98,6 +100,12 @@ def main(argv=None) -> int:
     sv = sub.add_parser('serve', help='JSON-RPC 2.0 engine service (stdio sidecar, or --http for the browser build)')
     sv.add_argument('--http', type=int, metavar='PORT', help='Serve over loopback HTTP + SSE instead of stdio')
     sv.add_argument('--history', type=Path, help='SQLite run-history database')
+    im = sub.add_parser('import', help='Convert a .yxmd/.yxmc/.yxwz/.yxzp document to a flowengine workflow')
+    im.add_argument('source', type=Path)
+    im.add_argument('-o', '--output', type=Path, required=True)
+    ex = sub.add_parser('export', help='Write a flowengine workflow as .yxmd (supported tools only)')
+    ex.add_argument('workflow', type=Path)
+    ex.add_argument('-o', '--output', type=Path, required=True)
     h = sub.add_parser('history', help='List or show recorded runs')
     h.add_argument('--db', type=Path, required=True)
     h.add_argument('run_id', nargs='?')
@@ -110,6 +118,25 @@ def main(argv=None) -> int:
                 serve_http(port=args.http, history_path=args.history)
             else:
                 serve(history_path=args.history)
+            return 0
+        if args.cmd == 'import':
+            from .interop.yxmd import import_file
+            doc, report = import_file(args.source)
+            args.output.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+            print(json.dumps(report['counts']))
+            for n in report['nodes']:
+                if n['status'] != 'mapped':
+                    print(f"{n['status']:<12} {n['node']:<8} {n['source']}  {n.get('reason') or '; '.join(n.get('warnings', []))}")
+            return 0
+        if args.cmd == 'export':
+            from .interop.yxmd import export_document
+            text, problems = export_document(load_workflow(args.workflow))
+            for p in problems:
+                print(f'NOT EXPORTED {p}', file=sys.stderr)
+            if problems:
+                return 2
+            args.output.write_text(text, encoding='utf-8')
+            print(f'wrote {args.output}')
             return 0
         if args.cmd == 'history':
             from .history import RunHistory

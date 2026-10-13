@@ -74,6 +74,7 @@ class EngineService:
 
     def _run_kwargs(self, params):
         return dict(base_dir=self._base(params), clock=self._clock(params), profile=params.get('profile'),
+                    limits={'allow_processes': bool(params.get('allow_processes'))},
                     workers=int(params.get('workers', 1)), batch_rows=params.get('batch_rows'),
                     memory_budget=params.get('memory_budget'), retain='preview', history=self.history)
 
@@ -135,6 +136,23 @@ class EngineService:
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(params['text'], encoding='utf-8')
             return {'path': str(p)}
+        if method == 'workflow.import':
+            from .interop.yxmd import import_file
+            try:
+                doc, report = import_file(Path(params['path']))
+            except ValueError as e:
+                raise EngineError(str(e), code='import-error') from None
+            return {'workflow': doc, 'report': report, 'base_dir': str(Path(params['path']).parent)}
+        if method == 'workflow.export':
+            from .interop.yxmd import export_document
+            p = Path(params['path'])
+            if p.suffix.lower() != '.yxmd':
+                raise EngineError('Export target must be a .yxmd file', code='bad-request')
+            text, problems = export_document(params['workflow'])
+            if problems and not params.get('allow_partial'):
+                return {'written': False, 'problems': problems}
+            p.write_text(text, encoding='utf-8')
+            return {'written': True, 'path': str(p), 'problems': problems}
         if method == 'file.write_export':
             p = Path(params['path'])
             if p.suffix.lower() not in ('.csv', '.tsv', '.json', '.txt'):

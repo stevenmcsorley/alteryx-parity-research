@@ -163,14 +163,17 @@
     ]
   },
   "independent_tests": {
-    "count": 10,
-    "passing": 10,
+    "count": 13,
+    "passing": 13,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.PropertyTests.test_invariants",
       "test_fe_executor.ValidationTests.test_graph_problems",
       "test_fe_executor.ValidationTests.test_static_schema_errors_detected_before_running",
+      "test_fe_interop.ImportTests.test_export_round_trip",
+      "test_fe_interop.ImportTests.test_runs_once_the_unsupported_branch_is_removed",
+      "test_fe_interop.ImportTests.test_validation_reports_the_unsupported_catalogue_tool",
       "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
       "test_fe_scale.StreamingTests.test_streamed_equals_batch",
       "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",

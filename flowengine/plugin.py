@@ -197,7 +197,7 @@ class Registry:
             tool = self._tools.get(tool_id2) if tool_id2 else None
         if tool is None:
             from . import catalog
-            entry = catalog.lookup(tool_id)
+            entry = catalog.lookup(tool_id) or catalog.lookup_xml(tool_id)
             if entry:
                 raise ToolUnavailableError(
                     f"Catalogue tool '{entry['name']}' ({entry['id']}) has no working implementation yet "

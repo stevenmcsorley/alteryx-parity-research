@@ -159,11 +159,24 @@ function Messages() {
     useEditor.setState({ nodes: useEditor.getState().nodes.map((n) => ({ ...n, selected: n.id === id })) });
     flow.fitView({ nodes: [{ id }], duration: 300, maxZoom: 1.3 });
   };
+  const report = useEditor((s) => s.importReport);
   const shown = events.filter((e) => level === 'all' || ['warning', 'node-failed', 'run-cancelled'].includes(e.type));
   return (
     <div data-testid="messages">
       <div style={{ padding: 8 }}>
         {error && <div className="problem" role="alert" data-testid="run-error"><strong>Run failed at {error.node_id}</strong>: {error.message} <code>({error.code})</code> <button onClick={() => focus(error.node_id)}>Show node</button></div>}
+        {report && (
+          <div className="section" data-testid="import-report" style={{ padding: '6px 0' }}>
+            <strong>Imported {report.source}</strong> (format {report.source_format_version}):{' '}
+            {Object.entries(report.counts).map(([k, v]) => `${v} ${k}`).join(', ')}
+            {report.nodes.filter((n: any) => n.status !== 'mapped').map((n: any) => (
+              <div key={n.node} className="log-row warning" onClick={() => focus(n.node)}>
+                <span className="t">{n.status}</span><span>{n.node}</span><span>{String(n.source).split('.').pop()}</span>
+                <span>{n.reason ?? (n.warnings ?? []).join('; ')}</span>
+              </div>
+            ))}
+          </div>
+        )}
         {problems.map((p, i) => <div key={i} onClick={() => focus(p.node_id)} style={{ cursor: p.node_id ? 'pointer' : undefined }}><ProblemRow p={p} /></div>)}
       </div>
       <div className="results-bar">

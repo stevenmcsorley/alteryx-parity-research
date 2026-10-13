@@ -145,3 +145,28 @@ case('datetime-to-text', 'parse:datetime', 'date to text with a custom pattern',
      'core.datetime', {'direction': 'to_text', 'field': 'd', 'format': 'dd/MM/yyyy', 'output_field': 's'},
      ref('DateTime', '<IsFrom value="True" /><InputFieldName>d</InputFieldName><Language>English</Language>'
          '<Format>dd/MM/yyyy</Format><OutputFieldName>s</OutputFieldName>'), {'output': 'Output'})
+
+
+def _sort_ref(field, locale):
+    return ref('Sort', f'<SortInfo locale="{locale}"><Field field="{field}" order="Ascending" /></SortInfo>')
+
+
+COLLATE = {'input': {'fields': [F('s', 'v_wstring', size=12)],
+                     'rows': [['b10'], ['b2'], ['B1'], ['a'], ['A'], ['10'], ['9'], ['é'], ['e'], ['Z'], ['_x'], ['22'],
+                              ['4'], ['a-b'], ['ab'], ['a b'], ['b1'], ['é1'], ['E']]}}
+case('probe-sort-locale-1033', 'preparation:sort', 'collation with locale 1033 (English)', COLLATE,
+     'core.sort', {'keys': [{'field': 's'}], 'collation': 'locale'}, _sort_ref('s', 1033), {'output': 'Output'})
+
+CT = {'input': {'fields': [F('g', 'v_string', size=5), F('h', 'v_string', size=20), F('v', 'double')],
+                'rows': [['a', 'Fun and Games', 1.0], ['a', 'General', 2.0], ['b', 'Fun and Games', 4.0],
+                         ['a', 'Fun and Games', 3.0], ['b', 'x-y.z', 5.0]]}}
+case('probe-crosstab-space-headers', 'transform:cross-tab', 'header values with spaces and punctuation, one method',
+     CT, 'core.cross_tab', {'group_by': ['g'], 'header_field': 'h', 'value_field': 'v', 'method': 'sum'},
+     ref('CrossTab', '<GroupFields><Field field="g" /></GroupFields><HeaderField field="h" /><DataField field="v" />'
+         '<Methods><Method method="Sum" /><Separator>,</Separator><FieldSize value="2048" /></Methods>'),
+     {'output': 'Output'})
+case('crosstab-two-methods', 'transform:cross-tab', 'sum and average in one cross tab',
+     CT, 'core.cross_tab', {'group_by': ['g'], 'header_field': 'h', 'value_field': 'v', 'methods': ['sum', 'avg']},
+     ref('CrossTab', '<GroupFields><Field field="g" /></GroupFields><HeaderField field="h" /><DataField field="v" />'
+         '<Methods><Method method="Sum" /><Method method="Avg" /><Separator>,</Separator><FieldSize value="2048" />'
+         '</Methods>'), {'output': 'Output'})

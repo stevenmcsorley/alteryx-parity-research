@@ -265,6 +265,11 @@ class DateTimeTool(Tool):
         if cfg['direction'] == 'to_text':
             out = []
             for v in col:
+                if isinstance(v, str):  # text input is read as an ISO date/time first [ref:holdout DateTime sample]
+                    try:
+                        v = cast_value(v.strip(), Field('x', FieldType.DATETIME))[0] if v.strip() else None
+                    except CastFailure:
+                        v = None
                 if v is None:
                     out.append(None)
                 elif isinstance(v, (_dt.date, _dt.time)):

@@ -140,7 +140,8 @@ def build(check=False):
             obs_by_cid[cid].append(r)
     audit = load_json(ROOT / 'data' / 'public-doc-audit.json', {'pages': []})
     audit_by_url = {p['url']: p for p in audit['pages']}
-    results_files = sorted((ROOT / 'conformance' / 'results').glob('*/*/results.json'))
+    results_files = sorted(p for p in (ROOT / 'conformance' / 'results').glob('*/*/results.json')
+                           if not p.parent.name.endswith('-samples'))  # holdout runs are workflow-level
     conf = defaultdict(list)       # primary profile (E1, incl. holdout) -> drives verification_status
     conf_other = defaultdict(list)  # other engine modes, recorded per contract
     conf_builds = []

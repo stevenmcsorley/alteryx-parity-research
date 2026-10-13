@@ -76,10 +76,18 @@ export async function validateNow(): Promise<ValidateResult | null> {
 export async function runWorkflow(options: { workers?: number; batch_rows?: number | null } = {}): Promise<void> {
   const s = useEditor.getState();
   if (s.run.status === 'running') return;
+  const codeTools = s.nodes.filter((n) => n.data.kind === 'tool' && CODE_TOOLS.has(n.data.tool));
+  let allow = false;
+  if (codeTools.length) {
+    allow = window.confirm(`This workflow contains ${codeTools.length} tool(s) that run code or programs on this computer `
+      + `(${codeTools.map((n) => n.id).join(', ')}). Only allow this for workflows you trust. Allow for this run?`);
+    if (!allow) return;
+  }
   try {
     const res = await engine().request<{ run_id: string; status: string; problems?: any[] }>('run.start', {
       workflow: toDocument(graphOf(s)), base_dir: s.baseDir, profile: s.profile, preview_rows: 500,
-      workers: options.workers ?? 2, ...(options.batch_rows ? { batch_rows: options.batch_rows } : {}) });
+      workers: options.workers ?? 2, allow_processes: allow,
+      ...(options.batch_rows ? { batch_rows: options.batch_rows } : {}) });
     if (res.status === 'invalid') {
       useEditor.getState().runInvalid(res.problems ?? []);
       return;
@@ -132,11 +140,26 @@ export async function saveWorkflow(path: string): Promise<void> {
   scheduleValidate(0);
 }
 
+const IMPORTABLE = /\.(yxmd|yxmc|yxwz|yxzp)$/i;
+const CODE_TOOLS = new Set(['core.python', 'core.r', 'core.run_command']);
+
 export async function openWorkflow(path: string): Promise<void> {
+  if (IMPORTABLE.test(path)) {
+    const res = await engine().request<{ workflow: any; report: any; base_dir: string }>('workflow.import', { path });
+    useEditor.getState().loadGraph(fromDocument(res.workflow), null, res.base_dir);
+    useEditor.setState({ importReport: res.report, dirty: true, bottomTab: 'messages' });
+    scheduleValidate(0);
+    return;
+  }
   const res = await engine().request<{ path: string; text: string }>('file.read_text', { path });
   const doc = JSON.parse(res.text);
   useEditor.getState().loadGraph(fromDocument(doc), res.path, dirOf(res.path));
   scheduleValidate(0);
+}
+
+export async function exportYxmd(path: string): Promise<{ written: boolean; problems: string[] }> {
+  const s = useEditor.getState();
+  return engine().request('workflow.export', { workflow: toDocument(graphOf(s)), path });
 }
 
 export async function exportText(path: string, text: string): Promise<string> {

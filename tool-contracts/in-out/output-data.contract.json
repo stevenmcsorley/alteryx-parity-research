@@ -39,7 +39,8 @@
           "json",
           "jsonl",
           "parquet",
-          "arrow"
+          "arrow",
+          "yxdb"
         ],
         "default": "auto"
       },

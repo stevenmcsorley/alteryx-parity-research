@@ -13,7 +13,7 @@
 - Specific reference: **NOT YET VERIFIED** — run public catalogue sync
 - Implementation: **implemented**
 - Machine-readable contract: `sort.contract.json`
-- Conformance verification: **partial**
+- Conformance verification: **failed**
 
 ## Research to complete (do not infer)
 

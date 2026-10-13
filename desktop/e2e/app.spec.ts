@@ -180,3 +180,39 @@ test('save and reopen preserves nodes, connections, containers and comments', as
   await expect(page.locator('[data-testid^="container-"]')).toHaveCount(1);
   await expect(page.getByTestId('valid')).toBeVisible({ timeout: 10_000 });
 });
+
+test('import a .yxmd workflow, see the report, remove the unsupported tool and run', async ({ page }) => {
+  await ready(page);
+  await openExample(page, path.join(REPO, 'tests', 'fixtures', 'yxmd', 'regional_sales.yxmd'));
+  await expect(page.getByTestId('import-report')).toContainText('unsupported');
+  await expect(page.getByTestId('problem-count')).toBeVisible({ timeout: 10_000 });
+  await expect(page.locator('[data-testid^="container-"]')).toHaveCount(1);
+  await page.getByTestId('node-t8').click();
+  await page.keyboard.press('Delete');
+  await expect(page.getByTestId('valid')).toBeVisible({ timeout: 10_000 });
+  await page.getByTestId('run').click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+  await expect(page.getByTestId('rows-t5-output')).toHaveText('3');
+});
+
+test('code tools run only after the user allows them', async ({ page }) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'flowbench-'));
+  const wf = path.join(dir, 'py.flow.json');
+  fs.writeFileSync(wf, JSON.stringify({
+    format: 'flowengine.workflow', formatVersion: 1, name: 'py',
+    nodes: [
+      { id: 'src', tool: 'core.text_input', config: { fields: [{ name: 'x', type: 'int32' }], rows: [[2], [3]] } },
+      { id: 'py', tool: 'core.python', config: { code: 'from flowbench_io import read_input, write_output\nwrite_output(1, [{"y": r["x"] * 10} for r in read_input(1)])' } },
+    ],
+    edges: [{ from: { node: 'src', anchor: 'output' }, to: { node: 'py', anchor: 'inputs' } }],
+  }));
+  await ready(page);
+  await openExample(page, wf);
+  page.once('dialog', (d) => d.dismiss());
+  await page.getByTestId('run').click();
+  await expect(page.getByTestId('run-status')).toHaveCount(0);
+  page.once('dialog', (d) => d.accept());
+  await page.getByTestId('run').click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 60_000 });
+  await expect(page.getByTestId('rows-py-output1')).toHaveText('2');
+});

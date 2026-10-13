@@ -34,3 +34,4 @@ local-source-audit/
 examples/*/out/
 conformance/work/
 .flowbench/
+!tests/fixtures/yxmd/*.yxmd

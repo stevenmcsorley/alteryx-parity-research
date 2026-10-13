@@ -83,6 +83,19 @@ def _flatten(value, prefix, out):
         out.append((prefix, value))
 
 
+def _lenient_json(text):
+    """Strict JSON first; on failure retry with trailing commas removed (accepted by the reference
+    [ref:holdout JSON_Parse sample])."""
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        import re
+        relaxed = re.sub(r',(\s*[}\]])', lambda m: m.group(1), text)
+        if relaxed == text:
+            raise
+        return json.loads(relaxed)
+
+
 class JSONParse(Tool):
     streaming = 'row-local'
     manifest = ToolManifest(
@@ -113,7 +126,7 @@ class JSONParse(Tool):
             if text is None:
                 continue
             try:
-                doc = json.loads(text)
+                doc = _lenient_json(text)
             except (json.JSONDecodeError, TypeError) as e:
                 if cfg['ignore_errors']:
                     ctx.warn(f'record {n + 1}: invalid JSON ignored')

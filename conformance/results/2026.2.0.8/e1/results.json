@@ -5,7 +5,7 @@
   "flowengine_profile": "ayx-2026.2-e1",
   "holdout": false,
   "authorisation": "docs/AUTHORISATION.md",
-  "executed_utc": "2026-10-13T10:54:12+00:00",
+  "executed_utc": "2026-10-13T14:03:41+00:00",
   "flowengine_clock": "2026-01-15T09:30:00",
   "limits": [
     "CSV output cannot distinguish null from empty string",
@@ -27,7 +27,7 @@
     },
     "preparation:sort": {
       "passed": 2,
-      "failed": 0
+      "failed": 1
     },
     "preparation:unique": {
       "passed": 2,
@@ -66,7 +66,7 @@
       "failed": 0
     },
     "transform:cross-tab": {
-      "passed": 1,
+      "passed": 3,
       "failed": 0
     },
     "parse:text-to-columns": {
@@ -2248,6 +2248,166 @@
         "messages": [],
         "digests": {
           "output": "1ab6e31685b0566a93a204bb84063a1b01c8db0e9e08af983abebac4f98e9dd3"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-sort-locale-1033",
+      "catalog_id": "preparation:sort",
+      "description": "collation with locale 1033 (English)",
+      "status": "failed",
+      "differences": [
+        "[output] row 1 field 's': ours='10' ref='4'",
+        "[output] row 2 field 's': ours='22' ref='9'",
+        "[output] row 3 field 's': ours='4' ref='10'",
+        "[output] row 4 field 's': ours='9' ref='22'",
+        "[output] row 5 field 's': ours='A' ref='_x'",
+        "[output] row 6 field 's': ours='B1' ref='a'",
+        "[output] row 7 field 's': ours='E' ref='a b'",
+        "[output] row 8 field 's': ours='Z' ref='A'",
+        "[output] row 9 field 's': ours='_x' ref='ab'",
+        "[output] row 10 field 's': ours='a' ref='a-b'",
+        "[output] row 11 field 's': ours='a b' ref='b1'",
+        "[output] row 12 field 's': ours='a-b' ref='b2'"
+      ],
+      "config_digest": "c78e3582dc94b862017523216aae225dccd9561d259cd4fe741435d2165914e2",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "ff70d05213d3f1d2d09357ed229b31d2c67b7015a7424c77258c93b54cd065bd"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "ff9785db365651411f7d09e92374e578bdaef548636db4cf1c788ca69c480014"
+        },
+        "observed": {
+          "output": [
+            [
+              "s"
+            ],
+            [
+              "4"
+            ],
+            [
+              "9"
+            ],
+            [
+              "10"
+            ],
+            [
+              "22"
+            ],
+            [
+              "_x"
+            ],
+            [
+              "a"
+            ],
+            [
+              "a b"
+            ],
+            [
+              "A"
+            ],
+            [
+              "ab"
+            ],
+            [
+              "a-b"
+            ],
+            [
+              "b1"
+            ],
+            [
+              "b2"
+            ],
+            [
+              "b10"
+            ],
+            [
+              "B1"
+            ],
+            [
+              "e"
+            ],
+            [
+              "E"
+            ],
+            [
+              "é"
+            ],
+            [
+              "é1"
+            ],
+            [
+              "Z"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "probe-crosstab-space-headers",
+      "catalog_id": "transform:cross-tab",
+      "description": "header values with spaces and punctuation, one method",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "ee533b890b4dd253d8a71de25c7077bc514a3d0135918e1e196ca8afae598a7b",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "763424039abbe6e90616d3a4e8ea68dbb47393f90ab6639d38d87e992b3eeb4a"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "763424039abbe6e90616d3a4e8ea68dbb47393f90ab6639d38d87e992b3eeb4a"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "crosstab-two-methods",
+      "catalog_id": "transform:cross-tab",
+      "description": "sum and average in one cross tab",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "671180ea5171c2843be9e71fb0dee8d725b6c041e81ee66d13618df4d6069c08",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "7075a74d2bc29f593bc468115001a057cde92dfb1cf95282bcf638729e0c11d6"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "7075a74d2bc29f593bc468115001a057cde92dfb1cf95282bcf638729e0c11d6"
         },
         "observed": null
       }

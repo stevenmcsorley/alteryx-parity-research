@@ -283,19 +283,32 @@ class Transpose(Tool):
         return {'output': Table.from_rows(fields, rows)}
 
 
+_METHOD_LABEL = {'sum': 'Sum', 'count': 'Count', 'avg': 'Avg', 'min': 'Min', 'max': 'Max', 'first': 'First',
+                 'last': 'Last', 'concat': 'Concat'}
+
+
+def _col_name(header: str) -> str:
+    import re
+    return re.sub(r'[^0-9A-Za-z]', '_', header)
+
+
 class CrossTab(Tool):
     manifest = ToolManifest(
         tool_id='core.cross_tab', version='1.0.0', display_name='Cross Tab',
         catalog_ids=('transform:cross-tab',),
         inputs=(Anchor('input', 'I'),), outputs=(Anchor('output', 'O'),),
-        description='Pivot distinct header-field values into columns. New column names are the header values, '
-                    'sorted ascending; groups in ascending key order. Output schema is data-dependent.',
+        description='Pivot distinct header-field values into columns named after the values (non-alphanumeric '
+                    'characters become "_"; several methods give <Method>_<value>), sorted ascending; groups in '
+                    'ascending key order. Text values are converted to numbers for Sum/Avg. Data-dependent schema.',
         config_schema={
             'type': 'object', 'additionalProperties': False, 'required': ['group_by', 'header_field', 'value_field'],
             'properties': {
                 'group_by': {'type': 'array', 'items': {'type': 'string'}},
                 'header_field': {'type': 'string'}, 'value_field': {'type': 'string'},
                 'method': {'enum': ['sum', 'count', 'avg', 'min', 'max', 'first', 'last', 'concat'], 'default': 'sum'},
+                'methods': {'type': 'array', 'minItems': 1, 'uniqueItems': True,
+                            'items': {'enum': ['sum', 'count', 'avg', 'min', 'max', 'first', 'last', 'concat']},
+                            'description': 'Several methods (overrides method): columns named <Method>_<header>'},
                 'separator': {'type': 'string', 'default': ','},
                 'null_header_name': {'type': 'string', 'default': '_Null_'},
             },
@@ -320,18 +333,35 @@ class CrossTab(Tool):
         clash = set(cols_h) & set(cfg['group_by'])
         if clash:
             raise SchemaError(f'Header values collide with group-by field names: {sorted(clash)}')
-        method = cfg['method']
-        out_fields = [t.schema[j] for j in gi] + [_agg_field(method, vfield.renamed(h), h) for h in cols_h]
+        methods = cfg.get('methods') or [cfg['method']]
+        if any(m in ('sum', 'avg') for m in methods) and vfield.type.is_string:
+            # numeric methods over text values convert the text to numbers [ref:holdout Cross_Tab sample]
+            vfield = Field(vfield.name, FieldType.DOUBLE)
+            from ..formula import EvalContext, _to_number
+            ec = EvalContext(warn=lambda m: ctx.warn(m))
+            for cells in groups.values():
+                for h in cells:
+                    cells[h] = [None if v is None or str(v).strip() == '' else float(_to_number(ec, v) or 0)
+                                for v in cells[h]]
+        # header values become names with every non-alphanumeric character replaced by "_"; with several methods
+        # columns are <Method>_<name>, grouped by header then method [ref:probe-crosstab-space-headers,
+        # crosstab-two-methods]
+        cols = [(m, h, _col_name(h) if len(methods) == 1 else f'{_METHOD_LABEL[m]}_{_col_name(h)}')
+                for h in cols_h for m in methods]
+        names = [c[2] for c in cols]
+        if len(set(names)) != len(names):
+            raise DataError('Distinct header values map to the same column name after sanitising')
+        out_fields = [t.schema[j] for j in gi] + [_agg_field(m, vfield.renamed(name), name) for m, h, name in cols]
         from .preparation import sort_key_fn
         gkey = sort_key_fn(Schema([t.schema[j] for j in gi]), [{'field': t.schema[j].name} for j in gi])
         rows = []
         for k, cells in sorted(groups.items(), key=lambda kv: gkey(kv[0])):  # [ref:crosstab-sum]
             vals = []
-            for h, f in zip(cols_h, out_fields[len(gi):]):
+            for (m, h, _), f in zip(cols, out_fields[len(gi):]):
                 if h not in cells:
                     vals.append(None)
                     continue
-                v = _aggregate(method, cells[h], vfield, {'separator': cfg['separator']})
+                v = _aggregate(m, cells[h], vfield, {'separator': cfg['separator']})
                 vals.append(cast_value(v, f)[0])
             rows.append(tuple(k) + tuple(vals))
         return {'output': Table.from_rows(out_fields, rows)}

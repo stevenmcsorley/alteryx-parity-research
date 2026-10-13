@@ -37,7 +37,7 @@ PIPE_NODES = [
     {'id': 'fx', 'tool': 'core.formula', 'config': {'formulas': [
         {'field': 'band', 'expression': 'IIF([amount] > 500, "high", "low")'},
         {'field': 'note', 'expression': 'Trim([note])'}]}},
-    {'id': 'rid', 'tool': 'core.record_id', 'config': {'group_by': ['region']}},
+    {'id': 'rid', 'tool': 'core.record_id', 'config': {'start': 100}},
     {'id': 'sel', 'tool': 'core.select', 'config': {'fields': [{'field': 'note', 'selected': False}]}},
     {'id': 'out', 'tool': 'core.output_data', 'config': {'path': 'out/result.csv'}},
 ]

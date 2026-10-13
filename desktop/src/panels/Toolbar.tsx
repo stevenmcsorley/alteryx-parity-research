@@ -1,5 +1,5 @@
 import { useEditor } from '../state/store';
-import { cancelRun, openWorkflow, runWorkflow, saveWorkflow, describe } from '../state/engineActions';
+import { cancelRun, exportYxmd, openWorkflow, runWorkflow, saveWorkflow, describe } from '../state/engineActions';
 import { promptPath } from '../ui/dialogs';
 import { notify } from '../ui/toast';
 
@@ -21,12 +21,24 @@ export async function doSave(forceAs = false) {
 export async function doOpen() {
   const s = useEditor.getState();
   if (s.dirty && !window.confirm('Discard unsaved changes?')) return;
-  const path = await promptPath('Open workflow', s.filePath ?? s.baseDir, 'flow.json', 'open');
+  const path = await promptPath('Open workflow (.flow.json, or import .yxmd/.yxmc/.yxwz/.yxzp)', s.filePath ?? s.baseDir, 'flow.json', 'open');
   if (!path) return;
   try {
     await openWorkflow(path);
   } catch (e) {
     notify(`Open failed: ${describe(e)}`);
+  }
+}
+
+export async function doExport() {
+  const s = useEditor.getState();
+  const path = await promptPath('Export as .yxmd', `${s.baseDir}${s.baseDir.includes('\\') ? '\\' : '/'}${s.name.replace(/[^\w-]+/g, '_')}.yxmd`, 'yxmd');
+  if (!path) return;
+  try {
+    const r = await exportYxmd(path);
+    notify(r.written ? `Exported ${path}` : `Not exported: ${r.problems.length} node(s) have no export mapping (${r.problems[0]})`);
+  } catch (e) {
+    notify(`Export failed: ${describe(e)}`);
   }
 }
 
@@ -57,6 +69,7 @@ export function Toolbar() {
       <button onClick={doNew} title="New (Ctrl+N)">New</button>
       <button onClick={doOpen} title="Open (Ctrl+O)">Open</button>
       <button onClick={() => doSave()} title="Save (Ctrl+S)" data-testid="save">Save</button>
+      <button onClick={() => doExport()} title="Export supported tools as .yxmd">Export</button>
       <span className="sep" />
       <button className="icon" onClick={() => useEditor.getState().undo()} disabled={!canUndo} title="Undo (Ctrl+Z)" aria-label="Undo">↶</button>
       <button className="icon" onClick={() => useEditor.getState().redo()} disabled={!canRedo} title="Redo (Ctrl+Y)" aria-label="Redo">↷</button>

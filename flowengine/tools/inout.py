@@ -19,7 +19,7 @@ from ._common import FIELD_SPEC, ON_ERROR, cast_column, field_from_spec
 
 UNBOUNDED_TEXT = 2**30 - 1  # declared size for untyped text fields: never truncates
 
-_FORMATS = ['auto', 'csv', 'tsv', 'delimited', 'json', 'jsonl', 'parquet', 'arrow']
+_FORMATS = ['auto', 'csv', 'tsv', 'delimited', 'json', 'jsonl', 'parquet', 'arrow', 'yxdb']
 _BINARY = ('parquet', 'arrow')
 
 
@@ -29,7 +29,7 @@ def _resolve_format(fmt: str, path: Path) -> str:
     ext = path.suffix.lower()
     return {'.csv': 'csv', '.tsv': 'tsv', '.tab': 'tsv', '.txt': 'delimited', '.json': 'json',
             '.jsonl': 'jsonl', '.ndjson': 'jsonl', '.parquet': 'parquet', '.arrow': 'arrow',
-            '.feather': 'arrow', '.ipc': 'arrow'}.get(ext) or _unsupported(ext)
+            '.feather': 'arrow', '.ipc': 'arrow', '.yxdb': 'yxdb'}.get(ext) or _unsupported(ext)
 
 
 def _unsupported(ext):
@@ -236,7 +236,9 @@ class InputData(Tool):
     def _schema_and_columns(self, ctx, cfg, header_only=False):
         path = ctx.resolve_path(cfg['path'])
         fmt = _resolve_format(cfg['format'], path)
-        if fmt in _BINARY:
+        if fmt == 'yxdb':
+            names, cols, natural = _read_yxdb(path, cfg['max_records'], ctx)
+        elif fmt in _BINARY:
             from .. import arrow
             if not path.is_file():
                 raise DataError(f'Input file not found: {path}')
@@ -287,7 +289,7 @@ class InputData(Tool):
         path = ctx.resolve_path(cfg['path'])
         if not path.is_file():
             return None  # reported at run time
-        if _resolve_format(cfg['format'], path) in ('json', 'jsonl') + _BINARY:
+        if _resolve_format(cfg['format'], path) in ('json', 'jsonl', 'yxdb') + _BINARY:
             return {'output': self._schema_and_columns(ctx, cfg)[0]}
         return {'output': self._schema_and_columns(ctx, cfg, header_only=True)[0]}
 
@@ -296,6 +298,48 @@ class InputData(Tool):
         table = Table(schema, cols) if cols else Table.empty(schema)
         ctx.info(f'read {len(table)} records', path=str(ctx.resolve_path(cfg['path'])))
         return {'output': table}
+
+
+def _read_yxdb(path, max_records, ctx):
+    """Read a .yxdb data file with the MIT-licensed third-party 'yxdb' package (optional dependency).
+    Its type model is coarse: text -> v_wstring, integers -> int64, decimals -> double; original sizes,
+    integer widths and fixed-decimal precision are not available."""
+    try:
+        from yxdb.yxdb_reader import YxdbReader
+        from yxdb.yxdb_field import DataType
+    except ImportError:
+        raise DataError('Reading .yxdb needs the optional "yxdb" package (pip install yxdb)') from None
+    if not path.is_file():
+        raise DataError(f'Input file not found: {path}')
+    try:
+        r = YxdbReader(path=str(path))
+    except Exception as e:
+        raise DataError(f'{path.name}: cannot read yxdb: {e}') from None
+    try:
+        fl = r.list_fields()
+        cols = [[] for _ in fl]
+        n = 0
+        while (max_records is None or n < max_records) and r.next():
+            for i, c in enumerate(cols):
+                c.append(r.read_index(i))
+            n += 1
+            if n % 50000 == 0:
+                ctx.check_cancelled()
+    finally:
+        r.close()
+    tmap = {DataType.BLOB: FieldType.BLOB, DataType.BOOLEAN: FieldType.BOOL, DataType.BYTE: FieldType.BYTE,
+            DataType.DOUBLE: FieldType.DOUBLE, DataType.LONG: FieldType.INT64, DataType.STRING: FieldType.V_WSTRING}
+    fields = []
+    for f, c in zip(fl, cols):
+        if f.data_type == DataType.DATE:
+            t = FieldType.DATETIME if any(isinstance(v, _dt.datetime) for v in c) else FieldType.DATE
+        else:
+            t = tmap[f.data_type]
+        if t is FieldType.DOUBLE:
+            c[:] = [None if v is None else float(v) for v in c]
+        fields.append(Field(f.name, t, UNBOUNDED_TEXT if t is FieldType.V_WSTRING else None))
+    ctx.info('yxdb read with coarse types (text/int64/double/date/bool/blob); original field sizes not preserved')
+    return [f.name for f in fields], cols, fields
 
 
 # =========================================================================== Output Data

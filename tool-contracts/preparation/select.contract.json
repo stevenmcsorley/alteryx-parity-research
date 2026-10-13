@@ -101,6 +101,14 @@
         ],
         "default": "error"
       },
+      "order": {
+        "enum": [
+          "listed",
+          "input"
+        ],
+        "default": "listed",
+        "description": "listed = output in the order configured; input = keep incoming field order"
+      },
       "on_conversion_error": {
         "enum": [
           "error",
