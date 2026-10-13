@@ -1,0 +1,19 @@
+{
+  "name": "Independent engine test fixture: clean/join/aggregate CSVs",
+  "notes": "This is NOT Alteryx workflow XML, an Alteryx example, or a claimed parity test.",
+  "nodes": [
+    {"id": "customers", "type": "csv_input", "config": {"path": "data/customers.csv"}},
+    {"id": "orders", "type": "csv_input", "config": {"path": "data/orders.csv"}},
+    {"id": "uk_only", "type": "filter", "config": {"field": "region", "op": "eq", "value": "UK"}},
+    {"id": "match", "type": "join", "config": {"left_on": "customer_id", "right_on": "customer_id", "how": "inner"}},
+    {"id": "totals", "type": "summarize", "config": {"group_by": ["customer_id", "name"], "op": "sum", "field": "amount", "as": "total_spend"}},
+    {"id": "export", "type": "csv_output", "config": {"path": "out/uk-customer-spend.csv"}}
+  ],
+  "edges": [
+    {"from": "customers", "to": "uk_only"},
+    {"from": "uk_only", "to": "match", "input": "left"},
+    {"from": "orders", "to": "match", "input": "right"},
+    {"from": "match", "to": "totals"},
+    {"from": "totals", "to": "export"}
+  ]
+}

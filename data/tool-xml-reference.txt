@@ -1,0 +1,60 @@
+# Manually transcribed from public Designer Tools List at https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html (13 Oct 2026).
+# Positional by category relative to tool-list-seed.txt; script confirms exact counts. Verify against the pinned installed build.
+[In/Out]
+AutoInsightsUploader; AlteryxBasePluginsGui.BrowseV2.BrowseV2; DateTimeNow; AlteryxBasePluginsGui.Directory.Directory; AlteryxBasePluginsGui.DbFileInput.DbFileInput; AlteryxSpatialPluginsGui.MapInput.MapInput; AlteryxBasePluginsGui.DbFileOutput.DbFileOutput; AlteryxBasePluginsGui.TextInput.TextInput
+[Preparation]
+AlteryxBasePluginsGui.AutoField.AutoField; Predictive Tools\Create_Samples.yxmc; AlteryxBasePluginsGui.DataCleansePro.DataCleansePro; Cleanse.yxmc; AlteryxBasePluginsGui.Filter.Filter; AlteryxBasePluginsGui.Formula.Formula; AlteryxBasePluginsGui.GenerateRows.GenerateRows; Imputation_v3.yxmc; MultiFieldBinning_v2.yxmc; AlteryxBasePluginsGui.MultiFieldFormula.MultiFieldFormula; AlteryxBasePluginsGui.MultiRowFormula.MultiRowFormula; Predictive Tools\Oversample_Field.yxmc; RandomRecords.yxmc; AlteryxBasePluginsGui.Ranking.Ranking; AlteryxBasePluginsGui.RecordID.RecordID; AlteryxBasePluginsGui.Sample.Sample; AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect; SelectRecords.yxmc; AlteryxBasePluginsGui.Sort.Sort; AlteryxBasePluginsGui.Tile.Tile; AlteryxBasePluginsGui.Unique.Unique
+[Join]
+AlteryxBasePluginsGui.AppendFields.AppendFields; AlteryxBasePluginsGui.FindReplace.FindReplace; AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch; AlteryxBasePluginsGui.Join.Join; AlteryxBasePluginsGui.JoinMultiple.JoinMultiple; AlteryxBasePluginsGui.MakeGroup.MakeGroup; AlteryxBasePluginsGui.Union.Union
+[Parse]
+AlteryxBasePluginsGui.DateTime.DateTime; AlteryxBasePluginsGui.RegEx.RegEx; AlteryxBasePluginsGui.TextToColumns.TextToColumns; AlteryxBasePluginsGui.XMLParse.XMLParse
+[Transform]
+AlteryxBasePluginsGui.Arrange.Arrange; CountRecords.yxmc; AlteryxBasePluginsGui.CrossTab.CrossTab; AlteryxBasePluginsGui.MakeColumns.MakeColumns; AlteryxBasePluginsGui.RunningTotal.RunningTotal; AlteryxSpatialPluginsGui.Summarize.Summarize; AlteryxBasePluginsGui.Transpose.Transpose; WeightedAvg.yxmc
+[In-Database]
+LockInGui.LockInBrowse.LockInBrowse; LockInGui.LockInInput.LockInInput; LockInGui.LockInStreamIn.LockInStreamIn; LockInGui.LockInStreamOut.LockInStreamOut; LockInGui.LockInDynamicInput.LockInDynamicInput; LockInGui.LockInDynamicOutput.LockInDynamicOutput; LockInGui.LockInFilter.LockInFilter; LockInGui.LockInFormula.LockInFormula; LockInGui.LockInJoin.LockInJoin; LockInGui.LockInMacroInput.LockInMacroInput; LockInGui.LockInMacroOutput.LockInMacroOutput; LockInGui.LockInSample.LockInSample; LockInGui.LockInSelect.LockInSelect; LockInGui.LockInSummarize.LockInSummarize; LockInGui.LockInUnion.LockInUnion; LockInGui.LockInOutput.LockInOutput
+[Reporting]
+PortfolioPluginsGui.Email.Email; PortfolioPluginsGui.ComposerImage.PortfolioComposerImage; PlotlyCharting; PortfolioPluginsGui.ComposerLayout.PortfolioComposerLayout; Legend_Builder.yxmc; Legend_Splitter.yxmc; PortfolioPluginsGui.ComposerOverlay.Overlay; PortfolioPluginsGui.ComposerRender.PortfolioComposerRender; FooterMacro.yxmc; ReportHeader; AlteryxSpatialPluginsGui.ReportMap.ReportMap; PortfolioPluginsGui.ComposerText.PortfolioComposerText; PortfolioPluginsGui.ComposerTable.PortfolioComposerTable
+[Documentation]
+AlteryxGuiToolkit.TextBox.TextBox; AlteryxGuiToolkit.HtmlBox.HtmlBox; AlteryxGuiToolkit.ToolContainer.ToolContainer
+[Spatial]
+AlteryxSpatialPluginsGui.Buffer.Buffer; AlteryxSpatialPluginsGui.CreatePoints.CreatePoints; AlteryxSpatialPluginsGui.Distance.Distance; AlteryxSpatialPluginsGui.FindNearest.FindNearest; AlteryxSpatialPluginsGui.Generalize.Generalize; HeatMap.yxmc; AlteryxSpatialPluginsGui.MakeGrid.MakeGrid; Non_Overlapping_DT.yxmc; AlteryxSpatialPluginsGui.PolyBuild.PolyBuild; AlteryxSpatialPluginsGui.PolySplit.PolySplit; AlteryxSpatialPluginsGui.Smooth.Smooth; AlteryxSpatialPluginsGui.SpatialInfo.SpatialInfo; AlteryxSpatialPluginsGui.SpatialMatch.SpatialMatch; AlteryxSpatialPluginsGui.SpatialProcess.SpatialProcess; AlteryxSpatialPluginsGui.TradeArea.TradeArea
+[Interface]
+AlteryxGuiToolkit.Action.Action; AlteryxGuiToolkit.Questions.CheckBoxGroup.CheckBoxGroup; AlteryxGuiToolkit.Condition.Condition; AlteryxGuiToolkit.Questions.ControlParam.ControlParam; AlteryxGuiToolkit.Questions.Date.Date; AlteryxGuiToolkit.Questions.DcmConnection.QuestionDcmConnection; AlteryxGuiToolkit.Questions.DropDownListBox.DropDown; AlteryxGuiToolkit.Error.Error; AlteryxGuiToolkit.Questions.FileBrowse.FileBrowse; AlteryxGuiToolkit.Questions.FolderBrowse.FolderBrowse; AlteryxGuiToolkit.Questions.DropDownListBox.ListBox; AlteryxBasePluginsGui.MacroInput.MacroInput; AlteryxBasePluginsGui.MacroOutput.MacroOutput; AlteryxGuiToolkit.Questions.Map.Map; AlteryxGuiToolkit.Questions.NumericUpDown.NumericUpDown; AlteryxGuiToolkit.Questions.RadioButtonGroup.RadioButtonGroup; AlteryxGuiToolkit.Questions.TextBox.QuestionTextBox; AlteryxGuiToolkit.Questions.Tree.Tree
+[Data Investigation]
+Predictive Tools\Association_Analysis.yxmc; AlteryxBasePluginsGui.BasicDataProfile.BasicDataProfile; Predictive Tools\ContingencyTable.yxmc; Predictive Tools\Distribution_Analysis.yxmc; Predictive Tools\Field_Summary_Report.yxmc; Predictive Tools\Frequency.yxmc; Predictive Tools\Heat_Plot.yxmc; Predictive Tools\Histogram.yxmc; Importance Weights.yxmc; AlteryxBasePluginsGui.PearsonCorrelation.PearsonCorrelation; Predictive Tools\Plot_of_Means.yxmc; Predictive Tools\Scatterplot.yxmc; SpearmanCorrCoeff.yxmc; Predictive Tools\Violin_Plot.yxmc
+[Predictive]
+Predictive Tools\Boosted_Model.yxmc; Predictive Tools\Count_Regression.yxmc; CrossValidation; DataRobotModelFactory; DataRobotEnhancedPredictions; Decision_Tree; Predictive Tools\Forest_Model.yxmc; Predictive Tools\Gamma_Regression.yxmc; Predictive Tools\Lift_Chart.yxmc; Linear Regression; Logistic_Regression; Model Coefficients.yxmc; Predictive Tools\Model Comparison.yxmc; Predictive Tools\Naive_Bayes.yxmc; Predictive Tools\Nested_Test.yxmc; Predictive Tools\NetworkViz.yxmc; Predictive Tools\Neural_Network.yxmc; Score; Predictive Tools\Spline_Model.yxmc; Predictive Tools\Stepwise.yxmc; Predictive Tools\SVM_v2.yxmc; Predictive Tools\Survival Analysis.yxmc; Survival Score.yxmc; Predictive Tools\Test_of_Means.yxmc; Variance Inflation Factors.yxmc
+[AB Testing]
+Predictive Tools\AB_Analysis.yxmc; Predictive Tools\AB_Controls.yxmc; Predictive Tools\AB_Treatments.yxmc; Predictive Tools\AB_Trend.yxmc
+[Time Series]
+Predictive Tools\ARIMA.yxmc; Predictive Tools\ETS.yxmc; Predictive Tools\TS_Compare.yxmc; Predictive Tools\TS_Covariate_Forecast.yxmc; Predictive Tools\TimeSeriesFiller.yxmc; Predictive Tools\TS_Forecast.yxmc; TS Forecast Factory.yxmc; TS Model Factory.yxmc; Predictive Tools\TS_Plot.yxmc
+[Predictive Grouping]
+Predictive Tools\Append_Cluster.yxmc; Predictive Tools\Find_Nearest_Neighbors.yxmc; Predictive Tools\K-Centroids_Cluster_Analysis.yxmc; Predictive Tools\K-Centroids_Diagnostics.yxmc; Predictive Tools\MB_Affinity.yxmc; Predictive Tools\MB_Inspect.yxmc; Predictive Tools\MB_Rules.yxmc; Multidimensional Scaling.yxmc; Predictive Tools\Principal_Components.yxmc
+[Prescriptive]
+Optimization; SimSampling; SimScoring; SimSummary
+[Connectors]
+azure_data_lake_input; azure_data_lake_output; AdobeAnalytics_v3.0.0; lteryxConnectorGui.AmazonS3Download.AmazonS3Download; AlteryxConnectorGui.AmazonS3Upload.AmazonS3Upload; AnaplanInput_1_1_0; AnaplanOutput_1_1_0; AutomationAnywhere360_v1.0.0; BoxInput; BoxOutput; CognitiveServicesTextAnalytics; DataverseInput_v1.1.1; DataverseOutput_v1.1.1; DropboxInput_v1.1.2; DropboxOutput_v1.1.2; dynamics_crm_input_v1.0.2; dynamics_crm_output_v1.0.2; GoogleAnalytics_v8.0.0; GoogleAnalytics4Input_1_1_0; big_query_input_v3.0.0; big_query_output_v3.0.0; GoogleDriveInput; GoogleDriveOutput; google-sheets-input; google-sheets-output; marketo-append; marketo-input; marketo-output; PowerBIOutput; AlteryxConnectorGui.MongoInput.MongoInput; AlteryxConnectorGui.MongoOutput.MongoOutput; OneDriveInput; OneDriveOutput; Outlook365Input_v1.1.0; PowerAutomate_v1.0.1; PublishToTableauServer_v2.0.0; SalesforceInput_v4.2.4; SalesforceOutput_v1.3.1; ServiceNowInput_1_1_0; SharePointInput_2_4_0; SharePointOutput_2_4_0; AlteryxConnectorDotNet.SharepointInput.SharepointInput; AlteryxConnectorDotNet.SharepointOutput.SharepointOutput; TableauOutput_1_4_0
+[Address]
+AlteryxCASSGui.CASS.CASS; AlteryxCASSGui.CASSParse.CASSParse; ReverseGeocoder.yxmc; PortfolioPluginsGui.Geocoder.Geocoder; PortfolioExplorer.yxmc; AlteryxCASSGui.ZIP9Coder.ZIP9Coder
+[Demographic Analysis]
+PortfolioPluginsGui.AllocateAppend.AllocateAppend; PortfolioPluginsGui.AllocateInput.AllocateInput; PortfolioPluginsGui.AllocateMetaInfo.AllocateMetaInfo; PortfolioPluginsGui.AllocateReport.AllocateReport
+[Behavior Analysis (Deprecated)]
+PortfolioPluginsGui.SolocastMetaInfo.SolocastMetaInfo; PortfolioPluginsGui.SolocastClusterNum.SolocastClusterNum; PortfolioPluginsGui.SolocastCompare.SolocastCompare; PortfolioPluginsGui.SolocastCreateProfile.SolocastCreateProfile; PortfolioPluginsGui.SolocastDetailAsFields.SolocastDetailAsFields; Behavior_ProfileComparisonReport.yxmc; Macros\Behavior_ProfileDetailReport.yxmc; PortfolioPluginsGui.SolocastReadProfileSet.SolocastReadProfileSet; PortfolioPluginsGui.SolocastWriteProfileSet.SolocastWriteProfileSet; Behavior_ProfileRankReport.yxmc
+[Calgary]
+CalgaryPluginsGui.CalgaryInput.CalgaryInput; CalgaryPluginsGui.CalgaryJoin.CalgaryJoin; CalgaryLoadersGui.CalgaryLoader.CalgaryLoader; CalgaryPluginsGui.CalgaryCrossCount.CalgaryCrossCount; CalgaryPluginsGui.CalgaryCrossCountAppend.CalgaryCrossCountAppend
+[Developer]
+Custom Spark; AlteryxBasePluginsGui.APIOutput.APIOutput; Base64_Encoder.yxmc; AlteryxBasePluginsGui.BlobConvert.BlobConvert; AlteryxBasePluginsGui.BlobInput.BlobInput; AlteryxBasePluginsGui.BlobOutput.BlobOutput; AlteryxBasePluginsGui.BlockUntilDone.BlockUntilDone; AlteryxGuiToolkit.ControlContainer.ControlContainer; AlteryxBasePluginsGui.Detour.Detour; AlteryxBasePluginsGui.DetourEnd.DetourEnd; AlteryxConnectorGui.Download.Download; AlteryxBasePluginsGui.DynamicInput.DynamicInput; AlteryxBasePluginsGui.DynamicRename.DynamicRename; AlteryxBasePluginsGui.DynamicReplace.DynamicReplace; AlteryxBasePluginsGui.DynamicSelect.DynamicSelect; ExpectEqual.yxmc; AlteryxBasePluginsGui.FieldInfo.FieldInfo; GitHubCommit.yxmc; GetLastCommit.yxmc; AlteryxBasePluginsGui.JSONParse.JSONParse; JSONSchema_1_0; LicenseAPITool_1_0; AlteryxBasePluginsGui.Message.Message; JupyterCode; AlteryxRPluginGui.R; AlteryxBasePluginsGui.RunCommand.RunCommand; CReW_Runner\CReW_Runner.yxmc; ServerAPI_1_0; AlteryxBasePluginsGui.Test.Test; AlteryxBasePluginsGui.Throttle.Throttle
+[Laboratory]
+ConnectTools.ConnectJSONBuilder; ConnectTools.ConnectOutput; AlteryxBasePluginsGui.JSONBuild.JSONBuild; JupyterFlow; KeyValuePairExtraction; LockInGui.LockInTranspose.LockInTranspose; VisualLayout
+[Machine Learning]
+Modeling; BuildFeatures; Classification; DataHealth; FeatureTypes; Fit; CloudMLPredict; CloudMLUpload; Predict; Regression; Transformation
+[Text Mining]
+NamedEntityRecognition; PartOfSpeechTagger; Sentiment; TextClassification; TextPreProcessing; TextSummary; TopicModel; WordCloud; ZeroShotTextClassification
+[Computer Vision]
+Barcode; PDFInput; ImageOutput; ImageProcessing; ImageProfile; ImageRecognition; ImageTemplate; ImageToText; PDFToText
+[AI Tools]
+Invoice Extractor\Invoice Extractor.yxmc; LLMOverride_1_0; Precision Match\Precision_Match.yxmc; Prompt_1_0; Schema Fit\Schema_Fit.yxmc; Synthetic Generate\Synthetic_Generate.yxmc
+[Connect]
+ConnectTools.ConnectJSONBuilder; ConnectTools.ConnectOutput; OdbcLoader_v2
+[SDK Examples]
+HtmlGuiSdk

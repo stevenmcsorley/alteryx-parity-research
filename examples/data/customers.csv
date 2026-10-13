@@ -1,0 +1,7 @@
+customer_id,name,region,score
+101,Ada,UK,75
+102,Ben,EU,
+102,Ben Duplicate,EU,85
+103,Zoë,UK,92
+104,李,APAC,0
+105,,UK,-5

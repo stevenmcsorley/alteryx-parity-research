@@ -1,0 +1,324 @@
+id,category,name,xml_tool_name,user_role,documentation_url,source_state,implementation_status,verification_status
+in-out:auto-insights-uploader,In/Out,Auto Insights Uploader,AutoInsightsUploader,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+in-out:browse,In/Out,Browse,AlteryxBasePluginsGui.BrowseV2.BrowseV2,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+in-out:date-time-now,In/Out,Date Time Now,DateTimeNow,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-out:directory,In/Out,Directory,AlteryxBasePluginsGui.Directory.Directory,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+in-out:input-data,In/Out,Input Data,AlteryxBasePluginsGui.DbFileInput.DbFileInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+in-out:map-input,In/Out,Map Input,AlteryxSpatialPluginsGui.MapInput.MapInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-out:output-data,In/Out,Output Data,AlteryxBasePluginsGui.DbFileOutput.DbFileOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+in-out:text-input,In/Out,Text Input,AlteryxBasePluginsGui.TextInput.TextInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:auto-field,Preparation,Auto Field,AlteryxBasePluginsGui.AutoField.AutoField,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:create-samples,Preparation,Create Samples,Predictive Tools\Create_Samples.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:data-cleanse-pro,Preparation,Data Cleanse Pro,AlteryxBasePluginsGui.DataCleansePro.DataCleansePro,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:data-cleansing,Preparation,Data Cleansing,Cleanse.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:filter,Preparation,Filter,AlteryxBasePluginsGui.Filter.Filter,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:formula,Preparation,Formula,AlteryxBasePluginsGui.Formula.Formula,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:generate-rows,Preparation,Generate Rows,AlteryxBasePluginsGui.GenerateRows.GenerateRows,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:imputation,Preparation,Imputation,Imputation_v3.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:multi-field-binning,Preparation,Multi-Field Binning,MultiFieldBinning_v2.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:multi-field-formula,Preparation,Multi-Field Formula,AlteryxBasePluginsGui.MultiFieldFormula.MultiFieldFormula,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:multi-row-formula,Preparation,Multi-Row Formula,AlteryxBasePluginsGui.MultiRowFormula.MultiRowFormula,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:oversample-field,Preparation,Oversample Field,Predictive Tools\Oversample_Field.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:random-sample,Preparation,Random % Sample,RandomRecords.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:rank,Preparation,Rank,AlteryxBasePluginsGui.Ranking.Ranking,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:record-id,Preparation,Record ID,AlteryxBasePluginsGui.RecordID.RecordID,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:sample,Preparation,Sample,AlteryxBasePluginsGui.Sample.Sample,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:select,Preparation,Select,AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:select-records,Preparation,Select Records,SelectRecords.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:sort,Preparation,Sort,AlteryxBasePluginsGui.Sort.Sort,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:tile,Preparation,Tile,AlteryxBasePluginsGui.Tile.Tile,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+preparation:unique,Preparation,Unique,AlteryxBasePluginsGui.Unique.Unique,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+join:append-fields,Join,Append Fields,AlteryxBasePluginsGui.AppendFields.AppendFields,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+join:find-replace,Join,Find Replace,AlteryxBasePluginsGui.FindReplace.FindReplace,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+join:fuzzy-match,Join,Fuzzy Match,AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+join:join,Join,Join,AlteryxBasePluginsGui.Join.Join,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+join:join-multiple,Join,Join Multiple,AlteryxBasePluginsGui.JoinMultiple.JoinMultiple,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+join:make-group,Join,Make Group,AlteryxBasePluginsGui.MakeGroup.MakeGroup,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+join:union,Join,Union,AlteryxBasePluginsGui.Union.Union,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+parse:datetime,Parse,DateTime,AlteryxBasePluginsGui.DateTime.DateTime,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+parse:regex,Parse,RegEx,AlteryxBasePluginsGui.RegEx.RegEx,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+parse:text-to-columns,Parse,Text To Columns,AlteryxBasePluginsGui.TextToColumns.TextToColumns,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+parse:xml-parse,Parse,XML Parse,AlteryxBasePluginsGui.XMLParse.XMLParse,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+transform:arrange,Transform,Arrange,AlteryxBasePluginsGui.Arrange.Arrange,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+transform:count-records,Transform,Count Records,CountRecords.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+transform:cross-tab,Transform,Cross Tab,AlteryxBasePluginsGui.CrossTab.CrossTab,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+transform:make-columns,Transform,Make Columns,AlteryxBasePluginsGui.MakeColumns.MakeColumns,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+transform:running-total,Transform,Running Total,AlteryxBasePluginsGui.RunningTotal.RunningTotal,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+transform:summarize,Transform,Summarize,AlteryxSpatialPluginsGui.Summarize.Summarize,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+transform:transpose,Transform,Transpose,AlteryxBasePluginsGui.Transpose.Transpose,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+transform:weighted-average,Transform,Weighted Average,WeightedAvg.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:browse-in-db,In-Database,Browse In-DB,LockInGui.LockInBrowse.LockInBrowse,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:connect-in-db,In-Database,Connect In-DB,LockInGui.LockInInput.LockInInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:data-stream-in,In-Database,Data Stream In,LockInGui.LockInStreamIn.LockInStreamIn,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:data-stream-out,In-Database,Data Stream Out,LockInGui.LockInStreamOut.LockInStreamOut,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:dynamic-input-in-db,In-Database,Dynamic Input In-DB,LockInGui.LockInDynamicInput.LockInDynamicInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:dynamic-output-in-db,In-Database,Dynamic Output In-DB,LockInGui.LockInDynamicOutput.LockInDynamicOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:filter-in-db,In-Database,Filter In-DB,LockInGui.LockInFilter.LockInFilter,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:formula-in-db,In-Database,Formula In-DB,LockInGui.LockInFormula.LockInFormula,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:join-in-db,In-Database,Join In-DB,LockInGui.LockInJoin.LockInJoin,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:macro-input-in-db,In-Database,Macro Input In-DB,LockInGui.LockInMacroInput.LockInMacroInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:macro-output-in-db,In-Database,Macro Output In-DB,LockInGui.LockInMacroOutput.LockInMacroOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:sample-in-db,In-Database,Sample In-DB,LockInGui.LockInSample.LockInSample,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:select-in-db,In-Database,Select In-DB,LockInGui.LockInSelect.LockInSelect,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:summarize-in-db,In-Database,Summarize In-DB,LockInGui.LockInSummarize.LockInSummarize,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:union-in-db,In-Database,Union In-DB,LockInGui.LockInUnion.LockInUnion,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-database:write-data-in-db,In-Database,Write Data In-DB,LockInGui.LockInOutput.LockInOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:email,Reporting,Email,PortfolioPluginsGui.Email.Email,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:image,Reporting,Image,PortfolioPluginsGui.ComposerImage.PortfolioComposerImage,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:interactive-chart,Reporting,Interactive Chart,PlotlyCharting,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:layout,Reporting,Layout,PortfolioPluginsGui.ComposerLayout.PortfolioComposerLayout,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:map-legend-builder,Reporting,Map Legend Builder,Legend_Builder.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:map-legend-splitter,Reporting,Map Legend Splitter,Legend_Splitter.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:overlay,Reporting,Overlay,PortfolioPluginsGui.ComposerOverlay.Overlay,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:render,Reporting,Render,PortfolioPluginsGui.ComposerRender.PortfolioComposerRender,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:report-footer,Reporting,Report Footer,FooterMacro.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:report-header,Reporting,Report Header,ReportHeader,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:report-map,Reporting,Report Map,AlteryxSpatialPluginsGui.ReportMap.ReportMap,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:report-text,Reporting,Report Text,PortfolioPluginsGui.ComposerText.PortfolioComposerText,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+reporting:table,Reporting,Table,PortfolioPluginsGui.ComposerTable.PortfolioComposerTable,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+documentation:comment,Documentation,Comment,AlteryxGuiToolkit.TextBox.TextBox,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+documentation:explorer-box,Documentation,Explorer Box,AlteryxGuiToolkit.HtmlBox.HtmlBox,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+documentation:tool-container,Documentation,Tool Container,AlteryxGuiToolkit.ToolContainer.ToolContainer,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:buffer,Spatial,Buffer,AlteryxSpatialPluginsGui.Buffer.Buffer,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:create-points,Spatial,Create Points,AlteryxSpatialPluginsGui.CreatePoints.CreatePoints,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:distance,Spatial,Distance,AlteryxSpatialPluginsGui.Distance.Distance,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:find-nearest,Spatial,Find Nearest,AlteryxSpatialPluginsGui.FindNearest.FindNearest,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:generalize,Spatial,Generalize,AlteryxSpatialPluginsGui.Generalize.Generalize,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:heat-map,Spatial,Heat Map,HeatMap.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:make-grid,Spatial,Make Grid,AlteryxSpatialPluginsGui.MakeGrid.MakeGrid,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:non-overlap-drivetime,Spatial,Non Overlap Drivetime,Non_Overlapping_DT.yxmc,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:poly-build,Spatial,Poly-Build,AlteryxSpatialPluginsGui.PolyBuild.PolyBuild,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:poly-split,Spatial,Poly-Split,AlteryxSpatialPluginsGui.PolySplit.PolySplit,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:smooth,Spatial,Smooth,AlteryxSpatialPluginsGui.Smooth.Smooth,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:spatial-info,Spatial,Spatial Info,AlteryxSpatialPluginsGui.SpatialInfo.SpatialInfo,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:spatial-match,Spatial,Spatial Match,AlteryxSpatialPluginsGui.SpatialMatch.SpatialMatch,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:spatial-process,Spatial,Spatial Process,AlteryxSpatialPluginsGui.SpatialProcess.SpatialProcess,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+spatial:trade-area,Spatial,Trade Area,AlteryxSpatialPluginsGui.TradeArea.TradeArea,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+interface:action,Interface,Action,AlteryxGuiToolkit.Action.Action,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:check-box,Interface,Check Box,AlteryxGuiToolkit.Questions.CheckBoxGroup.CheckBoxGroup,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:condition,Interface,Condition,AlteryxGuiToolkit.Condition.Condition,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:control-parameter,Interface,Control Parameter,AlteryxGuiToolkit.Questions.ControlParam.ControlParam,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:date,Interface,Date,AlteryxGuiToolkit.Questions.Date.Date,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:dcm-connection,Interface,DCM Connection,AlteryxGuiToolkit.Questions.DcmConnection.QuestionDcmConnection,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:drop-down,Interface,Drop Down,AlteryxGuiToolkit.Questions.DropDownListBox.DropDown,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:error-message,Interface,Error Message,AlteryxGuiToolkit.Error.Error,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:file-browse,Interface,File Browse,AlteryxGuiToolkit.Questions.FileBrowse.FileBrowse,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:folder-browse,Interface,Folder Browse,AlteryxGuiToolkit.Questions.FolderBrowse.FolderBrowse,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:list-box,Interface,List Box,AlteryxGuiToolkit.Questions.DropDownListBox.ListBox,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:macro-input,Interface,Macro Input,AlteryxBasePluginsGui.MacroInput.MacroInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:macro-output,Interface,Macro Output,AlteryxBasePluginsGui.MacroOutput.MacroOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:map,Interface,Map,AlteryxGuiToolkit.Questions.Map.Map,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:numeric-up-down,Interface,Numeric Up Down,AlteryxGuiToolkit.Questions.NumericUpDown.NumericUpDown,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:radio-button,Interface,Radio Button,AlteryxGuiToolkit.Questions.RadioButtonGroup.RadioButtonGroup,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:text-box,Interface,Text Box,AlteryxGuiToolkit.Questions.TextBox.QuestionTextBox,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+interface:tree,Interface,Tree,AlteryxGuiToolkit.Questions.Tree.Tree,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:association-analysis,Data Investigation,Association Analysis,Predictive Tools\Association_Analysis.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:basic-data-profile,Data Investigation,Basic Data Profile,AlteryxBasePluginsGui.BasicDataProfile.BasicDataProfile,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:contingency-table,Data Investigation,Contingency Table,Predictive Tools\ContingencyTable.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:distribution-analysis,Data Investigation,Distribution Analysis,Predictive Tools\Distribution_Analysis.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:field-summary,Data Investigation,Field Summary,Predictive Tools\Field_Summary_Report.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:frequency-table,Data Investigation,Frequency Table,Predictive Tools\Frequency.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:heat-plot,Data Investigation,Heat Plot,Predictive Tools\Heat_Plot.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:histogram,Data Investigation,Histogram,Predictive Tools\Histogram.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:importance-weights,Data Investigation,Importance Weights,Importance Weights.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:pearson-correlation,Data Investigation,Pearson Correlation,AlteryxBasePluginsGui.PearsonCorrelation.PearsonCorrelation,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:plot-of-means,Data Investigation,Plot of Means,Predictive Tools\Plot_of_Means.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:scatterplot,Data Investigation,Scatterplot,Predictive Tools\Scatterplot.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:spearman-correlation,Data Investigation,Spearman Correlation,SpearmanCorrCoeff.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+data-investigation:violin-plot,Data Investigation,Violin Plot,Predictive Tools\Violin_Plot.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:boosted-model,Predictive,Boosted Model,Predictive Tools\Boosted_Model.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:count-regression,Predictive,Count Regression,Predictive Tools\Count_Regression.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:cross-validation,Predictive,Cross-Validation,CrossValidation,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:datarobot-automodel,Predictive,DataRobot Automodel,DataRobotModelFactory,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:datarobot-predict,Predictive,DataRobot Predict,DataRobotEnhancedPredictions,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:decision-tree,Predictive,Decision Tree,Decision_Tree,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:forest-model,Predictive,Forest Model,Predictive Tools\Forest_Model.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:gamma-regression,Predictive,Gamma Regression,Predictive Tools\Gamma_Regression.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:lift-chart,Predictive,Lift Chart,Predictive Tools\Lift_Chart.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:linear-regression,Predictive,Linear Regression,Linear Regression,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:logistic-regression,Predictive,Logistic Regression,Logistic_Regression,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:model-coefficients,Predictive,Model Coefficients,Model Coefficients.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:model-comparison,Predictive,Model Comparison,Predictive Tools\Model Comparison.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:naive-bayes-classifier,Predictive,Naive Bayes Classifier,Predictive Tools\Naive_Bayes.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:nested-test,Predictive,Nested Test,Predictive Tools\Nested_Test.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:network-analysis,Predictive,Network Analysis,Predictive Tools\NetworkViz.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:neural-network,Predictive,Neural Network,Predictive Tools\Neural_Network.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:score,Predictive,Score,Score,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:spline-model,Predictive,Spline Model,Predictive Tools\Spline_Model.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:stepwise,Predictive,Stepwise,Predictive Tools\Stepwise.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:support-vector-machine,Predictive,Support Vector Machine,Predictive Tools\SVM_v2.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:survival-analysis,Predictive,Survival Analysis,Predictive Tools\Survival Analysis.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:survival-score,Predictive,Survival Score,Survival Score.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:test-of-means,Predictive,Test of Means,Predictive Tools\Test_of_Means.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive:variance-inflation-factors,Predictive,Variance Inflation Factors,Variance Inflation Factors.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+ab-testing:ab-analysis,AB Testing,AB Analysis,Predictive Tools\AB_Analysis.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+ab-testing:ab-controls,AB Testing,AB Controls,Predictive Tools\AB_Controls.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+ab-testing:ab-treatments,AB Testing,AB Treatments,Predictive Tools\AB_Treatments.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+ab-testing:ab-trend,AB Testing,AB Trend,Predictive Tools\AB_Trend.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+time-series:arima,Time Series,ARIMA,Predictive Tools\ARIMA.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+time-series:ets,Time Series,ETS,Predictive Tools\ETS.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+time-series:ts-compare,Time Series,TS Compare,Predictive Tools\TS_Compare.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+time-series:ts-covariate-forecast,Time Series,TS Covariate Forecast,Predictive Tools\TS_Covariate_Forecast.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+time-series:ts-filler,Time Series,TS Filler,Predictive Tools\TimeSeriesFiller.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+time-series:ts-forecast,Time Series,TS Forecast,Predictive Tools\TS_Forecast.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+time-series:ts-forecast-factory,Time Series,TS Forecast Factory,TS Forecast Factory.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+time-series:ts-model-factory,Time Series,TS Model Factory,TS Model Factory.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+time-series:ts-plot,Time Series,TS Plot,Predictive Tools\TS_Plot.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive-grouping:append-cluster,Predictive Grouping,Append Cluster,Predictive Tools\Append_Cluster.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive-grouping:find-nearest-neighbors,Predictive Grouping,Find Nearest Neighbors,Predictive Tools\Find_Nearest_Neighbors.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive-grouping:k-centroids-cluster-analysis,Predictive Grouping,K-Centroids Cluster Analysis,Predictive Tools\K-Centroids_Cluster_Analysis.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive-grouping:k-centroids-diagnostics,Predictive Grouping,K-Centroids Diagnostics,Predictive Tools\K-Centroids_Diagnostics.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive-grouping:mb-affinity,Predictive Grouping,MB Affinity,Predictive Tools\MB_Affinity.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive-grouping:mb-inspect,Predictive Grouping,MB Inspect,Predictive Tools\MB_Inspect.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive-grouping:mb-rules,Predictive Grouping,MB Rules,Predictive Tools\MB_Rules.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive-grouping:multidimensional-scaling,Predictive Grouping,Multidimensional Scaling,Multidimensional Scaling.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+predictive-grouping:principal-components,Predictive Grouping,Principal Components,Predictive Tools\Principal_Components.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+prescriptive:optimization,Prescriptive,Optimization,Optimization,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+prescriptive:simulation-sampling,Prescriptive,Simulation Sampling,SimSampling,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+prescriptive:simulation-scoring,Prescriptive,Simulation Scoring,SimScoring,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+prescriptive:simulation-summary,Prescriptive,Simulation Summary,SimSummary,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:azure-data-lake-file-input,Connectors,Azure Data Lake File Input,azure_data_lake_input,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:azure-data-lake-file-output,Connectors,Azure Data Lake File Output,azure_data_lake_output,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:adobe-analytics,Connectors,Adobe Analytics,AdobeAnalytics_v3.0.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:amazon-s3-download,Connectors,Amazon S3 Download,lteryxConnectorGui.AmazonS3Download.AmazonS3Download,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:amazon-s3-upload,Connectors,Amazon S3 Upload,AlteryxConnectorGui.AmazonS3Upload.AmazonS3Upload,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:anaplan-input,Connectors,Anaplan Input,AnaplanInput_1_1_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:anaplan-output,Connectors,Anaplan Output,AnaplanOutput_1_1_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:automation-anywhere-360,Connectors,Automation Anywhere 360,AutomationAnywhere360_v1.0.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:box-input,Connectors,Box Input,BoxInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:box-output,Connectors,Box Output,BoxOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:cognitive-services-text-analytics,Connectors,Cognitive Services Text Analytics,CognitiveServicesTextAnalytics,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:dataverse-input,Connectors,Dataverse Input,DataverseInput_v1.1.1,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:dataverse-output,Connectors,Dataverse Output,DataverseOutput_v1.1.1,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:dropbox-input,Connectors,Dropbox Input,DropboxInput_v1.1.2,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:dropbox-output,Connectors,Dropbox Output,DropboxOutput_v1.1.2,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:dynamics-crm-input,Connectors,Dynamics CRM Input,dynamics_crm_input_v1.0.2,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:dynamics-crm-output,Connectors,Dynamics CRM Output,dynamics_crm_output_v1.0.2,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:google-analytics,Connectors,Google Analytics,GoogleAnalytics_v8.0.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:google-analytics-4-input,Connectors,Google Analytics 4 Input,GoogleAnalytics4Input_1_1_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:google-bigquery-input,Connectors,Google BigQuery Input,big_query_input_v3.0.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:google-bigquery-output,Connectors,Google BigQuery Output,big_query_output_v3.0.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:google-drive-input,Connectors,Google Drive Input,GoogleDriveInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:google-drive-output,Connectors,Google Drive Output,GoogleDriveOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:google-sheets-input,Connectors,Google Sheets Input,google-sheets-input,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:google-sheets-output,Connectors,Google Sheets Output,google-sheets-output,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:marketo-append,Connectors,Marketo Append,marketo-append,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:marketo-input,Connectors,Marketo Input,marketo-input,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:marketo-output,Connectors,Marketo Output,marketo-output,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:microsoft-power-bi-output,Connectors,Microsoft Power BI Output,PowerBIOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:mongodb-input,Connectors,MongoDB Input,AlteryxConnectorGui.MongoInput.MongoInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:mongodb-output,Connectors,MongoDB Output,AlteryxConnectorGui.MongoOutput.MongoOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:onedrive-input,Connectors,OneDrive Input,OneDriveInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:onedrive-output,Connectors,OneDrive Output,OneDriveOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:outlook-365-input,Connectors,Outlook 365 Input,Outlook365Input_v1.1.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:power-automate,Connectors,Power Automate,PowerAutomate_v1.0.1,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:publish-to-tableau-server,Connectors,Publish to Tableau Server,PublishToTableauServer_v2.0.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:salesforce-input,Connectors,Salesforce Input,SalesforceInput_v4.2.4,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:salesforce-output-new,Connectors,Salesforce Output (New),SalesforceOutput_v1.3.1,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:servicenow-input,Connectors,ServiceNow Input,ServiceNowInput_1_1_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:sharepoint-files-input,Connectors,SharePoint Files Input,SharePointInput_2_4_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:sharepoint-files-output,Connectors,SharePoint Files Output,SharePointOutput_2_4_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:sharepoint-list-input,Connectors,SharePoint List Input,AlteryxConnectorDotNet.SharepointInput.SharepointInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:sharepoint-list-output,Connectors,SharePoint List Output,AlteryxConnectorDotNet.SharepointOutput.SharepointOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+connectors:tableau-output,Connectors,Tableau Output,TableauOutput_1_4_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+address:cass,Address,CASS,AlteryxCASSGui.CASS.CASS,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+address:parse-address,Address,Parse Address,AlteryxCASSGui.CASSParse.CASSParse,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+address:reverse-geocoder,Address,Reverse Geocoder,ReverseGeocoder.yxmc,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+address:street-geocoder,Address,Street Geocoder,PortfolioPluginsGui.Geocoder.Geocoder,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+address:us-geocoder,Address,US Geocoder,PortfolioExplorer.yxmc,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+address:us-zip9-coder,Address,US ZIP9 Coder,AlteryxCASSGui.ZIP9Coder.ZIP9Coder,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+demographic-analysis:allocate-append,Demographic Analysis,Allocate Append,PortfolioPluginsGui.AllocateAppend.AllocateAppend,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+demographic-analysis:allocate-input,Demographic Analysis,Allocate Input,PortfolioPluginsGui.AllocateInput.AllocateInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+demographic-analysis:allocate-metainfo,Demographic Analysis,Allocate Metainfo,PortfolioPluginsGui.AllocateMetaInfo.AllocateMetaInfo,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+demographic-analysis:allocate-report,Demographic Analysis,Allocate Report,PortfolioPluginsGui.AllocateReport.AllocateReport,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+behavior-analysis-deprecated:behavior-metainfo,Behavior Analysis (Deprecated),Behavior Metainfo,PortfolioPluginsGui.SolocastMetaInfo.SolocastMetaInfo,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+behavior-analysis-deprecated:cluster-code,Behavior Analysis (Deprecated),Cluster Code,PortfolioPluginsGui.SolocastClusterNum.SolocastClusterNum,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+behavior-analysis-deprecated:compare-behavior,Behavior Analysis (Deprecated),Compare Behavior,PortfolioPluginsGui.SolocastCompare.SolocastCompare,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+behavior-analysis-deprecated:create-profile,Behavior Analysis (Deprecated),Create Profile,PortfolioPluginsGui.SolocastCreateProfile.SolocastCreateProfile,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+behavior-analysis-deprecated:detail-fields,Behavior Analysis (Deprecated),Detail Fields,PortfolioPluginsGui.SolocastDetailAsFields.SolocastDetailAsFields,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+behavior-analysis-deprecated:profile-comparison-report,Behavior Analysis (Deprecated),Profile Comparison Report,Behavior_ProfileComparisonReport.yxmc,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+behavior-analysis-deprecated:profile-detail-report,Behavior Analysis (Deprecated),Profile Detail Report,Macros\Behavior_ProfileDetailReport.yxmc,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+behavior-analysis-deprecated:profile-input,Behavior Analysis (Deprecated),Profile Input,PortfolioPluginsGui.SolocastReadProfileSet.SolocastReadProfileSet,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+behavior-analysis-deprecated:profile-output,Behavior Analysis (Deprecated),Profile Output,PortfolioPluginsGui.SolocastWriteProfileSet.SolocastWriteProfileSet,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+behavior-analysis-deprecated:profile-rank-report,Behavior Analysis (Deprecated),Profile Rank Report,Behavior_ProfileRankReport.yxmc,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
+calgary:calgary-input,Calgary,Calgary Input,CalgaryPluginsGui.CalgaryInput.CalgaryInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+calgary:calgary-join,Calgary,Calgary Join,CalgaryPluginsGui.CalgaryJoin.CalgaryJoin,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+calgary:calgary-cross-count,Calgary,Calgary Cross Count,CalgaryLoadersGui.CalgaryLoader.CalgaryLoader,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+calgary:calgary-cross-count-append,Calgary,Calgary Cross Count Append,CalgaryPluginsGui.CalgaryCrossCount.CalgaryCrossCount,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+calgary:calgary-loader,Calgary,Calgary Loader,CalgaryPluginsGui.CalgaryCrossCountAppend.CalgaryCrossCountAppend,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:apache-spark-code,Developer,Apache Spark Code,Custom Spark,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:api-output,Developer,API Output,AlteryxBasePluginsGui.APIOutput.APIOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:base64-encoder,Developer,Base64 Encoder,Base64_Encoder.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:blob-convert,Developer,Blob Convert,AlteryxBasePluginsGui.BlobConvert.BlobConvert,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:blob-input,Developer,Blob Input,AlteryxBasePluginsGui.BlobInput.BlobInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:blob-output,Developer,Blob Output,AlteryxBasePluginsGui.BlobOutput.BlobOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:block-until-done,Developer,Block Until Done,AlteryxBasePluginsGui.BlockUntilDone.BlockUntilDone,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+developer:control-container,Developer,Control Container,AlteryxGuiToolkit.ControlContainer.ControlContainer,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+developer:detour,Developer,Detour,AlteryxBasePluginsGui.Detour.Detour,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:detour-end,Developer,Detour End,AlteryxBasePluginsGui.DetourEnd.DetourEnd,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:download,Developer,Download,AlteryxConnectorGui.Download.Download,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:dynamic-input,Developer,Dynamic Input,AlteryxBasePluginsGui.DynamicInput.DynamicInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+developer:dynamic-rename,Developer,Dynamic Rename,AlteryxBasePluginsGui.DynamicRename.DynamicRename,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+developer:dynamic-replace,Developer,Dynamic Replace,AlteryxBasePluginsGui.DynamicReplace.DynamicReplace,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:dynamic-select,Developer,Dynamic Select,AlteryxBasePluginsGui.DynamicSelect.DynamicSelect,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:expect-equals,Developer,Expect Equals,ExpectEqual.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:field-info,Developer,Field Info,AlteryxBasePluginsGui.FieldInfo.FieldInfo,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:github-commit,Developer,GitHub Commit,GitHubCommit.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:github-get-last-commit,Developer,GitHub Get Last Commit,GetLastCommit.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:json-parse,Developer,JSON Parse,AlteryxBasePluginsGui.JSONParse.JSONParse,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:json-schema,Developer,JSON Schema,JSONSchema_1_0,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:license-api,Developer,License API,LicenseAPITool_1_0,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:message,Developer,Message,AlteryxBasePluginsGui.Message.Message,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
+developer:python,Developer,Python,JupyterCode,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:r,Developer,R,AlteryxRPluginGui.R,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:run-command,Developer,Run Command,AlteryxBasePluginsGui.RunCommand.RunCommand,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:runner,Developer,Runner,CReW_Runner\CReW_Runner.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:server-api,Developer,Server API,ServerAPI_1_0,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:test,Developer,Test,AlteryxBasePluginsGui.Test.Test,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+developer:throttle,Developer,Throttle,AlteryxBasePluginsGui.Throttle.Throttle,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+laboratory:connect-json-builder,Laboratory,Connect JSON Builder,ConnectTools.ConnectJSONBuilder,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+laboratory:connect-output,Laboratory,Connect Output,ConnectTools.ConnectOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+laboratory:json-build,Laboratory,JSON Build,AlteryxBasePluginsGui.JSONBuild.JSONBuild,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+laboratory:jupyter-flow,Laboratory,Jupyter Flow,JupyterFlow,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+laboratory:key-value-pair-extraction,Laboratory,Key-Value Pair Extraction,KeyValuePairExtraction,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+laboratory:transpose-in-db,Laboratory,Transpose In-DB,LockInGui.LockInTranspose.LockInTranspose,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+laboratory:visual-layout,Laboratory,Visual Layout,VisualLayout,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+machine-learning:assisted-modeling,Machine Learning,Assisted Modeling,Modeling,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+machine-learning:build-features,Machine Learning,Build Features,BuildFeatures,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+machine-learning:classification,Machine Learning,Classification,Classification,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+machine-learning:data-health,Machine Learning,Data Health,DataHealth,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+machine-learning:feature-types,Machine Learning,Feature Types,FeatureTypes,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+machine-learning:fit,Machine Learning,Fit,Fit,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+machine-learning:machine-learning-predict,Machine Learning,Machine Learning Predict,CloudMLPredict,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+machine-learning:machine-learning-send,Machine Learning,Machine Learning Send,CloudMLUpload,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+machine-learning:predict,Machine Learning,Predict,Predict,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+machine-learning:regression,Machine Learning,Regression,Regression,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+machine-learning:transformation,Machine Learning,Transformation,Transformation,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+text-mining:named-entity-recognition,Text Mining,Named Entity Recognition,NamedEntityRecognition,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+text-mining:part-of-speech-tagger,Text Mining,Part-of-Speech Tagger,PartOfSpeechTagger,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+text-mining:sentiment-analysis,Text Mining,Sentiment Analysis,Sentiment,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+text-mining:text-classification,Text Mining,Text Classification,TextClassification,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+text-mining:text-pre-processing,Text Mining,Text Pre-processing,TextPreProcessing,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+text-mining:text-summary,Text Mining,Text Summary,TextSummary,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+text-mining:topic-modeling,Text Mining,Topic Modeling,TopicModel,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+text-mining:word-cloud,Text Mining,Word Cloud,WordCloud,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+text-mining:zero-shot-text-classification,Text Mining,Zero-shot Text Classification,ZeroShotTextClassification,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+computer-vision:barcode-tool,Computer Vision,Barcode Tool,Barcode,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+computer-vision:image-input,Computer Vision,Image Input,PDFInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+computer-vision:image-output,Computer Vision,Image Output,ImageOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+computer-vision:image-processing,Computer Vision,Image Processing,ImageProcessing,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+computer-vision:image-profile,Computer Vision,Image Profile,ImageProfile,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+computer-vision:image-recognition,Computer Vision,Image Recognition,ImageRecognition,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+computer-vision:image-template,Computer Vision,Image Template,ImageTemplate,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+computer-vision:image-to-text,Computer Vision,Image to Text,ImageToText,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+computer-vision:pdf-to-text,Computer Vision,PDF to Text,PDFToText,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+ai-tools:invoice-extractor,AI Tools,Invoice Extractor,Invoice Extractor\Invoice Extractor.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+ai-tools:llm-override,AI Tools,LLM Override,LLMOverride_1_0,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+ai-tools:precision-match,AI Tools,Precision Match,Precision Match\Precision_Match.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+ai-tools:prompt,AI Tools,Prompt,Prompt_1_0,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+ai-tools:schema-fit,AI Tools,Schema Fit,Schema Fit\Schema_Fit.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+ai-tools:synthetic-input,AI Tools,Synthetic Input,Synthetic Generate\Synthetic_Generate.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+connect:connect-json-builder,Connect,Connect JSON Builder,ConnectTools.ConnectJSONBuilder,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+connect:connect-output,Connect,Connect Output,ConnectTools.ConnectOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+connect:odbc-loader,Connect,ODBC Loader,OdbcLoader_v2,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+sdk-examples:html-gui-library,SDK Examples,HTML - GUI Library,HtmlGuiSdk,Full,,public-list-manually-transcribed-xml,not-started,not-tested

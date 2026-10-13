@@ -1,0 +1,6465 @@
+{
+  "notes": "Coverage requirements only. No tests have been executed.",
+  "tools": [
+    {
+      "tool_id": "in-out:auto-insights-uploader",
+      "category": "In/Out",
+      "name": "Auto Insights Uploader",
+      "xml_tool_name": "AutoInsightsUploader",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-out:browse",
+      "category": "In/Out",
+      "name": "Browse",
+      "xml_tool_name": "AlteryxBasePluginsGui.BrowseV2.BrowseV2",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-out:date-time-now",
+      "category": "In/Out",
+      "name": "Date Time Now",
+      "xml_tool_name": "DateTimeNow",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-out:directory",
+      "category": "In/Out",
+      "name": "Directory",
+      "xml_tool_name": "AlteryxBasePluginsGui.Directory.Directory",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-out:input-data",
+      "category": "In/Out",
+      "name": "Input Data",
+      "xml_tool_name": "AlteryxBasePluginsGui.DbFileInput.DbFileInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-out:map-input",
+      "category": "In/Out",
+      "name": "Map Input",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.MapInput.MapInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-out:output-data",
+      "category": "In/Out",
+      "name": "Output Data",
+      "xml_tool_name": "AlteryxBasePluginsGui.DbFileOutput.DbFileOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-out:text-input",
+      "category": "In/Out",
+      "name": "Text Input",
+      "xml_tool_name": "AlteryxBasePluginsGui.TextInput.TextInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:auto-field",
+      "category": "Preparation",
+      "name": "Auto Field",
+      "xml_tool_name": "AlteryxBasePluginsGui.AutoField.AutoField",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:create-samples",
+      "category": "Preparation",
+      "name": "Create Samples",
+      "xml_tool_name": "Predictive Tools\\Create_Samples.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:data-cleanse-pro",
+      "category": "Preparation",
+      "name": "Data Cleanse Pro",
+      "xml_tool_name": "AlteryxBasePluginsGui.DataCleansePro.DataCleansePro",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:data-cleansing",
+      "category": "Preparation",
+      "name": "Data Cleansing",
+      "xml_tool_name": "Cleanse.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:filter",
+      "category": "Preparation",
+      "name": "Filter",
+      "xml_tool_name": "AlteryxBasePluginsGui.Filter.Filter",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:formula",
+      "category": "Preparation",
+      "name": "Formula",
+      "xml_tool_name": "AlteryxBasePluginsGui.Formula.Formula",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:generate-rows",
+      "category": "Preparation",
+      "name": "Generate Rows",
+      "xml_tool_name": "AlteryxBasePluginsGui.GenerateRows.GenerateRows",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:imputation",
+      "category": "Preparation",
+      "name": "Imputation",
+      "xml_tool_name": "Imputation_v3.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:multi-field-binning",
+      "category": "Preparation",
+      "name": "Multi-Field Binning",
+      "xml_tool_name": "MultiFieldBinning_v2.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:multi-field-formula",
+      "category": "Preparation",
+      "name": "Multi-Field Formula",
+      "xml_tool_name": "AlteryxBasePluginsGui.MultiFieldFormula.MultiFieldFormula",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:multi-row-formula",
+      "category": "Preparation",
+      "name": "Multi-Row Formula",
+      "xml_tool_name": "AlteryxBasePluginsGui.MultiRowFormula.MultiRowFormula",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:oversample-field",
+      "category": "Preparation",
+      "name": "Oversample Field",
+      "xml_tool_name": "Predictive Tools\\Oversample_Field.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:random-sample",
+      "category": "Preparation",
+      "name": "Random % Sample",
+      "xml_tool_name": "RandomRecords.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:rank",
+      "category": "Preparation",
+      "name": "Rank",
+      "xml_tool_name": "AlteryxBasePluginsGui.Ranking.Ranking",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:record-id",
+      "category": "Preparation",
+      "name": "Record ID",
+      "xml_tool_name": "AlteryxBasePluginsGui.RecordID.RecordID",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:sample",
+      "category": "Preparation",
+      "name": "Sample",
+      "xml_tool_name": "AlteryxBasePluginsGui.Sample.Sample",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:select",
+      "category": "Preparation",
+      "name": "Select",
+      "xml_tool_name": "AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:select-records",
+      "category": "Preparation",
+      "name": "Select Records",
+      "xml_tool_name": "SelectRecords.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:sort",
+      "category": "Preparation",
+      "name": "Sort",
+      "xml_tool_name": "AlteryxBasePluginsGui.Sort.Sort",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:tile",
+      "category": "Preparation",
+      "name": "Tile",
+      "xml_tool_name": "AlteryxBasePluginsGui.Tile.Tile",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "preparation:unique",
+      "category": "Preparation",
+      "name": "Unique",
+      "xml_tool_name": "AlteryxBasePluginsGui.Unique.Unique",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "join:append-fields",
+      "category": "Join",
+      "name": "Append Fields",
+      "xml_tool_name": "AlteryxBasePluginsGui.AppendFields.AppendFields",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "join:find-replace",
+      "category": "Join",
+      "name": "Find Replace",
+      "xml_tool_name": "AlteryxBasePluginsGui.FindReplace.FindReplace",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "join:fuzzy-match",
+      "category": "Join",
+      "name": "Fuzzy Match",
+      "xml_tool_name": "AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "join:join",
+      "category": "Join",
+      "name": "Join",
+      "xml_tool_name": "AlteryxBasePluginsGui.Join.Join",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "join:join-multiple",
+      "category": "Join",
+      "name": "Join Multiple",
+      "xml_tool_name": "AlteryxBasePluginsGui.JoinMultiple.JoinMultiple",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "join:make-group",
+      "category": "Join",
+      "name": "Make Group",
+      "xml_tool_name": "AlteryxBasePluginsGui.MakeGroup.MakeGroup",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "join:union",
+      "category": "Join",
+      "name": "Union",
+      "xml_tool_name": "AlteryxBasePluginsGui.Union.Union",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "parse:datetime",
+      "category": "Parse",
+      "name": "DateTime",
+      "xml_tool_name": "AlteryxBasePluginsGui.DateTime.DateTime",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "parse:regex",
+      "category": "Parse",
+      "name": "RegEx",
+      "xml_tool_name": "AlteryxBasePluginsGui.RegEx.RegEx",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "parse:text-to-columns",
+      "category": "Parse",
+      "name": "Text To Columns",
+      "xml_tool_name": "AlteryxBasePluginsGui.TextToColumns.TextToColumns",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "parse:xml-parse",
+      "category": "Parse",
+      "name": "XML Parse",
+      "xml_tool_name": "AlteryxBasePluginsGui.XMLParse.XMLParse",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "transform:arrange",
+      "category": "Transform",
+      "name": "Arrange",
+      "xml_tool_name": "AlteryxBasePluginsGui.Arrange.Arrange",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "transform:count-records",
+      "category": "Transform",
+      "name": "Count Records",
+      "xml_tool_name": "CountRecords.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "transform:cross-tab",
+      "category": "Transform",
+      "name": "Cross Tab",
+      "xml_tool_name": "AlteryxBasePluginsGui.CrossTab.CrossTab",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "transform:make-columns",
+      "category": "Transform",
+      "name": "Make Columns",
+      "xml_tool_name": "AlteryxBasePluginsGui.MakeColumns.MakeColumns",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "transform:running-total",
+      "category": "Transform",
+      "name": "Running Total",
+      "xml_tool_name": "AlteryxBasePluginsGui.RunningTotal.RunningTotal",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "transform:summarize",
+      "category": "Transform",
+      "name": "Summarize",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.Summarize.Summarize",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "transform:transpose",
+      "category": "Transform",
+      "name": "Transpose",
+      "xml_tool_name": "AlteryxBasePluginsGui.Transpose.Transpose",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "transform:weighted-average",
+      "category": "Transform",
+      "name": "Weighted Average",
+      "xml_tool_name": "WeightedAvg.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:browse-in-db",
+      "category": "In-Database",
+      "name": "Browse In-DB",
+      "xml_tool_name": "LockInGui.LockInBrowse.LockInBrowse",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:connect-in-db",
+      "category": "In-Database",
+      "name": "Connect In-DB",
+      "xml_tool_name": "LockInGui.LockInInput.LockInInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:data-stream-in",
+      "category": "In-Database",
+      "name": "Data Stream In",
+      "xml_tool_name": "LockInGui.LockInStreamIn.LockInStreamIn",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:data-stream-out",
+      "category": "In-Database",
+      "name": "Data Stream Out",
+      "xml_tool_name": "LockInGui.LockInStreamOut.LockInStreamOut",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:dynamic-input-in-db",
+      "category": "In-Database",
+      "name": "Dynamic Input In-DB",
+      "xml_tool_name": "LockInGui.LockInDynamicInput.LockInDynamicInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:dynamic-output-in-db",
+      "category": "In-Database",
+      "name": "Dynamic Output In-DB",
+      "xml_tool_name": "LockInGui.LockInDynamicOutput.LockInDynamicOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:filter-in-db",
+      "category": "In-Database",
+      "name": "Filter In-DB",
+      "xml_tool_name": "LockInGui.LockInFilter.LockInFilter",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:formula-in-db",
+      "category": "In-Database",
+      "name": "Formula In-DB",
+      "xml_tool_name": "LockInGui.LockInFormula.LockInFormula",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:join-in-db",
+      "category": "In-Database",
+      "name": "Join In-DB",
+      "xml_tool_name": "LockInGui.LockInJoin.LockInJoin",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:macro-input-in-db",
+      "category": "In-Database",
+      "name": "Macro Input In-DB",
+      "xml_tool_name": "LockInGui.LockInMacroInput.LockInMacroInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:macro-output-in-db",
+      "category": "In-Database",
+      "name": "Macro Output In-DB",
+      "xml_tool_name": "LockInGui.LockInMacroOutput.LockInMacroOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:sample-in-db",
+      "category": "In-Database",
+      "name": "Sample In-DB",
+      "xml_tool_name": "LockInGui.LockInSample.LockInSample",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:select-in-db",
+      "category": "In-Database",
+      "name": "Select In-DB",
+      "xml_tool_name": "LockInGui.LockInSelect.LockInSelect",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:summarize-in-db",
+      "category": "In-Database",
+      "name": "Summarize In-DB",
+      "xml_tool_name": "LockInGui.LockInSummarize.LockInSummarize",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:union-in-db",
+      "category": "In-Database",
+      "name": "Union In-DB",
+      "xml_tool_name": "LockInGui.LockInUnion.LockInUnion",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "in-database:write-data-in-db",
+      "category": "In-Database",
+      "name": "Write Data In-DB",
+      "xml_tool_name": "LockInGui.LockInOutput.LockInOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:email",
+      "category": "Reporting",
+      "name": "Email",
+      "xml_tool_name": "PortfolioPluginsGui.Email.Email",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:image",
+      "category": "Reporting",
+      "name": "Image",
+      "xml_tool_name": "PortfolioPluginsGui.ComposerImage.PortfolioComposerImage",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:interactive-chart",
+      "category": "Reporting",
+      "name": "Interactive Chart",
+      "xml_tool_name": "PlotlyCharting",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:layout",
+      "category": "Reporting",
+      "name": "Layout",
+      "xml_tool_name": "PortfolioPluginsGui.ComposerLayout.PortfolioComposerLayout",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:map-legend-builder",
+      "category": "Reporting",
+      "name": "Map Legend Builder",
+      "xml_tool_name": "Legend_Builder.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:map-legend-splitter",
+      "category": "Reporting",
+      "name": "Map Legend Splitter",
+      "xml_tool_name": "Legend_Splitter.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:overlay",
+      "category": "Reporting",
+      "name": "Overlay",
+      "xml_tool_name": "PortfolioPluginsGui.ComposerOverlay.Overlay",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:render",
+      "category": "Reporting",
+      "name": "Render",
+      "xml_tool_name": "PortfolioPluginsGui.ComposerRender.PortfolioComposerRender",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:report-footer",
+      "category": "Reporting",
+      "name": "Report Footer",
+      "xml_tool_name": "FooterMacro.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:report-header",
+      "category": "Reporting",
+      "name": "Report Header",
+      "xml_tool_name": "ReportHeader",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:report-map",
+      "category": "Reporting",
+      "name": "Report Map",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.ReportMap.ReportMap",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:report-text",
+      "category": "Reporting",
+      "name": "Report Text",
+      "xml_tool_name": "PortfolioPluginsGui.ComposerText.PortfolioComposerText",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "reporting:table",
+      "category": "Reporting",
+      "name": "Table",
+      "xml_tool_name": "PortfolioPluginsGui.ComposerTable.PortfolioComposerTable",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "documentation:comment",
+      "category": "Documentation",
+      "name": "Comment",
+      "xml_tool_name": "AlteryxGuiToolkit.TextBox.TextBox",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "documentation:explorer-box",
+      "category": "Documentation",
+      "name": "Explorer Box",
+      "xml_tool_name": "AlteryxGuiToolkit.HtmlBox.HtmlBox",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "documentation:tool-container",
+      "category": "Documentation",
+      "name": "Tool Container",
+      "xml_tool_name": "AlteryxGuiToolkit.ToolContainer.ToolContainer",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:buffer",
+      "category": "Spatial",
+      "name": "Buffer",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.Buffer.Buffer",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:create-points",
+      "category": "Spatial",
+      "name": "Create Points",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.CreatePoints.CreatePoints",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:distance",
+      "category": "Spatial",
+      "name": "Distance",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.Distance.Distance",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:find-nearest",
+      "category": "Spatial",
+      "name": "Find Nearest",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.FindNearest.FindNearest",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:generalize",
+      "category": "Spatial",
+      "name": "Generalize",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.Generalize.Generalize",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:heat-map",
+      "category": "Spatial",
+      "name": "Heat Map",
+      "xml_tool_name": "HeatMap.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:make-grid",
+      "category": "Spatial",
+      "name": "Make Grid",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.MakeGrid.MakeGrid",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:non-overlap-drivetime",
+      "category": "Spatial",
+      "name": "Non Overlap Drivetime",
+      "xml_tool_name": "Non_Overlapping_DT.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:poly-build",
+      "category": "Spatial",
+      "name": "Poly-Build",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.PolyBuild.PolyBuild",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:poly-split",
+      "category": "Spatial",
+      "name": "Poly-Split",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.PolySplit.PolySplit",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:smooth",
+      "category": "Spatial",
+      "name": "Smooth",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.Smooth.Smooth",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:spatial-info",
+      "category": "Spatial",
+      "name": "Spatial Info",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.SpatialInfo.SpatialInfo",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:spatial-match",
+      "category": "Spatial",
+      "name": "Spatial Match",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.SpatialMatch.SpatialMatch",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:spatial-process",
+      "category": "Spatial",
+      "name": "Spatial Process",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.SpatialProcess.SpatialProcess",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "spatial:trade-area",
+      "category": "Spatial",
+      "name": "Trade Area",
+      "xml_tool_name": "AlteryxSpatialPluginsGui.TradeArea.TradeArea",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:action",
+      "category": "Interface",
+      "name": "Action",
+      "xml_tool_name": "AlteryxGuiToolkit.Action.Action",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:check-box",
+      "category": "Interface",
+      "name": "Check Box",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.CheckBoxGroup.CheckBoxGroup",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:condition",
+      "category": "Interface",
+      "name": "Condition",
+      "xml_tool_name": "AlteryxGuiToolkit.Condition.Condition",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:control-parameter",
+      "category": "Interface",
+      "name": "Control Parameter",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.ControlParam.ControlParam",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:date",
+      "category": "Interface",
+      "name": "Date",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.Date.Date",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:dcm-connection",
+      "category": "Interface",
+      "name": "DCM Connection",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.DcmConnection.QuestionDcmConnection",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:drop-down",
+      "category": "Interface",
+      "name": "Drop Down",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.DropDownListBox.DropDown",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:error-message",
+      "category": "Interface",
+      "name": "Error Message",
+      "xml_tool_name": "AlteryxGuiToolkit.Error.Error",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:file-browse",
+      "category": "Interface",
+      "name": "File Browse",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.FileBrowse.FileBrowse",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:folder-browse",
+      "category": "Interface",
+      "name": "Folder Browse",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.FolderBrowse.FolderBrowse",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:list-box",
+      "category": "Interface",
+      "name": "List Box",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.DropDownListBox.ListBox",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:macro-input",
+      "category": "Interface",
+      "name": "Macro Input",
+      "xml_tool_name": "AlteryxBasePluginsGui.MacroInput.MacroInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:macro-output",
+      "category": "Interface",
+      "name": "Macro Output",
+      "xml_tool_name": "AlteryxBasePluginsGui.MacroOutput.MacroOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:map",
+      "category": "Interface",
+      "name": "Map",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.Map.Map",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:numeric-up-down",
+      "category": "Interface",
+      "name": "Numeric Up Down",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.NumericUpDown.NumericUpDown",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:radio-button",
+      "category": "Interface",
+      "name": "Radio Button",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.RadioButtonGroup.RadioButtonGroup",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:text-box",
+      "category": "Interface",
+      "name": "Text Box",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.TextBox.QuestionTextBox",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "interface:tree",
+      "category": "Interface",
+      "name": "Tree",
+      "xml_tool_name": "AlteryxGuiToolkit.Questions.Tree.Tree",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:association-analysis",
+      "category": "Data Investigation",
+      "name": "Association Analysis",
+      "xml_tool_name": "Predictive Tools\\Association_Analysis.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:basic-data-profile",
+      "category": "Data Investigation",
+      "name": "Basic Data Profile",
+      "xml_tool_name": "AlteryxBasePluginsGui.BasicDataProfile.BasicDataProfile",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:contingency-table",
+      "category": "Data Investigation",
+      "name": "Contingency Table",
+      "xml_tool_name": "Predictive Tools\\ContingencyTable.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:distribution-analysis",
+      "category": "Data Investigation",
+      "name": "Distribution Analysis",
+      "xml_tool_name": "Predictive Tools\\Distribution_Analysis.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:field-summary",
+      "category": "Data Investigation",
+      "name": "Field Summary",
+      "xml_tool_name": "Predictive Tools\\Field_Summary_Report.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:frequency-table",
+      "category": "Data Investigation",
+      "name": "Frequency Table",
+      "xml_tool_name": "Predictive Tools\\Frequency.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:heat-plot",
+      "category": "Data Investigation",
+      "name": "Heat Plot",
+      "xml_tool_name": "Predictive Tools\\Heat_Plot.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:histogram",
+      "category": "Data Investigation",
+      "name": "Histogram",
+      "xml_tool_name": "Predictive Tools\\Histogram.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:importance-weights",
+      "category": "Data Investigation",
+      "name": "Importance Weights",
+      "xml_tool_name": "Importance Weights.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:pearson-correlation",
+      "category": "Data Investigation",
+      "name": "Pearson Correlation",
+      "xml_tool_name": "AlteryxBasePluginsGui.PearsonCorrelation.PearsonCorrelation",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:plot-of-means",
+      "category": "Data Investigation",
+      "name": "Plot of Means",
+      "xml_tool_name": "Predictive Tools\\Plot_of_Means.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:scatterplot",
+      "category": "Data Investigation",
+      "name": "Scatterplot",
+      "xml_tool_name": "Predictive Tools\\Scatterplot.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:spearman-correlation",
+      "category": "Data Investigation",
+      "name": "Spearman Correlation",
+      "xml_tool_name": "SpearmanCorrCoeff.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "data-investigation:violin-plot",
+      "category": "Data Investigation",
+      "name": "Violin Plot",
+      "xml_tool_name": "Predictive Tools\\Violin_Plot.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:boosted-model",
+      "category": "Predictive",
+      "name": "Boosted Model",
+      "xml_tool_name": "Predictive Tools\\Boosted_Model.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:count-regression",
+      "category": "Predictive",
+      "name": "Count Regression",
+      "xml_tool_name": "Predictive Tools\\Count_Regression.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:cross-validation",
+      "category": "Predictive",
+      "name": "Cross-Validation",
+      "xml_tool_name": "CrossValidation",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:datarobot-automodel",
+      "category": "Predictive",
+      "name": "DataRobot Automodel",
+      "xml_tool_name": "DataRobotModelFactory",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:datarobot-predict",
+      "category": "Predictive",
+      "name": "DataRobot Predict",
+      "xml_tool_name": "DataRobotEnhancedPredictions",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:decision-tree",
+      "category": "Predictive",
+      "name": "Decision Tree",
+      "xml_tool_name": "Decision_Tree",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:forest-model",
+      "category": "Predictive",
+      "name": "Forest Model",
+      "xml_tool_name": "Predictive Tools\\Forest_Model.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:gamma-regression",
+      "category": "Predictive",
+      "name": "Gamma Regression",
+      "xml_tool_name": "Predictive Tools\\Gamma_Regression.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:lift-chart",
+      "category": "Predictive",
+      "name": "Lift Chart",
+      "xml_tool_name": "Predictive Tools\\Lift_Chart.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:linear-regression",
+      "category": "Predictive",
+      "name": "Linear Regression",
+      "xml_tool_name": "Linear Regression",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:logistic-regression",
+      "category": "Predictive",
+      "name": "Logistic Regression",
+      "xml_tool_name": "Logistic_Regression",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:model-coefficients",
+      "category": "Predictive",
+      "name": "Model Coefficients",
+      "xml_tool_name": "Model Coefficients.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:model-comparison",
+      "category": "Predictive",
+      "name": "Model Comparison",
+      "xml_tool_name": "Predictive Tools\\Model Comparison.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:naive-bayes-classifier",
+      "category": "Predictive",
+      "name": "Naive Bayes Classifier",
+      "xml_tool_name": "Predictive Tools\\Naive_Bayes.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:nested-test",
+      "category": "Predictive",
+      "name": "Nested Test",
+      "xml_tool_name": "Predictive Tools\\Nested_Test.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:network-analysis",
+      "category": "Predictive",
+      "name": "Network Analysis",
+      "xml_tool_name": "Predictive Tools\\NetworkViz.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:neural-network",
+      "category": "Predictive",
+      "name": "Neural Network",
+      "xml_tool_name": "Predictive Tools\\Neural_Network.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:score",
+      "category": "Predictive",
+      "name": "Score",
+      "xml_tool_name": "Score",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:spline-model",
+      "category": "Predictive",
+      "name": "Spline Model",
+      "xml_tool_name": "Predictive Tools\\Spline_Model.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:stepwise",
+      "category": "Predictive",
+      "name": "Stepwise",
+      "xml_tool_name": "Predictive Tools\\Stepwise.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:support-vector-machine",
+      "category": "Predictive",
+      "name": "Support Vector Machine",
+      "xml_tool_name": "Predictive Tools\\SVM_v2.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:survival-analysis",
+      "category": "Predictive",
+      "name": "Survival Analysis",
+      "xml_tool_name": "Predictive Tools\\Survival Analysis.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:survival-score",
+      "category": "Predictive",
+      "name": "Survival Score",
+      "xml_tool_name": "Survival Score.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:test-of-means",
+      "category": "Predictive",
+      "name": "Test of Means",
+      "xml_tool_name": "Predictive Tools\\Test_of_Means.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive:variance-inflation-factors",
+      "category": "Predictive",
+      "name": "Variance Inflation Factors",
+      "xml_tool_name": "Variance Inflation Factors.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "ab-testing:ab-analysis",
+      "category": "AB Testing",
+      "name": "AB Analysis",
+      "xml_tool_name": "Predictive Tools\\AB_Analysis.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "ab-testing:ab-controls",
+      "category": "AB Testing",
+      "name": "AB Controls",
+      "xml_tool_name": "Predictive Tools\\AB_Controls.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "ab-testing:ab-treatments",
+      "category": "AB Testing",
+      "name": "AB Treatments",
+      "xml_tool_name": "Predictive Tools\\AB_Treatments.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "ab-testing:ab-trend",
+      "category": "AB Testing",
+      "name": "AB Trend",
+      "xml_tool_name": "Predictive Tools\\AB_Trend.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "time-series:arima",
+      "category": "Time Series",
+      "name": "ARIMA",
+      "xml_tool_name": "Predictive Tools\\ARIMA.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "time-series:ets",
+      "category": "Time Series",
+      "name": "ETS",
+      "xml_tool_name": "Predictive Tools\\ETS.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "time-series:ts-compare",
+      "category": "Time Series",
+      "name": "TS Compare",
+      "xml_tool_name": "Predictive Tools\\TS_Compare.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "time-series:ts-covariate-forecast",
+      "category": "Time Series",
+      "name": "TS Covariate Forecast",
+      "xml_tool_name": "Predictive Tools\\TS_Covariate_Forecast.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "time-series:ts-filler",
+      "category": "Time Series",
+      "name": "TS Filler",
+      "xml_tool_name": "Predictive Tools\\TimeSeriesFiller.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "time-series:ts-forecast",
+      "category": "Time Series",
+      "name": "TS Forecast",
+      "xml_tool_name": "Predictive Tools\\TS_Forecast.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "time-series:ts-forecast-factory",
+      "category": "Time Series",
+      "name": "TS Forecast Factory",
+      "xml_tool_name": "TS Forecast Factory.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "time-series:ts-model-factory",
+      "category": "Time Series",
+      "name": "TS Model Factory",
+      "xml_tool_name": "TS Model Factory.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "time-series:ts-plot",
+      "category": "Time Series",
+      "name": "TS Plot",
+      "xml_tool_name": "Predictive Tools\\TS_Plot.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive-grouping:append-cluster",
+      "category": "Predictive Grouping",
+      "name": "Append Cluster",
+      "xml_tool_name": "Predictive Tools\\Append_Cluster.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive-grouping:find-nearest-neighbors",
+      "category": "Predictive Grouping",
+      "name": "Find Nearest Neighbors",
+      "xml_tool_name": "Predictive Tools\\Find_Nearest_Neighbors.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive-grouping:k-centroids-cluster-analysis",
+      "category": "Predictive Grouping",
+      "name": "K-Centroids Cluster Analysis",
+      "xml_tool_name": "Predictive Tools\\K-Centroids_Cluster_Analysis.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive-grouping:k-centroids-diagnostics",
+      "category": "Predictive Grouping",
+      "name": "K-Centroids Diagnostics",
+      "xml_tool_name": "Predictive Tools\\K-Centroids_Diagnostics.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive-grouping:mb-affinity",
+      "category": "Predictive Grouping",
+      "name": "MB Affinity",
+      "xml_tool_name": "Predictive Tools\\MB_Affinity.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive-grouping:mb-inspect",
+      "category": "Predictive Grouping",
+      "name": "MB Inspect",
+      "xml_tool_name": "Predictive Tools\\MB_Inspect.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive-grouping:mb-rules",
+      "category": "Predictive Grouping",
+      "name": "MB Rules",
+      "xml_tool_name": "Predictive Tools\\MB_Rules.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive-grouping:multidimensional-scaling",
+      "category": "Predictive Grouping",
+      "name": "Multidimensional Scaling",
+      "xml_tool_name": "Multidimensional Scaling.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "predictive-grouping:principal-components",
+      "category": "Predictive Grouping",
+      "name": "Principal Components",
+      "xml_tool_name": "Predictive Tools\\Principal_Components.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "prescriptive:optimization",
+      "category": "Prescriptive",
+      "name": "Optimization",
+      "xml_tool_name": "Optimization",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "prescriptive:simulation-sampling",
+      "category": "Prescriptive",
+      "name": "Simulation Sampling",
+      "xml_tool_name": "SimSampling",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "prescriptive:simulation-scoring",
+      "category": "Prescriptive",
+      "name": "Simulation Scoring",
+      "xml_tool_name": "SimScoring",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "prescriptive:simulation-summary",
+      "category": "Prescriptive",
+      "name": "Simulation Summary",
+      "xml_tool_name": "SimSummary",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:azure-data-lake-file-input",
+      "category": "Connectors",
+      "name": "Azure Data Lake File Input",
+      "xml_tool_name": "azure_data_lake_input",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:azure-data-lake-file-output",
+      "category": "Connectors",
+      "name": "Azure Data Lake File Output",
+      "xml_tool_name": "azure_data_lake_output",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:adobe-analytics",
+      "category": "Connectors",
+      "name": "Adobe Analytics",
+      "xml_tool_name": "AdobeAnalytics_v3.0.0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:amazon-s3-download",
+      "category": "Connectors",
+      "name": "Amazon S3 Download",
+      "xml_tool_name": "lteryxConnectorGui.AmazonS3Download.AmazonS3Download",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:amazon-s3-upload",
+      "category": "Connectors",
+      "name": "Amazon S3 Upload",
+      "xml_tool_name": "AlteryxConnectorGui.AmazonS3Upload.AmazonS3Upload",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:anaplan-input",
+      "category": "Connectors",
+      "name": "Anaplan Input",
+      "xml_tool_name": "AnaplanInput_1_1_0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:anaplan-output",
+      "category": "Connectors",
+      "name": "Anaplan Output",
+      "xml_tool_name": "AnaplanOutput_1_1_0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:automation-anywhere-360",
+      "category": "Connectors",
+      "name": "Automation Anywhere 360",
+      "xml_tool_name": "AutomationAnywhere360_v1.0.0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:box-input",
+      "category": "Connectors",
+      "name": "Box Input",
+      "xml_tool_name": "BoxInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:box-output",
+      "category": "Connectors",
+      "name": "Box Output",
+      "xml_tool_name": "BoxOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:cognitive-services-text-analytics",
+      "category": "Connectors",
+      "name": "Cognitive Services Text Analytics",
+      "xml_tool_name": "CognitiveServicesTextAnalytics",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:dataverse-input",
+      "category": "Connectors",
+      "name": "Dataverse Input",
+      "xml_tool_name": "DataverseInput_v1.1.1",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:dataverse-output",
+      "category": "Connectors",
+      "name": "Dataverse Output",
+      "xml_tool_name": "DataverseOutput_v1.1.1",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:dropbox-input",
+      "category": "Connectors",
+      "name": "Dropbox Input",
+      "xml_tool_name": "DropboxInput_v1.1.2",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:dropbox-output",
+      "category": "Connectors",
+      "name": "Dropbox Output",
+      "xml_tool_name": "DropboxOutput_v1.1.2",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:dynamics-crm-input",
+      "category": "Connectors",
+      "name": "Dynamics CRM Input",
+      "xml_tool_name": "dynamics_crm_input_v1.0.2",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:dynamics-crm-output",
+      "category": "Connectors",
+      "name": "Dynamics CRM Output",
+      "xml_tool_name": "dynamics_crm_output_v1.0.2",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:google-analytics",
+      "category": "Connectors",
+      "name": "Google Analytics",
+      "xml_tool_name": "GoogleAnalytics_v8.0.0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:google-analytics-4-input",
+      "category": "Connectors",
+      "name": "Google Analytics 4 Input",
+      "xml_tool_name": "GoogleAnalytics4Input_1_1_0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:google-bigquery-input",
+      "category": "Connectors",
+      "name": "Google BigQuery Input",
+      "xml_tool_name": "big_query_input_v3.0.0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:google-bigquery-output",
+      "category": "Connectors",
+      "name": "Google BigQuery Output",
+      "xml_tool_name": "big_query_output_v3.0.0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:google-drive-input",
+      "category": "Connectors",
+      "name": "Google Drive Input",
+      "xml_tool_name": "GoogleDriveInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:google-drive-output",
+      "category": "Connectors",
+      "name": "Google Drive Output",
+      "xml_tool_name": "GoogleDriveOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:google-sheets-input",
+      "category": "Connectors",
+      "name": "Google Sheets Input",
+      "xml_tool_name": "google-sheets-input",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:google-sheets-output",
+      "category": "Connectors",
+      "name": "Google Sheets Output",
+      "xml_tool_name": "google-sheets-output",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:marketo-append",
+      "category": "Connectors",
+      "name": "Marketo Append",
+      "xml_tool_name": "marketo-append",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:marketo-input",
+      "category": "Connectors",
+      "name": "Marketo Input",
+      "xml_tool_name": "marketo-input",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:marketo-output",
+      "category": "Connectors",
+      "name": "Marketo Output",
+      "xml_tool_name": "marketo-output",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:microsoft-power-bi-output",
+      "category": "Connectors",
+      "name": "Microsoft Power BI Output",
+      "xml_tool_name": "PowerBIOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:mongodb-input",
+      "category": "Connectors",
+      "name": "MongoDB Input",
+      "xml_tool_name": "AlteryxConnectorGui.MongoInput.MongoInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:mongodb-output",
+      "category": "Connectors",
+      "name": "MongoDB Output",
+      "xml_tool_name": "AlteryxConnectorGui.MongoOutput.MongoOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:onedrive-input",
+      "category": "Connectors",
+      "name": "OneDrive Input",
+      "xml_tool_name": "OneDriveInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:onedrive-output",
+      "category": "Connectors",
+      "name": "OneDrive Output",
+      "xml_tool_name": "OneDriveOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:outlook-365-input",
+      "category": "Connectors",
+      "name": "Outlook 365 Input",
+      "xml_tool_name": "Outlook365Input_v1.1.0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:power-automate",
+      "category": "Connectors",
+      "name": "Power Automate",
+      "xml_tool_name": "PowerAutomate_v1.0.1",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:publish-to-tableau-server",
+      "category": "Connectors",
+      "name": "Publish to Tableau Server",
+      "xml_tool_name": "PublishToTableauServer_v2.0.0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:salesforce-input",
+      "category": "Connectors",
+      "name": "Salesforce Input",
+      "xml_tool_name": "SalesforceInput_v4.2.4",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:salesforce-output-new",
+      "category": "Connectors",
+      "name": "Salesforce Output (New)",
+      "xml_tool_name": "SalesforceOutput_v1.3.1",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:servicenow-input",
+      "category": "Connectors",
+      "name": "ServiceNow Input",
+      "xml_tool_name": "ServiceNowInput_1_1_0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:sharepoint-files-input",
+      "category": "Connectors",
+      "name": "SharePoint Files Input",
+      "xml_tool_name": "SharePointInput_2_4_0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:sharepoint-files-output",
+      "category": "Connectors",
+      "name": "SharePoint Files Output",
+      "xml_tool_name": "SharePointOutput_2_4_0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:sharepoint-list-input",
+      "category": "Connectors",
+      "name": "SharePoint List Input",
+      "xml_tool_name": "AlteryxConnectorDotNet.SharepointInput.SharepointInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:sharepoint-list-output",
+      "category": "Connectors",
+      "name": "SharePoint List Output",
+      "xml_tool_name": "AlteryxConnectorDotNet.SharepointOutput.SharepointOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connectors:tableau-output",
+      "category": "Connectors",
+      "name": "Tableau Output",
+      "xml_tool_name": "TableauOutput_1_4_0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "address:cass",
+      "category": "Address",
+      "name": "CASS",
+      "xml_tool_name": "AlteryxCASSGui.CASS.CASS",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "address:parse-address",
+      "category": "Address",
+      "name": "Parse Address",
+      "xml_tool_name": "AlteryxCASSGui.CASSParse.CASSParse",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "address:reverse-geocoder",
+      "category": "Address",
+      "name": "Reverse Geocoder",
+      "xml_tool_name": "ReverseGeocoder.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "address:street-geocoder",
+      "category": "Address",
+      "name": "Street Geocoder",
+      "xml_tool_name": "PortfolioPluginsGui.Geocoder.Geocoder",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "address:us-geocoder",
+      "category": "Address",
+      "name": "US Geocoder",
+      "xml_tool_name": "PortfolioExplorer.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "address:us-zip9-coder",
+      "category": "Address",
+      "name": "US ZIP9 Coder",
+      "xml_tool_name": "AlteryxCASSGui.ZIP9Coder.ZIP9Coder",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "demographic-analysis:allocate-append",
+      "category": "Demographic Analysis",
+      "name": "Allocate Append",
+      "xml_tool_name": "PortfolioPluginsGui.AllocateAppend.AllocateAppend",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "demographic-analysis:allocate-input",
+      "category": "Demographic Analysis",
+      "name": "Allocate Input",
+      "xml_tool_name": "PortfolioPluginsGui.AllocateInput.AllocateInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "demographic-analysis:allocate-metainfo",
+      "category": "Demographic Analysis",
+      "name": "Allocate Metainfo",
+      "xml_tool_name": "PortfolioPluginsGui.AllocateMetaInfo.AllocateMetaInfo",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "demographic-analysis:allocate-report",
+      "category": "Demographic Analysis",
+      "name": "Allocate Report",
+      "xml_tool_name": "PortfolioPluginsGui.AllocateReport.AllocateReport",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "behavior-analysis-deprecated:behavior-metainfo",
+      "category": "Behavior Analysis (Deprecated)",
+      "name": "Behavior Metainfo",
+      "xml_tool_name": "PortfolioPluginsGui.SolocastMetaInfo.SolocastMetaInfo",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "behavior-analysis-deprecated:cluster-code",
+      "category": "Behavior Analysis (Deprecated)",
+      "name": "Cluster Code",
+      "xml_tool_name": "PortfolioPluginsGui.SolocastClusterNum.SolocastClusterNum",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "behavior-analysis-deprecated:compare-behavior",
+      "category": "Behavior Analysis (Deprecated)",
+      "name": "Compare Behavior",
+      "xml_tool_name": "PortfolioPluginsGui.SolocastCompare.SolocastCompare",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "behavior-analysis-deprecated:create-profile",
+      "category": "Behavior Analysis (Deprecated)",
+      "name": "Create Profile",
+      "xml_tool_name": "PortfolioPluginsGui.SolocastCreateProfile.SolocastCreateProfile",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "behavior-analysis-deprecated:detail-fields",
+      "category": "Behavior Analysis (Deprecated)",
+      "name": "Detail Fields",
+      "xml_tool_name": "PortfolioPluginsGui.SolocastDetailAsFields.SolocastDetailAsFields",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "behavior-analysis-deprecated:profile-comparison-report",
+      "category": "Behavior Analysis (Deprecated)",
+      "name": "Profile Comparison Report",
+      "xml_tool_name": "Behavior_ProfileComparisonReport.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "behavior-analysis-deprecated:profile-detail-report",
+      "category": "Behavior Analysis (Deprecated)",
+      "name": "Profile Detail Report",
+      "xml_tool_name": "Macros\\Behavior_ProfileDetailReport.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "behavior-analysis-deprecated:profile-input",
+      "category": "Behavior Analysis (Deprecated)",
+      "name": "Profile Input",
+      "xml_tool_name": "PortfolioPluginsGui.SolocastReadProfileSet.SolocastReadProfileSet",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "behavior-analysis-deprecated:profile-output",
+      "category": "Behavior Analysis (Deprecated)",
+      "name": "Profile Output",
+      "xml_tool_name": "PortfolioPluginsGui.SolocastWriteProfileSet.SolocastWriteProfileSet",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "behavior-analysis-deprecated:profile-rank-report",
+      "category": "Behavior Analysis (Deprecated)",
+      "name": "Profile Rank Report",
+      "xml_tool_name": "Behavior_ProfileRankReport.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "calgary:calgary-input",
+      "category": "Calgary",
+      "name": "Calgary Input",
+      "xml_tool_name": "CalgaryPluginsGui.CalgaryInput.CalgaryInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "calgary:calgary-join",
+      "category": "Calgary",
+      "name": "Calgary Join",
+      "xml_tool_name": "CalgaryPluginsGui.CalgaryJoin.CalgaryJoin",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "calgary:calgary-cross-count",
+      "category": "Calgary",
+      "name": "Calgary Cross Count",
+      "xml_tool_name": "CalgaryLoadersGui.CalgaryLoader.CalgaryLoader",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "calgary:calgary-cross-count-append",
+      "category": "Calgary",
+      "name": "Calgary Cross Count Append",
+      "xml_tool_name": "CalgaryPluginsGui.CalgaryCrossCount.CalgaryCrossCount",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "calgary:calgary-loader",
+      "category": "Calgary",
+      "name": "Calgary Loader",
+      "xml_tool_name": "CalgaryPluginsGui.CalgaryCrossCountAppend.CalgaryCrossCountAppend",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:apache-spark-code",
+      "category": "Developer",
+      "name": "Apache Spark Code",
+      "xml_tool_name": "Custom Spark",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:api-output",
+      "category": "Developer",
+      "name": "API Output",
+      "xml_tool_name": "AlteryxBasePluginsGui.APIOutput.APIOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:base64-encoder",
+      "category": "Developer",
+      "name": "Base64 Encoder",
+      "xml_tool_name": "Base64_Encoder.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:blob-convert",
+      "category": "Developer",
+      "name": "Blob Convert",
+      "xml_tool_name": "AlteryxBasePluginsGui.BlobConvert.BlobConvert",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:blob-input",
+      "category": "Developer",
+      "name": "Blob Input",
+      "xml_tool_name": "AlteryxBasePluginsGui.BlobInput.BlobInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:blob-output",
+      "category": "Developer",
+      "name": "Blob Output",
+      "xml_tool_name": "AlteryxBasePluginsGui.BlobOutput.BlobOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:block-until-done",
+      "category": "Developer",
+      "name": "Block Until Done",
+      "xml_tool_name": "AlteryxBasePluginsGui.BlockUntilDone.BlockUntilDone",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:control-container",
+      "category": "Developer",
+      "name": "Control Container",
+      "xml_tool_name": "AlteryxGuiToolkit.ControlContainer.ControlContainer",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:detour",
+      "category": "Developer",
+      "name": "Detour",
+      "xml_tool_name": "AlteryxBasePluginsGui.Detour.Detour",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:detour-end",
+      "category": "Developer",
+      "name": "Detour End",
+      "xml_tool_name": "AlteryxBasePluginsGui.DetourEnd.DetourEnd",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:download",
+      "category": "Developer",
+      "name": "Download",
+      "xml_tool_name": "AlteryxConnectorGui.Download.Download",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:dynamic-input",
+      "category": "Developer",
+      "name": "Dynamic Input",
+      "xml_tool_name": "AlteryxBasePluginsGui.DynamicInput.DynamicInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:dynamic-rename",
+      "category": "Developer",
+      "name": "Dynamic Rename",
+      "xml_tool_name": "AlteryxBasePluginsGui.DynamicRename.DynamicRename",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:dynamic-replace",
+      "category": "Developer",
+      "name": "Dynamic Replace",
+      "xml_tool_name": "AlteryxBasePluginsGui.DynamicReplace.DynamicReplace",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:dynamic-select",
+      "category": "Developer",
+      "name": "Dynamic Select",
+      "xml_tool_name": "AlteryxBasePluginsGui.DynamicSelect.DynamicSelect",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:expect-equals",
+      "category": "Developer",
+      "name": "Expect Equals",
+      "xml_tool_name": "ExpectEqual.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:field-info",
+      "category": "Developer",
+      "name": "Field Info",
+      "xml_tool_name": "AlteryxBasePluginsGui.FieldInfo.FieldInfo",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:github-commit",
+      "category": "Developer",
+      "name": "GitHub Commit",
+      "xml_tool_name": "GitHubCommit.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:github-get-last-commit",
+      "category": "Developer",
+      "name": "GitHub Get Last Commit",
+      "xml_tool_name": "GetLastCommit.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:json-parse",
+      "category": "Developer",
+      "name": "JSON Parse",
+      "xml_tool_name": "AlteryxBasePluginsGui.JSONParse.JSONParse",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:json-schema",
+      "category": "Developer",
+      "name": "JSON Schema",
+      "xml_tool_name": "JSONSchema_1_0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:license-api",
+      "category": "Developer",
+      "name": "License API",
+      "xml_tool_name": "LicenseAPITool_1_0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:message",
+      "category": "Developer",
+      "name": "Message",
+      "xml_tool_name": "AlteryxBasePluginsGui.Message.Message",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:python",
+      "category": "Developer",
+      "name": "Python",
+      "xml_tool_name": "JupyterCode",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:r",
+      "category": "Developer",
+      "name": "R",
+      "xml_tool_name": "AlteryxRPluginGui.R",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:run-command",
+      "category": "Developer",
+      "name": "Run Command",
+      "xml_tool_name": "AlteryxBasePluginsGui.RunCommand.RunCommand",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:runner",
+      "category": "Developer",
+      "name": "Runner",
+      "xml_tool_name": "CReW_Runner\\CReW_Runner.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:server-api",
+      "category": "Developer",
+      "name": "Server API",
+      "xml_tool_name": "ServerAPI_1_0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:test",
+      "category": "Developer",
+      "name": "Test",
+      "xml_tool_name": "AlteryxBasePluginsGui.Test.Test",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "developer:throttle",
+      "category": "Developer",
+      "name": "Throttle",
+      "xml_tool_name": "AlteryxBasePluginsGui.Throttle.Throttle",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "laboratory:connect-json-builder",
+      "category": "Laboratory",
+      "name": "Connect JSON Builder",
+      "xml_tool_name": "ConnectTools.ConnectJSONBuilder",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "laboratory:connect-output",
+      "category": "Laboratory",
+      "name": "Connect Output",
+      "xml_tool_name": "ConnectTools.ConnectOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "laboratory:json-build",
+      "category": "Laboratory",
+      "name": "JSON Build",
+      "xml_tool_name": "AlteryxBasePluginsGui.JSONBuild.JSONBuild",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "laboratory:jupyter-flow",
+      "category": "Laboratory",
+      "name": "Jupyter Flow",
+      "xml_tool_name": "JupyterFlow",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "laboratory:key-value-pair-extraction",
+      "category": "Laboratory",
+      "name": "Key-Value Pair Extraction",
+      "xml_tool_name": "KeyValuePairExtraction",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "laboratory:transpose-in-db",
+      "category": "Laboratory",
+      "name": "Transpose In-DB",
+      "xml_tool_name": "LockInGui.LockInTranspose.LockInTranspose",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "laboratory:visual-layout",
+      "category": "Laboratory",
+      "name": "Visual Layout",
+      "xml_tool_name": "VisualLayout",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "machine-learning:assisted-modeling",
+      "category": "Machine Learning",
+      "name": "Assisted Modeling",
+      "xml_tool_name": "Modeling",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "machine-learning:build-features",
+      "category": "Machine Learning",
+      "name": "Build Features",
+      "xml_tool_name": "BuildFeatures",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "machine-learning:classification",
+      "category": "Machine Learning",
+      "name": "Classification",
+      "xml_tool_name": "Classification",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "machine-learning:data-health",
+      "category": "Machine Learning",
+      "name": "Data Health",
+      "xml_tool_name": "DataHealth",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "machine-learning:feature-types",
+      "category": "Machine Learning",
+      "name": "Feature Types",
+      "xml_tool_name": "FeatureTypes",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "machine-learning:fit",
+      "category": "Machine Learning",
+      "name": "Fit",
+      "xml_tool_name": "Fit",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "machine-learning:machine-learning-predict",
+      "category": "Machine Learning",
+      "name": "Machine Learning Predict",
+      "xml_tool_name": "CloudMLPredict",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "machine-learning:machine-learning-send",
+      "category": "Machine Learning",
+      "name": "Machine Learning Send",
+      "xml_tool_name": "CloudMLUpload",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "machine-learning:predict",
+      "category": "Machine Learning",
+      "name": "Predict",
+      "xml_tool_name": "Predict",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "machine-learning:regression",
+      "category": "Machine Learning",
+      "name": "Regression",
+      "xml_tool_name": "Regression",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "machine-learning:transformation",
+      "category": "Machine Learning",
+      "name": "Transformation",
+      "xml_tool_name": "Transformation",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "text-mining:named-entity-recognition",
+      "category": "Text Mining",
+      "name": "Named Entity Recognition",
+      "xml_tool_name": "NamedEntityRecognition",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "text-mining:part-of-speech-tagger",
+      "category": "Text Mining",
+      "name": "Part-of-Speech Tagger",
+      "xml_tool_name": "PartOfSpeechTagger",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "text-mining:sentiment-analysis",
+      "category": "Text Mining",
+      "name": "Sentiment Analysis",
+      "xml_tool_name": "Sentiment",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "text-mining:text-classification",
+      "category": "Text Mining",
+      "name": "Text Classification",
+      "xml_tool_name": "TextClassification",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "text-mining:text-pre-processing",
+      "category": "Text Mining",
+      "name": "Text Pre-processing",
+      "xml_tool_name": "TextPreProcessing",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "text-mining:text-summary",
+      "category": "Text Mining",
+      "name": "Text Summary",
+      "xml_tool_name": "TextSummary",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "text-mining:topic-modeling",
+      "category": "Text Mining",
+      "name": "Topic Modeling",
+      "xml_tool_name": "TopicModel",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "text-mining:word-cloud",
+      "category": "Text Mining",
+      "name": "Word Cloud",
+      "xml_tool_name": "WordCloud",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "text-mining:zero-shot-text-classification",
+      "category": "Text Mining",
+      "name": "Zero-shot Text Classification",
+      "xml_tool_name": "ZeroShotTextClassification",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "computer-vision:barcode-tool",
+      "category": "Computer Vision",
+      "name": "Barcode Tool",
+      "xml_tool_name": "Barcode",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "computer-vision:image-input",
+      "category": "Computer Vision",
+      "name": "Image Input",
+      "xml_tool_name": "PDFInput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "computer-vision:image-output",
+      "category": "Computer Vision",
+      "name": "Image Output",
+      "xml_tool_name": "ImageOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "computer-vision:image-processing",
+      "category": "Computer Vision",
+      "name": "Image Processing",
+      "xml_tool_name": "ImageProcessing",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "computer-vision:image-profile",
+      "category": "Computer Vision",
+      "name": "Image Profile",
+      "xml_tool_name": "ImageProfile",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "computer-vision:image-recognition",
+      "category": "Computer Vision",
+      "name": "Image Recognition",
+      "xml_tool_name": "ImageRecognition",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "computer-vision:image-template",
+      "category": "Computer Vision",
+      "name": "Image Template",
+      "xml_tool_name": "ImageTemplate",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "computer-vision:image-to-text",
+      "category": "Computer Vision",
+      "name": "Image to Text",
+      "xml_tool_name": "ImageToText",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "computer-vision:pdf-to-text",
+      "category": "Computer Vision",
+      "name": "PDF to Text",
+      "xml_tool_name": "PDFToText",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "ai-tools:invoice-extractor",
+      "category": "AI Tools",
+      "name": "Invoice Extractor",
+      "xml_tool_name": "Invoice Extractor\\Invoice Extractor.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "ai-tools:llm-override",
+      "category": "AI Tools",
+      "name": "LLM Override",
+      "xml_tool_name": "LLMOverride_1_0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "ai-tools:precision-match",
+      "category": "AI Tools",
+      "name": "Precision Match",
+      "xml_tool_name": "Precision Match\\Precision_Match.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "ai-tools:prompt",
+      "category": "AI Tools",
+      "name": "Prompt",
+      "xml_tool_name": "Prompt_1_0",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "ai-tools:schema-fit",
+      "category": "AI Tools",
+      "name": "Schema Fit",
+      "xml_tool_name": "Schema Fit\\Schema_Fit.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "ai-tools:synthetic-input",
+      "category": "AI Tools",
+      "name": "Synthetic Input",
+      "xml_tool_name": "Synthetic Generate\\Synthetic_Generate.yxmc",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connect:connect-json-builder",
+      "category": "Connect",
+      "name": "Connect JSON Builder",
+      "xml_tool_name": "ConnectTools.ConnectJSONBuilder",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connect:connect-output",
+      "category": "Connect",
+      "name": "Connect Output",
+      "xml_tool_name": "ConnectTools.ConnectOutput",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "connect:odbc-loader",
+      "category": "Connect",
+      "name": "ODBC Loader",
+      "xml_tool_name": "OdbcLoader_v2",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    },
+    {
+      "tool_id": "sdk-examples:html-gui-library",
+      "category": "SDK Examples",
+      "name": "HTML - GUI Library",
+      "xml_tool_name": "HtmlGuiSdk",
+      "baseline_cases": [
+        "null-empty",
+        "schema-and-types",
+        "boundary-values",
+        "order-and-duplicates",
+        "error-behaviour",
+        "serialization",
+        "performance"
+      ],
+      "configuration_cases": [],
+      "oracle_status": "missing",
+      "implementation_status": "not-started",
+      "verification_status": "not-tested",
+      "evidence_refs": []
+    }
+  ]
+}

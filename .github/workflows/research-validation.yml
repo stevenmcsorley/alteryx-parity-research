@@ -1,0 +1,26 @@
+name: Research baseline, independent engine and coverage
+on:
+  push:
+  pull_request:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate all inventory records
+        run: python scripts/validate_repository.py
+      - name: Verify reproducible artifacts
+        run: |
+          python scripts/materialize_tool_specs.py
+          python scripts/coverage_report.py
+          python scripts/generate_test_matrix.py
+          python scripts/build_fixture_pack.py
+      - name: Unit and integration tests
+        run: python -m unittest discover -s tests -v
+      - name: Real independent workflow smoke test
+        run: python -m engine.independent_engine examples/customer_reconciliation.json
+      - name: Assert generated tracked outputs are stable
+        run: git diff --exit-code data/test-matrix.json docs/COVERAGE.md

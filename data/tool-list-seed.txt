@@ -1,0 +1,60 @@
+# Independently transcribed tool names/categories from Alteryx public Designer Tools List, accessed 2026-10-13.
+# Names are identification references, not included source code. Canonical XML IDs and official tool-doc URLs are retrieved by sync_official_catalog.py.
+[In/Out]
+Auto Insights Uploader; Browse; Date Time Now; Directory; Input Data; Map Input; Output Data; Text Input
+[Preparation]
+Auto Field; Create Samples; Data Cleanse Pro; Data Cleansing; Filter; Formula; Generate Rows; Imputation; Multi-Field Binning; Multi-Field Formula; Multi-Row Formula; Oversample Field; Random % Sample; Rank; Record ID; Sample; Select; Select Records; Sort; Tile; Unique
+[Join]
+Append Fields; Find Replace; Fuzzy Match; Join; Join Multiple; Make Group; Union
+[Parse]
+DateTime; RegEx; Text To Columns; XML Parse
+[Transform]
+Arrange; Count Records; Cross Tab; Make Columns; Running Total; Summarize; Transpose; Weighted Average
+[In-Database]
+Browse In-DB; Connect In-DB; Data Stream In; Data Stream Out; Dynamic Input In-DB; Dynamic Output In-DB; Filter In-DB; Formula In-DB; Join In-DB; Macro Input In-DB; Macro Output In-DB; Sample In-DB; Select In-DB; Summarize In-DB; Union In-DB; Write Data In-DB
+[Reporting]
+Email; Image; Interactive Chart; Layout; Map Legend Builder; Map Legend Splitter; Overlay; Render; Report Footer; Report Header; Report Map; Report Text; Table
+[Documentation]
+Comment; Explorer Box; Tool Container
+[Spatial]
+Buffer; Create Points; Distance; Find Nearest; Generalize; Heat Map; Make Grid; Non Overlap Drivetime; Poly-Build; Poly-Split; Smooth; Spatial Info; Spatial Match; Spatial Process; Trade Area
+[Interface]
+Action; Check Box; Condition; Control Parameter; Date; DCM Connection; Drop Down; Error Message; File Browse; Folder Browse; List Box; Macro Input; Macro Output; Map; Numeric Up Down; Radio Button; Text Box; Tree
+[Data Investigation]
+Association Analysis; Basic Data Profile; Contingency Table; Distribution Analysis; Field Summary; Frequency Table; Heat Plot; Histogram; Importance Weights; Pearson Correlation; Plot of Means; Scatterplot; Spearman Correlation; Violin Plot
+[Predictive]
+Boosted Model; Count Regression; Cross-Validation; DataRobot Automodel; DataRobot Predict; Decision Tree; Forest Model; Gamma Regression; Lift Chart; Linear Regression; Logistic Regression; Model Coefficients; Model Comparison; Naive Bayes Classifier; Nested Test; Network Analysis; Neural Network; Score; Spline Model; Stepwise; Support Vector Machine; Survival Analysis; Survival Score; Test of Means; Variance Inflation Factors
+[AB Testing]
+AB Analysis; AB Controls; AB Treatments; AB Trend
+[Time Series]
+ARIMA; ETS; TS Compare; TS Covariate Forecast; TS Filler; TS Forecast; TS Forecast Factory; TS Model Factory; TS Plot
+[Predictive Grouping]
+Append Cluster; Find Nearest Neighbors; K-Centroids Cluster Analysis; K-Centroids Diagnostics; MB Affinity; MB Inspect; MB Rules; Multidimensional Scaling; Principal Components
+[Prescriptive]
+Optimization; Simulation Sampling; Simulation Scoring; Simulation Summary
+[Connectors]
+Azure Data Lake File Input; Azure Data Lake File Output; Adobe Analytics; Amazon S3 Download; Amazon S3 Upload; Anaplan Input; Anaplan Output; Automation Anywhere 360; Box Input; Box Output; Cognitive Services Text Analytics; Dataverse Input; Dataverse Output; Dropbox Input; Dropbox Output; Dynamics CRM Input; Dynamics CRM Output; Google Analytics; Google Analytics 4 Input; Google BigQuery Input; Google BigQuery Output; Google Drive Input; Google Drive Output; Google Sheets Input; Google Sheets Output; Marketo Append; Marketo Input; Marketo Output; Microsoft Power BI Output; MongoDB Input; MongoDB Output; OneDrive Input; OneDrive Output; Outlook 365 Input; Power Automate; Publish to Tableau Server; Salesforce Input; Salesforce Output (New); ServiceNow Input; SharePoint Files Input; SharePoint Files Output; SharePoint List Input; SharePoint List Output; Tableau Output
+[Address]
+CASS; Parse Address; Reverse Geocoder; Street Geocoder; US Geocoder; US ZIP9 Coder
+[Demographic Analysis]
+Allocate Append; Allocate Input; Allocate Metainfo; Allocate Report
+[Behavior Analysis (Deprecated)]
+Behavior Metainfo; Cluster Code; Compare Behavior; Create Profile; Detail Fields; Profile Comparison Report; Profile Detail Report; Profile Input; Profile Output; Profile Rank Report
+[Calgary]
+Calgary Input; Calgary Join; Calgary Cross Count; Calgary Cross Count Append; Calgary Loader
+[Developer]
+Apache Spark Code; API Output; Base64 Encoder; Blob Convert; Blob Input; Blob Output; Block Until Done; Control Container; Detour; Detour End; Download; Dynamic Input; Dynamic Rename; Dynamic Replace; Dynamic Select; Expect Equals; Field Info; GitHub Commit; GitHub Get Last Commit; JSON Parse; JSON Schema; License API; Message; Python; R; Run Command; Runner; Server API; Test; Throttle
+[Laboratory]
+Connect JSON Builder; Connect Output; JSON Build; Jupyter Flow; Key-Value Pair Extraction; Transpose In-DB; Visual Layout
+[Machine Learning]
+Assisted Modeling; Build Features; Classification; Data Health; Feature Types; Fit; Machine Learning Predict; Machine Learning Send; Predict; Regression; Transformation
+[Text Mining]
+Named Entity Recognition; Part-of-Speech Tagger; Sentiment Analysis; Text Classification; Text Pre-processing; Text Summary; Topic Modeling; Word Cloud; Zero-shot Text Classification
+[Computer Vision]
+Barcode Tool; Image Input; Image Output; Image Processing; Image Profile; Image Recognition; Image Template; Image to Text; PDF to Text
+[AI Tools]
+Invoice Extractor; LLM Override; Precision Match; Prompt; Schema Fit; Synthetic Input
+[Connect]
+Connect JSON Builder; Connect Output; ODBC Loader
+[SDK Examples]
+HTML - GUI Library

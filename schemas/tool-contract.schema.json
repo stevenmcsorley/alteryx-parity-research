@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/designer-parity/tool-contract.schema.json",
+  "title": "Independent tool specification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "target_version", "name", "category", "status", "inputs", "outputs", "configuration_schema", "sources", "cases"],
+  "properties": {
+    "id": {"type": "string", "minLength": 2},
+    "target_version": {"type": "string"},
+    "name": {"type": "string"},
+    "category": {"type": "string"},
+    "xml_tool_name": {"type": ["string", "null"]},
+    "status": {"enum": ["not-started", "specified", "in-progress", "implemented", "verified", "blocked"]},
+    "inputs": {"type": "array", "items": {"$ref": "#/$defs/anchor"}},
+    "outputs": {"type": "array", "items": {"$ref": "#/$defs/anchor"}},
+    "configuration_schema": {"type": "object"},
+    "deterministic": {"type": ["boolean", "null"]},
+    "external_dependencies": {"type": "array", "items": {"type": "string"}},
+    "license_notes": {"type": "string"},
+    "sources": {"type": "array", "items": {"type": "object", "required": ["url", "evidence_type"], "properties": {"url": {"type": "string", "format": "uri"}, "evidence_type": {"type": "string"}, "accessed_utc": {"type": ["string", "null"]}}}},
+    "cases": {"type": "array", "items": {"type": "object", "required": ["case_id", "status"], "properties": {"case_id": {"type": "string"}, "status": {"enum": ["not-tested", "passed", "failed", "blocked"]}, "evidence": {"type": "array", "items": {"type": "string"}}}}},
+    "unresolved": {"type": "array", "items": {"type": "string"}}
+  },
+  "$defs": {"anchor": {"type": "object", "required": ["name", "direction", "cardinality"], "properties": {"name": {"type": "string"}, "direction": {"enum": ["input", "output"]}, "cardinality": {"enum": ["one", "many", "zero-or-one"]}, "schema": {"type": ["object", "null"]}}}}
+}
