@@ -172,10 +172,9 @@
     ]
   },
   "independent_tests": {
-    "count": 8,
-    "passing": 8,
+    "count": 7,
+    "passing": 7,
     "tests": [
-      "integration.test_database_integration.DatabaseIntegrationTests.test_live_cross_database_join_and_rerun_refresh",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.PropertyTests.test_invariants",

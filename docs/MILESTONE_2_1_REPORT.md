@@ -28,13 +28,14 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
 
 - Catalogue: **323 category/tool entries**, 321 distinct names; unchanged from the baseline.
 - Implemented catalogue kernels: **58**; full-reference-pass entries: **32**; reference-difference entries: **1**.
-- Python: **151 tests passed, 1 skipped** on this machine; the skip is the existing R runtime test because R is
-  not installed. The three new database tests used live local PostgreSQL 16 and SQL Server 2022 containers.
-- Database exercise: connection test, metadata and preview succeeded; real PostgreSQL/SQL Server type matrices
+- Python: **147 tests passed, 1 skipped** on this machine; the skip is the existing R runtime test because R is
+  not installed.
+- Database: **4 separate integration tests passed** against local PostgreSQL 16 and SQL Server 2022. Connection
+  test, metadata and preview succeeded; real PostgreSQL/SQL Server type matrices
   preserved nulls, Unicode, decimals and binary data; a 41-row PostgreSQL Customers table and
   120-row SQL Server Orders table were read and joined locally; a new SQL Server row was visible on the next run.
-- TypeScript type-check: passed. Vitest: **10 passed**. Playwright: **9 passed**.
-- After adding the connection UI, Playwright: **10 passed**, including the manager and database extension palette.
+- TypeScript type-check: passed. Vitest: **10 passed**. Playwright: **10 passed**, including the manager and
+  database extension palette.
 - Rust tests were not run because `cargo` is not installed in this environment.
 
 ## Remaining milestone work
