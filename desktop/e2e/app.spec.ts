@@ -36,7 +36,7 @@ test('palette lists every catalogue entry with an honest status', async ({ page 
   await ready(page);
   const items = page.locator('[data-testid^="palette-"].tool-item');
   await expect(items).toHaveCount(323);
-  const implemented = await page.locator('.tool-item .badge.ready, .tool-item .badge.tested').count();
+  const implemented = await page.locator('.tool-item .badge.ready, .tool-item .badge.tested, .tool-item .badge.refdiff').count();
   expect(implemented).toBeGreaterThanOrEqual(26);
   await page.getByTestId('palette-address:us-geocoder').click();
   await expect(page.getByTestId('tool-detail')).toContainText('licensed data');

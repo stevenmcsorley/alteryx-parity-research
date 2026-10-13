@@ -115,6 +115,7 @@ label { color: var(--text-2); font-size: 12px; }
 .badge.tested { background: var(--accent-soft); color: var(--accent); }
 .badge.unavailable { background: var(--muted-soft); color: var(--text-3); }
 .badge.blocked { background: var(--warn-soft); color: var(--warn); }
+.badge.refdiff { background: var(--err-soft); color: var(--err); }
 .tool-detail { border-top: 1px solid var(--border); padding: 10px; background: var(--panel-2); font-size: 12px; max-height: 42%; overflow: auto; }
 .tool-detail h4 { margin: 0 0 4px; font-size: 13px; }
 .tool-detail p { margin: 4px 0; color: var(--text-2); }

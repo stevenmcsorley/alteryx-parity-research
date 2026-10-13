@@ -12,7 +12,7 @@ export function statusOf(c: CatalogEntry): { cls: string; label: string; text: s
   if (c.kernel && c.verification_status === 'partial')
     return { cls: 'tested', label: 'Ref-tested', text: 'Implemented; every recorded reference comparison passes (partial coverage of options).' };
   if (c.kernel && c.verification_status === 'failed')
-    return { cls: 'blocked', label: 'Ref-diff', text: 'Implemented, but a reference comparison currently differs.' };
+    return { cls: 'refdiff', label: 'Ref-diff', text: 'Implemented, but a reference comparison currently differs (see the contract).' };
   if (c.kernel) return { cls: 'ready', label: 'Ready', text: 'Implemented and tested in this project; not yet compared with the reference.' };
   if (c.external_prerequisites_blocking) return { cls: 'blocked', label: 'Blocked', text: c.unavailable_reason ?? '' };
   return { cls: 'unavailable', label: 'Unavailable', text: c.unavailable_reason ?? '' };
