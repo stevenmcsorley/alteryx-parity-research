@@ -31,9 +31,12 @@ pub fn engine_root(resource_dir: Option<PathBuf>) -> PathBuf {
         return PathBuf::from(p);
     }
     if let Some(r) = resource_dir {
-        let bundled = r.join("engine");
-        if bundled.join("flowengine").join("__init__.py").is_file() {
-            return bundled;
+        // Windows installers can expose either the resource root or its parent
+        // through the platform resolver, depending on the bundle layout.
+        for bundled in [r.join("engine"), r.join("resources").join("engine")] {
+            if bundled.join("flowengine").join("__init__.py").is_file() {
+                return bundled;
+            }
         }
     }
     Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join("..")
@@ -44,9 +47,13 @@ pub fn python_command(root: &Path) -> PathBuf {
         return PathBuf::from(p);
     }
     if let Some(resources) = root.parent() {
-        let bundled = resources.join("runtime").join("python.exe");
-        if bundled.is_file() {
-            return bundled;
+        for bundled in [
+            resources.join("runtime").join("python.exe"),
+            resources.join("resources").join("runtime").join("python.exe"),
+        ] {
+            if bundled.is_file() {
+                return bundled;
+            }
         }
     }
     PathBuf::from("python")
@@ -179,6 +186,22 @@ mod tests {
         assert!(matches!(classify(r#"{"jsonrpc":"2.0","method":"run.event","params":{}}"#), Some(Err(_))));
         assert!(classify("not json").is_none());
         assert!(classify(r#"{"jsonrpc":"2.0"}"#).is_none());
+    }
+
+    #[test]
+    fn discovers_bundled_engine_and_python_from_resource_root_or_parent() {
+        let dir = std::env::temp_dir().join(format!("flowbench-resources-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let resources = dir.join("resources");
+        std::fs::create_dir_all(resources.join("engine/flowengine")).unwrap();
+        std::fs::write(resources.join("engine/flowengine/__init__.py"), "").unwrap();
+        std::fs::create_dir_all(resources.join("runtime")).unwrap();
+        std::fs::write(resources.join("runtime/python.exe"), "").unwrap();
+
+        let root = engine_root(Some(dir.clone()));
+        assert_eq!(root, resources.join("engine"));
+        assert_eq!(python_command(&root), resources.join("runtime/python.exe"));
+        let _ = std::fs::remove_dir_all(dir);
     }
 
     #[test]
