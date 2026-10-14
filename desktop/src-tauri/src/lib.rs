@@ -1,3 +1,4 @@
+mod ai;
 mod engine;
 
 use engine::{engine_root, Engine};
@@ -25,6 +26,7 @@ pub fn run() {
                 let _ = handle.emit("engine-notification", msg);
             });
             app.manage(engine);
+            app.manage(ai::AiService::new(data));
             Ok(())
         })
         .on_window_event(|window, event| {
@@ -32,7 +34,17 @@ pub fn run() {
                 window.app_handle().state::<Engine>().stop();
             }
         })
-        .invoke_handler(tauri::generate_handler![engine_request])
+        .invoke_handler(tauri::generate_handler![
+            engine_request,
+            ai::ai_status,
+            ai::ai_sign_in,
+            ai::ai_models,
+            ai::ai_sign_out,
+            ai::ai_cancel,
+            ai::ai_begin,
+            ai::ai_set_data_consent,
+            ai::ai_respond
+        ])
         .run(tauri::generate_context!())
         .expect("error while running Flowbench");
 }

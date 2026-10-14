@@ -11,6 +11,18 @@ import { useEditor } from './state/store';
 import { cancelRun, initEngine, runWorkflow, scheduleValidate } from './state/engineActions';
 import { AiSidebar } from './ai/AiSidebar';
 
+function RightDock({ aiOpen, selectAi, selectInspector }: { aiOpen: boolean; selectAi: () => void; selectInspector: () => void }) {
+  return <section className="app-right right-dock" aria-label="Inspector and AI workspace">
+    <div className="right-tabs" role="tablist" aria-label="Right workspace panels">
+      <button role="tab" aria-selected={!aiOpen} onClick={selectInspector}>Inspector</button>
+      <button role="tab" aria-selected={aiOpen} onClick={selectAi}>Flowbench AI</button>
+    </div>
+    <div className="right-panel" role="tabpanel" aria-label={aiOpen ? 'Flowbench AI' : 'Inspector'}>
+      {aiOpen ? <AiSidebar embedded close={selectInspector} /> : <Inspector embedded />}
+    </div>
+  </section>;
+}
+
 function isTyping(e: KeyboardEvent) {
   const t = e.target as HTMLElement | null;
   return !!t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable);
@@ -85,7 +97,7 @@ export default function App() {
           <Canvas />
           <EngineOffline />
         </div>
-        {aiOpen ? <AiSidebar close={() => setAiOpen(false)} /> : <Inspector />}
+        <RightDock aiOpen={aiOpen} selectAi={() => setAiOpen(true)} selectInspector={() => setAiOpen(false)} />
         <ResultsPanel />
       </div>
       <Toasts />

@@ -6,12 +6,12 @@ import { SchemaForm, type FieldContext } from './SchemaForm';
 import { categoryColor, glyph } from '../ui/categories';
 import { engine, describe } from '../state/engineActions';
 
-export function Inspector() {
+export function Inspector({ embedded = false }: { embedded?: boolean } = {}) {
   const selected = useEditor((s) => s.nodes.filter((n) => n.selected));
   if (selected.length > 1) return <MultiSelection count={selected.length} />;
   const node = selected[0];
   return (
-    <aside className="app-right" aria-label="Configuration" data-testid="inspector">
+    <aside className={embedded ? 'inspector-content' : 'app-right'} aria-label="Configuration" data-testid="inspector">
       {!node ? <WorkflowProperties /> : node.data.kind === 'tool' ? <ToolInspector node={node} /> :
         node.data.kind === 'application-action' ? <ApplicationActionInspector node={node} /> :
         node.data.kind === 'container' ? <ContainerInspector node={node} /> : <CommentInspector node={node} />}

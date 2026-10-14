@@ -23,11 +23,14 @@ describe('flowbench.agent.v1 read-only tools', () => {
 
   it('returns workflow graph structure but never configuration values or data rows', async () => {
     const output = JSON.stringify(await dispatchAgentTool(env, 'workflow.get_snapshot'));
-    expect(output).toContain('core.text_input');
-    expect(output).toContain('configured_options');
+    expect(output).toContain('input:text');
+    expect(output).toContain('node_1');
     expect(output).not.toContain('Sensitive customer value');
     expect(output).not.toContain('private-secret');
     expect(output).not.toContain('C:/private/data.csv');
+    expect(output).not.toContain('Fixture');
+    expect(output).not.toContain('Sales');
+    expect(output).not.toContain('test-profile');
   });
 
   it('strictly rejects unknown tools and unregistered write operations', async () => {
@@ -41,10 +44,35 @@ describe('flowbench.agent.v1 read-only tools', () => {
     await expect(dispatchAgentTool(env, 'catalog.search_tools', { query: 'text', extra: true })).rejects.toThrow('Unexpected argument');
   });
 
-  it('redacts secret-like text in diagnostics', async () => {
+  it('excludes diagnostic messages from validation and diagnostics responses', async () => {
+    const validation = JSON.stringify(await dispatchAgentTool(env, 'workflow.validate'));
     const result = JSON.stringify(await dispatchAgentTool(env, 'workflow.get_diagnostics'));
-    expect(result).toContain('password=[REDACTED]');
+    expect(validation).toContain('bad-config');
+    expect(validation).not.toContain('private-secret');
+    expect(validation).not.toContain('password=');
     expect(result).not.toContain('private-secret');
+    expect(result).not.toContain('password=');
+  });
+
+  it('projects tool manifests without descriptive metadata, defaults, or user-entered values', async () => {
+    const tool: any = { tool_id: 'core.filter', version: '1', catalog_ids: ['preparation:filter'], display_name: 'Filter',
+      description: 'Potentially private tool description', side_effects: 'none', deterministic: true, dependencies: [],
+      inputs: [{ name: 'input', label: 'Private anchor label', required: true, multiple: false, description: 'private' }],
+      outputs: [{ name: 'true', label: 'Private output label', required: false, multiple: false, description: '' }],
+      config_schema: { type: 'object', description: 'private schema note', properties: { expression: { type: 'string', default: 'private query value', description: 'private' } } } };
+    const projected = JSON.stringify(await dispatchAgentTool({ ...env, getState: () => ({ ...context(), tools: { 'core.filter': tool } }) }, 'catalog.get_tool_manifest', { tool_id: 'core.filter' }));
+    expect(projected).toContain('core.filter');
+    expect(projected).not.toContain('Potentially private');
+    expect(projected).not.toContain('Private anchor');
+    expect(projected).not.toContain('private query value');
+    expect(projected).not.toContain('private schema note');
+  });
+
+  it('does not return private catalogue labels or descriptions', async () => {
+    const result = JSON.stringify(await dispatchAgentTool(env, 'catalog.search_tools', { query: 'input' }));
+    expect(result).toContain('input:text');
+    expect(result).not.toContain('Text Input');
+    expect(result).not.toContain('Fixture');
   });
 
   it('runs validation only through the existing validator', async () => {
