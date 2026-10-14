@@ -128,7 +128,19 @@ function upstreamFields(node: CanvasNode): FieldContext {
   const s = useEditor.getState();
   const byAnchor: Record<string, FieldDef[]> = {};
   for (const e of s.edges.filter((x) => x.target === node.id)) {
-    const fs = s.schemas[e.source]?.[e.sourceHandle ?? 'output'] ?? [];
+    let fs = s.schemas[e.source]?.[e.sourceHandle ?? 'output'] ?? [];
+    // Source tools with explicit field declarations know their schema before a
+    // run. Keep field selectors useful while a workflow is being configured.
+    if (!fs.length) {
+      const source = s.nodes.find((n) => n.id === e.source);
+      if (source?.data.kind === 'tool' && ['core.text_input', 'core.input_data'].includes(source.data.tool)) {
+        const configured = source.data.config.fields;
+        if (Array.isArray(configured)) fs = configured.filter((f: any) => f && typeof f.name === 'string')
+          .map((f: any) => ({ name: f.name, type: String(f.type ?? 'v_wstring'),
+            ...(Number.isFinite(f.size) ? { size: f.size } : {}),
+            ...(Number.isFinite(f.scale) ? { scale: f.scale } : {}) }));
+      }
+    }
     byAnchor[e.targetHandle ?? 'input'] = [...(byAnchor[e.targetHandle ?? 'input'] ?? []), ...fs];
   }
   const seen = new Set<string>();

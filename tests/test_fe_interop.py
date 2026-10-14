@@ -221,6 +221,64 @@ class ImportTests(unittest.TestCase):
         self.assertEqual(problems, [])
         self.assertNotIn('dont-store-this', exported)
 
+    def test_imported_fuzzy_match_executes_supported_flowbench_translation_and_roundtrips_xml(self):
+        # Project-authored fixture uses structurally observed FuzzyMatch XML fields.
+        # Scores use Flowbench v1 and are explicitly not asserted as Alteryx parity.
+        xml = '''<AlteryxDocument yxmdVer="2026.2"><Nodes>
+          <Node ToolID="1"><GuiSettings Plugin="AlteryxBasePluginsGui.TextInput.TextInput"/><Properties><Configuration>
+            <Fields><Field name="id" type="Int32" size="4"/><Field name="name" type="V_WString" size="40"/></Fields>
+            <Data><r><c>1</c><c>Smith</c></r><r><c>2</c><c>Schmidt</c></r><r><c>3</c><c>Jones</c></r></Data>
+          </Configuration></Properties></Node>
+          <Node ToolID="2"><GuiSettings Plugin="AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch"/><Properties><Configuration>
+            <RecordIdField>id</RecordIdField><MatchThreshold value="30"/><OutputScore value="True"/>
+            <OutputKey value="True"/><OutputUnmatched value="True"/><OutputMakeGroup value="False"/>
+            <GenerateKeys value="False"/><MatchFields><MatchField><FieldName>name</FieldName><Style Name="Custom">
+              <KeyGeneration><KeyFunction>DblMetaphone</KeyFunction><UseWords value="False"/><IgnoreEmpty value="True"/><MaxKeyLen value="8"/></KeyGeneration>
+              <Match><MatchFunction>Levenshtein</MatchFunction><MatchThreshold value="0"/><MatchWeight value="100"/></Match>
+            </Style></MatchField></MatchFields><MergeMode value="False"/><SourceIdField/>
+          </Configuration></Properties></Node>
+        </Nodes><Connections><Connection><Origin ToolID="1" Connection="Output"/><Destination ToolID="2" Connection="Input"/></Connection></Connections>
+        <Properties/></AlteryxDocument>'''
+        imported, report = import_document(xml)
+        fuzzy = next(n for n in imported['nodes'] if n['id'] == 't2')
+        self.assertEqual(fuzzy['tool'], 'core.fuzzy_match')
+        self.assertEqual(report['nodes'][1]['status'], 'partial')
+        result = run_workflow(imported, base_dir=ROOT)
+        self.assertTrue(result.ok, result.error)
+        self.assertEqual([(r[0], r[1]) for r in rows(result.output('t2'))], [(1, 2), (3, None)])
+        key_only_xml = xml.replace('<MatchFunction>Levenshtein</MatchFunction>',
+                                   '<MatchFunction>None</MatchFunction>')
+        key_only_doc, _ = import_document(key_only_xml)
+        key_only_cfg = next(n for n in key_only_doc['nodes'] if n['id'] == 't2')['config']
+        self.assertEqual(key_only_cfg['match_fields'][0]['match_method'], 'key_only')
+        key_only_result = run_workflow(key_only_doc, base_dir=ROOT)
+        self.assertTrue(key_only_result.ok, key_only_result.error)
+        self.assertEqual(rows(key_only_result.output('t2'))[0][2], 100)
+        exported, problems = export_document(imported)
+        self.assertEqual(problems, [])
+        self.assertIn('AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch', exported)
+        again, again_report = import_document(exported)
+        self.assertEqual(again_report['nodes'][1]['status'], 'partial')
+        rerun = run_workflow(again, base_dir=ROOT)
+        self.assertTrue(rerun.ok, rerun.error)
+        self.assertEqual(rows(rerun.output('t2')), rows(result.output('t2')))
+
+    def test_imported_fuzzy_match_rejects_vendor_word_frequency_without_dropping_xml(self):
+        xml = '''<AlteryxDocument><Nodes><Node ToolID="1"><GuiSettings Plugin="AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch"/>
+          <Properties><Configuration><RecordIdField>id</RecordIdField><MatchFields><MatchField><FieldName>name</FieldName>
+            <Style><KeyGeneration><KeyFunction>DblMetaphone</KeyFunction></KeyGeneration><Match>
+              <MatchFunction>JaroTFIDF</MatchFunction><WordStats>Name.yxdb</WordStats></Match></Style>
+          </MatchField></MatchFields></Configuration></Properties></Node></Nodes><Connections/><Properties/></AlteryxDocument>'''
+        imported, report = import_document(xml)
+        self.assertEqual(imported['nodes'][0]['tool'], 'AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch')
+        self.assertEqual(report['nodes'][0]['status'], 'unsupported')
+        self.assertIn('WordStats', report['nodes'][0]['reason'])
+        self.assertIn('JaroTFIDF', imported['metadata']['import']['nodes']['t1']['xml'])
+        exported, problems = export_document(imported)
+        self.assertIn('AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch', exported)
+        self.assertIn('<WordStats>Name.yxdb</WordStats>', exported)
+        self.assertTrue(any('anchors are not translated' in problem for problem in problems))
+
 
 if __name__ == '__main__':
     unittest.main()

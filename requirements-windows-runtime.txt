@@ -1,6 +1,7 @@
 attrs==25.4.0
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
+Metaphone==0.6
 numpy==2.4.6
 psycopg==3.2.3
 psycopg-binary==3.2.3
