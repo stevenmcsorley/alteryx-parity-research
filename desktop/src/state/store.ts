@@ -62,6 +62,7 @@ export type EditorState = {
   onEdgesChange(changes: EdgeChange<CanvasEdge>[]): void;
   connect(c: Connection): string | null;
   addTool(toolId: string, position: { x: number; y: number }): string;
+  addApplicationAction(position: { x: number; y: number }): string;
   addComment(position: { x: number; y: number }): string;
   updateNodeData(id: string, patch: Record<string, unknown>, record?: boolean): void;
   deleteSelected(): void;
@@ -178,7 +179,21 @@ export const useEditor = create<EditorState>((set, get) => ({
     if (c.source === c.target) return 'A tool cannot connect to itself';
     const target = s.nodes.find((n) => n.id === c.target);
     const source = s.nodes.find((n) => n.id === c.source);
-    if (target?.data.kind !== 'tool' || source?.data.kind !== 'tool') return 'Only tools have anchors';
+    if (source?.data.kind === 'application-action') {
+      if (target?.data.kind !== 'tool' || c.sourceHandle !== 'Action' || c.targetHandle !== '__action__')
+        return 'Action connections must run from the Action anchor to a tool Action target';
+      const id = edgeId(c.source, 'Action', c.target, '__action__');
+      if (s.edges.some((e) => e.id === id)) return 'Already connected';
+      if (s.edges.some((e) => e.target === c.target && e.targetHandle === '__action__'))
+        return 'A tool can have only one native Action connection in this editor';
+      get().checkpoint();
+      set({ edges: [...s.edges, { id, source: c.source, sourceHandle: 'Action', target: c.target,
+        targetHandle: '__action__', data: { kind: 'application-action' },
+        style: { stroke: '#805ad5', strokeDasharray: '5 4' }, label: 'Action' }] });
+      return null;
+    }
+    if (target?.data.kind === 'application-action' || target?.data.kind !== 'tool' || source?.data.kind !== 'tool')
+      return 'Only data tools connect through row-data anchors';
     const manifest = s.tools[target.data.tool];
     const anchor = manifest?.inputs.find((a) => a.name === c.targetHandle);
     if (!anchor) return `Unknown input anchor ${c.targetHandle}`;
@@ -207,6 +222,18 @@ export const useEditor = create<EditorState>((set, get) => ({
     get().checkpoint();
     set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'tool', position, selected: true,
       data: { kind: 'tool', tool: toolId, config: m ? defaultConfig(m.config_schema) : {} } }] });
+    return id;
+  },
+
+  addApplicationAction: (position) => {
+    const s = get();
+    const id = nextNodeId('application_action', s.nodes.map((n) => n.id));
+    const used = new Set<string>((s.metadata?.application?.questions ?? []).map((q: any) => String(q.id)));
+    const questionId = nextNodeId('question', used);
+    get().checkpoint();
+    set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'applicationAction', position,
+      selected: true, data: { kind: 'application-action', question: { id: questionId, prompt: 'Enter a value', type: 'text' },
+        config_path: ['expression'] } }] });
     return id;
   },
 

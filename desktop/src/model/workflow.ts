@@ -17,9 +17,15 @@ export type ToolNodeData = {
 };
 export type CommentNodeData = { kind: 'comment'; text: string };
 export type ContainerNodeData = { kind: 'container'; caption: string; disabled?: boolean; collapsed?: boolean };
-export type CanvasNodeData = ToolNodeData | CommentNodeData | ContainerNodeData;
+export type ApplicationActionNodeData = {
+  kind: 'application-action';
+  question: { id: string; prompt: string; label?: string; type: 'text' | 'number' | 'boolean'; required?: boolean; default?: string | number | boolean };
+  config_path: string[];
+  source_action_index?: number;
+};
+export type CanvasNodeData = ToolNodeData | CommentNodeData | ContainerNodeData | ApplicationActionNodeData;
 export type CanvasNode = Node<CanvasNodeData>;
-export type CanvasEdge = Edge;
+export type CanvasEdge = Edge<{ kind?: 'application-action' }>;
 
 export type CanvasGraph = { nodes: CanvasNode[]; edges: CanvasEdge[]; name: string; description?: string; profile?: string; metadata?: Record<string, any> };
 
@@ -53,6 +59,7 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
   const nodes: WorkflowDoc['nodes'] = [];
   const containers: any[] = [];
   const comments: any[] = [];
+  const applicationActions: any[] = [];
   for (const n of g.nodes) {
     const pos = absolutePosition(n, byId);
     if (n.data.kind === 'tool') {
@@ -69,13 +76,17 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
         parent: n.parentId ?? null,
         children: g.nodes.filter((c) => c.parentId === n.id).map((c) => c.id),
       });
+    } else if (n.data.kind === 'application-action') {
+      const link = g.edges.find((e) => e.source === n.id && e.sourceHandle === 'Action' && e.data?.kind === 'application-action');
+      applicationActions.push({ id: n.id, question: structuredClone(n.data.question), config_path: [...n.data.config_path],
+        target_node: link?.target ?? null, position: pos, source_action_index: n.data.source_action_index });
     } else {
       comments.push({ id: n.id, text: n.data.text, position: pos, parent: n.parentId ?? null,
         size: { width: Number(n.style?.width ?? n.width ?? 200), height: Number(n.style?.height ?? n.height ?? 80) } });
     }
   }
   // tools explicitly disabled by their own flag keep it even if the container is re-enabled
-  const edges = g.edges.map((e) => ({
+  const edges = g.edges.filter((e) => e.data?.kind !== 'application-action').map((e) => ({
     from: { node: e.source, anchor: e.sourceHandle ?? 'output' },
     to: { node: e.target, anchor: e.targetHandle ?? 'input' },
   }));
@@ -84,7 +95,29 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
   const ownDisabled = Object.fromEntries(
     g.nodes.filter((n) => n.data.kind === 'tool' && n.data.disabled).map((n) => [n.id, true]),
   );
-  doc.metadata = { ...(g.metadata ?? {}), ui: { containers, comments, ownDisabled } };
+  const metadata = structuredClone(g.metadata ?? {});
+  const actionNodes = g.nodes.filter((n) => n.data.kind === 'application-action');
+  if (actionNodes.length) {
+    const old = metadata.application ?? { questions: [], actions: [] };
+    const questions = [...(old.questions ?? [])];
+    const replaced = new Set(actionNodes.map((n) => (n.data as ApplicationActionNodeData).source_action_index)
+      .filter((x): x is number => Number.isInteger(x)));
+    const actions: any[] = (old.actions ?? []).filter((_: any, i: number) => !replaced.has(i));
+    for (const n of actionNodes) {
+      const d = n.data as ApplicationActionNodeData;
+      const linked = g.edges.find((e) => e.source === n.id && e.sourceHandle === 'Action' && e.data?.kind === 'application-action');
+      if (!linked) continue;
+      const target = byId.get(linked.target);
+      if (target?.data.kind !== 'tool') continue;
+      const { prompt, label: _label, ...questionFields } = d.question;
+      const q = { ...questionFields, label: prompt };
+      const qi = questions.findIndex((x: any) => x.id === q.id);
+      if (qi >= 0) questions[qi] = q; else questions.push(q);
+      actions.push({ question: q.id, node_id: target.id, config_path: d.config_path });
+    }
+    metadata.application = { ...old, questions, actions };
+  }
+  doc.metadata = { ...metadata, ui: { containers, comments, ownDisabled, applicationActions } };
   if (g.profile) doc.metadata.profile = g.profile;
   return doc;
 }
@@ -93,6 +126,7 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
   const ui = doc.metadata?.ui ?? {};
   const containers: any[] = ui.containers ?? [];
   const comments: any[] = ui.comments ?? [];
+  const applicationActions: any[] = ui.applicationActions ?? [];
   const ownDisabled: Record<string, boolean> = ui.ownDisabled ?? {};
   const parentOf = new Map<string, string>();
   for (const c of containers) for (const child of c.children ?? []) parentOf.set(child, c.id);
@@ -100,6 +134,7 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
   for (const c of containers) absById.set(c.id, c.position);
   for (const n of doc.nodes) absById.set(n.id, n.position ?? { x: 0, y: 0 });
   for (const c of comments) absById.set(c.id, c.position);
+  for (const a of applicationActions) absById.set(a.id, a.position ?? { x: 0, y: 0 });
   const rel = (id: string) => {
     const p = absById.get(id) ?? { x: 0, y: 0 };
     const parent = parentOf.get(id);
@@ -138,6 +173,11 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
       id: c.id, type: 'comment', position: rel(c.id), parentId: parentOf.get(c.id),
       data: { kind: 'comment', text: c.text }, style: { width: c.size?.width ?? 200, height: c.size?.height ?? 80 },
     })),
+    ...applicationActions.map((a: any): CanvasNode => ({
+      id: a.id, type: 'applicationAction', position: rel(a.id),
+      data: { kind: 'application-action', question: { ...a.question, prompt: a.question.prompt ?? a.question.label ?? a.question.id },
+        config_path: a.config_path, source_action_index: a.source_action_index },
+    })),
   ];
   for (const n of nodes) if (!n.parentId) delete n.parentId;
   autoLayout(nodes, doc);
@@ -145,6 +185,31 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
     id: edgeId(e.from.node, e.from.anchor, e.to.node, e.to.anchor),
     source: e.from.node, sourceHandle: e.from.anchor, target: e.to.node, targetHandle: e.to.anchor,
   }));
+  for (const a of applicationActions) {
+    const target = a.target_node;
+    if (target && doc.nodes.some((n) => n.id === target)) edges.push({
+      id: `${a.id}:Action->${target}:__action__`, source: a.id, sourceHandle: 'Action',
+      target, targetHandle: '__action__', data: { kind: 'application-action' },
+      style: { stroke: '#805ad5', strokeDasharray: '5 4' }, label: 'Action',
+    });
+  }
+  if (!applicationActions.length) {
+    const app = doc.metadata?.application ?? {};
+    for (const [i, action] of ((app.actions ?? []) as any[]).entries()) {
+      const question = (app.questions ?? []).find((q: any) => q.id === action.question);
+      if (!question || !doc.nodes.some((n) => n.id === action.node_id)) continue;
+      const id = `application_action_${i + 1}`;
+      const position = { x: 180, y: 80 + i * 110 };
+      nodes.push({ id, type: 'applicationAction', position,
+        data: { kind: 'application-action', question: { ...structuredClone(question), prompt: question.prompt ?? question.label ?? question.id },
+          config_path: [...action.config_path], source_action_index: i } });
+      edges.push({ id: `${id}:Action->${action.node_id}:__action__`, source: id, sourceHandle: 'Action',
+        target: action.node_id, targetHandle: '__action__', data: { kind: 'application-action' },
+        style: { stroke: '#805ad5', strokeDasharray: '5 4' }, label: 'Action' });
+      applicationActions.push({ id, question: structuredClone(question), config_path: [...action.config_path],
+        target_node: action.node_id, position, source_action_index: i });
+    }
+  }
   return { nodes, edges, name: doc.name ?? 'Untitled', description: doc.description, profile: doc.metadata?.profile,
     metadata: doc.metadata ? structuredClone(doc.metadata) : undefined };
 }

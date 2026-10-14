@@ -27,6 +27,7 @@ export function Palette() {
   const [onlyReady, setOnlyReady] = useState(false);
   const [active, setActive] = useState<string | null>(null);
   const addTool = useEditor((s) => s.addTool);
+  const addApplicationAction = useEditor((s) => s.addApplicationAction);
   const flow = useReactFlow();
 
   const categories = useMemo(() => [...new Set(catalog.map((c) => c.category))].sort(), [catalog]);
@@ -56,12 +57,14 @@ export function Palette() {
     const anchor = nodes.find((n) => n.selected) ?? nodes[nodes.length - 1];
     if (anchor) {
       const w = Number(anchor.measured?.width ?? 180);
-      addTool(kernel, { x: Math.round(anchor.position.x + w + 70), y: Math.round(anchor.position.y) });
+      if (kernel === 'flowengine.application_action') addApplicationAction({ x: Math.round(anchor.position.x), y: Math.round(anchor.position.y + 190) });
+      else addTool(kernel, { x: Math.round(anchor.position.x + w + 70), y: Math.round(anchor.position.y) });
       return;
     }
     const r = document.querySelector('[data-testid="canvas"]')?.getBoundingClientRect();
     const p = flow.screenToFlowPosition({ x: (r?.left ?? 0) + (r?.width ?? 600) / 3, y: (r?.top ?? 0) + (r?.height ?? 400) / 3 });
-    addTool(kernel, { x: Math.round(p.x), y: Math.round(p.y) });
+    if (kernel === 'flowengine.application_action') addApplicationAction({ x: Math.round(p.x), y: Math.round(p.y) });
+    else addTool(kernel, { x: Math.round(p.x), y: Math.round(p.y) });
   };
 
   return (
@@ -95,16 +98,16 @@ export function Palette() {
                   return (
                     <div key={c.id} className={`tool-item ${c.kernel ? '' : 'unavailable'} ${active === c.id ? 'active' : ''}`}
                       data-testid={`palette-${c.id}`} role="button" tabIndex={0}
-                      draggable={!!c.kernel}
+                      draggable={!!c.kernel || c.id === 'interface:action'}
                       onDragStart={(e) => {
-                        if (!c.kernel) return;
-                        e.dataTransfer.setData(TOOL_MIME, c.kernel);
+                        if (!c.kernel && c.id !== 'interface:action') return;
+                        e.dataTransfer.setData(TOOL_MIME, c.kernel ?? 'flowengine.application_action');
                         e.dataTransfer.effectAllowed = 'copy';
                       }}
                       onClick={() => setActive(c.id)}
-                      onDoubleClick={() => c.kernel && addAtCentre(c.kernel)}
+                      onDoubleClick={() => c.id === 'interface:action' ? addAtCentre('flowengine.application_action') : c.kernel && addAtCentre(c.kernel)}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && c.kernel) addAtCentre(c.kernel);
+                        if (e.key === 'Enter' && (c.kernel || c.id === 'interface:action')) addAtCentre(c.kernel ?? 'flowengine.application_action');
                         if (e.key === ' ') setActive(c.id);
                       }}
                       title={st.text}>
@@ -162,6 +165,7 @@ function ToolDetail({ entry, onAdd }: { entry: CatalogEntry; onAdd: (k: string) 
       {m && <p>{st.text}</p>}
       {entry.documentation_url && <p style={{ wordBreak: 'break-all' }}>Public reference: {entry.documentation_url}</p>}
       {m && <button className="primary" onClick={() => onAdd(m.tool_id)}>Add to canvas</button>}
+      {!m && entry.id === 'interface:action' && <button className="primary" onClick={() => onAdd('flowengine.application_action')}>Add Flowbench Action</button>}
     </div>
   );
 }

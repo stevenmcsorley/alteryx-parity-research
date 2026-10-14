@@ -48,6 +48,15 @@ export with ToolIDs remapped. Password-question defaults are redacted from the
 imported metadata and export. Reference XML structure and the authorized
 black-box CLI observation are recorded in `data/action-reference-evidence.json`.
 The CLI did not apply RuntimeProperties actions, so this is not a Designer app
-runner differential result. Native Designer app-runner comparison and desktop
-palette/configuration for an Action node remain incomplete. See the generated
-catalogue contract and roadmap for the exact supported/unsupported variants.
+runner differential result.
+
+The desktop palette also offers a **Flowbench Action** editor node. Its form
+question is configured in the inspector, and its `Action` output connects to a
+tool's separate `Action` target. That edge is saved under editor metadata and is
+never sent to the row-processing DAG. The inspector currently supports text,
+number and boolean answers and selects an existing target configuration value;
+execution uses the same private-copy, type-check and validation path described
+above. This is native Flowbench functionality, not a claim that every Alteryx
+Interface connection or Action XML variant is interchangeable. Imported XML
+retention and the limited imported UpdateValue adapter remain tracked
+independently in the generated contract and roadmap.

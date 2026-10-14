@@ -113,6 +113,42 @@ test('run a typed analytic application and apply its configuration action', asyn
   expect(saved.nodes[1].config.formulas[0].expression).toBe('[amount] + 1');
 });
 
+test('palette Action configures a target through a non-data connection and runs', async ({ page }) => {
+  await ready(page);
+  await addFromPalette(page, 'in-out:text-input');
+  const editor = page.getByTestId('text-input-editor');
+  await editor.getByRole('button', { name: '+ field' }).click();
+  await editor.getByLabel('Field 1 name').fill('amount');
+  await editor.getByLabel('Field 1 type').selectOption('int32');
+  for (const n of ['2', '5', '8']) {
+    await editor.getByRole('button', { name: '+ row' }).click();
+    const row = await editor.locator('tbody tr').count();
+    await editor.getByLabel(`Row ${row} field 1`).fill(n);
+  }
+  await addFromPalette(page, 'preparation:filter');
+  await page.getByRole('radio', { name: 'Custom expression' }).click();
+  await page.getByTestId('cfg-filter_1-expression-expr').fill('[amount] > 2');
+  await addFromPalette(page, 'interface:action');
+  await page.getByLabel('Action question ID').fill('minimum_expression');
+  await page.getByLabel('Action prompt').fill('Filter expression');
+  await page.getByLabel('Action default answer').fill('[amount] > 2');
+  // The minimap is a fixed overlay; don't let it intercept the connector drag in this UI acceptance case.
+  await page.getByTestId('rf__minimap').evaluate((el) => { (el as HTMLElement).style.pointerEvents = 'none'; });
+  await connect(page, 'out-text_input_1-output', 'in-filter_1-input');
+  await connect(page, 'out-application_action_1-Action', 'in-filter_1-__action__');
+  await expect(page.getByTestId('node-application_action_1')).toContainText('Updates expression');
+  await expect(page.getByLabel('Action configuration field')).toHaveValue('expression');
+  await expect(page.getByTestId('valid')).toBeVisible({ timeout: 10_000 });
+  await page.getByTestId('run').click();
+  const app = page.getByRole('dialog', { name: 'Run analytic application' });
+  await app.getByLabel('Filter expression').fill('[amount] > 5');
+  await app.getByRole('button', { name: 'Run' }).click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+  await page.getByLabel('Output to display').selectOption('filter_1::true');
+  await expect(page.getByTestId('results-grid')).toContainText('8');
+  await expect(page.getByTestId('results-grid')).not.toContainText('5');
+});
+
 test('validation feedback names the node and the problem', async ({ page }) => {
   await ready(page);
   await addFromPalette(page, 'in-out:text-input');

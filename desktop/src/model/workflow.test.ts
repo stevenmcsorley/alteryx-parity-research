@@ -38,6 +38,21 @@ describe('workflow model', () => {
     expect(out.metadata!.ui.ownDisabled).toEqual({ b: true });
   });
 
+  it('renders application actions as configuration edges and preserves the workflow data DAG', () => {
+    const appDoc = { ...doc, metadata: { ...doc.metadata!, application: {
+      questions: [{ id: 'threshold', label: 'Threshold', type: 'text', default: '[amount] > 2' }],
+      actions: [{ question: 'threshold', node_id: 'b', config_path: ['expression'] }],
+    } } } as WorkflowDoc;
+    const graph = fromDocument(appDoc);
+    expect(graph.nodes.some((n) => n.data.kind === 'application-action')).toBe(true);
+    expect(graph.edges).toHaveLength(2);
+    expect(graph.edges.find((e) => e.data?.kind === 'application-action')?.targetHandle).toBe('__action__');
+    const saved = toDocument(graph);
+    expect(saved.edges).toEqual(doc.edges);
+    expect(saved.metadata?.application?.actions).toEqual(appDoc.metadata?.application?.actions);
+    expect(saved.metadata?.application?.questions[0]).toEqual({ id: 'threshold', label: 'Threshold', type: 'text', default: '[amount] > 2' });
+  });
+
   it('auto-lays out documents without positions by dependency depth', () => {
     const g = fromDocument({ ...doc, metadata: undefined, nodes: doc.nodes.map(({ position: _p, ...n }) => n) });
     const a = g.nodes.find((n) => n.id === 'a')!, b = g.nodes.find((n) => n.id === 'b')!;
