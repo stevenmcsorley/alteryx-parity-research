@@ -1,6 +1,6 @@
 # Milestone 2.1 — database integration and desktop packaging
 
-Status as of 13 October 2026: **in progress**. This is a report of implemented and verified work, not a claim that
+Status as of 14 October 2026: **in progress**. This is a report of implemented and verified work, not a claim that
 the milestone acceptance workflow or installer is complete.
 
 ## Recovered local state
@@ -95,13 +95,19 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
   session returned no native app/window surfaces and its documented native launch API was unavailable, so
   browser-only or engine-only testing is not represented as acceptance evidence. **Milestone 2.1 remains
   incomplete** until the live desktop flow is run and reproducible evidence is captured.
+- Added [`docs/MILESTONE_2_1_MANUAL_ACCEPTANCE.md`](MILESTONE_2_1_MANUAL_ACCEPTANCE.md), the Windows PowerShell
+  fixture setup/mutation/restore procedure, and a credential-filtered run-manifest exporter for the repository
+  owner to perform the remaining installed-UI check. These are instructions and utilities, not manual acceptance
+  evidence. Their syntax, live-fixture read-only readiness checks, guarded mutation/restoration, and manifest
+  secret-exclusion behavior were locally checked. Automated CI and integration evidence remain separately
+  identified above.
 
 No compatibility or coverage claims were changed by this work. E1/E2 profiles and the known Sort collation
 difference remain as recorded in `docs/COVERAGE.md`.
 
 ## Latest delivery
 
-- Installer fix: `88ad0cc819b4963cdbddf043919b5e874fd1af30`; current report commit: `8714973e9d13ab6b145f0025ef2b779771d0d301`.
+- Installer fix: `88ad0cc819b4963cdbddf043919b5e874fd1af30`.
 - PR #2 remains open and based on open PR #1: https://github.com/stevenmcsorley/alteryx-parity-research/pull/2.
 - Latest CI: [run 38460982270](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38460982270);
   all five jobs passed (engine, database integration, desktop, Windows desktop shell, and R runtime).

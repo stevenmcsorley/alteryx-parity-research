@@ -24,11 +24,13 @@ browser build used for automated UI tests). Source: `desktop/`.
 * **Files:** open/save `*.flow.json`; import `.yxmd/.yxmc/.yxwz/.yxzp` (report shown); export `.yxmd` for
   supported tools (lists what cannot be exported).
 * **Safety:** workflows containing Python, R or Run Command tools ask for permission before each run.
-* **Databases (Milestone 2.1, in progress):** manage PostgreSQL and SQL Server connection settings, test
-  connections, save credentials in the operating-system vault, drag Database Input onto the canvas, browse
-  schemas/tables, enter read-only SQL and preview live records. Database Output requires both connection-level
-  write enablement and a per-run confirmation. SQL query pushdown and Parquet export from the results grid are
-  not yet wired into the desktop workflow.
+* **Databases (Milestone 2.1 acceptance pending):** manage PostgreSQL and SQL Server connections, test them,
+  store credentials in the operating-system credential vault, browse metadata, and configure Database Input
+  to read a live table or read-only query on each run. Database Output requires a write-enabled connection and
+  per-run confirmation. Cross-database joins execute in the Flowbench engine; safe eligible operations may be
+  pushed into one database, with executed queries and fallback diagnostics recorded in run evidence.
+* **Results export:** the Results grid displays a bounded preview while the engine retains the full result.
+  Its file dialogs export the selected complete output or Browse capture as CSV or typed Parquet.
 
 ## Keyboard
 
@@ -43,28 +45,47 @@ browser build used for automated UI tests). Source: `desktop/`.
 
 ## Build and run
 
-Prerequisites: Python 3.12 with `pip install -r requirements.txt`, Node 22, Rust (MSVC), WebView2.
+For development from source: Python 3.12 with `pip install -r requirements.txt`, Node 22, Rust (MSVC), and
+WebView2. Staging a Windows installer requires Python **3.12.10** exactly. End users of the Windows NSIS
+installer do not need a separately installed Python, pip, Node.js, or Rust toolchain: the installer contains the
+pinned CPython 3.12.10 runtime and engine dependencies. R is an optional external runtime for R tools and is not
+bundled. Code signing is not configured for this internal build.
 
 ```powershell
 cd desktop
 npm ci
 npx tauri dev                 # desktop app with hot reload
-npx tauri build               # release exe + NSIS installer (src-tauri/target/release/bundle/nsis)
+# for a self-contained Windows installer, first stage pinned CPython and dependencies:
+$env:RUNNER_TEMP = Join-Path $env:TEMP 'flowbench-runtime-build'
+New-Item -ItemType Directory -Force -Path $env:RUNNER_TEMP | Out-Null
+pwsh .\scripts\package_windows_runtime.ps1
+npm run tauri -- build         # NSIS installer (src-tauri/target/release/bundle/nsis)
 # browser build against a separately started engine:
 python -m flowengine serve --http 8765        # from the repository root
 npm run dev
 ```
 
-The installer bundles the `flowengine` package, schemas and catalogue as resources. It does **not** bundle a
-Python runtime: the app starts `python` (override with `FLOWENGINE_PYTHON`) and shows an "engine is not
-reachable" screen with instructions if Python or the requirements are missing. Bundling an embedded Python
-and code signing are open release tasks (MILESTONE_2_REPORT.md).
+Windows packaging stages the engine, schemas, catalogue, pinned dependencies, and managed Python runtime under
+the Tauri resources. Startup verifies `engine.info` and the 323-entry catalogue over the sidecar RPC channel;
+the clean-runner installer CI also executes a deterministic workflow through the installed application before
+reinstalling and uninstalling it. See `docs/MILESTONE_2_1_REPORT.md` for the run link and current evidence.
+
+SQL pushdown is conservative. Filter, Select, Summarize, and same-database Join operations can be folded only
+when the planner establishes the necessary semantic and consumer constraints. Cross-database Join runs locally;
+unsupported expressions/options, fan-out, output-anchor use, ordering, or type/collation differences keep
+operations local and produce fallback diagnostics. A translator being able to render SQL does not by itself
+mean that a workflow operation was pushed. Consult the run diagnostics/manifest to see what actually executed.
+
+Milestone 2.1 remains **incomplete** until the repository owner completes the documented installed-Tauri
+PostgreSQL + SQL Server [manual acceptance workflow](MILESTONE_2_1_MANUAL_ACCEPTANCE.md) and records the manual
+result. Browser Playwright and engine integration results are automated evidence, not a substitute for that
+manual desktop check.
 
 ## Tests
 
 * `npx vitest run`: model conversion, undo/redo, connection rules, grouping, run-result guards, status labels,
   CSV export (10 tests).
-* `npx playwright test app.spec`: 9 end-to-end scenarios against the real engine: palette honesty,
+* `npx playwright test app.spec`: 11 end-to-end scenarios against the real engine: palette honesty,
   building/configuring/connecting/running from scratch, validation feedback, the example workflow with golden
   output, undo/redo/grouping, cancellation, save/reopen round trip, `.yxmd` import, code-tool permission.
 * `cargo test` (src-tauri): sidecar protocol parsing and a real engine round trip.
