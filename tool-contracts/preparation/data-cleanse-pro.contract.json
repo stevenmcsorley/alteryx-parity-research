@@ -1,0 +1,173 @@
+{
+  "id": "preparation:data-cleanse-pro",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Data Cleanse Pro",
+  "category": "Preparation",
+  "xml_tool_name": "AlteryxBasePluginsGui.DataCleansePro.DataCleansePro",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/data-cleanse-pro-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "CheckBox_ModifyCase",
+      "Checkbox_ReplaceNumericColumns",
+      "Checkbox_ReplaceStringColumns",
+      "Exceptions",
+      "Fields",
+      "Fields/Field",
+      "Letters",
+      "ModifyCase",
+      "Numbers",
+      "Punctuations",
+      "RemoveAllWhitespaces",
+      "RemoveHTMLTags",
+      "RemoveInvisibleCharacters",
+      "RemoveLeadingAndTrailingWhitespace",
+      "RemoveLetters",
+      "RemoveNullColumns",
+      "RemoveNullRows",
+      "RemoveNumbers",
+      "RemovePunctuation",
+      "RemoveTabsLineBreaksAndDuplicates",
+      "ReplaceWithBlanks",
+      "ReplaceWithZero",
+      "radioButton_ReplaceBlankswithNulls",
+      "radioButton_ReplaceNullwithBlanks",
+      "radioButton_ReplaceNullwithZero",
+      "radioButton_ReplaceZerowithNulls"
+    ],
+    "public_doc_sections": [
+      "Tool Components",
+      "Configure the Tool",
+      "Remove Null Data",
+      "Select Columns to Cleanse",
+      "Remove Characters",
+      "Replace String Columns",
+      "Replace Numeric Columns",
+      "Modify Case"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.DataCleansePro.DataCleansePro"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "CheckBox_ModifyCase",
+      "Checkbox_ReplaceNumericColumns",
+      "Checkbox_ReplaceStringColumns",
+      "Exceptions",
+      "Fields",
+      "Fields/Field",
+      "Letters",
+      "ModifyCase",
+      "Numbers",
+      "Punctuations",
+      "RemoveAllWhitespaces",
+      "RemoveHTMLTags",
+      "RemoveInvisibleCharacters",
+      "RemoveLeadingAndTrailingWhitespace",
+      "RemoveLetters",
+      "RemoveNullColumns",
+      "RemoveNullRows",
+      "RemoveNumbers",
+      "RemovePunctuation",
+      "RemoveTabsLineBreaksAndDuplicates",
+      "ReplaceWithBlanks",
+      "ReplaceWithZero",
+      "radioButton_ReplaceBlankswithNulls",
+      "radioButton_ReplaceNullwithBlanks",
+      "radioButton_ReplaceNullwithZero",
+      "radioButton_ReplaceZerowithNulls"
+    ],
+    "nodes_observed": 9
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Data Cleanse Pro Tool",
+    "sha256": "d3657e30928f7eb74a3822a715b6d3d3e7c79bbbd795a7adf062be35bb549808",
+    "retrieved_utc": "2026-10-13T09:33:24.877344+00:00",
+    "anchors_extracted": [
+      {
+        "label": "Input",
+        "letter": null,
+        "direction_guess": "input"
+      },
+      {
+        "label": "Output",
+        "letter": null,
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Remove Null Data",
+      "Select Columns to Cleanse",
+      "Remove Characters",
+      "Replace String Columns",
+      "Replace Numeric Columns",
+      "Modify Case"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/preparation/data-cleanse-pro-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.877344+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

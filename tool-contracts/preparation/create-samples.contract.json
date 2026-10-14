@@ -1,0 +1,130 @@
+{
+  "id": "preparation:create-samples",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Create Samples",
+  "category": "Preparation",
+  "xml_tool_name": "Predictive Tools\\Create_Samples.yxmc",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/create-samples-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Estimation",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    },
+    {
+      "name": "Holdout",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    },
+    {
+      "name": "Validation",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "Value"
+    ],
+    "public_doc_sections": [
+      "Configure the Tool",
+      "View the Output"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "Predictive Tools\\Create_Samples.yxmc"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [
+      "Estimation",
+      "Holdout",
+      "Validation"
+    ],
+    "config_elements": [
+      "Value"
+    ],
+    "nodes_observed": 3
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Create Samples Tool",
+    "sha256": "019f6db26923d0aa5d38caa7c14a615c628b3a721a0cd68e598091a51c63ede4",
+    "retrieved_utc": "2026-10-13T09:33:24.864840+00:00",
+    "anchors_extracted": [
+      {
+        "label": "E",
+        "letter": "E",
+        "direction_guess": "output"
+      },
+      {
+        "label": "V",
+        "letter": "V",
+        "direction_guess": "input"
+      },
+      {
+        "label": "H",
+        "letter": "H",
+        "direction_guess": "unknown"
+      }
+    ],
+    "anchor_extraction": "page-anchor-lines",
+    "section_headings": [
+      "Configure the Tool",
+      "View the Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/preparation/create-samples-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.864840+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

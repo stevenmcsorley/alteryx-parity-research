@@ -1,0 +1,181 @@
+{
+  "id": "in-out:output-data",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Output Data",
+  "category": "In/Out",
+  "xml_tool_name": "AlteryxBasePluginsGui.DbFileOutput.DbFileOutput",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/output-data-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "path"
+    ],
+    "properties": {
+      "path": {
+        "type": "string",
+        "minLength": 1
+      },
+      "format": {
+        "enum": [
+          "auto",
+          "csv",
+          "tsv",
+          "delimited",
+          "json",
+          "jsonl"
+        ],
+        "default": "auto"
+      },
+      "delimiter": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1,
+        "default": ","
+      },
+      "write_header": {
+        "type": "boolean",
+        "default": true
+      },
+      "encoding": {
+        "type": "string",
+        "default": "utf-8"
+      },
+      "if_exists": {
+        "enum": [
+          "overwrite",
+          "error"
+        ],
+        "default": "overwrite"
+      },
+      "null_text": {
+        "type": "string",
+        "default": ""
+      },
+      "line_terminator": {
+        "enum": [
+          "\n",
+          "\r\n"
+        ],
+        "default": "\n"
+      },
+      "quoting": {
+        "enum": [
+          "minimal",
+          "all"
+        ],
+        "default": "minimal"
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "alteryx-server (public-doc keyword signal; unreviewed)",
+    "credentials (public-doc keyword signal; unreviewed)",
+    "database-driver (public-doc keyword signal; unreviewed)",
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.output_data",
+    "version": "1.0.0",
+    "module": "flowengine.tools.inout",
+    "side_effects": "writes-files"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.DbFileOutput.DbFileOutput"
+    ],
+    "input_anchors": [
+      "Action",
+      "Input"
+    ],
+    "output_anchors": [],
+    "config_elements": [
+      "File",
+      "FormatSpecificOptions",
+      "FormatSpecificOptions/CodePage",
+      "FormatSpecificOptions/Delimeter",
+      "FormatSpecificOptions/ForceQuotes",
+      "FormatSpecificOptions/HeaderRow",
+      "FormatSpecificOptions/LineEndStyle",
+      "FormatSpecificOptions/NoSpatialIndex",
+      "FormatSpecificOptions/OutputOption",
+      "FormatSpecificOptions/SaveSource",
+      "FormatSpecificOptions/SkipFieldNames",
+      "FormatSpecificOptions/WriteBOM",
+      "FormatSpecificOptions/WriteCompatibleVersion",
+      "KeepField",
+      "MultiFile",
+      "MultiFileField",
+      "MultiFileType",
+      "Passwords"
+    ],
+    "nodes_observed": 22
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Output Data Tool",
+    "sha256": "645175f0bf80d017b1e318180c3b6a5922cdc895cf31cce422f0d5ad1dd35a22",
+    "retrieved_utc": "2026-10-13T09:33:24.225857+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Connect with DCM (Default)",
+      "Connect without DCM",
+      "Disable Output Tool",
+      "View Output File",
+      "Convert Output Data Tool to Input Data Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 3,
+    "passing": 3,
+    "tests": [
+      "test_fe_executor.EndToEndTests.test_golden_outputs",
+      "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
+      "test_fe_tools.InOutTests.test_output_roundtrip_csv_json_and_if_exists"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/output-data-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.225857+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No differential conformance case yet."
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "id": "text-mining:topic-modeling",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Topic Modeling",
+  "category": "Text Mining",
+  "xml_tool_name": "TopicModel",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/topic-modeling.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Tool Components",
+      "Configure the Tool",
+      "Advanced Options",
+      "Dictionary Options",
+      "LDA Options",
+      "Output"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "python-nlp-runtime",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Topic Modeling",
+    "sha256": "4b71b4efbf3eaeda0e6e19add7389a48e4fdb7ba34fcc27c339316f77a259934",
+    "retrieved_utc": "2026-10-13T09:33:23.031210+00:00",
+    "anchors_extracted": [
+      {
+        "label": "Input",
+        "letter": null,
+        "direction_guess": "input"
+      },
+      {
+        "label": "D",
+        "letter": "D",
+        "direction_guess": "unknown"
+      },
+      {
+        "label": "R",
+        "letter": "R",
+        "direction_guess": "unknown"
+      },
+      {
+        "label": "M",
+        "letter": "M",
+        "direction_guess": "unknown"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Advanced Options",
+      "Dictionary Options",
+      "LDA Options",
+      "Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/topic-modeling.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.031210+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

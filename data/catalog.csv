@@ -1,324 +1,324 @@
 id,category,name,xml_tool_name,user_role,documentation_url,source_state,implementation_status,verification_status
-in-out:auto-insights-uploader,In/Out,Auto Insights Uploader,AutoInsightsUploader,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-in-out:browse,In/Out,Browse,AlteryxBasePluginsGui.BrowseV2.BrowseV2,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-in-out:date-time-now,In/Out,Date Time Now,DateTimeNow,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-out:directory,In/Out,Directory,AlteryxBasePluginsGui.Directory.Directory,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-in-out:input-data,In/Out,Input Data,AlteryxBasePluginsGui.DbFileInput.DbFileInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-in-out:map-input,In/Out,Map Input,AlteryxSpatialPluginsGui.MapInput.MapInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-out:output-data,In/Out,Output Data,AlteryxBasePluginsGui.DbFileOutput.DbFileOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-in-out:text-input,In/Out,Text Input,AlteryxBasePluginsGui.TextInput.TextInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:auto-field,Preparation,Auto Field,AlteryxBasePluginsGui.AutoField.AutoField,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:create-samples,Preparation,Create Samples,Predictive Tools\Create_Samples.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:data-cleanse-pro,Preparation,Data Cleanse Pro,AlteryxBasePluginsGui.DataCleansePro.DataCleansePro,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:data-cleansing,Preparation,Data Cleansing,Cleanse.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:filter,Preparation,Filter,AlteryxBasePluginsGui.Filter.Filter,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:formula,Preparation,Formula,AlteryxBasePluginsGui.Formula.Formula,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:generate-rows,Preparation,Generate Rows,AlteryxBasePluginsGui.GenerateRows.GenerateRows,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:imputation,Preparation,Imputation,Imputation_v3.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:multi-field-binning,Preparation,Multi-Field Binning,MultiFieldBinning_v2.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:multi-field-formula,Preparation,Multi-Field Formula,AlteryxBasePluginsGui.MultiFieldFormula.MultiFieldFormula,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:multi-row-formula,Preparation,Multi-Row Formula,AlteryxBasePluginsGui.MultiRowFormula.MultiRowFormula,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:oversample-field,Preparation,Oversample Field,Predictive Tools\Oversample_Field.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:random-sample,Preparation,Random % Sample,RandomRecords.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:rank,Preparation,Rank,AlteryxBasePluginsGui.Ranking.Ranking,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:record-id,Preparation,Record ID,AlteryxBasePluginsGui.RecordID.RecordID,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:sample,Preparation,Sample,AlteryxBasePluginsGui.Sample.Sample,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:select,Preparation,Select,AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:select-records,Preparation,Select Records,SelectRecords.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:sort,Preparation,Sort,AlteryxBasePluginsGui.Sort.Sort,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:tile,Preparation,Tile,AlteryxBasePluginsGui.Tile.Tile,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-preparation:unique,Preparation,Unique,AlteryxBasePluginsGui.Unique.Unique,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-join:append-fields,Join,Append Fields,AlteryxBasePluginsGui.AppendFields.AppendFields,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-join:find-replace,Join,Find Replace,AlteryxBasePluginsGui.FindReplace.FindReplace,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-join:fuzzy-match,Join,Fuzzy Match,AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-join:join,Join,Join,AlteryxBasePluginsGui.Join.Join,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-join:join-multiple,Join,Join Multiple,AlteryxBasePluginsGui.JoinMultiple.JoinMultiple,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-join:make-group,Join,Make Group,AlteryxBasePluginsGui.MakeGroup.MakeGroup,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-join:union,Join,Union,AlteryxBasePluginsGui.Union.Union,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-parse:datetime,Parse,DateTime,AlteryxBasePluginsGui.DateTime.DateTime,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-parse:regex,Parse,RegEx,AlteryxBasePluginsGui.RegEx.RegEx,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-parse:text-to-columns,Parse,Text To Columns,AlteryxBasePluginsGui.TextToColumns.TextToColumns,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-parse:xml-parse,Parse,XML Parse,AlteryxBasePluginsGui.XMLParse.XMLParse,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-transform:arrange,Transform,Arrange,AlteryxBasePluginsGui.Arrange.Arrange,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-transform:count-records,Transform,Count Records,CountRecords.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-transform:cross-tab,Transform,Cross Tab,AlteryxBasePluginsGui.CrossTab.CrossTab,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-transform:make-columns,Transform,Make Columns,AlteryxBasePluginsGui.MakeColumns.MakeColumns,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-transform:running-total,Transform,Running Total,AlteryxBasePluginsGui.RunningTotal.RunningTotal,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-transform:summarize,Transform,Summarize,AlteryxSpatialPluginsGui.Summarize.Summarize,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-transform:transpose,Transform,Transpose,AlteryxBasePluginsGui.Transpose.Transpose,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-transform:weighted-average,Transform,Weighted Average,WeightedAvg.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:browse-in-db,In-Database,Browse In-DB,LockInGui.LockInBrowse.LockInBrowse,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:connect-in-db,In-Database,Connect In-DB,LockInGui.LockInInput.LockInInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:data-stream-in,In-Database,Data Stream In,LockInGui.LockInStreamIn.LockInStreamIn,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:data-stream-out,In-Database,Data Stream Out,LockInGui.LockInStreamOut.LockInStreamOut,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:dynamic-input-in-db,In-Database,Dynamic Input In-DB,LockInGui.LockInDynamicInput.LockInDynamicInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:dynamic-output-in-db,In-Database,Dynamic Output In-DB,LockInGui.LockInDynamicOutput.LockInDynamicOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:filter-in-db,In-Database,Filter In-DB,LockInGui.LockInFilter.LockInFilter,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:formula-in-db,In-Database,Formula In-DB,LockInGui.LockInFormula.LockInFormula,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:join-in-db,In-Database,Join In-DB,LockInGui.LockInJoin.LockInJoin,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:macro-input-in-db,In-Database,Macro Input In-DB,LockInGui.LockInMacroInput.LockInMacroInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:macro-output-in-db,In-Database,Macro Output In-DB,LockInGui.LockInMacroOutput.LockInMacroOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:sample-in-db,In-Database,Sample In-DB,LockInGui.LockInSample.LockInSample,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:select-in-db,In-Database,Select In-DB,LockInGui.LockInSelect.LockInSelect,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:summarize-in-db,In-Database,Summarize In-DB,LockInGui.LockInSummarize.LockInSummarize,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:union-in-db,In-Database,Union In-DB,LockInGui.LockInUnion.LockInUnion,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-in-database:write-data-in-db,In-Database,Write Data In-DB,LockInGui.LockInOutput.LockInOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:email,Reporting,Email,PortfolioPluginsGui.Email.Email,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:image,Reporting,Image,PortfolioPluginsGui.ComposerImage.PortfolioComposerImage,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:interactive-chart,Reporting,Interactive Chart,PlotlyCharting,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:layout,Reporting,Layout,PortfolioPluginsGui.ComposerLayout.PortfolioComposerLayout,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:map-legend-builder,Reporting,Map Legend Builder,Legend_Builder.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:map-legend-splitter,Reporting,Map Legend Splitter,Legend_Splitter.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:overlay,Reporting,Overlay,PortfolioPluginsGui.ComposerOverlay.Overlay,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:render,Reporting,Render,PortfolioPluginsGui.ComposerRender.PortfolioComposerRender,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:report-footer,Reporting,Report Footer,FooterMacro.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:report-header,Reporting,Report Header,ReportHeader,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:report-map,Reporting,Report Map,AlteryxSpatialPluginsGui.ReportMap.ReportMap,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:report-text,Reporting,Report Text,PortfolioPluginsGui.ComposerText.PortfolioComposerText,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-reporting:table,Reporting,Table,PortfolioPluginsGui.ComposerTable.PortfolioComposerTable,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-documentation:comment,Documentation,Comment,AlteryxGuiToolkit.TextBox.TextBox,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-documentation:explorer-box,Documentation,Explorer Box,AlteryxGuiToolkit.HtmlBox.HtmlBox,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-documentation:tool-container,Documentation,Tool Container,AlteryxGuiToolkit.ToolContainer.ToolContainer,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:buffer,Spatial,Buffer,AlteryxSpatialPluginsGui.Buffer.Buffer,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:create-points,Spatial,Create Points,AlteryxSpatialPluginsGui.CreatePoints.CreatePoints,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:distance,Spatial,Distance,AlteryxSpatialPluginsGui.Distance.Distance,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:find-nearest,Spatial,Find Nearest,AlteryxSpatialPluginsGui.FindNearest.FindNearest,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:generalize,Spatial,Generalize,AlteryxSpatialPluginsGui.Generalize.Generalize,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:heat-map,Spatial,Heat Map,HeatMap.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:make-grid,Spatial,Make Grid,AlteryxSpatialPluginsGui.MakeGrid.MakeGrid,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:non-overlap-drivetime,Spatial,Non Overlap Drivetime,Non_Overlapping_DT.yxmc,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:poly-build,Spatial,Poly-Build,AlteryxSpatialPluginsGui.PolyBuild.PolyBuild,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:poly-split,Spatial,Poly-Split,AlteryxSpatialPluginsGui.PolySplit.PolySplit,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:smooth,Spatial,Smooth,AlteryxSpatialPluginsGui.Smooth.Smooth,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:spatial-info,Spatial,Spatial Info,AlteryxSpatialPluginsGui.SpatialInfo.SpatialInfo,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:spatial-match,Spatial,Spatial Match,AlteryxSpatialPluginsGui.SpatialMatch.SpatialMatch,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:spatial-process,Spatial,Spatial Process,AlteryxSpatialPluginsGui.SpatialProcess.SpatialProcess,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-spatial:trade-area,Spatial,Trade Area,AlteryxSpatialPluginsGui.TradeArea.TradeArea,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-interface:action,Interface,Action,AlteryxGuiToolkit.Action.Action,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:check-box,Interface,Check Box,AlteryxGuiToolkit.Questions.CheckBoxGroup.CheckBoxGroup,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:condition,Interface,Condition,AlteryxGuiToolkit.Condition.Condition,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:control-parameter,Interface,Control Parameter,AlteryxGuiToolkit.Questions.ControlParam.ControlParam,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:date,Interface,Date,AlteryxGuiToolkit.Questions.Date.Date,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:dcm-connection,Interface,DCM Connection,AlteryxGuiToolkit.Questions.DcmConnection.QuestionDcmConnection,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:drop-down,Interface,Drop Down,AlteryxGuiToolkit.Questions.DropDownListBox.DropDown,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:error-message,Interface,Error Message,AlteryxGuiToolkit.Error.Error,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:file-browse,Interface,File Browse,AlteryxGuiToolkit.Questions.FileBrowse.FileBrowse,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:folder-browse,Interface,Folder Browse,AlteryxGuiToolkit.Questions.FolderBrowse.FolderBrowse,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:list-box,Interface,List Box,AlteryxGuiToolkit.Questions.DropDownListBox.ListBox,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:macro-input,Interface,Macro Input,AlteryxBasePluginsGui.MacroInput.MacroInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:macro-output,Interface,Macro Output,AlteryxBasePluginsGui.MacroOutput.MacroOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:map,Interface,Map,AlteryxGuiToolkit.Questions.Map.Map,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:numeric-up-down,Interface,Numeric Up Down,AlteryxGuiToolkit.Questions.NumericUpDown.NumericUpDown,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:radio-button,Interface,Radio Button,AlteryxGuiToolkit.Questions.RadioButtonGroup.RadioButtonGroup,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:text-box,Interface,Text Box,AlteryxGuiToolkit.Questions.TextBox.QuestionTextBox,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-interface:tree,Interface,Tree,AlteryxGuiToolkit.Questions.Tree.Tree,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:association-analysis,Data Investigation,Association Analysis,Predictive Tools\Association_Analysis.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:basic-data-profile,Data Investigation,Basic Data Profile,AlteryxBasePluginsGui.BasicDataProfile.BasicDataProfile,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:contingency-table,Data Investigation,Contingency Table,Predictive Tools\ContingencyTable.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:distribution-analysis,Data Investigation,Distribution Analysis,Predictive Tools\Distribution_Analysis.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:field-summary,Data Investigation,Field Summary,Predictive Tools\Field_Summary_Report.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:frequency-table,Data Investigation,Frequency Table,Predictive Tools\Frequency.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:heat-plot,Data Investigation,Heat Plot,Predictive Tools\Heat_Plot.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:histogram,Data Investigation,Histogram,Predictive Tools\Histogram.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:importance-weights,Data Investigation,Importance Weights,Importance Weights.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:pearson-correlation,Data Investigation,Pearson Correlation,AlteryxBasePluginsGui.PearsonCorrelation.PearsonCorrelation,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:plot-of-means,Data Investigation,Plot of Means,Predictive Tools\Plot_of_Means.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:scatterplot,Data Investigation,Scatterplot,Predictive Tools\Scatterplot.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:spearman-correlation,Data Investigation,Spearman Correlation,SpearmanCorrCoeff.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-data-investigation:violin-plot,Data Investigation,Violin Plot,Predictive Tools\Violin_Plot.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:boosted-model,Predictive,Boosted Model,Predictive Tools\Boosted_Model.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:count-regression,Predictive,Count Regression,Predictive Tools\Count_Regression.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:cross-validation,Predictive,Cross-Validation,CrossValidation,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:datarobot-automodel,Predictive,DataRobot Automodel,DataRobotModelFactory,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:datarobot-predict,Predictive,DataRobot Predict,DataRobotEnhancedPredictions,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:decision-tree,Predictive,Decision Tree,Decision_Tree,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:forest-model,Predictive,Forest Model,Predictive Tools\Forest_Model.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:gamma-regression,Predictive,Gamma Regression,Predictive Tools\Gamma_Regression.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:lift-chart,Predictive,Lift Chart,Predictive Tools\Lift_Chart.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:linear-regression,Predictive,Linear Regression,Linear Regression,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:logistic-regression,Predictive,Logistic Regression,Logistic_Regression,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:model-coefficients,Predictive,Model Coefficients,Model Coefficients.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:model-comparison,Predictive,Model Comparison,Predictive Tools\Model Comparison.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:naive-bayes-classifier,Predictive,Naive Bayes Classifier,Predictive Tools\Naive_Bayes.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:nested-test,Predictive,Nested Test,Predictive Tools\Nested_Test.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:network-analysis,Predictive,Network Analysis,Predictive Tools\NetworkViz.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:neural-network,Predictive,Neural Network,Predictive Tools\Neural_Network.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:score,Predictive,Score,Score,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:spline-model,Predictive,Spline Model,Predictive Tools\Spline_Model.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:stepwise,Predictive,Stepwise,Predictive Tools\Stepwise.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:support-vector-machine,Predictive,Support Vector Machine,Predictive Tools\SVM_v2.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:survival-analysis,Predictive,Survival Analysis,Predictive Tools\Survival Analysis.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:survival-score,Predictive,Survival Score,Survival Score.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:test-of-means,Predictive,Test of Means,Predictive Tools\Test_of_Means.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive:variance-inflation-factors,Predictive,Variance Inflation Factors,Variance Inflation Factors.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-ab-testing:ab-analysis,AB Testing,AB Analysis,Predictive Tools\AB_Analysis.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-ab-testing:ab-controls,AB Testing,AB Controls,Predictive Tools\AB_Controls.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-ab-testing:ab-treatments,AB Testing,AB Treatments,Predictive Tools\AB_Treatments.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-ab-testing:ab-trend,AB Testing,AB Trend,Predictive Tools\AB_Trend.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-time-series:arima,Time Series,ARIMA,Predictive Tools\ARIMA.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-time-series:ets,Time Series,ETS,Predictive Tools\ETS.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-time-series:ts-compare,Time Series,TS Compare,Predictive Tools\TS_Compare.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-time-series:ts-covariate-forecast,Time Series,TS Covariate Forecast,Predictive Tools\TS_Covariate_Forecast.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-time-series:ts-filler,Time Series,TS Filler,Predictive Tools\TimeSeriesFiller.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-time-series:ts-forecast,Time Series,TS Forecast,Predictive Tools\TS_Forecast.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-time-series:ts-forecast-factory,Time Series,TS Forecast Factory,TS Forecast Factory.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-time-series:ts-model-factory,Time Series,TS Model Factory,TS Model Factory.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-time-series:ts-plot,Time Series,TS Plot,Predictive Tools\TS_Plot.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive-grouping:append-cluster,Predictive Grouping,Append Cluster,Predictive Tools\Append_Cluster.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive-grouping:find-nearest-neighbors,Predictive Grouping,Find Nearest Neighbors,Predictive Tools\Find_Nearest_Neighbors.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive-grouping:k-centroids-cluster-analysis,Predictive Grouping,K-Centroids Cluster Analysis,Predictive Tools\K-Centroids_Cluster_Analysis.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive-grouping:k-centroids-diagnostics,Predictive Grouping,K-Centroids Diagnostics,Predictive Tools\K-Centroids_Diagnostics.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive-grouping:mb-affinity,Predictive Grouping,MB Affinity,Predictive Tools\MB_Affinity.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive-grouping:mb-inspect,Predictive Grouping,MB Inspect,Predictive Tools\MB_Inspect.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive-grouping:mb-rules,Predictive Grouping,MB Rules,Predictive Tools\MB_Rules.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive-grouping:multidimensional-scaling,Predictive Grouping,Multidimensional Scaling,Multidimensional Scaling.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-predictive-grouping:principal-components,Predictive Grouping,Principal Components,Predictive Tools\Principal_Components.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-prescriptive:optimization,Prescriptive,Optimization,Optimization,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-prescriptive:simulation-sampling,Prescriptive,Simulation Sampling,SimSampling,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-prescriptive:simulation-scoring,Prescriptive,Simulation Scoring,SimScoring,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-prescriptive:simulation-summary,Prescriptive,Simulation Summary,SimSummary,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:azure-data-lake-file-input,Connectors,Azure Data Lake File Input,azure_data_lake_input,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:azure-data-lake-file-output,Connectors,Azure Data Lake File Output,azure_data_lake_output,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:adobe-analytics,Connectors,Adobe Analytics,AdobeAnalytics_v3.0.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:amazon-s3-download,Connectors,Amazon S3 Download,lteryxConnectorGui.AmazonS3Download.AmazonS3Download,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:amazon-s3-upload,Connectors,Amazon S3 Upload,AlteryxConnectorGui.AmazonS3Upload.AmazonS3Upload,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:anaplan-input,Connectors,Anaplan Input,AnaplanInput_1_1_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:anaplan-output,Connectors,Anaplan Output,AnaplanOutput_1_1_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:automation-anywhere-360,Connectors,Automation Anywhere 360,AutomationAnywhere360_v1.0.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:box-input,Connectors,Box Input,BoxInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:box-output,Connectors,Box Output,BoxOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:cognitive-services-text-analytics,Connectors,Cognitive Services Text Analytics,CognitiveServicesTextAnalytics,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:dataverse-input,Connectors,Dataverse Input,DataverseInput_v1.1.1,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:dataverse-output,Connectors,Dataverse Output,DataverseOutput_v1.1.1,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:dropbox-input,Connectors,Dropbox Input,DropboxInput_v1.1.2,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:dropbox-output,Connectors,Dropbox Output,DropboxOutput_v1.1.2,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:dynamics-crm-input,Connectors,Dynamics CRM Input,dynamics_crm_input_v1.0.2,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:dynamics-crm-output,Connectors,Dynamics CRM Output,dynamics_crm_output_v1.0.2,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:google-analytics,Connectors,Google Analytics,GoogleAnalytics_v8.0.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:google-analytics-4-input,Connectors,Google Analytics 4 Input,GoogleAnalytics4Input_1_1_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:google-bigquery-input,Connectors,Google BigQuery Input,big_query_input_v3.0.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:google-bigquery-output,Connectors,Google BigQuery Output,big_query_output_v3.0.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:google-drive-input,Connectors,Google Drive Input,GoogleDriveInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:google-drive-output,Connectors,Google Drive Output,GoogleDriveOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:google-sheets-input,Connectors,Google Sheets Input,google-sheets-input,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:google-sheets-output,Connectors,Google Sheets Output,google-sheets-output,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:marketo-append,Connectors,Marketo Append,marketo-append,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:marketo-input,Connectors,Marketo Input,marketo-input,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:marketo-output,Connectors,Marketo Output,marketo-output,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:microsoft-power-bi-output,Connectors,Microsoft Power BI Output,PowerBIOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:mongodb-input,Connectors,MongoDB Input,AlteryxConnectorGui.MongoInput.MongoInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:mongodb-output,Connectors,MongoDB Output,AlteryxConnectorGui.MongoOutput.MongoOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:onedrive-input,Connectors,OneDrive Input,OneDriveInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:onedrive-output,Connectors,OneDrive Output,OneDriveOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:outlook-365-input,Connectors,Outlook 365 Input,Outlook365Input_v1.1.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:power-automate,Connectors,Power Automate,PowerAutomate_v1.0.1,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:publish-to-tableau-server,Connectors,Publish to Tableau Server,PublishToTableauServer_v2.0.0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:salesforce-input,Connectors,Salesforce Input,SalesforceInput_v4.2.4,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:salesforce-output-new,Connectors,Salesforce Output (New),SalesforceOutput_v1.3.1,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:servicenow-input,Connectors,ServiceNow Input,ServiceNowInput_1_1_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:sharepoint-files-input,Connectors,SharePoint Files Input,SharePointInput_2_4_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:sharepoint-files-output,Connectors,SharePoint Files Output,SharePointOutput_2_4_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:sharepoint-list-input,Connectors,SharePoint List Input,AlteryxConnectorDotNet.SharepointInput.SharepointInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:sharepoint-list-output,Connectors,SharePoint List Output,AlteryxConnectorDotNet.SharepointOutput.SharepointOutput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-connectors:tableau-output,Connectors,Tableau Output,TableauOutput_1_4_0,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-address:cass,Address,CASS,AlteryxCASSGui.CASS.CASS,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-address:parse-address,Address,Parse Address,AlteryxCASSGui.CASSParse.CASSParse,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-address:reverse-geocoder,Address,Reverse Geocoder,ReverseGeocoder.yxmc,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-address:street-geocoder,Address,Street Geocoder,PortfolioPluginsGui.Geocoder.Geocoder,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-address:us-geocoder,Address,US Geocoder,PortfolioExplorer.yxmc,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-address:us-zip9-coder,Address,US ZIP9 Coder,AlteryxCASSGui.ZIP9Coder.ZIP9Coder,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-demographic-analysis:allocate-append,Demographic Analysis,Allocate Append,PortfolioPluginsGui.AllocateAppend.AllocateAppend,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-demographic-analysis:allocate-input,Demographic Analysis,Allocate Input,PortfolioPluginsGui.AllocateInput.AllocateInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-demographic-analysis:allocate-metainfo,Demographic Analysis,Allocate Metainfo,PortfolioPluginsGui.AllocateMetaInfo.AllocateMetaInfo,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-demographic-analysis:allocate-report,Demographic Analysis,Allocate Report,PortfolioPluginsGui.AllocateReport.AllocateReport,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-behavior-analysis-deprecated:behavior-metainfo,Behavior Analysis (Deprecated),Behavior Metainfo,PortfolioPluginsGui.SolocastMetaInfo.SolocastMetaInfo,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-behavior-analysis-deprecated:cluster-code,Behavior Analysis (Deprecated),Cluster Code,PortfolioPluginsGui.SolocastClusterNum.SolocastClusterNum,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-behavior-analysis-deprecated:compare-behavior,Behavior Analysis (Deprecated),Compare Behavior,PortfolioPluginsGui.SolocastCompare.SolocastCompare,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-behavior-analysis-deprecated:create-profile,Behavior Analysis (Deprecated),Create Profile,PortfolioPluginsGui.SolocastCreateProfile.SolocastCreateProfile,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-behavior-analysis-deprecated:detail-fields,Behavior Analysis (Deprecated),Detail Fields,PortfolioPluginsGui.SolocastDetailAsFields.SolocastDetailAsFields,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-behavior-analysis-deprecated:profile-comparison-report,Behavior Analysis (Deprecated),Profile Comparison Report,Behavior_ProfileComparisonReport.yxmc,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-behavior-analysis-deprecated:profile-detail-report,Behavior Analysis (Deprecated),Profile Detail Report,Macros\Behavior_ProfileDetailReport.yxmc,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-behavior-analysis-deprecated:profile-input,Behavior Analysis (Deprecated),Profile Input,PortfolioPluginsGui.SolocastReadProfileSet.SolocastReadProfileSet,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-behavior-analysis-deprecated:profile-output,Behavior Analysis (Deprecated),Profile Output,PortfolioPluginsGui.SolocastWriteProfileSet.SolocastWriteProfileSet,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-behavior-analysis-deprecated:profile-rank-report,Behavior Analysis (Deprecated),Profile Rank Report,Behavior_ProfileRankReport.yxmc,Full (Data Packages Add-on),,public-list-manually-transcribed-xml,not-started,not-tested
-calgary:calgary-input,Calgary,Calgary Input,CalgaryPluginsGui.CalgaryInput.CalgaryInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-calgary:calgary-join,Calgary,Calgary Join,CalgaryPluginsGui.CalgaryJoin.CalgaryJoin,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-calgary:calgary-cross-count,Calgary,Calgary Cross Count,CalgaryLoadersGui.CalgaryLoader.CalgaryLoader,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-calgary:calgary-cross-count-append,Calgary,Calgary Cross Count Append,CalgaryPluginsGui.CalgaryCrossCount.CalgaryCrossCount,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-calgary:calgary-loader,Calgary,Calgary Loader,CalgaryPluginsGui.CalgaryCrossCountAppend.CalgaryCrossCountAppend,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:apache-spark-code,Developer,Apache Spark Code,Custom Spark,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:api-output,Developer,API Output,AlteryxBasePluginsGui.APIOutput.APIOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:base64-encoder,Developer,Base64 Encoder,Base64_Encoder.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:blob-convert,Developer,Blob Convert,AlteryxBasePluginsGui.BlobConvert.BlobConvert,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:blob-input,Developer,Blob Input,AlteryxBasePluginsGui.BlobInput.BlobInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:blob-output,Developer,Blob Output,AlteryxBasePluginsGui.BlobOutput.BlobOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:block-until-done,Developer,Block Until Done,AlteryxBasePluginsGui.BlockUntilDone.BlockUntilDone,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-developer:control-container,Developer,Control Container,AlteryxGuiToolkit.ControlContainer.ControlContainer,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-developer:detour,Developer,Detour,AlteryxBasePluginsGui.Detour.Detour,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:detour-end,Developer,Detour End,AlteryxBasePluginsGui.DetourEnd.DetourEnd,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:download,Developer,Download,AlteryxConnectorGui.Download.Download,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:dynamic-input,Developer,Dynamic Input,AlteryxBasePluginsGui.DynamicInput.DynamicInput,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-developer:dynamic-rename,Developer,Dynamic Rename,AlteryxBasePluginsGui.DynamicRename.DynamicRename,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-developer:dynamic-replace,Developer,Dynamic Replace,AlteryxBasePluginsGui.DynamicReplace.DynamicReplace,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:dynamic-select,Developer,Dynamic Select,AlteryxBasePluginsGui.DynamicSelect.DynamicSelect,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:expect-equals,Developer,Expect Equals,ExpectEqual.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:field-info,Developer,Field Info,AlteryxBasePluginsGui.FieldInfo.FieldInfo,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:github-commit,Developer,GitHub Commit,GitHubCommit.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:github-get-last-commit,Developer,GitHub Get Last Commit,GetLastCommit.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:json-parse,Developer,JSON Parse,AlteryxBasePluginsGui.JSONParse.JSONParse,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:json-schema,Developer,JSON Schema,JSONSchema_1_0,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:license-api,Developer,License API,LicenseAPITool_1_0,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:message,Developer,Message,AlteryxBasePluginsGui.Message.Message,"Basic, Full",,public-list-manually-transcribed-xml,not-started,not-tested
-developer:python,Developer,Python,JupyterCode,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:r,Developer,R,AlteryxRPluginGui.R,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:run-command,Developer,Run Command,AlteryxBasePluginsGui.RunCommand.RunCommand,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:runner,Developer,Runner,CReW_Runner\CReW_Runner.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:server-api,Developer,Server API,ServerAPI_1_0,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:test,Developer,Test,AlteryxBasePluginsGui.Test.Test,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-developer:throttle,Developer,Throttle,AlteryxBasePluginsGui.Throttle.Throttle,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-laboratory:connect-json-builder,Laboratory,Connect JSON Builder,ConnectTools.ConnectJSONBuilder,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-laboratory:connect-output,Laboratory,Connect Output,ConnectTools.ConnectOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-laboratory:json-build,Laboratory,JSON Build,AlteryxBasePluginsGui.JSONBuild.JSONBuild,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-laboratory:jupyter-flow,Laboratory,Jupyter Flow,JupyterFlow,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-laboratory:key-value-pair-extraction,Laboratory,Key-Value Pair Extraction,KeyValuePairExtraction,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-laboratory:transpose-in-db,Laboratory,Transpose In-DB,LockInGui.LockInTranspose.LockInTranspose,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-laboratory:visual-layout,Laboratory,Visual Layout,VisualLayout,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-machine-learning:assisted-modeling,Machine Learning,Assisted Modeling,Modeling,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-machine-learning:build-features,Machine Learning,Build Features,BuildFeatures,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-machine-learning:classification,Machine Learning,Classification,Classification,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-machine-learning:data-health,Machine Learning,Data Health,DataHealth,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-machine-learning:feature-types,Machine Learning,Feature Types,FeatureTypes,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-machine-learning:fit,Machine Learning,Fit,Fit,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-machine-learning:machine-learning-predict,Machine Learning,Machine Learning Predict,CloudMLPredict,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-machine-learning:machine-learning-send,Machine Learning,Machine Learning Send,CloudMLUpload,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-machine-learning:predict,Machine Learning,Predict,Predict,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-machine-learning:regression,Machine Learning,Regression,Regression,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-machine-learning:transformation,Machine Learning,Transformation,Transformation,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-text-mining:named-entity-recognition,Text Mining,Named Entity Recognition,NamedEntityRecognition,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-text-mining:part-of-speech-tagger,Text Mining,Part-of-Speech Tagger,PartOfSpeechTagger,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-text-mining:sentiment-analysis,Text Mining,Sentiment Analysis,Sentiment,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-text-mining:text-classification,Text Mining,Text Classification,TextClassification,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-text-mining:text-pre-processing,Text Mining,Text Pre-processing,TextPreProcessing,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-text-mining:text-summary,Text Mining,Text Summary,TextSummary,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-text-mining:topic-modeling,Text Mining,Topic Modeling,TopicModel,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-text-mining:word-cloud,Text Mining,Word Cloud,WordCloud,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-text-mining:zero-shot-text-classification,Text Mining,Zero-shot Text Classification,ZeroShotTextClassification,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-computer-vision:barcode-tool,Computer Vision,Barcode Tool,Barcode,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-computer-vision:image-input,Computer Vision,Image Input,PDFInput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-computer-vision:image-output,Computer Vision,Image Output,ImageOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-computer-vision:image-processing,Computer Vision,Image Processing,ImageProcessing,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-computer-vision:image-profile,Computer Vision,Image Profile,ImageProfile,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-computer-vision:image-recognition,Computer Vision,Image Recognition,ImageRecognition,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-computer-vision:image-template,Computer Vision,Image Template,ImageTemplate,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-computer-vision:image-to-text,Computer Vision,Image to Text,ImageToText,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-computer-vision:pdf-to-text,Computer Vision,PDF to Text,PDFToText,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-ai-tools:invoice-extractor,AI Tools,Invoice Extractor,Invoice Extractor\Invoice Extractor.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-ai-tools:llm-override,AI Tools,LLM Override,LLMOverride_1_0,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-ai-tools:precision-match,AI Tools,Precision Match,Precision Match\Precision_Match.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-ai-tools:prompt,AI Tools,Prompt,Prompt_1_0,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-ai-tools:schema-fit,AI Tools,Schema Fit,Schema Fit\Schema_Fit.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-ai-tools:synthetic-input,AI Tools,Synthetic Input,Synthetic Generate\Synthetic_Generate.yxmc,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-connect:connect-json-builder,Connect,Connect JSON Builder,ConnectTools.ConnectJSONBuilder,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-connect:connect-output,Connect,Connect Output,ConnectTools.ConnectOutput,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-connect:odbc-loader,Connect,ODBC Loader,OdbcLoader_v2,Full,,public-list-manually-transcribed-xml,not-started,not-tested
-sdk-examples:html-gui-library,SDK Examples,HTML - GUI Library,HtmlGuiSdk,Full,,public-list-manually-transcribed-xml,not-started,not-tested
+in-out:auto-insights-uploader,In/Out,Auto Insights Uploader,AutoInsightsUploader,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/in-out-tools/auto-insights-uploader-tool.html,official-catalog-verified,not-started,not-tested
+in-out:browse,In/Out,Browse,AlteryxBasePluginsGui.BrowseV2.BrowseV2,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/in-out-tools/browse-tool.html,official-catalog-verified,implemented,not-tested
+in-out:date-time-now,In/Out,Date Time Now,DateTimeNow,Full,https://help.alteryx.com/current/en/designer/tools/in-out-tools/date-time-now-tool.html,official-catalog-verified,implemented,not-tested
+in-out:directory,In/Out,Directory,AlteryxBasePluginsGui.Directory.Directory,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/in-out-tools/directory-tool.html,official-catalog-verified,implemented,not-tested
+in-out:input-data,In/Out,Input Data,AlteryxBasePluginsGui.DbFileInput.DbFileInput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/in-out-tools/input-data-tool.html,official-catalog-verified,implemented,not-tested
+in-out:map-input,In/Out,Map Input,AlteryxSpatialPluginsGui.MapInput.MapInput,Full,https://help.alteryx.com/current/en/designer/tools/in-out-tools/map-input-tool.html,official-catalog-verified,not-started,not-tested
+in-out:output-data,In/Out,Output Data,AlteryxBasePluginsGui.DbFileOutput.DbFileOutput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/in-out-tools/output-data-tool.html,official-catalog-verified,implemented,not-tested
+in-out:text-input,In/Out,Text Input,AlteryxBasePluginsGui.TextInput.TextInput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/in-out-tools/text-input-tool.html,official-catalog-verified,implemented,not-tested
+preparation:auto-field,Preparation,Auto Field,AlteryxBasePluginsGui.AutoField.AutoField,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/preparation/auto-field-tool.html,official-catalog-verified,not-started,not-tested
+preparation:create-samples,Preparation,Create Samples,Predictive Tools\Create_Samples.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/preparation/create-samples-tool.html,official-catalog-verified,not-started,not-tested
+preparation:data-cleanse-pro,Preparation,Data Cleanse Pro,AlteryxBasePluginsGui.DataCleansePro.DataCleansePro,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/preparation/data-cleanse-pro-tool.html,official-catalog-verified,not-started,not-tested
+preparation:data-cleansing,Preparation,Data Cleansing,Cleanse.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/preparation/data-cleansing-tool.html,official-catalog-verified,implemented,not-tested
+preparation:filter,Preparation,Filter,AlteryxBasePluginsGui.Filter.Filter,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/preparation/filter-tool.html,official-catalog-verified,implemented,partial
+preparation:formula,Preparation,Formula,AlteryxBasePluginsGui.Formula.Formula,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/preparation/formula-tool.html,official-catalog-verified,implemented,partial
+preparation:generate-rows,Preparation,Generate Rows,AlteryxBasePluginsGui.GenerateRows.GenerateRows,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/preparation/generate-rows-tool.html,official-catalog-verified,implemented,not-tested
+preparation:imputation,Preparation,Imputation,Imputation_v3.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/preparation/imputation-tool.html,official-catalog-verified,not-started,not-tested
+preparation:multi-field-binning,Preparation,Multi-Field Binning,MultiFieldBinning_v2.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/preparation/multi-field-binning-tool.html,official-catalog-verified,not-started,not-tested
+preparation:multi-field-formula,Preparation,Multi-Field Formula,AlteryxBasePluginsGui.MultiFieldFormula.MultiFieldFormula,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/preparation/multi-field-formula-tool.html,official-catalog-verified,not-started,not-tested
+preparation:multi-row-formula,Preparation,Multi-Row Formula,AlteryxBasePluginsGui.MultiRowFormula.MultiRowFormula,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/preparation/multi-row-formula-tool.html,official-catalog-verified,implemented,partial
+preparation:oversample-field,Preparation,Oversample Field,Predictive Tools\Oversample_Field.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/preparation/oversample-field-tool.html,official-catalog-verified,not-started,not-tested
+preparation:random-sample,Preparation,Random % Sample,RandomRecords.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/preparation/random---sample-tool.html,official-catalog-verified,not-started,not-tested
+preparation:rank,Preparation,Rank,AlteryxBasePluginsGui.Ranking.Ranking,Full,https://help.alteryx.com/current/en/designer/tools/preparation/rank-tool.html,official-catalog-verified,not-started,not-tested
+preparation:record-id,Preparation,Record ID,AlteryxBasePluginsGui.RecordID.RecordID,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/preparation/record-id-tool.html,official-catalog-verified,implemented,partial
+preparation:sample,Preparation,Sample,AlteryxBasePluginsGui.Sample.Sample,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/preparation/sample-tool.html,official-catalog-verified,implemented,partial
+preparation:select,Preparation,Select,AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/preparation/select-tool.html,official-catalog-verified,implemented,partial
+preparation:select-records,Preparation,Select Records,SelectRecords.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/preparation/select-records-tool.html,official-catalog-verified,not-started,not-tested
+preparation:sort,Preparation,Sort,AlteryxBasePluginsGui.Sort.Sort,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/preparation/sort-tool.html,official-catalog-verified,implemented,partial
+preparation:tile,Preparation,Tile,AlteryxBasePluginsGui.Tile.Tile,Full,https://help.alteryx.com/current/en/designer/tools/preparation/tile-tool.html,official-catalog-verified,not-started,not-tested
+preparation:unique,Preparation,Unique,AlteryxBasePluginsGui.Unique.Unique,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/preparation/unique-tool.html,official-catalog-verified,implemented,partial
+join:append-fields,Join,Append Fields,AlteryxBasePluginsGui.AppendFields.AppendFields,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/join/append-fields-tool.html,official-catalog-verified,implemented,partial
+join:find-replace,Join,Find Replace,AlteryxBasePluginsGui.FindReplace.FindReplace,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/join/find-replace-tool.html,official-catalog-verified,not-started,not-tested
+join:fuzzy-match,Join,Fuzzy Match,AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch,Full,https://help.alteryx.com/current/en/designer/tools/join/fuzzy-match-tool.html,official-catalog-verified,not-started,not-tested
+join:join,Join,Join,AlteryxBasePluginsGui.Join.Join,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/join/join-tool.html,official-catalog-verified,implemented,partial
+join:join-multiple,Join,Join Multiple,AlteryxBasePluginsGui.JoinMultiple.JoinMultiple,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/join/join-multiple-tool.html,official-catalog-verified,not-started,not-tested
+join:make-group,Join,Make Group,AlteryxBasePluginsGui.MakeGroup.MakeGroup,Full,https://help.alteryx.com/current/en/designer/tools/join/make-group-tool.html,official-catalog-verified,not-started,not-tested
+join:union,Join,Union,AlteryxBasePluginsGui.Union.Union,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/join/union-tool.html,official-catalog-verified,implemented,partial
+parse:datetime,Parse,DateTime,AlteryxBasePluginsGui.DateTime.DateTime,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/parse/datetime-tool.html,official-catalog-verified,not-started,not-tested
+parse:regex,Parse,RegEx,AlteryxBasePluginsGui.RegEx.RegEx,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/parse/regex-tool.html,official-catalog-verified,implemented,partial
+parse:text-to-columns,Parse,Text To Columns,AlteryxBasePluginsGui.TextToColumns.TextToColumns,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/parse/text-to-columns-tool.html,official-catalog-verified,implemented,partial
+parse:xml-parse,Parse,XML Parse,AlteryxBasePluginsGui.XMLParse.XMLParse,Full,https://help.alteryx.com/current/en/designer/tools/parse/xml-parse-tool.html,official-catalog-verified,not-started,not-tested
+transform:arrange,Transform,Arrange,AlteryxBasePluginsGui.Arrange.Arrange,Full,https://help.alteryx.com/current/en/designer/tools/transform/arrange-tool.html,official-catalog-verified,not-started,not-tested
+transform:count-records,Transform,Count Records,CountRecords.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/transform/count-records-tool.html,official-catalog-verified,implemented,not-tested
+transform:cross-tab,Transform,Cross Tab,AlteryxBasePluginsGui.CrossTab.CrossTab,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/transform/cross-tab-tool.html,official-catalog-verified,implemented,partial
+transform:make-columns,Transform,Make Columns,AlteryxBasePluginsGui.MakeColumns.MakeColumns,Full,https://help.alteryx.com/current/en/designer/tools/transform/make-columns-tool.html,official-catalog-verified,not-started,not-tested
+transform:running-total,Transform,Running Total,AlteryxBasePluginsGui.RunningTotal.RunningTotal,Full,https://help.alteryx.com/current/en/designer/tools/transform/running-total-tool.html,official-catalog-verified,implemented,partial
+transform:summarize,Transform,Summarize,AlteryxSpatialPluginsGui.Summarize.Summarize,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/transform/summarize-tool.html,official-catalog-verified,implemented,partial
+transform:transpose,Transform,Transpose,AlteryxBasePluginsGui.Transpose.Transpose,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/transform/transpose-tool.html,official-catalog-verified,implemented,partial
+transform:weighted-average,Transform,Weighted Average,WeightedAvg.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/transform/weighted-average-tool.html,official-catalog-verified,not-started,not-tested
+in-database:browse-in-db,In-Database,Browse In-DB,LockInGui.LockInBrowse.LockInBrowse,Full,https://help.alteryx.com/current/en/designer/tools/in-database/browse-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:connect-in-db,In-Database,Connect In-DB,LockInGui.LockInInput.LockInInput,Full,https://help.alteryx.com/current/en/designer/tools/in-database/connect-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:data-stream-in,In-Database,Data Stream In,LockInGui.LockInStreamIn.LockInStreamIn,Full,https://help.alteryx.com/current/en/designer/tools/in-database/data-stream-in-tool.html,official-catalog-verified,not-started,not-tested
+in-database:data-stream-out,In-Database,Data Stream Out,LockInGui.LockInStreamOut.LockInStreamOut,Full,https://help.alteryx.com/current/en/designer/tools/in-database/data-stream-out-tool.html,official-catalog-verified,not-started,not-tested
+in-database:dynamic-input-in-db,In-Database,Dynamic Input In-DB,LockInGui.LockInDynamicInput.LockInDynamicInput,Full,https://help.alteryx.com/current/en/designer/tools/in-database/dynamic-input-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:dynamic-output-in-db,In-Database,Dynamic Output In-DB,LockInGui.LockInDynamicOutput.LockInDynamicOutput,Full,https://help.alteryx.com/current/en/designer/tools/in-database/dynamic-output-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:filter-in-db,In-Database,Filter In-DB,LockInGui.LockInFilter.LockInFilter,Full,https://help.alteryx.com/current/en/designer/tools/in-database/filter-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:formula-in-db,In-Database,Formula In-DB,LockInGui.LockInFormula.LockInFormula,Full,https://help.alteryx.com/current/en/designer/tools/in-database/formula-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:join-in-db,In-Database,Join In-DB,LockInGui.LockInJoin.LockInJoin,Full,https://help.alteryx.com/current/en/designer/tools/in-database/join-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:macro-input-in-db,In-Database,Macro Input In-DB,LockInGui.LockInMacroInput.LockInMacroInput,Full,https://help.alteryx.com/current/en/designer/tools/in-database/macro-input-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:macro-output-in-db,In-Database,Macro Output In-DB,LockInGui.LockInMacroOutput.LockInMacroOutput,Full,https://help.alteryx.com/current/en/designer/tools/in-database/macro-output-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:sample-in-db,In-Database,Sample In-DB,LockInGui.LockInSample.LockInSample,Full,https://help.alteryx.com/current/en/designer/tools/in-database/sample-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:select-in-db,In-Database,Select In-DB,LockInGui.LockInSelect.LockInSelect,Full,https://help.alteryx.com/current/en/designer/tools/in-database/select-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:summarize-in-db,In-Database,Summarize In-DB,LockInGui.LockInSummarize.LockInSummarize,Full,https://help.alteryx.com/current/en/designer/tools/in-database/summarize-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:union-in-db,In-Database,Union In-DB,LockInGui.LockInUnion.LockInUnion,Full,https://help.alteryx.com/current/en/designer/tools/in-database/union-in-db-tool.html,official-catalog-verified,not-started,not-tested
+in-database:write-data-in-db,In-Database,Write Data In-DB,LockInGui.LockInOutput.LockInOutput,Full,https://help.alteryx.com/current/en/designer/tools/in-database/write-data-in-db-tool.html,official-catalog-verified,not-started,not-tested
+reporting:email,Reporting,Email,PortfolioPluginsGui.Email.Email,Full,https://help.alteryx.com/current/en/designer/tools/reporting/email-tool.html,official-catalog-verified,not-started,not-tested
+reporting:image,Reporting,Image,PortfolioPluginsGui.ComposerImage.PortfolioComposerImage,Full,https://help.alteryx.com/current/en/designer/tools/reporting/image-tool.html,official-catalog-verified,not-started,not-tested
+reporting:interactive-chart,Reporting,Interactive Chart,PlotlyCharting,Full,https://help.alteryx.com/current/en/designer/tools/reporting/interactive-chart-tool.html,official-catalog-verified,not-started,not-tested
+reporting:layout,Reporting,Layout,PortfolioPluginsGui.ComposerLayout.PortfolioComposerLayout,Full,https://help.alteryx.com/current/en/designer/tools/reporting/layout-tool.html,official-catalog-verified,not-started,not-tested
+reporting:map-legend-builder,Reporting,Map Legend Builder,Legend_Builder.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/reporting/map-legend-builder-tool.html,official-catalog-verified,not-started,not-tested
+reporting:map-legend-splitter,Reporting,Map Legend Splitter,Legend_Splitter.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/reporting/map-legend-splitter-tool.html,official-catalog-verified,not-started,not-tested
+reporting:overlay,Reporting,Overlay,PortfolioPluginsGui.ComposerOverlay.Overlay,Full,https://help.alteryx.com/current/en/designer/tools/reporting/overlay-tool.html,official-catalog-verified,not-started,not-tested
+reporting:render,Reporting,Render,PortfolioPluginsGui.ComposerRender.PortfolioComposerRender,Full,https://help.alteryx.com/current/en/designer/tools/reporting/render-tool.html,official-catalog-verified,not-started,not-tested
+reporting:report-footer,Reporting,Report Footer,FooterMacro.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/reporting/report-footer-tool.html,official-catalog-verified,not-started,not-tested
+reporting:report-header,Reporting,Report Header,ReportHeader,Full,https://help.alteryx.com/current/en/designer/tools/reporting/report-header-tool.html,official-catalog-verified,not-started,not-tested
+reporting:report-map,Reporting,Report Map,AlteryxSpatialPluginsGui.ReportMap.ReportMap,Full,https://help.alteryx.com/current/en/designer/tools/reporting/report-map-tool.html,official-catalog-verified,not-started,not-tested
+reporting:report-text,Reporting,Report Text,PortfolioPluginsGui.ComposerText.PortfolioComposerText,Full,https://help.alteryx.com/current/en/designer/tools/reporting/report-text-tool.html,official-catalog-verified,not-started,not-tested
+reporting:table,Reporting,Table,PortfolioPluginsGui.ComposerTable.PortfolioComposerTable,Full,https://help.alteryx.com/current/en/designer/tools/reporting/table-tool.html,official-catalog-verified,not-started,not-tested
+documentation:comment,Documentation,Comment,AlteryxGuiToolkit.TextBox.TextBox,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/documentation/comment-tool.html,official-catalog-verified,not-started,not-tested
+documentation:explorer-box,Documentation,Explorer Box,AlteryxGuiToolkit.HtmlBox.HtmlBox,Full,https://help.alteryx.com/current/en/designer/tools/documentation/explorer-box-tool.html,official-catalog-verified,not-started,not-tested
+documentation:tool-container,Documentation,Tool Container,AlteryxGuiToolkit.ToolContainer.ToolContainer,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/documentation/tool-container-tool.html,official-catalog-verified,not-started,not-tested
+spatial:buffer,Spatial,Buffer,AlteryxSpatialPluginsGui.Buffer.Buffer,Full,https://help.alteryx.com/current/en/designer/tools/spatial/buffer-tool.html,official-catalog-verified,not-started,not-tested
+spatial:create-points,Spatial,Create Points,AlteryxSpatialPluginsGui.CreatePoints.CreatePoints,Full,https://help.alteryx.com/current/en/designer/tools/spatial/create-points-tool.html,official-catalog-verified,not-started,not-tested
+spatial:distance,Spatial,Distance,AlteryxSpatialPluginsGui.Distance.Distance,Full,https://help.alteryx.com/current/en/designer/tools/spatial/distance-tool.html,official-catalog-verified,not-started,not-tested
+spatial:find-nearest,Spatial,Find Nearest,AlteryxSpatialPluginsGui.FindNearest.FindNearest,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/spatial/find-nearest-tool.html,official-catalog-verified,not-started,not-tested
+spatial:generalize,Spatial,Generalize,AlteryxSpatialPluginsGui.Generalize.Generalize,Full,https://help.alteryx.com/current/en/designer/tools/spatial/generalize-tool.html,official-catalog-verified,not-started,not-tested
+spatial:heat-map,Spatial,Heat Map,HeatMap.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/spatial/heat-map-tool.html,official-catalog-verified,not-started,not-tested
+spatial:make-grid,Spatial,Make Grid,AlteryxSpatialPluginsGui.MakeGrid.MakeGrid,Full,https://help.alteryx.com/current/en/designer/tools/spatial/make-grid-tool.html,official-catalog-verified,not-started,not-tested
+spatial:non-overlap-drivetime,Spatial,Non Overlap Drivetime,Non_Overlapping_DT.yxmc,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/spatial/non-overlapping-drivetime-tool.html,official-catalog-verified,not-started,not-tested
+spatial:poly-build,Spatial,Poly-Build,AlteryxSpatialPluginsGui.PolyBuild.PolyBuild,Full,https://help.alteryx.com/current/en/designer/tools/spatial/poly-build-tool.html,official-catalog-verified,not-started,not-tested
+spatial:poly-split,Spatial,Poly-Split,AlteryxSpatialPluginsGui.PolySplit.PolySplit,Full,https://help.alteryx.com/current/en/designer/tools/spatial/poly-split-tool.html,official-catalog-verified,not-started,not-tested
+spatial:smooth,Spatial,Smooth,AlteryxSpatialPluginsGui.Smooth.Smooth,Full,https://help.alteryx.com/current/en/designer/tools/spatial/smooth-tool.html,official-catalog-verified,not-started,not-tested
+spatial:spatial-info,Spatial,Spatial Info,AlteryxSpatialPluginsGui.SpatialInfo.SpatialInfo,Full,https://help.alteryx.com/current/en/designer/tools/spatial/spatial-info-tool.html,official-catalog-verified,not-started,not-tested
+spatial:spatial-match,Spatial,Spatial Match,AlteryxSpatialPluginsGui.SpatialMatch.SpatialMatch,Full,https://help.alteryx.com/current/en/designer/tools/spatial/spatial-match-tool.html,official-catalog-verified,not-started,not-tested
+spatial:spatial-process,Spatial,Spatial Process,AlteryxSpatialPluginsGui.SpatialProcess.SpatialProcess,Full,https://help.alteryx.com/current/en/designer/tools/spatial/spatial-process-tool.html,official-catalog-verified,not-started,not-tested
+spatial:trade-area,Spatial,Trade Area,AlteryxSpatialPluginsGui.TradeArea.TradeArea,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/spatial/trade-area-tool.html,official-catalog-verified,not-started,not-tested
+interface:action,Interface,Action,AlteryxGuiToolkit.Action.Action,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/action-tool.html,official-catalog-verified,not-started,not-tested
+interface:check-box,Interface,Check Box,AlteryxGuiToolkit.Questions.CheckBoxGroup.CheckBoxGroup,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/check-box-tool.html,official-catalog-verified,not-started,not-tested
+interface:condition,Interface,Condition,AlteryxGuiToolkit.Condition.Condition,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/condition-tool.html,official-catalog-verified,not-started,not-tested
+interface:control-parameter,Interface,Control Parameter,AlteryxGuiToolkit.Questions.ControlParam.ControlParam,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/control-parameter-tool.html,official-catalog-verified,not-started,not-tested
+interface:date,Interface,Date,AlteryxGuiToolkit.Questions.Date.Date,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/date-tool.html,official-catalog-verified,not-started,not-tested
+interface:dcm-connection,Interface,DCM Connection,AlteryxGuiToolkit.Questions.DcmConnection.QuestionDcmConnection,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/dcm-connection-tool.html,official-catalog-verified,not-started,not-tested
+interface:drop-down,Interface,Drop Down,AlteryxGuiToolkit.Questions.DropDownListBox.DropDown,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/drop-down-tool.html,official-catalog-verified,not-started,not-tested
+interface:error-message,Interface,Error Message,AlteryxGuiToolkit.Error.Error,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/error-message-tool.html,official-catalog-verified,not-started,not-tested
+interface:file-browse,Interface,File Browse,AlteryxGuiToolkit.Questions.FileBrowse.FileBrowse,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/file-browse-tool.html,official-catalog-verified,not-started,not-tested
+interface:folder-browse,Interface,Folder Browse,AlteryxGuiToolkit.Questions.FolderBrowse.FolderBrowse,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/folder-browse-tool.html,official-catalog-verified,not-started,not-tested
+interface:list-box,Interface,List Box,AlteryxGuiToolkit.Questions.DropDownListBox.ListBox,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/list-box-tool.html,official-catalog-verified,not-started,not-tested
+interface:macro-input,Interface,Macro Input,AlteryxBasePluginsGui.MacroInput.MacroInput,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/macro-input-tool.html,official-catalog-verified,not-started,not-tested
+interface:macro-output,Interface,Macro Output,AlteryxBasePluginsGui.MacroOutput.MacroOutput,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/macro-output-tool.html,official-catalog-verified,not-started,not-tested
+interface:map,Interface,Map,AlteryxGuiToolkit.Questions.Map.Map,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/map-tool.html,official-catalog-verified,not-started,not-tested
+interface:numeric-up-down,Interface,Numeric Up Down,AlteryxGuiToolkit.Questions.NumericUpDown.NumericUpDown,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/numeric-up-down-tool.html,official-catalog-verified,not-started,not-tested
+interface:radio-button,Interface,Radio Button,AlteryxGuiToolkit.Questions.RadioButtonGroup.RadioButtonGroup,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/radio-button-tool.html,official-catalog-verified,not-started,not-tested
+interface:text-box,Interface,Text Box,AlteryxGuiToolkit.Questions.TextBox.QuestionTextBox,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/text-box-tool.html,official-catalog-verified,not-started,not-tested
+interface:tree,Interface,Tree,AlteryxGuiToolkit.Questions.Tree.Tree,Full,https://help.alteryx.com/current/en/designer/tools/interface-tools/tree-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:association-analysis,Data Investigation,Association Analysis,Predictive Tools\Association_Analysis.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/association-analysis-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:basic-data-profile,Data Investigation,Basic Data Profile,AlteryxBasePluginsGui.BasicDataProfile.BasicDataProfile,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/basic-data-profile-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:contingency-table,Data Investigation,Contingency Table,Predictive Tools\ContingencyTable.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/contingency-table-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:distribution-analysis,Data Investigation,Distribution Analysis,Predictive Tools\Distribution_Analysis.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/distribution-analysis-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:field-summary,Data Investigation,Field Summary,Predictive Tools\Field_Summary_Report.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/field-summary-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:frequency-table,Data Investigation,Frequency Table,Predictive Tools\Frequency.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/frequency-table-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:heat-plot,Data Investigation,Heat Plot,Predictive Tools\Heat_Plot.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/heat-plot-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:histogram,Data Investigation,Histogram,Predictive Tools\Histogram.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/histogram-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:importance-weights,Data Investigation,Importance Weights,Importance Weights.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/importance-weights-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:pearson-correlation,Data Investigation,Pearson Correlation,AlteryxBasePluginsGui.PearsonCorrelation.PearsonCorrelation,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/pearson-correlation-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:plot-of-means,Data Investigation,Plot of Means,Predictive Tools\Plot_of_Means.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/plot-of-means-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:scatterplot,Data Investigation,Scatterplot,Predictive Tools\Scatterplot.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/scatterplot-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:spearman-correlation,Data Investigation,Spearman Correlation,SpearmanCorrCoeff.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/spearman-correlation-tool.html,official-catalog-verified,not-started,not-tested
+data-investigation:violin-plot,Data Investigation,Violin Plot,Predictive Tools\Violin_Plot.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/data-investigation/violin-plot-tool.html,official-catalog-verified,not-started,not-tested
+predictive:boosted-model,Predictive,Boosted Model,Predictive Tools\Boosted_Model.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/boosted-model-tool.html,official-catalog-verified,not-started,not-tested
+predictive:count-regression,Predictive,Count Regression,Predictive Tools\Count_Regression.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/count-regression-tool.html,official-catalog-verified,not-started,not-tested
+predictive:cross-validation,Predictive,Cross-Validation,CrossValidation,Full,https://help.alteryx.com/current/en/designer/tools/predictive/cross-validation-tool.html,official-catalog-verified,not-started,not-tested
+predictive:datarobot-automodel,Predictive,DataRobot Automodel,DataRobotModelFactory,Full,https://help.alteryx.com/current/en/designer/tools/predictive/datarobot-automodel-tool.html,official-catalog-verified,not-started,not-tested
+predictive:datarobot-predict,Predictive,DataRobot Predict,DataRobotEnhancedPredictions,Full,https://help.alteryx.com/current/en/designer/tools/predictive/datarobot-predict-tool.html,official-catalog-verified,not-started,not-tested
+predictive:decision-tree,Predictive,Decision Tree,Decision_Tree,Full,https://help.alteryx.com/current/en/designer/tools/predictive/decision-tree-tool.html,official-catalog-verified,not-started,not-tested
+predictive:forest-model,Predictive,Forest Model,Predictive Tools\Forest_Model.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/forest-model-tool.html,official-catalog-verified,not-started,not-tested
+predictive:gamma-regression,Predictive,Gamma Regression,Predictive Tools\Gamma_Regression.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/gamma-regression-tool.html,official-catalog-verified,not-started,not-tested
+predictive:lift-chart,Predictive,Lift Chart,Predictive Tools\Lift_Chart.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/lift-chart-tool.html,official-catalog-verified,not-started,not-tested
+predictive:linear-regression,Predictive,Linear Regression,Linear Regression,Full,https://help.alteryx.com/current/en/designer/tools/predictive/linear-regression-tool.html,official-catalog-verified,not-started,not-tested
+predictive:logistic-regression,Predictive,Logistic Regression,Logistic_Regression,Full,https://help.alteryx.com/current/en/designer/tools/predictive/logistic-regression-tool.html,official-catalog-verified,not-started,not-tested
+predictive:model-coefficients,Predictive,Model Coefficients,Model Coefficients.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/model-coefficients-tool.html,official-catalog-verified,not-started,not-tested
+predictive:model-comparison,Predictive,Model Comparison,Predictive Tools\Model Comparison.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/model-comparison-tool.html,official-catalog-verified,not-started,not-tested
+predictive:naive-bayes-classifier,Predictive,Naive Bayes Classifier,Predictive Tools\Naive_Bayes.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/naive-bayes-classifier-tool.html,official-catalog-verified,not-started,not-tested
+predictive:nested-test,Predictive,Nested Test,Predictive Tools\Nested_Test.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/nested-test-tool.html,official-catalog-verified,not-started,not-tested
+predictive:network-analysis,Predictive,Network Analysis,Predictive Tools\NetworkViz.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/network-analysis-tool.html,official-catalog-verified,not-started,not-tested
+predictive:neural-network,Predictive,Neural Network,Predictive Tools\Neural_Network.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/neural-network-tool.html,official-catalog-verified,not-started,not-tested
+predictive:score,Predictive,Score,Score,Full,https://help.alteryx.com/current/en/designer/tools/predictive/score-tool.html,official-catalog-verified,not-started,not-tested
+predictive:spline-model,Predictive,Spline Model,Predictive Tools\Spline_Model.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/spline-model-tool.html,official-catalog-verified,not-started,not-tested
+predictive:stepwise,Predictive,Stepwise,Predictive Tools\Stepwise.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/stepwise-tool.html,official-catalog-verified,not-started,not-tested
+predictive:support-vector-machine,Predictive,Support Vector Machine,Predictive Tools\SVM_v2.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/support-vector-machine-tool.html,official-catalog-verified,not-started,not-tested
+predictive:survival-analysis,Predictive,Survival Analysis,Survival Analysis.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/survival-analysis-tool.html,official-catalog-verified,not-started,not-tested
+predictive:survival-score,Predictive,Survival Score,Survival Score.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/survival-score-tool.html,official-catalog-verified,not-started,not-tested
+predictive:test-of-means,Predictive,Test of Means,Predictive Tools\Test_of_Means.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/test-of-means-tool.html,official-catalog-verified,not-started,not-tested
+predictive:variance-inflation-factors,Predictive,Variance Inflation Factors,Variance Inflation Factors.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive/variance-inflation-factors-tool.html,official-catalog-verified,not-started,not-tested
+ab-testing:ab-analysis,AB Testing,AB Analysis,Predictive Tools\AB_Analysis.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/ab-testing/ab-analysis-tool.html,official-catalog-verified,not-started,not-tested
+ab-testing:ab-controls,AB Testing,AB Controls,Predictive Tools\AB_Controls.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/ab-testing/ab-controls-tool.html,official-catalog-verified,not-started,not-tested
+ab-testing:ab-treatments,AB Testing,AB Treatments,Predictive Tools\AB_Treatments.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/ab-testing/ab-treatments-tool.html,official-catalog-verified,not-started,not-tested
+ab-testing:ab-trend,AB Testing,AB Trend,Predictive Tools\AB_Trend.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/ab-testing/ab-trend-tool.html,official-catalog-verified,not-started,not-tested
+time-series:arima,Time Series,ARIMA,Predictive Tools\ARIMA.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/time-series/arima-tool.html,official-catalog-verified,not-started,not-tested
+time-series:ets,Time Series,ETS,Predictive Tools\ETS.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/time-series/ets-tool.html,official-catalog-verified,not-started,not-tested
+time-series:ts-compare,Time Series,TS Compare,Predictive Tools\TS_Compare.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/time-series/ts-compare-tool.html,official-catalog-verified,not-started,not-tested
+time-series:ts-covariate-forecast,Time Series,TS Covariate Forecast,Predictive Tools\TS_Covariate_Forecast.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/time-series/ts-covariate-forecast-tool.html,official-catalog-verified,not-started,not-tested
+time-series:ts-filler,Time Series,TS Filler,Predictive Tools\TimeSeriesFiller.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/time-series/ts-filler-tool.html,official-catalog-verified,not-started,not-tested
+time-series:ts-forecast,Time Series,TS Forecast,Predictive Tools\TS_Forecast.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/time-series/ts-forecast-tool.html,official-catalog-verified,not-started,not-tested
+time-series:ts-forecast-factory,Time Series,TS Forecast Factory,TS Forecast Factory.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/time-series/ts-forecast-factory-tool.html,official-catalog-verified,not-started,not-tested
+time-series:ts-model-factory,Time Series,TS Model Factory,TS Model Factory.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/time-series/ts-model-factory-tool.html,official-catalog-verified,not-started,not-tested
+time-series:ts-plot,Time Series,TS Plot,Predictive Tools\TS_Plot.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/time-series/ts-plot-tool.html,official-catalog-verified,not-started,not-tested
+predictive-grouping:append-cluster,Predictive Grouping,Append Cluster,Predictive Tools\Append_Cluster.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive-grouping/append-cluster-tool.html,official-catalog-verified,not-started,not-tested
+predictive-grouping:find-nearest-neighbors,Predictive Grouping,Find Nearest Neighbors,Predictive Tools\Find_Nearest_Neighbors.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive-grouping/find-nearest-neighbors-tool.html,official-catalog-verified,not-started,not-tested
+predictive-grouping:k-centroids-cluster-analysis,Predictive Grouping,K-Centroids Cluster Analysis,Predictive Tools\K-Centroids_Cluster_Analysis.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive-grouping/k-centroids-cluster-analysis-tool.html,official-catalog-verified,not-started,not-tested
+predictive-grouping:k-centroids-diagnostics,Predictive Grouping,K-Centroids Diagnostics,Predictive Tools\K-Centroids_Diagnostics.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive-grouping/k-centroids-diagnostics-tool.html,official-catalog-verified,not-started,not-tested
+predictive-grouping:mb-affinity,Predictive Grouping,MB Affinity,Predictive Tools\MB_Affinity.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive-grouping/mb-affinity-tool.html,official-catalog-verified,not-started,not-tested
+predictive-grouping:mb-inspect,Predictive Grouping,MB Inspect,Predictive Tools\MB_Inspect.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive-grouping/mb-inspect-tool.html,official-catalog-verified,not-started,not-tested
+predictive-grouping:mb-rules,Predictive Grouping,MB Rules,Predictive Tools\MB_Rules.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive-grouping/mb-rules-tool.html,official-catalog-verified,not-started,not-tested
+predictive-grouping:multidimensional-scaling,Predictive Grouping,Multidimensional Scaling,Multidimensional Scaling.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive-grouping/multidimensional-scaling-tool.html,official-catalog-verified,not-started,not-tested
+predictive-grouping:principal-components,Predictive Grouping,Principal Components,Predictive Tools\Principal_Components.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/predictive-grouping/principal-components-tool.html,official-catalog-verified,not-started,not-tested
+prescriptive:optimization,Prescriptive,Optimization,Optimization,Full,https://help.alteryx.com/current/en/designer/tools/prescriptive/optimization-tool.html,official-catalog-verified,not-started,not-tested
+prescriptive:simulation-sampling,Prescriptive,Simulation Sampling,SimSampling,Full,https://help.alteryx.com/current/en/designer/tools/prescriptive/simulation-sampling-tool.html,official-catalog-verified,not-started,not-tested
+prescriptive:simulation-scoring,Prescriptive,Simulation Scoring,SimScoring,Full,https://help.alteryx.com/current/en/designer/tools/prescriptive/simulation-scoring-tool.html,official-catalog-verified,not-started,not-tested
+prescriptive:simulation-summary,Prescriptive,Simulation Summary,SimSummary,Full,https://help.alteryx.com/current/en/designer/tools/prescriptive/simulation-summary-tool.html,official-catalog-verified,not-started,not-tested
+connectors:azure-data-lake-file-input,Connectors,Azure Data Lake File Input,azure_data_lake_input,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/microsoft-azure-data-lake-file-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:azure-data-lake-file-output,Connectors,Azure Data Lake File Output,azure_data_lake_output,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/microsoft-azure-data-lake-file-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:adobe-analytics,Connectors,Adobe Analytics,AdobeAnalytics_v3.0.0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/adobe-analytics-tool.html,official-catalog-verified,not-started,not-tested
+connectors:amazon-s3-download,Connectors,Amazon S3 Download,lteryxConnectorGui.AmazonS3Download.AmazonS3Download,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/amazon-s3-download-tool.html,official-catalog-verified,not-started,not-tested
+connectors:amazon-s3-upload,Connectors,Amazon S3 Upload,AlteryxConnectorGui.AmazonS3Upload.AmazonS3Upload,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/amazon-s3-upload-tool.html,official-catalog-verified,not-started,not-tested
+connectors:anaplan-input,Connectors,Anaplan Input,AnaplanInput_1_1_0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/anaplan-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:anaplan-output,Connectors,Anaplan Output,AnaplanOutput_1_1_0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/anaplan-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:automation-anywhere-360,Connectors,Automation Anywhere 360,AutomationAnywhere360_v1.0.0,"Basic, Full",https://help.alteryx.com/current/en/designer/data-sources/automation-anywhere.html,official-catalog-verified,not-started,not-tested
+connectors:box-input,Connectors,Box Input,BoxInput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/box-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:box-output,Connectors,Box Output,BoxOutput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/box-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:cognitive-services-text-analytics,Connectors,Cognitive Services Text Analytics,CognitiveServicesTextAnalytics,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/cognitive-services-text-analytics-tool.html,official-catalog-verified,not-started,not-tested
+connectors:dataverse-input,Connectors,Dataverse Input,DataverseInput_v1.1.1,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/dataverse-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:dataverse-output,Connectors,Dataverse Output,DataverseOutput_v1.1.1,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/dataverse-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:dropbox-input,Connectors,Dropbox Input,DropboxInput_v1.1.2,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/dropbox-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:dropbox-output,Connectors,Dropbox Output,DropboxOutput_v1.1.2,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/dropbox-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:dynamics-crm-input,Connectors,Dynamics CRM Input,dynamics_crm_input_v1.0.2,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/dynamics-crm-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:dynamics-crm-output,Connectors,Dynamics CRM Output,dynamics_crm_output_v1.0.2,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/dynamics-crm-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:google-analytics,Connectors,Google Analytics,GoogleAnalytics_v8.0.0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/google-analytics-tool.html,official-catalog-verified,not-started,not-tested
+connectors:google-analytics-4-input,Connectors,Google Analytics 4 Input,GoogleAnalytics4Input_1_1_0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/google-analytics-4-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:google-bigquery-input,Connectors,Google BigQuery Input,big_query_input_v3.0.0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/google-bigquery-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:google-bigquery-output,Connectors,Google BigQuery Output,big_query_output_v3.0.0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/google-bigquery-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:google-drive-input,Connectors,Google Drive Input,GoogleDriveInput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/google-drive-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:google-drive-output,Connectors,Google Drive Output,GoogleDriveOutput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/google-drive-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:google-sheets-input,Connectors,Google Sheets Input,google-sheets-input,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/google-sheets-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:google-sheets-output,Connectors,Google Sheets Output,google-sheets-output,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/google-sheets-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:marketo-append,Connectors,Marketo Append,marketo-append,Full,https://help.alteryx.com/current/en/designer/tools/connectors/marketo-append-tool.html,official-catalog-verified,not-started,not-tested
+connectors:marketo-input,Connectors,Marketo Input,marketo-input,Full,https://help.alteryx.com/current/en/designer/tools/connectors/marketo-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:marketo-output,Connectors,Marketo Output,marketo-output,Full,https://help.alteryx.com/current/en/designer/tools/connectors/marketo-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:microsoft-power-bi-output,Connectors,Microsoft Power BI Output,PowerBIOutput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/microsoft-power-bi-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:mongodb-input,Connectors,MongoDB Input,AlteryxConnectorGui.MongoInput.MongoInput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/mongodb-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:mongodb-output,Connectors,MongoDB Output,AlteryxConnectorGui.MongoOutput.MongoOutput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/mongodb-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:onedrive-input,Connectors,OneDrive Input,OneDriveInput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/onedrive-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:onedrive-output,Connectors,OneDrive Output,OneDriveOutput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/onedrive-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:outlook-365-input,Connectors,Outlook 365 Input,Outlook365Input_v1.1.0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/outlook-365-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:power-automate,Connectors,Power Automate,PowerAutomate_v1.0.1,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/power-automate-tool.html,official-catalog-verified,not-started,not-tested
+connectors:publish-to-tableau-server,Connectors,Publish to Tableau Server,PublishToTableauServer_v2.0.0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/publish-to-tableau-server-tool.html,official-catalog-verified,not-started,not-tested
+connectors:salesforce-input,Connectors,Salesforce Input,SalesforceInput_v4.2.4,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/salesforce-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:salesforce-output-new,Connectors,Salesforce Output (New),SalesforceOutput_v1.3.1,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/salesforce-output-tool--new-.html,official-catalog-verified,not-started,not-tested
+connectors:servicenow-input,Connectors,ServiceNow Input,ServiceNowInput_1_1_0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/servicenow-input.html,official-catalog-verified,not-started,not-tested
+connectors:sharepoint-files-input,Connectors,SharePoint Files Input,SharePointInput_2_4_0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/sharepoint-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:sharepoint-files-output,Connectors,SharePoint Files Output,SharePointOutput_2_4_0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/sharepoint-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:sharepoint-list-input,Connectors,SharePoint List Input,AlteryxConnectorDotNet.SharepointInput.SharepointInput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/sharepoint-list-input-tool.html,official-catalog-verified,not-started,not-tested
+connectors:sharepoint-list-output,Connectors,SharePoint List Output,AlteryxConnectorDotNet.SharepointOutput.SharepointOutput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/sharepoint-list-output-tool.html,official-catalog-verified,not-started,not-tested
+connectors:tableau-output,Connectors,Tableau Output,TableauOutput_1_4_0,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/connectors/tableau-output-tool.html,official-catalog-verified,not-started,not-tested
+address:cass,Address,CASS,AlteryxCASSGui.CASS.CASS,Full,https://help.alteryx.com/current/en/designer/tools/address/cass-tool.html,official-catalog-verified,not-started,not-tested
+address:parse-address,Address,Parse Address,AlteryxCASSGui.CASSParse.CASSParse,Full,https://help.alteryx.com/current/en/designer/tools/address/parse-address-tool.html,official-catalog-verified,not-started,not-tested
+address:reverse-geocoder,Address,Reverse Geocoder,ReverseGeocoder.yxmc,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/address/reverse-geocoder-tool.html,official-catalog-verified,not-started,not-tested
+address:street-geocoder,Address,Street Geocoder,PortfolioPluginsGui.Geocoder.Geocoder,Full,https://help.alteryx.com/current/en/designer/tools/address/street-geocoder-tool.html,official-catalog-verified,not-started,not-tested
+address:us-geocoder,Address,US Geocoder,PortfolioExplorer.yxmc,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/address/us-geocoder-tool.html,official-catalog-verified,not-started,not-tested
+address:us-zip9-coder,Address,US ZIP9 Coder,AlteryxCASSGui.ZIP9Coder.ZIP9Coder,Full,https://help.alteryx.com/current/en/designer/tools/address/us-zip9-coder-tool.html,official-catalog-verified,not-started,not-tested
+demographic-analysis:allocate-append,Demographic Analysis,Allocate Append,PortfolioPluginsGui.AllocateAppend.AllocateAppend,Full,https://help.alteryx.com/current/en/designer/tools/demographic-analysis/allocate-append-tool.html,official-catalog-verified,not-started,not-tested
+demographic-analysis:allocate-input,Demographic Analysis,Allocate Input,PortfolioPluginsGui.AllocateInput.AllocateInput,Full,https://help.alteryx.com/current/en/designer/tools/demographic-analysis/allocate-input-tool.html,official-catalog-verified,not-started,not-tested
+demographic-analysis:allocate-metainfo,Demographic Analysis,Allocate Metainfo,PortfolioPluginsGui.AllocateMetaInfo.AllocateMetaInfo,Full,https://help.alteryx.com/current/en/designer/tools/demographic-analysis/allocate-metainfo-tool.html,official-catalog-verified,not-started,not-tested
+demographic-analysis:allocate-report,Demographic Analysis,Allocate Report,PortfolioPluginsGui.AllocateReport.AllocateReport,Full,https://help.alteryx.com/current/en/designer/tools/demographic-analysis/allocate-report-tool.html,official-catalog-verified,not-started,not-tested
+behavior-analysis-deprecated:behavior-metainfo,Behavior Analysis (Deprecated),Behavior Metainfo,PortfolioPluginsGui.SolocastMetaInfo.SolocastMetaInfo,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/behavior-analysis/behavior-metainfo-tool.html,official-catalog-verified,not-started,not-tested
+behavior-analysis-deprecated:cluster-code,Behavior Analysis (Deprecated),Cluster Code,PortfolioPluginsGui.SolocastClusterNum.SolocastClusterNum,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/behavior-analysis/cluster-code-tool.html,official-catalog-verified,not-started,not-tested
+behavior-analysis-deprecated:compare-behavior,Behavior Analysis (Deprecated),Compare Behavior,PortfolioPluginsGui.SolocastCompare.SolocastCompare,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/behavior-analysis/compare-behavior-tool.html,official-catalog-verified,not-started,not-tested
+behavior-analysis-deprecated:create-profile,Behavior Analysis (Deprecated),Create Profile,PortfolioPluginsGui.SolocastCreateProfile.SolocastCreateProfile,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/behavior-analysis/create-profile-tool.html,official-catalog-verified,not-started,not-tested
+behavior-analysis-deprecated:detail-fields,Behavior Analysis (Deprecated),Detail Fields,PortfolioPluginsGui.SolocastDetailAsFields.SolocastDetailAsFields,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/behavior-analysis/detail-fields-tool.html,official-catalog-verified,not-started,not-tested
+behavior-analysis-deprecated:profile-comparison-report,Behavior Analysis (Deprecated),Profile Comparison Report,Behavior_ProfileComparisonReport.yxmc,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/behavior-analysis/profile-comparison-report-tool.html,official-catalog-verified,not-started,not-tested
+behavior-analysis-deprecated:profile-detail-report,Behavior Analysis (Deprecated),Profile Detail Report,Macros\Behavior_ProfileDetailReport.yxmc,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/behavior-analysis/profile-detail-report-tool.html,official-catalog-verified,not-started,not-tested
+behavior-analysis-deprecated:profile-input,Behavior Analysis (Deprecated),Profile Input,PortfolioPluginsGui.SolocastReadProfileSet.SolocastReadProfileSet,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/behavior-analysis/profile-input-tool.html,official-catalog-verified,not-started,not-tested
+behavior-analysis-deprecated:profile-output,Behavior Analysis (Deprecated),Profile Output,PortfolioPluginsGui.SolocastWriteProfileSet.SolocastWriteProfileSet,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/behavior-analysis/profile-output-tool.html,official-catalog-verified,not-started,not-tested
+behavior-analysis-deprecated:profile-rank-report,Behavior Analysis (Deprecated),Profile Rank Report,Behavior_ProfileRankReport.yxmc,Full (Data Packages Add-on),https://help.alteryx.com/current/en/designer/tools/behavior-analysis/profile-rank-report-tool.html,official-catalog-verified,not-started,not-tested
+calgary:calgary-input,Calgary,Calgary Input,CalgaryPluginsGui.CalgaryInput.CalgaryInput,Full,https://help.alteryx.com/current/en/designer/tools/calgary/calgary-input-tool.html,official-catalog-verified,not-started,not-tested
+calgary:calgary-join,Calgary,Calgary Join,CalgaryPluginsGui.CalgaryJoin.CalgaryJoin,Full,https://help.alteryx.com/current/en/designer/tools/calgary/calgary-join-tool.html,official-catalog-verified,not-started,not-tested
+calgary:calgary-cross-count,Calgary,Calgary Cross Count,CalgaryLoadersGui.CalgaryLoader.CalgaryLoader,Full,https://help.alteryx.com/current/en/designer/tools/calgary/calgary-cross-count-tool.html,official-catalog-verified,not-started,not-tested
+calgary:calgary-cross-count-append,Calgary,Calgary Cross Count Append,CalgaryPluginsGui.CalgaryCrossCount.CalgaryCrossCount,Full,https://help.alteryx.com/current/en/designer/tools/calgary/calgary-cross-count-append-tool.html,official-catalog-verified,not-started,not-tested
+calgary:calgary-loader,Calgary,Calgary Loader,CalgaryPluginsGui.CalgaryCrossCountAppend.CalgaryCrossCountAppend,Full,https://help.alteryx.com/current/en/designer/tools/calgary/calgary-loader-tool.html,official-catalog-verified,not-started,not-tested
+developer:apache-spark-code,Developer,Apache Spark Code,Custom Spark,Full,https://help.alteryx.com/current/en/designer/tools/developer/apache-spark-code-tool.html,official-catalog-verified,not-started,not-tested
+developer:api-output,Developer,API Output,AlteryxBasePluginsGui.APIOutput.APIOutput,Full,https://help.alteryx.com/current/en/designer/tools/developer/api-output-tool.html,official-catalog-verified,not-started,not-tested
+developer:base64-encoder,Developer,Base64 Encoder,Base64_Encoder.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/developer/base64-encoder-tool.html,official-catalog-verified,not-started,not-tested
+developer:blob-convert,Developer,Blob Convert,AlteryxBasePluginsGui.BlobConvert.BlobConvert,Full,https://help.alteryx.com/current/en/designer/tools/developer/blob-convert-tool.html,official-catalog-verified,not-started,not-tested
+developer:blob-input,Developer,Blob Input,AlteryxBasePluginsGui.BlobInput.BlobInput,Full,https://help.alteryx.com/current/en/designer/tools/developer/blob-input-tool.html,official-catalog-verified,not-started,not-tested
+developer:blob-output,Developer,Blob Output,AlteryxBasePluginsGui.BlobOutput.BlobOutput,Full,https://help.alteryx.com/current/en/designer/tools/developer/blob-output-tool.html,official-catalog-verified,not-started,not-tested
+developer:block-until-done,Developer,Block Until Done,AlteryxBasePluginsGui.BlockUntilDone.BlockUntilDone,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/developer/block-until-done-tool.html,official-catalog-verified,not-started,not-tested
+developer:control-container,Developer,Control Container,AlteryxGuiToolkit.ControlContainer.ControlContainer,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/developer/control-container-tool.html,official-catalog-verified,not-started,not-tested
+developer:detour,Developer,Detour,AlteryxBasePluginsGui.Detour.Detour,Full,https://help.alteryx.com/current/en/designer/tools/developer/detour-tool.html,official-catalog-verified,not-started,not-tested
+developer:detour-end,Developer,Detour End,AlteryxBasePluginsGui.DetourEnd.DetourEnd,Full,https://help.alteryx.com/current/en/designer/tools/developer/detour-end-tool.html,official-catalog-verified,not-started,not-tested
+developer:download,Developer,Download,AlteryxConnectorGui.Download.Download,Full,https://help.alteryx.com/current/en/designer/tools/developer/download-tool.html,official-catalog-verified,not-started,not-tested
+developer:dynamic-input,Developer,Dynamic Input,AlteryxBasePluginsGui.DynamicInput.DynamicInput,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/developer/dynamic-input-tool.html,official-catalog-verified,not-started,not-tested
+developer:dynamic-rename,Developer,Dynamic Rename,AlteryxBasePluginsGui.DynamicRename.DynamicRename,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/developer/dynamic-rename-tool.html,official-catalog-verified,not-started,not-tested
+developer:dynamic-replace,Developer,Dynamic Replace,AlteryxBasePluginsGui.DynamicReplace.DynamicReplace,Full,https://help.alteryx.com/current/en/designer/tools/developer/dynamic-replace-tool.html,official-catalog-verified,not-started,not-tested
+developer:dynamic-select,Developer,Dynamic Select,AlteryxBasePluginsGui.DynamicSelect.DynamicSelect,Full,https://help.alteryx.com/current/en/designer/tools/developer/dynamic-select-tool.html,official-catalog-verified,not-started,not-tested
+developer:expect-equals,Developer,Expect Equals,ExpectEqual.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/developer/expect-equal-tool.html,official-catalog-verified,not-started,not-tested
+developer:field-info,Developer,Field Info,AlteryxBasePluginsGui.FieldInfo.FieldInfo,Full,https://help.alteryx.com/current/en/designer/tools/developer/field-info-tool.html,official-catalog-verified,not-started,not-tested
+developer:github-commit,Developer,GitHub Commit,GitHubCommit.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/developer/github-commit-tool.html,official-catalog-verified,not-started,not-tested
+developer:github-get-last-commit,Developer,GitHub Get Last Commit,GetLastCommit.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/developer/github-get-last-commit-tool.html,official-catalog-verified,not-started,not-tested
+developer:json-parse,Developer,JSON Parse,AlteryxBasePluginsGui.JSONParse.JSONParse,Full,https://help.alteryx.com/current/en/designer/tools/developer/json-parse-tool.html,official-catalog-verified,not-started,not-tested
+developer:json-schema,Developer,JSON Schema,JSONSchema_1_0,Full,https://help.alteryx.com/current/en/designer/tools/developer/json-schema-tool.html,official-catalog-verified,not-started,not-tested
+developer:license-api,Developer,License API,LicenseAPITool_1_0,Full,https://help.alteryx.com/current/en/designer/tools/developer/license-api-tool.html,official-catalog-verified,not-started,not-tested
+developer:message,Developer,Message,AlteryxBasePluginsGui.Message.Message,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/developer/message-tool.html,official-catalog-verified,not-started,not-tested
+developer:python,Developer,Python,JupyterCode,Full,https://help.alteryx.com/current/en/designer/tools/developer/python-tool.html,official-catalog-verified,not-started,not-tested
+developer:r,Developer,R,AlteryxRPluginGui.R,Full,https://help.alteryx.com/current/en/designer/tools/developer/r-tool.html,official-catalog-verified,not-started,not-tested
+developer:run-command,Developer,Run Command,AlteryxBasePluginsGui.RunCommand.RunCommand,Full,https://help.alteryx.com/current/en/designer/tools/developer/run-command-tool.html,official-catalog-verified,not-started,not-tested
+developer:runner,Developer,Runner,CReW_Runner\CReW_Runner.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/developer/runner-tool.html,official-catalog-verified,not-started,not-tested
+developer:server-api,Developer,Server API,ServerAPI_1_0,Full,https://help.alteryx.com/current/en/designer/tools/developer/server-api-tool.html,official-catalog-verified,not-started,not-tested
+developer:test,Developer,Test,AlteryxBasePluginsGui.Test.Test,Full,https://help.alteryx.com/current/en/designer/tools/developer/test-tool.html,official-catalog-verified,not-started,not-tested
+developer:throttle,Developer,Throttle,AlteryxBasePluginsGui.Throttle.Throttle,Full,https://help.alteryx.com/current/en/designer/tools/developer/throttle-tool.html,official-catalog-verified,not-started,not-tested
+laboratory:connect-json-builder,Laboratory,Connect JSON Builder,ConnectTools.ConnectJSONBuilder,Full,https://help.alteryx.com/current/en/designer/tools/connect/connect-json-builder.html,official-catalog-verified,not-started,not-tested
+laboratory:connect-output,Laboratory,Connect Output,ConnectTools.ConnectOutput,Full,https://help.alteryx.com/current/en/designer/tools/connect/connect-output.html,official-catalog-verified,not-started,not-tested
+laboratory:json-build,Laboratory,JSON Build,AlteryxBasePluginsGui.JSONBuild.JSONBuild,Full,https://help.alteryx.com/current/en/designer/tools/laboratory/json-build-tool.html,official-catalog-verified,not-started,not-tested
+laboratory:jupyter-flow,Laboratory,Jupyter Flow,JupyterFlow,Full,https://help.alteryx.com/current/en/designer/tools/laboratory/jupyter-flow.html,official-catalog-verified,not-started,not-tested
+laboratory:key-value-pair-extraction,Laboratory,Key-Value Pair Extraction,KeyValuePairExtraction,Full,https://help.alteryx.com/current/en/designer/tools/laboratory/key-value-pair-extraction.html,official-catalog-verified,not-started,not-tested
+laboratory:transpose-in-db,Laboratory,Transpose In-DB,LockInGui.LockInTranspose.LockInTranspose,Full,https://help.alteryx.com/current/en/designer/tools/laboratory/transpose-in-db-tool.html,official-catalog-verified,not-started,not-tested
+laboratory:visual-layout,Laboratory,Visual Layout,VisualLayout,Full,https://help.alteryx.com/current/en/designer/tools/laboratory/visual-layout-tool.html,official-catalog-verified,not-started,not-tested
+machine-learning:assisted-modeling,Machine Learning,Assisted Modeling,Modeling,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/assisted-modeling-tool.html,official-catalog-verified,not-started,not-tested
+machine-learning:build-features,Machine Learning,Build Features,BuildFeatures,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/build-features.html,official-catalog-verified,not-started,not-tested
+machine-learning:classification,Machine Learning,Classification,Classification,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/classification-tool.html,official-catalog-verified,not-started,not-tested
+machine-learning:data-health,Machine Learning,Data Health,DataHealth,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/data-health.html,official-catalog-verified,not-started,not-tested
+machine-learning:feature-types,Machine Learning,Feature Types,FeatureTypes,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/feature-types.html,official-catalog-verified,not-started,not-tested
+machine-learning:fit,Machine Learning,Fit,Fit,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/fit-tool.html,official-catalog-verified,not-started,not-tested
+machine-learning:machine-learning-predict,Machine Learning,Machine Learning Predict,CloudMLPredict,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/machine-learning-predict.html,official-catalog-verified,not-started,not-tested
+machine-learning:machine-learning-send,Machine Learning,Machine Learning Send,CloudMLUpload,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/machine-learning-send.html,official-catalog-verified,not-started,not-tested
+machine-learning:predict,Machine Learning,Predict,Predict,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/predict-tool.html,official-catalog-verified,not-started,not-tested
+machine-learning:regression,Machine Learning,Regression,Regression,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/regression-tool.html,official-catalog-verified,not-started,not-tested
+machine-learning:transformation,Machine Learning,Transformation,Transformation,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/transformation-tool.html,official-catalog-verified,not-started,not-tested
+text-mining:named-entity-recognition,Text Mining,Named Entity Recognition,NamedEntityRecognition,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/named-entity-recognition.html,official-catalog-verified,not-started,not-tested
+text-mining:part-of-speech-tagger,Text Mining,Part-of-Speech Tagger,PartOfSpeechTagger,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/part-of-speech-tagger.html,official-catalog-verified,not-started,not-tested
+text-mining:sentiment-analysis,Text Mining,Sentiment Analysis,Sentiment,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/sentiment-analysis.html,official-catalog-verified,not-started,not-tested
+text-mining:text-classification,Text Mining,Text Classification,TextClassification,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/text-classification.html,official-catalog-verified,not-started,not-tested
+text-mining:text-pre-processing,Text Mining,Text Pre-processing,TextPreProcessing,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/text-pre-processing.html,official-catalog-verified,not-started,not-tested
+text-mining:text-summary,Text Mining,Text Summary,TextSummary,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/text-summary.html,official-catalog-verified,not-started,not-tested
+text-mining:topic-modeling,Text Mining,Topic Modeling,TopicModel,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/topic-modeling.html,official-catalog-verified,not-started,not-tested
+text-mining:word-cloud,Text Mining,Word Cloud,WordCloud,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/word-cloud.html,official-catalog-verified,not-started,not-tested
+text-mining:zero-shot-text-classification,Text Mining,Zero-shot Text Classification,ZeroShotTextClassification,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/zero-shot-text-classification.html,official-catalog-verified,not-started,not-tested
+computer-vision:barcode-tool,Computer Vision,Barcode Tool,Barcode,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/barcode.html,official-catalog-verified,not-started,not-tested
+computer-vision:image-input,Computer Vision,Image Input,PDFInput,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-input.html,official-catalog-verified,not-started,not-tested
+computer-vision:image-output,Computer Vision,Image Output,ImageOutput,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-output.html,official-catalog-verified,not-started,not-tested
+computer-vision:image-processing,Computer Vision,Image Processing,ImageProcessing,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-processing.html,official-catalog-verified,not-started,not-tested
+computer-vision:image-profile,Computer Vision,Image Profile,ImageProfile,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-profile.html,official-catalog-verified,not-started,not-tested
+computer-vision:image-recognition,Computer Vision,Image Recognition,ImageRecognition,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-recognition.html,official-catalog-verified,not-started,not-tested
+computer-vision:image-template,Computer Vision,Image Template,ImageTemplate,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-template.html,official-catalog-verified,not-started,not-tested
+computer-vision:image-to-text,Computer Vision,Image to Text,ImageToText,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-to-text.html,official-catalog-verified,not-started,not-tested
+computer-vision:pdf-to-text,Computer Vision,PDF to Text,PDFToText,Full,https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/pdf-to-text.html,official-catalog-verified,not-started,not-tested
+ai-tools:invoice-extractor,AI Tools,Invoice Extractor,Invoice Extractor\Invoice Extractor.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/ai-tools/invoice-extractor-tool.html,official-catalog-verified,not-started,not-tested
+ai-tools:llm-override,AI Tools,LLM Override,LLMOverride_1_0,Full,https://help.alteryx.com/current/en/designer/tools/ai-tools/llm-override-tool.html,official-catalog-verified,not-started,not-tested
+ai-tools:precision-match,AI Tools,Precision Match,Precision Match\Precision_Match.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/ai-tools/precision-match-tool.html,official-catalog-verified,not-started,not-tested
+ai-tools:prompt,AI Tools,Prompt,Prompt_1_0,Full,https://help.alteryx.com/current/en/designer/tools/ai-tools/prompt-tool.html,official-catalog-verified,not-started,not-tested
+ai-tools:schema-fit,AI Tools,Schema Fit,Schema Fit\Schema_Fit.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/ai-tools/schema-fit-tool.html,official-catalog-verified,not-started,not-tested
+ai-tools:synthetic-input,AI Tools,Synthetic Input,Synthetic Generate\Synthetic_Generate.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/ai-tools/synthetic-input-tool.html,official-catalog-verified,not-started,not-tested
+connect:connect-json-builder,Connect,Connect JSON Builder,ConnectTools.ConnectJSONBuilder,Full,https://help.alteryx.com/current/en/designer/tools/connect/connect-json-builder.html,official-catalog-verified,not-started,not-tested
+connect:connect-output,Connect,Connect Output,ConnectTools.ConnectOutput,Full,https://help.alteryx.com/current/en/designer/tools/connect/connect-output.html,official-catalog-verified,not-started,not-tested
+connect:odbc-loader,Connect,ODBC Loader,OdbcLoader_v2,Full,https://help.alteryx.com/current/en/designer/tools/connect/odbc-tool.html,official-catalog-verified,not-started,not-tested
+sdk-examples:html-gui-library,SDK Examples,HTML - GUI Library,HtmlGuiSdk,Full,https://help.alteryx.com/current/en/designer/tools/sdk-examples/html---gui-library-tool.html,official-catalog-verified,not-started,not-tested

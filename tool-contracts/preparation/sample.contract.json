@@ -1,0 +1,188 @@
+{
+  "id": "preparation:sample",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Sample",
+  "category": "Preparation",
+  "xml_tool_name": "AlteryxBasePluginsGui.Sample.Sample",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/sample-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "mode",
+      "n"
+    ],
+    "properties": {
+      "mode": {
+        "enum": [
+          "first",
+          "last",
+          "skip",
+          "every_nth",
+          "first_percent"
+        ]
+      },
+      "n": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "group_by": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.sample",
+    "version": "1.0.0",
+    "module": "flowengine.tools.preparation",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.Sample.Sample"
+    ],
+    "input_anchors": [
+      "Action",
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "GroupFields",
+      "GroupFields/Field",
+      "Mode",
+      "N"
+    ],
+    "nodes_observed": 49
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Sample Tool",
+    "sha256": "cf3300fbf5b7adeb0026b4099c4aa4274eb1ee17d1da39dd9464d83da40458ac",
+    "retrieved_utc": "2026-10-13T09:33:24.986235+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_fe_executor.ExecutionTests.test_fan_out_and_release",
+      "test_fe_tools.PreparationTests.test_sample_modes"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/preparation/sample-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.986235+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "sample-first",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#sample-first",
+        "reference build 2026.2.0.8",
+        "config sha256 5a12763ce433c2497449fb1c27450caaf0f074f64d0de1f48e8e7b161ba444b0"
+      ]
+    },
+    {
+      "case_id": "sample-last",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#sample-last",
+        "reference build 2026.2.0.8",
+        "config sha256 6cbb36c3d068628c53ef37a4f2b0177797320d20946b77e0e206af4ac18d988c"
+      ]
+    },
+    {
+      "case_id": "sample-skip",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#sample-skip",
+        "reference build 2026.2.0.8",
+        "config sha256 4b51cf5917cd804452190164028a6459074c9eeee393e284c41d0477e7dd35f4"
+      ]
+    },
+    {
+      "case_id": "sample-every-nth",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#sample-every-nth",
+        "reference build 2026.2.0.8",
+        "config sha256 701b527fe3501a44823bedd639442e1d4cb2e70dc7b13739bf4062c82bb4ee58"
+      ]
+    },
+    {
+      "case_id": "sample-percent",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#sample-percent",
+        "reference build 2026.2.0.8",
+        "config sha256 3a117713b47229a410a317579ad5fa3748d00ca826fb0ab9c4356a7d13682891"
+      ]
+    },
+    {
+      "case_id": "sample-first-grouped",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#sample-first-grouped",
+        "reference build 2026.2.0.8",
+        "config sha256 6ecd22cfa3adff048dcfb3e00191b93fb987888c0738a8ff06e02c7d4adfc9aa"
+      ]
+    }
+  ],
+  "unresolved": []
+}

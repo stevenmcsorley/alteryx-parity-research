@@ -1,0 +1,133 @@
+{
+  "id": "developer:python",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Python",
+  "category": "Developer",
+  "xml_tool_name": "JupyterCode",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/python-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "AssetManaged",
+      "DefaultVenv",
+      "GuidDir",
+      "JupyterGuidDir",
+      "JupyterProduction",
+      "LastExecutedByEngineVersion",
+      "Notebook",
+      "Port",
+      "WorkflowName",
+      "productionModeScript",
+      "specialCellMetadata",
+      "vEnvName"
+    ],
+    "public_doc_sections": [
+      "Get Started",
+      "Install the Data-Science Packages You Need",
+      "Additional Package Installation",
+      "Configure the Tool",
+      "Environment",
+      "Python Script",
+      "Connect to Workflow Data",
+      "Notes and Limitations",
+      "Pandas String Dtype",
+      "IPython",
+      "Python Tool Doesn't Load Script with Disable Auto Configure"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "database-driver (public-doc keyword signal; unreviewed)",
+    "python-runtime (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "JupyterCode"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [],
+    "config_elements": [
+      "AssetManaged",
+      "DefaultVenv",
+      "GuidDir",
+      "JupyterGuidDir",
+      "JupyterProduction",
+      "LastExecutedByEngineVersion",
+      "Notebook",
+      "Port",
+      "WorkflowName",
+      "productionModeScript",
+      "specialCellMetadata",
+      "vEnvName"
+    ],
+    "nodes_observed": 6
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Python Tool",
+    "sha256": "8bd54f7eb09a22fafb232948b631617ff9015fbdc6a4a4ff774b5d2bbc4abe7e",
+    "retrieved_utc": "2026-10-13T09:33:23.903719+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Get Started",
+      "Install the Data-Science Packages You Need",
+      "Additional Package Installation",
+      "Configure the Tool",
+      "Environment",
+      "Python Script",
+      "Connect to Workflow Data",
+      "Notes and Limitations",
+      "Pandas String Dtype",
+      "IPython",
+      "Python Tool Doesn't Load Script with Disable Auto Configure"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/developer/python-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.903719+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

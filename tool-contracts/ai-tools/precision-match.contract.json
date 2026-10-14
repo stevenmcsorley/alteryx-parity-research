@@ -1,0 +1,124 @@
+{
+  "id": "ai-tools:precision-match",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Precision Match",
+  "category": "AI Tools",
+  "xml_tool_name": "Precision Match\\Precision_Match.yxmc",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/ai-tools/precision-match-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "LLM Connection",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    },
+    {
+      "name": "Target Data",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "Value"
+    ],
+    "public_doc_sections": [
+      "Tool Components",
+      "Configure the Tool",
+      "Output"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "llm-service (model provider credentials)",
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": true,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "Precision Match\\Precision_Match.yxmc"
+    ],
+    "input_anchors": [
+      "LLM Connection",
+      "Target Data"
+    ],
+    "output_anchors": [],
+    "config_elements": [
+      "Value"
+    ],
+    "nodes_observed": 3
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Precision Match Tool",
+    "sha256": "ec2c2f8b7ce7ce347a05aaa1380687d0b529ffa5528af958e5827a41f9923260",
+    "retrieved_utc": "2026-10-13T09:33:22.771289+00:00",
+    "anchors_extracted": [
+      {
+        "label": "input",
+        "letter": "M",
+        "direction_guess": "input"
+      },
+      {
+        "label": "input",
+        "letter": "D",
+        "direction_guess": "input"
+      },
+      {
+        "label": "output",
+        "letter": "D",
+        "direction_guess": "output"
+      },
+      {
+        "label": "output",
+        "letter": "M",
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/ai-tools/precision-match-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:22.771289+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "id": "preparation:multi-row-formula",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Multi-Row Formula",
+  "category": "Preparation",
+  "xml_tool_name": "AlteryxBasePluginsGui.MultiRowFormula.MultiRowFormula",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/multi-row-formula-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "field",
+      "expression"
+    ],
+    "properties": {
+      "field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "expression": {
+        "type": "string",
+        "minLength": 1
+      },
+      "type": {
+        "enum": [
+          "bool",
+          "byte",
+          "int16",
+          "int32",
+          "int64",
+          "fixed_decimal",
+          "float",
+          "double",
+          "string",
+          "wstring",
+          "v_string",
+          "v_wstring",
+          "date",
+          "time",
+          "datetime",
+          "blob"
+        ]
+      },
+      "size": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "nonexistent_rows": {
+        "enum": [
+          "null",
+          "zero_or_empty"
+        ],
+        "default": "null"
+      },
+      "group_by": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      },
+      "on_conversion_error": {
+        "enum": [
+          "error",
+          "null"
+        ],
+        "default": "error",
+        "description": "Conversion failure policy: fail the node, or emit null and a warning"
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.multi_row_formula",
+    "version": "1.0.0",
+    "module": "flowengine.tools.preparation",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.MultiRowFormula.MultiRowFormula"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "CreateField_Name",
+      "CreateField_Size",
+      "CreateField_Type",
+      "Expression",
+      "GroupByFields",
+      "GroupByFields/Field",
+      "NumRows",
+      "OtherRows",
+      "UpdateField",
+      "UpdateField_Name"
+    ],
+    "nodes_observed": 41
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Multi-Row Formula Tool",
+    "sha256": "7bfd1f735bdd94bc919cd37b0378d015a8d56c9a65c23bf081ee2e80f5339cfe",
+    "retrieved_utc": "2026-10-13T09:33:24.952699+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools.PreparationTests.test_multi_row_formula"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/preparation/multi-row-formula-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.952699+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "multi-row-fill-down",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#multi-row-fill-down",
+        "reference build 2026.2.0.8",
+        "config sha256 5b2df3f0a36d9b4ead560f2abbc61caa2b9691c45041efd46f4ac72cf952f2d6"
+      ]
+    }
+  ],
+  "unresolved": []
+}

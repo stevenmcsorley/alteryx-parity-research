@@ -1,0 +1,242 @@
+{
+  "id": "join:join",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Join",
+  "category": "Join",
+  "xml_tool_name": "AlteryxBasePluginsGui.Join.Join",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/join/join-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "left",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Left"
+    },
+    {
+      "name": "right",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Right"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "left_unjoined",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Left"
+    },
+    {
+      "name": "joined",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Join"
+    },
+    {
+      "name": "right_unjoined",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Right"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "by"
+    ],
+    "properties": {
+      "by": {
+        "enum": [
+          "fields",
+          "position"
+        ]
+      },
+      "keys": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "left",
+            "right"
+          ],
+          "properties": {
+            "left": {
+              "type": "string"
+            },
+            "right": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "case_insensitive": {
+        "type": "boolean",
+        "default": false
+      },
+      "right_prefix": {
+        "type": "string",
+        "default": "Right_",
+        "description": "Prefix applied to right field names that collide with left names"
+      },
+      "drop_right_keys": {
+        "type": "boolean",
+        "default": false
+      },
+      "right_fields": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string"
+        },
+        "default": null,
+        "description": "Right fields to keep in the joined output (null = all)"
+      },
+      "left_fields": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string"
+        },
+        "default": null
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.join",
+    "version": "1.0.0",
+    "module": "flowengine.tools.join",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.Join.Join"
+    ],
+    "input_anchors": [
+      "Left",
+      "Right"
+    ],
+    "output_anchors": [
+      "Join",
+      "Left",
+      "Right"
+    ],
+    "config_elements": [
+      "JoinInfo",
+      "JoinInfo/Field",
+      "SelectConfiguration",
+      "SelectConfiguration/Configuration"
+    ],
+    "nodes_observed": 169
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Join Tool",
+    "sha256": "f296b5d16a210d62ae1f2c3bf3f5a0de7a0866535d3c21f03b62931c55e0caf4",
+    "retrieved_utc": "2026-10-13T09:33:24.408217+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Search Columns",
+      "Select, Deselect, Sort, and Reorder Columns",
+      "Modify Data Type and Size",
+      "Rename a Column or Add a Description",
+      "View More Options",
+      "View the Output",
+      "Additional Types of Joins"
+    ]
+  },
+  "independent_tests": {
+    "count": 6,
+    "passing": 6,
+    "tests": [
+      "test_fe_executor.EndToEndTests.test_golden_outputs",
+      "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
+      "test_fe_executor.PropertyTests.test_invariants",
+      "test_fe_tools.JoinTests.test_join_case_insensitive_and_type_check",
+      "test_fe_tools.JoinTests.test_join_options",
+      "test_fe_tools.JoinTests.test_join_three_outputs_many_to_many_nulls"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/join/join-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.408217+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "join-many-to-many-nulls",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#join-many-to-many-nulls",
+        "reference build 2026.2.0.8",
+        "config sha256 e66c09fa3d6bd78b654ca9feff6631741edf2a845a17d12e731702942eb1fb89"
+      ]
+    },
+    {
+      "case_id": "join-by-position",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#join-by-position",
+        "reference build 2026.2.0.8",
+        "config sha256 cac542609570adb318c4b091358f0f29ff732bbe8fab02f74d839fae50b9f49e"
+      ]
+    },
+    {
+      "case_id": "join-string-case",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#join-string-case",
+        "reference build 2026.2.0.8",
+        "config sha256 052655d64b521eaa5c166f8d7817c11581716bc41298cb7945852b2dc321a92a"
+      ]
+    },
+    {
+      "case_id": "probe-join-unjoined-order",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#probe-join-unjoined-order",
+        "reference build 2026.2.0.8",
+        "config sha256 e93d9850c0f8a09671dd53ddae9ce46f9b256cadc4077969f0d5733477314cae"
+      ]
+    }
+  ],
+  "unresolved": []
+}

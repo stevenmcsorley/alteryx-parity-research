@@ -1,0 +1,265 @@
+{
+  "id": "in-out:input-data",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Input Data",
+  "category": "In/Out",
+  "xml_tool_name": "AlteryxBasePluginsGui.DbFileInput.DbFileInput",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/input-data-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "path"
+    ],
+    "properties": {
+      "path": {
+        "type": "string",
+        "minLength": 1
+      },
+      "format": {
+        "enum": [
+          "auto",
+          "csv",
+          "tsv",
+          "delimited",
+          "json",
+          "jsonl"
+        ],
+        "default": "auto"
+      },
+      "delimiter": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1,
+        "default": ","
+      },
+      "quote_char": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1,
+        "default": "\""
+      },
+      "has_header": {
+        "type": "boolean",
+        "default": true
+      },
+      "encoding": {
+        "type": "string",
+        "default": "utf-8-sig"
+      },
+      "skip_rows": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 0
+      },
+      "max_records": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 0,
+        "default": null
+      },
+      "fields": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "type"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": {
+              "enum": [
+                "bool",
+                "byte",
+                "int16",
+                "int32",
+                "int64",
+                "fixed_decimal",
+                "float",
+                "double",
+                "string",
+                "wstring",
+                "v_string",
+                "v_wstring",
+                "date",
+                "time",
+                "datetime",
+                "blob"
+              ]
+            },
+            "size": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "scale": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "description": "Optional declared schema; values are converted to these types."
+      },
+      "on_conversion_error": {
+        "enum": [
+          "error",
+          "null"
+        ],
+        "default": "error",
+        "description": "Conversion failure policy: fail the node, or emit null and a warning"
+      },
+      "ragged_rows": {
+        "enum": [
+          "error",
+          "pad"
+        ],
+        "default": "error"
+      },
+      "empty_as_null": {
+        "type": "boolean",
+        "default": false,
+        "description": "Treat empty delimited values as null instead of empty string"
+      },
+      "add_file_name_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "alteryx-server (public-doc keyword signal; unreviewed)",
+    "credentials (public-doc keyword signal; unreviewed)",
+    "database-driver (public-doc keyword signal; unreviewed)",
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.input_data",
+    "version": "1.0.0",
+    "module": "flowengine.tools.inout",
+    "side_effects": "reads-files"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.DbFileInput.DbFileInput"
+    ],
+    "input_anchors": [
+      "Action"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "File",
+      "FormatSpecificOptions",
+      "FormatSpecificOptions/AllStrings",
+      "FormatSpecificOptions/AllowLongLines",
+      "FormatSpecificOptions/AllowShareWrite",
+      "FormatSpecificOptions/AllowShortLines",
+      "FormatSpecificOptions/ChildValues",
+      "FormatSpecificOptions/CodePage",
+      "FormatSpecificOptions/Delimeter",
+      "FormatSpecificOptions/FieldLen",
+      "FormatSpecificOptions/FirstRowData",
+      "FormatSpecificOptions/HeaderRow",
+      "FormatSpecificOptions/IgnoreErrors",
+      "FormatSpecificOptions/IgnoreQuotes",
+      "FormatSpecificOptions/ImportLine",
+      "FormatSpecificOptions/LineEndStyle",
+      "FormatSpecificOptions/NumWarnings",
+      "FormatSpecificOptions/OuterXML",
+      "FormatSpecificOptions/ParseRoot",
+      "FormatSpecificOptions/Path",
+      "FormatSpecificOptions/QuoteRecordBreak",
+      "FormatSpecificOptions/ReadCentroids",
+      "FormatSpecificOptions/SingleThreadRead",
+      "FormatSpecificOptions/TrimWhiteSpace",
+      "FormatSpecificOptions/XmlElement",
+      "Passwords"
+    ],
+    "nodes_observed": 190
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Input Data Tool",
+    "sha256": "6a7baa4f0741dee6abc3bfb36ea1b7aa4e6aa8aa8ad34dff0036f8e169cdf9a9",
+    "retrieved_utc": "2026-10-13T09:33:24.182857+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Connect with DCM (Default)",
+      "Connect without DCM",
+      "Options",
+      "Preview Data Layout",
+      "Duplicate Column Names",
+      "Duplicate Name Ends with 1 or 9",
+      "Duplicate Name Ends with a Digit Between 2-8 (Inclusive)",
+      "Duplicate Name Ends with a Letter or Special Character",
+      "Convert an Output Data Tool to an Input Data Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 7,
+    "passing": 7,
+    "tests": [
+      "test_fe_executor.EndToEndTests.test_golden_outputs",
+      "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
+      "test_fe_tools.InOutTests.test_csv_errors",
+      "test_fe_tools.InOutTests.test_csv_typed_conversion_error_policy",
+      "test_fe_tools.InOutTests.test_csv_untyped_reads_text_and_preserves_unicode",
+      "test_fe_tools.InOutTests.test_json_input_types_and_nested",
+      "test_fe_tools.InOutTests.test_ragged_pad_and_no_header_and_limits"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/input-data-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.182857+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No differential conformance case yet."
+  ]
+}

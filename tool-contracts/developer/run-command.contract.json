@@ -1,0 +1,125 @@
+{
+  "id": "developer:run-command",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Run Command",
+  "category": "Developer",
+  "xml_tool_name": "AlteryxBasePluginsGui.RunCommand.RunCommand",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/run-command-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Action",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    },
+    {
+      "name": "Input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "Arguments",
+      "InputConfiguration",
+      "InputConfiguration/Configuration",
+      "OutputConfiguration",
+      "OutputConfiguration/Configuration",
+      "ProgramName",
+      "RunMinimized",
+      "RunSilent",
+      "WorkingDir"
+    ],
+    "public_doc_sections": [
+      "Configure the Tool",
+      "Example Use Case",
+      "Run Command Tool Workaround with AMP Engine"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.RunCommand.RunCommand"
+    ],
+    "input_anchors": [
+      "Action",
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "Arguments",
+      "InputConfiguration",
+      "InputConfiguration/Configuration",
+      "OutputConfiguration",
+      "OutputConfiguration/Configuration",
+      "ProgramName",
+      "RunMinimized",
+      "RunSilent",
+      "WorkingDir"
+    ],
+    "nodes_observed": 4
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Run Command Tool",
+    "sha256": "f21d2e098685021b0ab1be1e0f7af9fb38c7fccd0b006ea187ecd6881eca54e2",
+    "retrieved_utc": "2026-10-13T09:33:23.927721+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Example Use Case",
+      "Run Command Tool Workaround with AMP Engine"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/developer/run-command-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.927721+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

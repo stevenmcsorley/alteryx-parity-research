@@ -1,0 +1,8 @@
+customer_id,name,region,status,signup_date
+C001,  ada lovelace ,North,active,2025-01-15
+C002,Ben Okafor,South,active,2025-02-01
+C003,zoë kowalski,North,inactive,2024-11-30
+C002,Ben Okafor (duplicate),South,active,2025-02-02
+C004,李 雷,East,active,2025-03-10
+C005,,South,active,
+C006,Chidi  Anagonye,East,active,2025-06-21

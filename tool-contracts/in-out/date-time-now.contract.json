@@ -1,0 +1,102 @@
+{
+  "id": "in-out:date-time-now",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Date Time Now",
+  "category": "In/Out",
+  "xml_tool_name": "DateTimeNow",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/date-time-now-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "field_name": {
+        "type": "string",
+        "minLength": 1,
+        "default": "DateTime_Out"
+      },
+      "output": {
+        "enum": [
+          "datetime",
+          "date",
+          "time",
+          "text"
+        ],
+        "default": "datetime"
+      },
+      "text_format": {
+        "type": "string",
+        "default": "%Y-%m-%d %H:%M:%S"
+      }
+    }
+  },
+  "deterministic": false,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.date_time_now",
+    "version": "1.0.0",
+    "module": "flowengine.tools.inout",
+    "side_effects": "none"
+  },
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Date Time Now Tool",
+    "sha256": "848de27efea77312582500a2b1334eeae45d8da7802b584f30d4199ef459084f",
+    "retrieved_utc": "2026-10-13T09:33:24.149586+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "English",
+      "简体中文 (Simplified Chinese)",
+      "Français (French)",
+      "Deutsch (German)",
+      "Italiano (Italian)",
+      "日本語 (Japanese)",
+      "Português (Portuguese)",
+      "Español (Spanish)"
+    ]
+  },
+  "independent_tests": {
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools.InOutTests.test_date_time_now_uses_injected_clock"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/date-time-now-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.149586+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No differential conformance case yet."
+  ]
+}

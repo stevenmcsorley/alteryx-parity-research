@@ -1,0 +1,164 @@
+{
+  "id": "preparation:generate-rows",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Generate Rows",
+  "category": "Preparation",
+  "xml_tool_name": "AlteryxBasePluginsGui.GenerateRows.GenerateRows",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/generate-rows-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "field",
+      "type",
+      "init",
+      "condition",
+      "loop"
+    ],
+    "properties": {
+      "field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "type": {
+        "enum": [
+          "bool",
+          "byte",
+          "int16",
+          "int32",
+          "int64",
+          "fixed_decimal",
+          "float",
+          "double",
+          "string",
+          "wstring",
+          "v_string",
+          "v_wstring",
+          "date",
+          "time",
+          "datetime",
+          "blob"
+        ]
+      },
+      "size": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "init": {
+        "type": "string"
+      },
+      "condition": {
+        "type": "string"
+      },
+      "loop": {
+        "type": "string"
+      },
+      "max_rows_per_record": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 1000000
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.generate_rows",
+    "version": "1.0.0",
+    "module": "flowengine.tools.preparation",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.GenerateRows.GenerateRows"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "CreateField_Name",
+      "CreateField_Size",
+      "CreateField_Type",
+      "Expression_Cond",
+      "Expression_Init",
+      "Expression_Loop",
+      "RecordCount",
+      "UpdateField",
+      "UpdateField_Name"
+    ],
+    "nodes_observed": 29
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Generate Rows Tool",
+    "sha256": "f991a4f3c1bb0449e91123c02aafa8f38e2fbad30ebe21f826d6dda042f660b9",
+    "retrieved_utc": "2026-10-13T09:33:24.916425+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Connect an Input",
+      "Configure the Tool",
+      "Troubleshooting"
+    ]
+  },
+  "independent_tests": {
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools.PreparationTests.test_generate_rows"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/preparation/generate-rows-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.916425+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No differential conformance case yet."
+  ]
+}

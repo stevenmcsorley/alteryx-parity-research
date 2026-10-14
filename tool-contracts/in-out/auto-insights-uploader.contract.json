@@ -1,0 +1,87 @@
+{
+  "id": "in-out:auto-insights-uploader",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Auto Insights Uploader",
+  "category": "In/Out",
+  "xml_tool_name": "AutoInsightsUploader",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/auto-insights-uploader-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "System Requirements",
+      "Upgrade Considerations",
+      "Download",
+      "Install",
+      "Configure Designer Versions 2021.4 and Newer",
+      "Configure Designer Versions 2021.2 and 2021.3",
+      "Build and Run Your Workflow",
+      "Update Your Dataset",
+      "Use Auto Insights Uploader with Server",
+      "Server Requirements",
+      "To Use the AI Uploader Tool With Alteryx Server",
+      "Uninstall"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "alteryx-server (public-doc keyword signal; unreviewed)",
+    "credentials (public-doc keyword signal; unreviewed)",
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Auto Insights Uploader Tool",
+    "sha256": "c5ebae213323fef4149ffb530a889eac932a62f146a53360770af010ad68ec2d",
+    "retrieved_utc": "2026-10-13T09:33:24.110930+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "System Requirements",
+      "Upgrade Considerations",
+      "Download",
+      "Install",
+      "Configure Designer Versions 2021.4 and Newer",
+      "Configure Designer Versions 2021.2 and 2021.3",
+      "Build and Run Your Workflow",
+      "Update Your Dataset",
+      "Use Auto Insights Uploader with Server",
+      "Server Requirements",
+      "To Use the AI Uploader Tool With Alteryx Server",
+      "Uninstall"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/auto-insights-uploader-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.110930+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+  ]
+}

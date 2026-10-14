@@ -1,0 +1,107 @@
+{
+  "id": "calgary:calgary-cross-count-append",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Calgary Cross Count Append",
+  "category": "Calgary",
+  "xml_tool_name": "CalgaryPluginsGui.CalgaryCrossCount.CalgaryCrossCount",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/calgary/calgary-cross-count-append-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "Output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "CrossCountFields",
+      "CrossCountFields/CustomField",
+      "CrossCountFields/Field",
+      "LinkedTables",
+      "Query",
+      "RootFileName"
+    ],
+    "public_doc_sections": [
+      "Configure the Tool",
+      "Join Query Criteria Tab",
+      "Cross Count Fields Tab",
+      "Additional Query Criteria Tab"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "licensed-reference-dataset (indexed Calgary data)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": true,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "CalgaryPluginsGui.CalgaryCrossCount.CalgaryCrossCount"
+    ],
+    "input_anchors": [],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "CrossCountFields",
+      "CrossCountFields/CustomField",
+      "CrossCountFields/Field",
+      "LinkedTables",
+      "Query",
+      "RootFileName"
+    ],
+    "nodes_observed": 2
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Calgary Cross Count Append Tool",
+    "sha256": "a1e75edd6275a371c8b3c5e9f3fb16d81a549d277596f79674ddabe5ad72052c",
+    "retrieved_utc": "2026-10-13T09:33:23.124230+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Join Query Criteria Tab",
+      "Cross Count Fields Tab",
+      "Additional Query Criteria Tab"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/calgary/calgary-cross-count-append-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.124230+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+  ]
+}

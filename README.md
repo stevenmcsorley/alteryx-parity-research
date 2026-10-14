@@ -4,17 +4,17 @@
 
 > Research baseline: 13 October 2026. Pinned reference release: **Designer 2026.1.4.126** (30 September 2026). The official `/current/` documentation is a moving target; contents need comparison with the actual pinned installation. This repository does **not** contain Alteryx software, private code, installation media, copied icons, customer datasets, credentials, licence circumvention instructions, or any completed tool implementations.
 
-## What is here now
+## What is here now (milestone 1, 13 October 2026)
 
-- **323 public category-tool occurrences / 321 distinct names across 29 categories**, with publicly listed XML identifiers and role fields manually transcribed from the official Designer Tools List. The duplicates are `Connect JSON Builder` and `Connect Output`, which appear in both Laboratory and Connect. These are **catalogue entries**, not implemented tools.
-- A reproducible online parser to **cross-check XML identifiers and user roles and retrieve official per-tool help URLs** from the public tool list. Manual XML/role data are present offline, but the live detailed sync **has not been run** here because external network access is unavailable. The parser refuses partial downloads rather than silently shrinking the list.
-- A **323-entry untested acceptance-test matrix**. Every entry has implementation=`not-started`, verification=`not-tested`.
-- Full-system PRD, architecture boundaries, version and source register, REA runbook, authorisation boundary, and a reproducible independent-data fixture generator.
-- **323 individual research briefs** in `tool-contracts/`, one for every category-tool occurrence, with source/rights/testing checklists and nothing misrepresented as implemented.
-- `docs/ACQUISITION_AND_DEPS.md`, `docs/EXECUTION_PLAN_AND_GATES.md`, `docs/READY_FOR_AGENT.md`, and automatically generated `docs/COVERAGE.md`.
-- **Original, limited working Python DAG engine foundation** (`engine/independent_engine`), supporting generic CSV input, filter, join, summary and CSV output; 12 tests in all. **This is not Alteryx parity.**
-- Metadata-only public per-tool documentation auditor (`scripts/audit_public_sources.py`); needs internet and verified help URLs.
-- Validation scripts and CI. The tools catalogue is research metadata, not application functionality.
+- **Catalogue refreshed against the official tool list** (live sync 13 Oct 2026): 323 entries / 321 names / 29 categories, all 323 per-tool help URLs resolved, one XML identifier drift corrected (Survival Analysis). Metadata-only audit of all 321 unique help pages in `data/public-doc-audit.json`.
+- **323 machine-readable tool contracts** (`tool-contracts/**/*.contract.json`) with anchors, configuration, dependencies, tests, conformance cases and open questions — all generated from evidence by `scripts/build_status.py`.
+- **`flowengine`** — an original, typed workflow engine: JSON workflow format with schema validation, plugin registry with JSON-Schema-configured tool manifests, planner with static schema inference, deterministic executor with structured JSONL events, cancellation and reproducibility manifests, an independent formula language, a CLI and a JSON-RPC editor service.
+- **26 tool kernels implemented and tested** (In/Out, Preparation, Join, Parse, Transform). Every other catalogue entry fails validation with `tool-unavailable` — nothing is stubbed.
+- **Differential conformance harness** against an authorised local reference install (build 2026.2.0.8): **48/48 cases pass across 17 catalogue tools** after adopting the observed semantics, each cited in code (`docs/ENGINE_SEMANTICS.md`).
+- **End-to-end example** `examples/sales/monthly_sales.flow.json` (two typed CSV inputs → cleanse → unique → filter → formula → join → summarise → sort → CSV outputs) with golden outputs and a reproducibility test.
+- 98 unit/property/integration/golden/service tests; CI reproduces the status ledger.
+
+See [`docs/COVERAGE.md`](docs/COVERAGE.md) for the separate metrics and [`docs/MILESTONE_1_REPORT.md`](docs/MILESTONE_1_REPORT.md) for the full report. `engine/independent_engine` is the superseded five-operator testbed, kept for history.
 
 ## Decisions
 
@@ -53,29 +53,25 @@
 ## Start here (Windows PowerShell)
 
 ```powershell
-# Prerequisites: Git, Python 3.11+; Node.js only for REA
-python scripts/validate_repository.py
-python scripts/generate_test_matrix.py
-python scripts/build_fixture_pack.py
-python scripts/materialize_tool_specs.py
-python scripts/coverage_report.py
-python -m unittest discover -s tests -v
-python -m engine.independent_engine examples/customer_reconciliation.json
-
-# When connected to the internet, independently refresh/check XML IDs, roles and documentation URLs:
 python -m pip install -r requirements-dev.txt
-python scripts/sync_official_catalog.py
-python scripts/audit_public_sources.py --max-pages 323
 python scripts/validate_repository.py
+python -m unittest discover -s tests -v
+python -m flowengine validate examples/sales/monthly_sales.flow.json
+python -m flowengine run examples/sales/monthly_sales.flow.json --log run.jsonl --manifest run.json
+python -m flowengine tools
+python scripts/build_status.py          # regenerate contracts + status ledger from evidence
+python scripts/coverage_report.py
 
-# When you have appropriate rights/authorisation and want to configure REA for your agent:
-npx rea-agents setup
-npx rea-agents doctor
+# Online, metadata only:
+python scripts/sync_official_catalog.py
+python scripts/audit_public_sources.py --max-pages 400 --cache-dir $env:TEMP\doc-cache
+
+# With an authorised reference install (see docs/AUTHORISATION.md):
+python conformance/reference/scan_reference_workflows.py
+python conformance/harness.py
 ```
 
-The above workflow example outputs `examples/out/uk-customer-spend.csv`. The engine is an independently designed testbed with only five primitive operators and deliberately different semantics; it does **not** constitute Alteryx compatibility for any of the 323 catalogued tools.
-
-**Do not proceed to restricted target binary inspection without reviewing [`docs/RIGHTS_AND_BOUNDARIES.md`](docs/RIGHTS_AND_BOUNDARIES.md).** REA is a research tool; it does not confer rights to use the target software or reproduce copyrighted implementation.
+**Do not extend reference investigation beyond the scope recorded in [`docs/AUTHORISATION.md`](docs/AUTHORISATION.md).** REA is a research tool; it does not confer rights to use the target software or reproduce copyrighted implementation.
 
 ## Full parity is a contract, not a status
 

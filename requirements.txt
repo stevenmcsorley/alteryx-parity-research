@@ -1,0 +1,2 @@
+# Runtime dependencies of the flowengine package
+jsonschema>=4.20,<5

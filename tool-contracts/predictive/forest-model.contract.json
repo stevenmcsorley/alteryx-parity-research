@@ -1,0 +1,109 @@
+{
+  "id": "predictive:forest-model",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Forest Model",
+  "category": "Predictive",
+  "xml_tool_name": "Predictive Tools\\Forest_Model.yxmc",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive/forest-model-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "O",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "R",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Configure the Tool for Standard Processing",
+      "Connect an Input",
+      "Required Parameters",
+      "Model Customization",
+      "Graphics Options",
+      "View the Output",
+      "Configure the Tool for In-Database Processing",
+      "Connect an Input",
+      "Required Parameters",
+      "Model Customization",
+      "Graphics Options",
+      "View the Output"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "r-runtime (statistical models; vendor ships R-based macros)",
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Forest Model Tool",
+    "sha256": "4cc2cca0308f78474aadb468870ca757ed1690dd1f990c44e2ea9a306c3beacc",
+    "retrieved_utc": "2026-10-13T09:33:24.683187+00:00",
+    "anchors_extracted": [
+      {
+        "label": "O",
+        "letter": "O",
+        "direction_guess": "output"
+      },
+      {
+        "label": "R",
+        "letter": "R",
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "page-anchor-lines",
+    "section_headings": [
+      "Configure the Tool for Standard Processing",
+      "Connect an Input",
+      "Required Parameters",
+      "Model Customization",
+      "Graphics Options",
+      "View the Output",
+      "Configure the Tool for In-Database Processing",
+      "Connect an Input",
+      "Required Parameters",
+      "Model Customization",
+      "Graphics Options",
+      "View the Output"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/predictive/forest-model-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.683187+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

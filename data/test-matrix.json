@@ -1,5 +1,5 @@
 {
-  "notes": "Coverage requirements only. No tests have been executed.",
+  "notes": "Coverage requirements per entry. Executed evidence counts come from data/tool-status.json; the per-test and per-case detail is in each contract JSON.",
   "tools": [
     {
       "tool_id": "in-out:auto-insights-uploader",
@@ -19,7 +19,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-out:auto-insights-uploader)"
+      ]
     },
     {
       "tool_id": "in-out:browse",
@@ -37,9 +41,13 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 7,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-out:browse)"
+      ]
     },
     {
       "tool_id": "in-out:date-time-now",
@@ -57,9 +65,13 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 1,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-out:date-time-now)"
+      ]
     },
     {
       "tool_id": "in-out:directory",
@@ -77,9 +89,13 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 1,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-out:directory)"
+      ]
     },
     {
       "tool_id": "in-out:input-data",
@@ -97,9 +113,13 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 7,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-out:input-data)"
+      ]
     },
     {
       "tool_id": "in-out:map-input",
@@ -119,7 +139,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-out:map-input)"
+      ]
     },
     {
       "tool_id": "in-out:output-data",
@@ -137,9 +161,13 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 3,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-out:output-data)"
+      ]
     },
     {
       "tool_id": "in-out:text-input",
@@ -157,9 +185,13 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 41,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-out:text-input)"
+      ]
     },
     {
       "tool_id": "preparation:auto-field",
@@ -179,7 +211,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:auto-field)"
+      ]
     },
     {
       "tool_id": "preparation:create-samples",
@@ -199,7 +235,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:create-samples)"
+      ]
     },
     {
       "tool_id": "preparation:data-cleanse-pro",
@@ -219,7 +259,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:data-cleanse-pro)"
+      ]
     },
     {
       "tool_id": "preparation:data-cleansing",
@@ -237,9 +281,13 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 3,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:data-cleansing)"
+      ]
     },
     {
       "tool_id": "preparation:filter",
@@ -256,10 +304,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 7,
+      "reference_cases": 5,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:filter)"
+      ]
     },
     {
       "tool_id": "preparation:formula",
@@ -276,10 +328,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 6,
+      "reference_cases": 12,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:formula)"
+      ]
     },
     {
       "tool_id": "preparation:generate-rows",
@@ -297,9 +353,13 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 1,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:generate-rows)"
+      ]
     },
     {
       "tool_id": "preparation:imputation",
@@ -319,7 +379,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:imputation)"
+      ]
     },
     {
       "tool_id": "preparation:multi-field-binning",
@@ -339,7 +403,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:multi-field-binning)"
+      ]
     },
     {
       "tool_id": "preparation:multi-field-formula",
@@ -359,7 +427,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:multi-field-formula)"
+      ]
     },
     {
       "tool_id": "preparation:multi-row-formula",
@@ -376,10 +448,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 1,
+      "reference_cases": 1,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:multi-row-formula)"
+      ]
     },
     {
       "tool_id": "preparation:oversample-field",
@@ -399,7 +475,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:oversample-field)"
+      ]
     },
     {
       "tool_id": "preparation:random-sample",
@@ -419,7 +499,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:random-sample)"
+      ]
     },
     {
       "tool_id": "preparation:rank",
@@ -439,7 +523,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:rank)"
+      ]
     },
     {
       "tool_id": "preparation:record-id",
@@ -456,10 +544,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 1,
+      "reference_cases": 1,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:record-id)"
+      ]
     },
     {
       "tool_id": "preparation:sample",
@@ -476,10 +568,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 2,
+      "reference_cases": 6,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:sample)"
+      ]
     },
     {
       "tool_id": "preparation:select",
@@ -496,10 +592,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 4,
+      "reference_cases": 2,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:select)"
+      ]
     },
     {
       "tool_id": "preparation:select-records",
@@ -519,7 +619,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:select-records)"
+      ]
     },
     {
       "tool_id": "preparation:sort",
@@ -536,10 +640,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 6,
+      "reference_cases": 2,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:sort)"
+      ]
     },
     {
       "tool_id": "preparation:tile",
@@ -559,7 +667,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:tile)"
+      ]
     },
     {
       "tool_id": "preparation:unique",
@@ -576,10 +688,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 4,
+      "reference_cases": 2,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for preparation:unique)"
+      ]
     },
     {
       "tool_id": "join:append-fields",
@@ -596,10 +712,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 1,
+      "reference_cases": 1,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for join:append-fields)"
+      ]
     },
     {
       "tool_id": "join:find-replace",
@@ -619,7 +739,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for join:find-replace)"
+      ]
     },
     {
       "tool_id": "join:fuzzy-match",
@@ -639,7 +763,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for join:fuzzy-match)"
+      ]
     },
     {
       "tool_id": "join:join",
@@ -656,10 +784,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 6,
+      "reference_cases": 4,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for join:join)"
+      ]
     },
     {
       "tool_id": "join:join-multiple",
@@ -679,7 +811,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for join:join-multiple)"
+      ]
     },
     {
       "tool_id": "join:make-group",
@@ -699,7 +835,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for join:make-group)"
+      ]
     },
     {
       "tool_id": "join:union",
@@ -716,10 +856,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 2,
+      "reference_cases": 1,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for join:union)"
+      ]
     },
     {
       "tool_id": "parse:datetime",
@@ -739,7 +883,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for parse:datetime)"
+      ]
     },
     {
       "tool_id": "parse:regex",
@@ -756,10 +904,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 1,
+      "reference_cases": 3,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for parse:regex)"
+      ]
     },
     {
       "tool_id": "parse:text-to-columns",
@@ -776,10 +928,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 1,
+      "reference_cases": 1,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for parse:text-to-columns)"
+      ]
     },
     {
       "tool_id": "parse:xml-parse",
@@ -799,7 +955,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for parse:xml-parse)"
+      ]
     },
     {
       "tool_id": "transform:arrange",
@@ -819,7 +979,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for transform:arrange)"
+      ]
     },
     {
       "tool_id": "transform:count-records",
@@ -837,9 +1001,13 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 6,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for transform:count-records)"
+      ]
     },
     {
       "tool_id": "transform:cross-tab",
@@ -856,10 +1024,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 1,
+      "reference_cases": 1,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for transform:cross-tab)"
+      ]
     },
     {
       "tool_id": "transform:make-columns",
@@ -879,7 +1051,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for transform:make-columns)"
+      ]
     },
     {
       "tool_id": "transform:running-total",
@@ -896,10 +1072,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 1,
+      "reference_cases": 1,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for transform:running-total)"
+      ]
     },
     {
       "tool_id": "transform:summarize",
@@ -916,10 +1096,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 5,
+      "reference_cases": 4,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for transform:summarize)"
+      ]
     },
     {
       "tool_id": "transform:transpose",
@@ -936,10 +1120,14 @@
         "performance"
       ],
       "configuration_cases": [],
-      "oracle_status": "missing",
-      "implementation_status": "not-started",
-      "verification_status": "not-tested",
-      "evidence_refs": []
+      "oracle_status": "reference-differential",
+      "implementation_status": "implemented",
+      "verification_status": "partial",
+      "independent_tests": 1,
+      "reference_cases": 1,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for transform:transpose)"
+      ]
     },
     {
       "tool_id": "transform:weighted-average",
@@ -959,7 +1147,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for transform:weighted-average)"
+      ]
     },
     {
       "tool_id": "in-database:browse-in-db",
@@ -979,7 +1171,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:browse-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:connect-in-db",
@@ -999,7 +1195,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:connect-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:data-stream-in",
@@ -1019,7 +1219,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:data-stream-in)"
+      ]
     },
     {
       "tool_id": "in-database:data-stream-out",
@@ -1039,7 +1243,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:data-stream-out)"
+      ]
     },
     {
       "tool_id": "in-database:dynamic-input-in-db",
@@ -1059,7 +1267,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:dynamic-input-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:dynamic-output-in-db",
@@ -1079,7 +1291,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:dynamic-output-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:filter-in-db",
@@ -1099,7 +1315,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:filter-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:formula-in-db",
@@ -1119,7 +1339,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:formula-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:join-in-db",
@@ -1139,7 +1363,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:join-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:macro-input-in-db",
@@ -1159,7 +1387,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:macro-input-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:macro-output-in-db",
@@ -1179,7 +1411,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:macro-output-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:sample-in-db",
@@ -1199,7 +1435,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:sample-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:select-in-db",
@@ -1219,7 +1459,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:select-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:summarize-in-db",
@@ -1239,7 +1483,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:summarize-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:union-in-db",
@@ -1259,7 +1507,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:union-in-db)"
+      ]
     },
     {
       "tool_id": "in-database:write-data-in-db",
@@ -1279,7 +1531,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for in-database:write-data-in-db)"
+      ]
     },
     {
       "tool_id": "reporting:email",
@@ -1299,7 +1555,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:email)"
+      ]
     },
     {
       "tool_id": "reporting:image",
@@ -1319,7 +1579,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:image)"
+      ]
     },
     {
       "tool_id": "reporting:interactive-chart",
@@ -1339,7 +1603,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:interactive-chart)"
+      ]
     },
     {
       "tool_id": "reporting:layout",
@@ -1359,7 +1627,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:layout)"
+      ]
     },
     {
       "tool_id": "reporting:map-legend-builder",
@@ -1379,7 +1651,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:map-legend-builder)"
+      ]
     },
     {
       "tool_id": "reporting:map-legend-splitter",
@@ -1399,7 +1675,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:map-legend-splitter)"
+      ]
     },
     {
       "tool_id": "reporting:overlay",
@@ -1419,7 +1699,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:overlay)"
+      ]
     },
     {
       "tool_id": "reporting:render",
@@ -1439,7 +1723,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:render)"
+      ]
     },
     {
       "tool_id": "reporting:report-footer",
@@ -1459,7 +1747,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:report-footer)"
+      ]
     },
     {
       "tool_id": "reporting:report-header",
@@ -1479,7 +1771,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:report-header)"
+      ]
     },
     {
       "tool_id": "reporting:report-map",
@@ -1499,7 +1795,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:report-map)"
+      ]
     },
     {
       "tool_id": "reporting:report-text",
@@ -1519,7 +1819,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:report-text)"
+      ]
     },
     {
       "tool_id": "reporting:table",
@@ -1539,7 +1843,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for reporting:table)"
+      ]
     },
     {
       "tool_id": "documentation:comment",
@@ -1559,7 +1867,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for documentation:comment)"
+      ]
     },
     {
       "tool_id": "documentation:explorer-box",
@@ -1579,7 +1891,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for documentation:explorer-box)"
+      ]
     },
     {
       "tool_id": "documentation:tool-container",
@@ -1599,7 +1915,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for documentation:tool-container)"
+      ]
     },
     {
       "tool_id": "spatial:buffer",
@@ -1619,7 +1939,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:buffer)"
+      ]
     },
     {
       "tool_id": "spatial:create-points",
@@ -1639,7 +1963,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:create-points)"
+      ]
     },
     {
       "tool_id": "spatial:distance",
@@ -1659,7 +1987,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:distance)"
+      ]
     },
     {
       "tool_id": "spatial:find-nearest",
@@ -1679,7 +2011,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:find-nearest)"
+      ]
     },
     {
       "tool_id": "spatial:generalize",
@@ -1699,7 +2035,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:generalize)"
+      ]
     },
     {
       "tool_id": "spatial:heat-map",
@@ -1719,7 +2059,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:heat-map)"
+      ]
     },
     {
       "tool_id": "spatial:make-grid",
@@ -1739,7 +2083,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:make-grid)"
+      ]
     },
     {
       "tool_id": "spatial:non-overlap-drivetime",
@@ -1759,7 +2107,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:non-overlap-drivetime)"
+      ]
     },
     {
       "tool_id": "spatial:poly-build",
@@ -1779,7 +2131,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:poly-build)"
+      ]
     },
     {
       "tool_id": "spatial:poly-split",
@@ -1799,7 +2155,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:poly-split)"
+      ]
     },
     {
       "tool_id": "spatial:smooth",
@@ -1819,7 +2179,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:smooth)"
+      ]
     },
     {
       "tool_id": "spatial:spatial-info",
@@ -1839,7 +2203,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:spatial-info)"
+      ]
     },
     {
       "tool_id": "spatial:spatial-match",
@@ -1859,7 +2227,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:spatial-match)"
+      ]
     },
     {
       "tool_id": "spatial:spatial-process",
@@ -1879,7 +2251,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:spatial-process)"
+      ]
     },
     {
       "tool_id": "spatial:trade-area",
@@ -1899,7 +2275,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for spatial:trade-area)"
+      ]
     },
     {
       "tool_id": "interface:action",
@@ -1919,7 +2299,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:action)"
+      ]
     },
     {
       "tool_id": "interface:check-box",
@@ -1939,7 +2323,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:check-box)"
+      ]
     },
     {
       "tool_id": "interface:condition",
@@ -1959,7 +2347,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:condition)"
+      ]
     },
     {
       "tool_id": "interface:control-parameter",
@@ -1979,7 +2371,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:control-parameter)"
+      ]
     },
     {
       "tool_id": "interface:date",
@@ -1999,7 +2395,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:date)"
+      ]
     },
     {
       "tool_id": "interface:dcm-connection",
@@ -2019,7 +2419,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:dcm-connection)"
+      ]
     },
     {
       "tool_id": "interface:drop-down",
@@ -2039,7 +2443,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:drop-down)"
+      ]
     },
     {
       "tool_id": "interface:error-message",
@@ -2059,7 +2467,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:error-message)"
+      ]
     },
     {
       "tool_id": "interface:file-browse",
@@ -2079,7 +2491,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:file-browse)"
+      ]
     },
     {
       "tool_id": "interface:folder-browse",
@@ -2099,7 +2515,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:folder-browse)"
+      ]
     },
     {
       "tool_id": "interface:list-box",
@@ -2119,7 +2539,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:list-box)"
+      ]
     },
     {
       "tool_id": "interface:macro-input",
@@ -2139,7 +2563,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:macro-input)"
+      ]
     },
     {
       "tool_id": "interface:macro-output",
@@ -2159,7 +2587,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:macro-output)"
+      ]
     },
     {
       "tool_id": "interface:map",
@@ -2179,7 +2611,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:map)"
+      ]
     },
     {
       "tool_id": "interface:numeric-up-down",
@@ -2199,7 +2635,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:numeric-up-down)"
+      ]
     },
     {
       "tool_id": "interface:radio-button",
@@ -2219,7 +2659,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:radio-button)"
+      ]
     },
     {
       "tool_id": "interface:text-box",
@@ -2239,7 +2683,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:text-box)"
+      ]
     },
     {
       "tool_id": "interface:tree",
@@ -2259,7 +2707,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for interface:tree)"
+      ]
     },
     {
       "tool_id": "data-investigation:association-analysis",
@@ -2279,7 +2731,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:association-analysis)"
+      ]
     },
     {
       "tool_id": "data-investigation:basic-data-profile",
@@ -2299,7 +2755,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:basic-data-profile)"
+      ]
     },
     {
       "tool_id": "data-investigation:contingency-table",
@@ -2319,7 +2779,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:contingency-table)"
+      ]
     },
     {
       "tool_id": "data-investigation:distribution-analysis",
@@ -2339,7 +2803,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:distribution-analysis)"
+      ]
     },
     {
       "tool_id": "data-investigation:field-summary",
@@ -2359,7 +2827,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:field-summary)"
+      ]
     },
     {
       "tool_id": "data-investigation:frequency-table",
@@ -2379,7 +2851,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:frequency-table)"
+      ]
     },
     {
       "tool_id": "data-investigation:heat-plot",
@@ -2399,7 +2875,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:heat-plot)"
+      ]
     },
     {
       "tool_id": "data-investigation:histogram",
@@ -2419,7 +2899,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:histogram)"
+      ]
     },
     {
       "tool_id": "data-investigation:importance-weights",
@@ -2439,7 +2923,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:importance-weights)"
+      ]
     },
     {
       "tool_id": "data-investigation:pearson-correlation",
@@ -2459,7 +2947,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:pearson-correlation)"
+      ]
     },
     {
       "tool_id": "data-investigation:plot-of-means",
@@ -2479,7 +2971,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:plot-of-means)"
+      ]
     },
     {
       "tool_id": "data-investigation:scatterplot",
@@ -2499,7 +2995,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:scatterplot)"
+      ]
     },
     {
       "tool_id": "data-investigation:spearman-correlation",
@@ -2519,7 +3019,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:spearman-correlation)"
+      ]
     },
     {
       "tool_id": "data-investigation:violin-plot",
@@ -2539,7 +3043,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for data-investigation:violin-plot)"
+      ]
     },
     {
       "tool_id": "predictive:boosted-model",
@@ -2559,7 +3067,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:boosted-model)"
+      ]
     },
     {
       "tool_id": "predictive:count-regression",
@@ -2579,7 +3091,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:count-regression)"
+      ]
     },
     {
       "tool_id": "predictive:cross-validation",
@@ -2599,7 +3115,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:cross-validation)"
+      ]
     },
     {
       "tool_id": "predictive:datarobot-automodel",
@@ -2619,7 +3139,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:datarobot-automodel)"
+      ]
     },
     {
       "tool_id": "predictive:datarobot-predict",
@@ -2639,7 +3163,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:datarobot-predict)"
+      ]
     },
     {
       "tool_id": "predictive:decision-tree",
@@ -2659,7 +3187,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:decision-tree)"
+      ]
     },
     {
       "tool_id": "predictive:forest-model",
@@ -2679,7 +3211,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:forest-model)"
+      ]
     },
     {
       "tool_id": "predictive:gamma-regression",
@@ -2699,7 +3235,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:gamma-regression)"
+      ]
     },
     {
       "tool_id": "predictive:lift-chart",
@@ -2719,7 +3259,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:lift-chart)"
+      ]
     },
     {
       "tool_id": "predictive:linear-regression",
@@ -2739,7 +3283,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:linear-regression)"
+      ]
     },
     {
       "tool_id": "predictive:logistic-regression",
@@ -2759,7 +3307,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:logistic-regression)"
+      ]
     },
     {
       "tool_id": "predictive:model-coefficients",
@@ -2779,7 +3331,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:model-coefficients)"
+      ]
     },
     {
       "tool_id": "predictive:model-comparison",
@@ -2799,7 +3355,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:model-comparison)"
+      ]
     },
     {
       "tool_id": "predictive:naive-bayes-classifier",
@@ -2819,7 +3379,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:naive-bayes-classifier)"
+      ]
     },
     {
       "tool_id": "predictive:nested-test",
@@ -2839,7 +3403,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:nested-test)"
+      ]
     },
     {
       "tool_id": "predictive:network-analysis",
@@ -2859,7 +3427,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:network-analysis)"
+      ]
     },
     {
       "tool_id": "predictive:neural-network",
@@ -2879,7 +3451,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:neural-network)"
+      ]
     },
     {
       "tool_id": "predictive:score",
@@ -2899,7 +3475,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:score)"
+      ]
     },
     {
       "tool_id": "predictive:spline-model",
@@ -2919,7 +3499,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:spline-model)"
+      ]
     },
     {
       "tool_id": "predictive:stepwise",
@@ -2939,7 +3523,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:stepwise)"
+      ]
     },
     {
       "tool_id": "predictive:support-vector-machine",
@@ -2959,13 +3547,17 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:support-vector-machine)"
+      ]
     },
     {
       "tool_id": "predictive:survival-analysis",
       "category": "Predictive",
       "name": "Survival Analysis",
-      "xml_tool_name": "Predictive Tools\\Survival Analysis.yxmc",
+      "xml_tool_name": "Survival Analysis.yxmc",
       "baseline_cases": [
         "null-empty",
         "schema-and-types",
@@ -2979,7 +3571,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:survival-analysis)"
+      ]
     },
     {
       "tool_id": "predictive:survival-score",
@@ -2999,7 +3595,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:survival-score)"
+      ]
     },
     {
       "tool_id": "predictive:test-of-means",
@@ -3019,7 +3619,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:test-of-means)"
+      ]
     },
     {
       "tool_id": "predictive:variance-inflation-factors",
@@ -3039,7 +3643,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive:variance-inflation-factors)"
+      ]
     },
     {
       "tool_id": "ab-testing:ab-analysis",
@@ -3059,7 +3667,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for ab-testing:ab-analysis)"
+      ]
     },
     {
       "tool_id": "ab-testing:ab-controls",
@@ -3079,7 +3691,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for ab-testing:ab-controls)"
+      ]
     },
     {
       "tool_id": "ab-testing:ab-treatments",
@@ -3099,7 +3715,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for ab-testing:ab-treatments)"
+      ]
     },
     {
       "tool_id": "ab-testing:ab-trend",
@@ -3119,7 +3739,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for ab-testing:ab-trend)"
+      ]
     },
     {
       "tool_id": "time-series:arima",
@@ -3139,7 +3763,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for time-series:arima)"
+      ]
     },
     {
       "tool_id": "time-series:ets",
@@ -3159,7 +3787,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for time-series:ets)"
+      ]
     },
     {
       "tool_id": "time-series:ts-compare",
@@ -3179,7 +3811,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for time-series:ts-compare)"
+      ]
     },
     {
       "tool_id": "time-series:ts-covariate-forecast",
@@ -3199,7 +3835,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for time-series:ts-covariate-forecast)"
+      ]
     },
     {
       "tool_id": "time-series:ts-filler",
@@ -3219,7 +3859,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for time-series:ts-filler)"
+      ]
     },
     {
       "tool_id": "time-series:ts-forecast",
@@ -3239,7 +3883,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for time-series:ts-forecast)"
+      ]
     },
     {
       "tool_id": "time-series:ts-forecast-factory",
@@ -3259,7 +3907,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for time-series:ts-forecast-factory)"
+      ]
     },
     {
       "tool_id": "time-series:ts-model-factory",
@@ -3279,7 +3931,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for time-series:ts-model-factory)"
+      ]
     },
     {
       "tool_id": "time-series:ts-plot",
@@ -3299,7 +3955,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for time-series:ts-plot)"
+      ]
     },
     {
       "tool_id": "predictive-grouping:append-cluster",
@@ -3319,7 +3979,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive-grouping:append-cluster)"
+      ]
     },
     {
       "tool_id": "predictive-grouping:find-nearest-neighbors",
@@ -3339,7 +4003,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive-grouping:find-nearest-neighbors)"
+      ]
     },
     {
       "tool_id": "predictive-grouping:k-centroids-cluster-analysis",
@@ -3359,7 +4027,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive-grouping:k-centroids-cluster-analysis)"
+      ]
     },
     {
       "tool_id": "predictive-grouping:k-centroids-diagnostics",
@@ -3379,7 +4051,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive-grouping:k-centroids-diagnostics)"
+      ]
     },
     {
       "tool_id": "predictive-grouping:mb-affinity",
@@ -3399,7 +4075,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive-grouping:mb-affinity)"
+      ]
     },
     {
       "tool_id": "predictive-grouping:mb-inspect",
@@ -3419,7 +4099,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive-grouping:mb-inspect)"
+      ]
     },
     {
       "tool_id": "predictive-grouping:mb-rules",
@@ -3439,7 +4123,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive-grouping:mb-rules)"
+      ]
     },
     {
       "tool_id": "predictive-grouping:multidimensional-scaling",
@@ -3459,7 +4147,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive-grouping:multidimensional-scaling)"
+      ]
     },
     {
       "tool_id": "predictive-grouping:principal-components",
@@ -3479,7 +4171,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for predictive-grouping:principal-components)"
+      ]
     },
     {
       "tool_id": "prescriptive:optimization",
@@ -3499,7 +4195,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for prescriptive:optimization)"
+      ]
     },
     {
       "tool_id": "prescriptive:simulation-sampling",
@@ -3519,7 +4219,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for prescriptive:simulation-sampling)"
+      ]
     },
     {
       "tool_id": "prescriptive:simulation-scoring",
@@ -3539,7 +4243,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for prescriptive:simulation-scoring)"
+      ]
     },
     {
       "tool_id": "prescriptive:simulation-summary",
@@ -3559,7 +4267,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for prescriptive:simulation-summary)"
+      ]
     },
     {
       "tool_id": "connectors:azure-data-lake-file-input",
@@ -3579,7 +4291,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:azure-data-lake-file-input)"
+      ]
     },
     {
       "tool_id": "connectors:azure-data-lake-file-output",
@@ -3599,7 +4315,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:azure-data-lake-file-output)"
+      ]
     },
     {
       "tool_id": "connectors:adobe-analytics",
@@ -3619,7 +4339,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:adobe-analytics)"
+      ]
     },
     {
       "tool_id": "connectors:amazon-s3-download",
@@ -3639,7 +4363,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:amazon-s3-download)"
+      ]
     },
     {
       "tool_id": "connectors:amazon-s3-upload",
@@ -3659,7 +4387,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:amazon-s3-upload)"
+      ]
     },
     {
       "tool_id": "connectors:anaplan-input",
@@ -3679,7 +4411,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:anaplan-input)"
+      ]
     },
     {
       "tool_id": "connectors:anaplan-output",
@@ -3699,7 +4435,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:anaplan-output)"
+      ]
     },
     {
       "tool_id": "connectors:automation-anywhere-360",
@@ -3719,7 +4459,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:automation-anywhere-360)"
+      ]
     },
     {
       "tool_id": "connectors:box-input",
@@ -3739,7 +4483,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:box-input)"
+      ]
     },
     {
       "tool_id": "connectors:box-output",
@@ -3759,7 +4507,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:box-output)"
+      ]
     },
     {
       "tool_id": "connectors:cognitive-services-text-analytics",
@@ -3779,7 +4531,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:cognitive-services-text-analytics)"
+      ]
     },
     {
       "tool_id": "connectors:dataverse-input",
@@ -3799,7 +4555,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:dataverse-input)"
+      ]
     },
     {
       "tool_id": "connectors:dataverse-output",
@@ -3819,7 +4579,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:dataverse-output)"
+      ]
     },
     {
       "tool_id": "connectors:dropbox-input",
@@ -3839,7 +4603,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:dropbox-input)"
+      ]
     },
     {
       "tool_id": "connectors:dropbox-output",
@@ -3859,7 +4627,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:dropbox-output)"
+      ]
     },
     {
       "tool_id": "connectors:dynamics-crm-input",
@@ -3879,7 +4651,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:dynamics-crm-input)"
+      ]
     },
     {
       "tool_id": "connectors:dynamics-crm-output",
@@ -3899,7 +4675,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:dynamics-crm-output)"
+      ]
     },
     {
       "tool_id": "connectors:google-analytics",
@@ -3919,7 +4699,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:google-analytics)"
+      ]
     },
     {
       "tool_id": "connectors:google-analytics-4-input",
@@ -3939,7 +4723,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:google-analytics-4-input)"
+      ]
     },
     {
       "tool_id": "connectors:google-bigquery-input",
@@ -3959,7 +4747,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:google-bigquery-input)"
+      ]
     },
     {
       "tool_id": "connectors:google-bigquery-output",
@@ -3979,7 +4771,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:google-bigquery-output)"
+      ]
     },
     {
       "tool_id": "connectors:google-drive-input",
@@ -3999,7 +4795,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:google-drive-input)"
+      ]
     },
     {
       "tool_id": "connectors:google-drive-output",
@@ -4019,7 +4819,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:google-drive-output)"
+      ]
     },
     {
       "tool_id": "connectors:google-sheets-input",
@@ -4039,7 +4843,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:google-sheets-input)"
+      ]
     },
     {
       "tool_id": "connectors:google-sheets-output",
@@ -4059,7 +4867,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:google-sheets-output)"
+      ]
     },
     {
       "tool_id": "connectors:marketo-append",
@@ -4079,7 +4891,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:marketo-append)"
+      ]
     },
     {
       "tool_id": "connectors:marketo-input",
@@ -4099,7 +4915,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:marketo-input)"
+      ]
     },
     {
       "tool_id": "connectors:marketo-output",
@@ -4119,7 +4939,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:marketo-output)"
+      ]
     },
     {
       "tool_id": "connectors:microsoft-power-bi-output",
@@ -4139,7 +4963,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:microsoft-power-bi-output)"
+      ]
     },
     {
       "tool_id": "connectors:mongodb-input",
@@ -4159,7 +4987,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:mongodb-input)"
+      ]
     },
     {
       "tool_id": "connectors:mongodb-output",
@@ -4179,7 +5011,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:mongodb-output)"
+      ]
     },
     {
       "tool_id": "connectors:onedrive-input",
@@ -4199,7 +5035,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:onedrive-input)"
+      ]
     },
     {
       "tool_id": "connectors:onedrive-output",
@@ -4219,7 +5059,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:onedrive-output)"
+      ]
     },
     {
       "tool_id": "connectors:outlook-365-input",
@@ -4239,7 +5083,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:outlook-365-input)"
+      ]
     },
     {
       "tool_id": "connectors:power-automate",
@@ -4259,7 +5107,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:power-automate)"
+      ]
     },
     {
       "tool_id": "connectors:publish-to-tableau-server",
@@ -4279,7 +5131,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:publish-to-tableau-server)"
+      ]
     },
     {
       "tool_id": "connectors:salesforce-input",
@@ -4299,7 +5155,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:salesforce-input)"
+      ]
     },
     {
       "tool_id": "connectors:salesforce-output-new",
@@ -4319,7 +5179,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:salesforce-output-new)"
+      ]
     },
     {
       "tool_id": "connectors:servicenow-input",
@@ -4339,7 +5203,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:servicenow-input)"
+      ]
     },
     {
       "tool_id": "connectors:sharepoint-files-input",
@@ -4359,7 +5227,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:sharepoint-files-input)"
+      ]
     },
     {
       "tool_id": "connectors:sharepoint-files-output",
@@ -4379,7 +5251,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:sharepoint-files-output)"
+      ]
     },
     {
       "tool_id": "connectors:sharepoint-list-input",
@@ -4399,7 +5275,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:sharepoint-list-input)"
+      ]
     },
     {
       "tool_id": "connectors:sharepoint-list-output",
@@ -4419,7 +5299,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:sharepoint-list-output)"
+      ]
     },
     {
       "tool_id": "connectors:tableau-output",
@@ -4439,7 +5323,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connectors:tableau-output)"
+      ]
     },
     {
       "tool_id": "address:cass",
@@ -4459,7 +5347,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for address:cass)"
+      ]
     },
     {
       "tool_id": "address:parse-address",
@@ -4479,7 +5371,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for address:parse-address)"
+      ]
     },
     {
       "tool_id": "address:reverse-geocoder",
@@ -4499,7 +5395,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for address:reverse-geocoder)"
+      ]
     },
     {
       "tool_id": "address:street-geocoder",
@@ -4519,7 +5419,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for address:street-geocoder)"
+      ]
     },
     {
       "tool_id": "address:us-geocoder",
@@ -4539,7 +5443,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for address:us-geocoder)"
+      ]
     },
     {
       "tool_id": "address:us-zip9-coder",
@@ -4559,7 +5467,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for address:us-zip9-coder)"
+      ]
     },
     {
       "tool_id": "demographic-analysis:allocate-append",
@@ -4579,7 +5491,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for demographic-analysis:allocate-append)"
+      ]
     },
     {
       "tool_id": "demographic-analysis:allocate-input",
@@ -4599,7 +5515,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for demographic-analysis:allocate-input)"
+      ]
     },
     {
       "tool_id": "demographic-analysis:allocate-metainfo",
@@ -4619,7 +5539,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for demographic-analysis:allocate-metainfo)"
+      ]
     },
     {
       "tool_id": "demographic-analysis:allocate-report",
@@ -4639,7 +5563,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for demographic-analysis:allocate-report)"
+      ]
     },
     {
       "tool_id": "behavior-analysis-deprecated:behavior-metainfo",
@@ -4659,7 +5587,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for behavior-analysis-deprecated:behavior-metainfo)"
+      ]
     },
     {
       "tool_id": "behavior-analysis-deprecated:cluster-code",
@@ -4679,7 +5611,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for behavior-analysis-deprecated:cluster-code)"
+      ]
     },
     {
       "tool_id": "behavior-analysis-deprecated:compare-behavior",
@@ -4699,7 +5635,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for behavior-analysis-deprecated:compare-behavior)"
+      ]
     },
     {
       "tool_id": "behavior-analysis-deprecated:create-profile",
@@ -4719,7 +5659,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for behavior-analysis-deprecated:create-profile)"
+      ]
     },
     {
       "tool_id": "behavior-analysis-deprecated:detail-fields",
@@ -4739,7 +5683,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for behavior-analysis-deprecated:detail-fields)"
+      ]
     },
     {
       "tool_id": "behavior-analysis-deprecated:profile-comparison-report",
@@ -4759,7 +5707,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for behavior-analysis-deprecated:profile-comparison-report)"
+      ]
     },
     {
       "tool_id": "behavior-analysis-deprecated:profile-detail-report",
@@ -4779,7 +5731,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for behavior-analysis-deprecated:profile-detail-report)"
+      ]
     },
     {
       "tool_id": "behavior-analysis-deprecated:profile-input",
@@ -4799,7 +5755,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for behavior-analysis-deprecated:profile-input)"
+      ]
     },
     {
       "tool_id": "behavior-analysis-deprecated:profile-output",
@@ -4819,7 +5779,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for behavior-analysis-deprecated:profile-output)"
+      ]
     },
     {
       "tool_id": "behavior-analysis-deprecated:profile-rank-report",
@@ -4839,7 +5803,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for behavior-analysis-deprecated:profile-rank-report)"
+      ]
     },
     {
       "tool_id": "calgary:calgary-input",
@@ -4859,7 +5827,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for calgary:calgary-input)"
+      ]
     },
     {
       "tool_id": "calgary:calgary-join",
@@ -4879,7 +5851,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for calgary:calgary-join)"
+      ]
     },
     {
       "tool_id": "calgary:calgary-cross-count",
@@ -4899,7 +5875,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for calgary:calgary-cross-count)"
+      ]
     },
     {
       "tool_id": "calgary:calgary-cross-count-append",
@@ -4919,7 +5899,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for calgary:calgary-cross-count-append)"
+      ]
     },
     {
       "tool_id": "calgary:calgary-loader",
@@ -4939,7 +5923,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for calgary:calgary-loader)"
+      ]
     },
     {
       "tool_id": "developer:apache-spark-code",
@@ -4959,7 +5947,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:apache-spark-code)"
+      ]
     },
     {
       "tool_id": "developer:api-output",
@@ -4979,7 +5971,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:api-output)"
+      ]
     },
     {
       "tool_id": "developer:base64-encoder",
@@ -4999,7 +5995,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:base64-encoder)"
+      ]
     },
     {
       "tool_id": "developer:blob-convert",
@@ -5019,7 +6019,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:blob-convert)"
+      ]
     },
     {
       "tool_id": "developer:blob-input",
@@ -5039,7 +6043,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:blob-input)"
+      ]
     },
     {
       "tool_id": "developer:blob-output",
@@ -5059,7 +6067,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:blob-output)"
+      ]
     },
     {
       "tool_id": "developer:block-until-done",
@@ -5079,7 +6091,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:block-until-done)"
+      ]
     },
     {
       "tool_id": "developer:control-container",
@@ -5099,7 +6115,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:control-container)"
+      ]
     },
     {
       "tool_id": "developer:detour",
@@ -5119,7 +6139,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:detour)"
+      ]
     },
     {
       "tool_id": "developer:detour-end",
@@ -5139,7 +6163,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:detour-end)"
+      ]
     },
     {
       "tool_id": "developer:download",
@@ -5159,7 +6187,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:download)"
+      ]
     },
     {
       "tool_id": "developer:dynamic-input",
@@ -5179,7 +6211,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:dynamic-input)"
+      ]
     },
     {
       "tool_id": "developer:dynamic-rename",
@@ -5199,7 +6235,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:dynamic-rename)"
+      ]
     },
     {
       "tool_id": "developer:dynamic-replace",
@@ -5219,7 +6259,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:dynamic-replace)"
+      ]
     },
     {
       "tool_id": "developer:dynamic-select",
@@ -5239,7 +6283,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:dynamic-select)"
+      ]
     },
     {
       "tool_id": "developer:expect-equals",
@@ -5259,7 +6307,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:expect-equals)"
+      ]
     },
     {
       "tool_id": "developer:field-info",
@@ -5279,7 +6331,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:field-info)"
+      ]
     },
     {
       "tool_id": "developer:github-commit",
@@ -5299,7 +6355,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:github-commit)"
+      ]
     },
     {
       "tool_id": "developer:github-get-last-commit",
@@ -5319,7 +6379,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:github-get-last-commit)"
+      ]
     },
     {
       "tool_id": "developer:json-parse",
@@ -5339,7 +6403,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:json-parse)"
+      ]
     },
     {
       "tool_id": "developer:json-schema",
@@ -5359,7 +6427,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:json-schema)"
+      ]
     },
     {
       "tool_id": "developer:license-api",
@@ -5379,7 +6451,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:license-api)"
+      ]
     },
     {
       "tool_id": "developer:message",
@@ -5399,7 +6475,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:message)"
+      ]
     },
     {
       "tool_id": "developer:python",
@@ -5419,7 +6499,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:python)"
+      ]
     },
     {
       "tool_id": "developer:r",
@@ -5439,7 +6523,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:r)"
+      ]
     },
     {
       "tool_id": "developer:run-command",
@@ -5459,7 +6547,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:run-command)"
+      ]
     },
     {
       "tool_id": "developer:runner",
@@ -5479,7 +6571,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:runner)"
+      ]
     },
     {
       "tool_id": "developer:server-api",
@@ -5499,7 +6595,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:server-api)"
+      ]
     },
     {
       "tool_id": "developer:test",
@@ -5519,7 +6619,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:test)"
+      ]
     },
     {
       "tool_id": "developer:throttle",
@@ -5539,7 +6643,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for developer:throttle)"
+      ]
     },
     {
       "tool_id": "laboratory:connect-json-builder",
@@ -5559,7 +6667,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for laboratory:connect-json-builder)"
+      ]
     },
     {
       "tool_id": "laboratory:connect-output",
@@ -5579,7 +6691,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for laboratory:connect-output)"
+      ]
     },
     {
       "tool_id": "laboratory:json-build",
@@ -5599,7 +6715,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for laboratory:json-build)"
+      ]
     },
     {
       "tool_id": "laboratory:jupyter-flow",
@@ -5619,7 +6739,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for laboratory:jupyter-flow)"
+      ]
     },
     {
       "tool_id": "laboratory:key-value-pair-extraction",
@@ -5639,7 +6763,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for laboratory:key-value-pair-extraction)"
+      ]
     },
     {
       "tool_id": "laboratory:transpose-in-db",
@@ -5659,7 +6787,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for laboratory:transpose-in-db)"
+      ]
     },
     {
       "tool_id": "laboratory:visual-layout",
@@ -5679,7 +6811,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for laboratory:visual-layout)"
+      ]
     },
     {
       "tool_id": "machine-learning:assisted-modeling",
@@ -5699,7 +6835,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for machine-learning:assisted-modeling)"
+      ]
     },
     {
       "tool_id": "machine-learning:build-features",
@@ -5719,7 +6859,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for machine-learning:build-features)"
+      ]
     },
     {
       "tool_id": "machine-learning:classification",
@@ -5739,7 +6883,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for machine-learning:classification)"
+      ]
     },
     {
       "tool_id": "machine-learning:data-health",
@@ -5759,7 +6907,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for machine-learning:data-health)"
+      ]
     },
     {
       "tool_id": "machine-learning:feature-types",
@@ -5779,7 +6931,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for machine-learning:feature-types)"
+      ]
     },
     {
       "tool_id": "machine-learning:fit",
@@ -5799,7 +6955,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for machine-learning:fit)"
+      ]
     },
     {
       "tool_id": "machine-learning:machine-learning-predict",
@@ -5819,7 +6979,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for machine-learning:machine-learning-predict)"
+      ]
     },
     {
       "tool_id": "machine-learning:machine-learning-send",
@@ -5839,7 +7003,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for machine-learning:machine-learning-send)"
+      ]
     },
     {
       "tool_id": "machine-learning:predict",
@@ -5859,7 +7027,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for machine-learning:predict)"
+      ]
     },
     {
       "tool_id": "machine-learning:regression",
@@ -5879,7 +7051,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for machine-learning:regression)"
+      ]
     },
     {
       "tool_id": "machine-learning:transformation",
@@ -5899,7 +7075,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for machine-learning:transformation)"
+      ]
     },
     {
       "tool_id": "text-mining:named-entity-recognition",
@@ -5919,7 +7099,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for text-mining:named-entity-recognition)"
+      ]
     },
     {
       "tool_id": "text-mining:part-of-speech-tagger",
@@ -5939,7 +7123,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for text-mining:part-of-speech-tagger)"
+      ]
     },
     {
       "tool_id": "text-mining:sentiment-analysis",
@@ -5959,7 +7147,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for text-mining:sentiment-analysis)"
+      ]
     },
     {
       "tool_id": "text-mining:text-classification",
@@ -5979,7 +7171,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for text-mining:text-classification)"
+      ]
     },
     {
       "tool_id": "text-mining:text-pre-processing",
@@ -5999,7 +7195,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for text-mining:text-pre-processing)"
+      ]
     },
     {
       "tool_id": "text-mining:text-summary",
@@ -6019,7 +7219,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for text-mining:text-summary)"
+      ]
     },
     {
       "tool_id": "text-mining:topic-modeling",
@@ -6039,7 +7243,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for text-mining:topic-modeling)"
+      ]
     },
     {
       "tool_id": "text-mining:word-cloud",
@@ -6059,7 +7267,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for text-mining:word-cloud)"
+      ]
     },
     {
       "tool_id": "text-mining:zero-shot-text-classification",
@@ -6079,7 +7291,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for text-mining:zero-shot-text-classification)"
+      ]
     },
     {
       "tool_id": "computer-vision:barcode-tool",
@@ -6099,7 +7315,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for computer-vision:barcode-tool)"
+      ]
     },
     {
       "tool_id": "computer-vision:image-input",
@@ -6119,7 +7339,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for computer-vision:image-input)"
+      ]
     },
     {
       "tool_id": "computer-vision:image-output",
@@ -6139,7 +7363,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for computer-vision:image-output)"
+      ]
     },
     {
       "tool_id": "computer-vision:image-processing",
@@ -6159,7 +7387,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for computer-vision:image-processing)"
+      ]
     },
     {
       "tool_id": "computer-vision:image-profile",
@@ -6179,7 +7411,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for computer-vision:image-profile)"
+      ]
     },
     {
       "tool_id": "computer-vision:image-recognition",
@@ -6199,7 +7435,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for computer-vision:image-recognition)"
+      ]
     },
     {
       "tool_id": "computer-vision:image-template",
@@ -6219,7 +7459,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for computer-vision:image-template)"
+      ]
     },
     {
       "tool_id": "computer-vision:image-to-text",
@@ -6239,7 +7483,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for computer-vision:image-to-text)"
+      ]
     },
     {
       "tool_id": "computer-vision:pdf-to-text",
@@ -6259,7 +7507,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for computer-vision:pdf-to-text)"
+      ]
     },
     {
       "tool_id": "ai-tools:invoice-extractor",
@@ -6279,7 +7531,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for ai-tools:invoice-extractor)"
+      ]
     },
     {
       "tool_id": "ai-tools:llm-override",
@@ -6299,7 +7555,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for ai-tools:llm-override)"
+      ]
     },
     {
       "tool_id": "ai-tools:precision-match",
@@ -6319,7 +7579,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for ai-tools:precision-match)"
+      ]
     },
     {
       "tool_id": "ai-tools:prompt",
@@ -6339,7 +7603,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for ai-tools:prompt)"
+      ]
     },
     {
       "tool_id": "ai-tools:schema-fit",
@@ -6359,7 +7627,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for ai-tools:schema-fit)"
+      ]
     },
     {
       "tool_id": "ai-tools:synthetic-input",
@@ -6379,7 +7651,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for ai-tools:synthetic-input)"
+      ]
     },
     {
       "tool_id": "connect:connect-json-builder",
@@ -6399,7 +7675,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connect:connect-json-builder)"
+      ]
     },
     {
       "tool_id": "connect:connect-output",
@@ -6419,7 +7699,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connect:connect-output)"
+      ]
     },
     {
       "tool_id": "connect:odbc-loader",
@@ -6439,7 +7723,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for connect:odbc-loader)"
+      ]
     },
     {
       "tool_id": "sdk-examples:html-gui-library",
@@ -6459,7 +7747,11 @@
       "oracle_status": "missing",
       "implementation_status": "not-started",
       "verification_status": "not-tested",
-      "evidence_refs": []
+      "independent_tests": 0,
+      "reference_cases": 0,
+      "evidence_refs": [
+        "tool-contracts (contract JSON for sdk-examples:html-gui-library)"
+      ]
     }
   ]
 }

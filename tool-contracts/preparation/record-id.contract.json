@@ -1,0 +1,158 @@
+{
+  "id": "preparation:record-id",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Record ID",
+  "category": "Preparation",
+  "xml_tool_name": "AlteryxBasePluginsGui.RecordID.RecordID",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/record-id-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "field_name": {
+        "type": "string",
+        "minLength": 1,
+        "default": "RecordID"
+      },
+      "start": {
+        "type": "integer",
+        "default": 1
+      },
+      "type": {
+        "enum": [
+          "int16",
+          "int32",
+          "int64",
+          "v_string"
+        ],
+        "default": "int32"
+      },
+      "size": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 6,
+        "description": "Zero-padded width when type is v_string"
+      },
+      "position": {
+        "enum": [
+          "first",
+          "last"
+        ],
+        "default": "first"
+      },
+      "group_by": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.record_id",
+    "version": "1.0.0",
+    "module": "flowengine.tools.preparation",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.RecordID.RecordID"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "FieldName",
+      "FieldSize",
+      "FieldType",
+      "GroupFields",
+      "GroupFields/Field",
+      "Position",
+      "StartValue"
+    ],
+    "nodes_observed": 62
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Record ID Tool",
+    "sha256": "c401dee432b649f55cb9b283b2ff0fd11478977fbd356cdc7c4df50c689553e5",
+    "retrieved_utc": "2026-10-13T09:33:24.981235+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools.PreparationTests.test_record_id_variants"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/preparation/record-id-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.981235+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "record-id-default",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#record-id-default",
+        "reference build 2026.2.0.8",
+        "config sha256 7c1d8f04beb64d3ea477e581f7c4043ecefa52ad32e82028049ca955a1d3b8c2"
+      ]
+    }
+  ],
+  "unresolved": []
+}

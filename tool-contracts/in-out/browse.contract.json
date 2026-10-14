@@ -1,0 +1,123 @@
+{
+  "id": "in-out:browse",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Browse",
+  "category": "In/Out",
+  "xml_tool_name": "AlteryxBasePluginsGui.BrowseV2.BrowseV2",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/browse-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.browse",
+    "version": "1.0.0",
+    "module": "flowengine.tools.inout",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.BrowseV2.BrowseV2"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [],
+    "config_elements": [
+      "Layout",
+      "Layout/View1",
+      "Layout/View2",
+      "Layout/ViewMode",
+      "Layout/ViewSize",
+      "TempFile",
+      "TempFileDataProfiling"
+    ],
+    "nodes_observed": 276
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Browse Tool",
+    "sha256": "dc5018bc7a4c920d0b07f9fabc1f5988c6d0a2329f7939517ed4a04eeeeeaac7",
+    "retrieved_utc": "2026-10-13T09:33:24.137585+00:00",
+    "anchors_extracted": [
+      {
+        "label": "Input",
+        "letter": null,
+        "direction_guess": "input"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Disable Browse Tools in Workflow",
+      "Disable Data Profiling",
+      "View Data Profile",
+      "Holistic View",
+      "Single Column View",
+      "Data Profiling Limit",
+      "Convert Browse Tool to Output Tool",
+      "Convert Browse Tool to Macro Output Tool",
+      "Convert Browse Tool to Output Data Tool"
+    ]
+  },
+  "independent_tests": {
+    "count": 7,
+    "passing": 7,
+    "tests": [
+      "test_fe_executor.EndToEndTests.test_golden_outputs",
+      "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
+      "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
+      "test_fe_executor.ExecutionTests.test_jsonl_log_and_retain_none",
+      "test_fe_service.ServiceTests.test_run_previews_and_errors",
+      "test_fe_tools.InOutTests.test_browse_captures",
+      "test_fe_tools.InOutTests.test_text_input_validation"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/browse-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.137585+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No differential conformance case yet."
+  ]
+}

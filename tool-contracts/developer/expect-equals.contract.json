@@ -1,0 +1,101 @@
+{
+  "id": "developer:expect-equals",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Expect Equals",
+  "category": "Developer",
+  "xml_tool_name": "ExpectEqual.yxmc",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/expect-equal-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Expected",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "Actual",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Tool Components",
+      "Configure the Tool",
+      "Tool Examples",
+      "Example 1: Fields Differ",
+      "Example 2: Fields Are in a Different Order",
+      "Example 3: Fields Are Different Types",
+      "Example 4: Data Values Differ",
+      "Example 5: Different Number of Rows",
+      "Example 6: Too Many Messages"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Expect Equal Tool",
+    "sha256": "f1e8dfcbf143c56fa9f26ce96badd7286d6df076b1de6f2dbbe47329b4b4ea6c",
+    "retrieved_utc": "2026-10-13T09:33:23.817855+00:00",
+    "anchors_extracted": [
+      {
+        "label": "Expected",
+        "letter": null,
+        "direction_guess": "input"
+      },
+      {
+        "label": "Actual",
+        "letter": null,
+        "direction_guess": "input"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Tool Examples",
+      "Example 1: Fields Differ",
+      "Example 2: Fields Are in a Different Order",
+      "Example 3: Fields Are Different Types",
+      "Example 4: Data Values Differ",
+      "Example 5: Different Number of Rows",
+      "Example 6: Too Many Messages"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/developer/expect-equal-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.817855+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

@@ -12,6 +12,7 @@
 - Official catalogue: https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html
 - Specific reference: **NOT YET VERIFIED** — run public catalogue sync
 - Implementation: **not-started**
+- Machine-readable contract: `explorer-box.contract.json`
 - Conformance verification: **not-tested**
 
 ## Research to complete (do not infer)

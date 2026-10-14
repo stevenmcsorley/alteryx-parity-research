@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/flowengine/workflow.schema.json",
+  "title": "flowengine workflow document (format version 1)",
+  "description": "Original canonical workflow format of this project. Not an Alteryx .yxmd representation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "formatVersion", "nodes", "edges"],
+  "properties": {
+    "format": {"const": "flowengine.workflow"},
+    "formatVersion": {"const": 1},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "metadata": {"type": "object"},
+    "constants": {
+      "type": "object",
+      "description": "Workflow-level constants available to tools (not secrets).",
+      "additionalProperties": {"type": ["string", "number", "boolean", "null"]}
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "tool", "config"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[A-Za-z0-9_.\\-]{1,128}$"},
+          "tool": {"type": "string", "minLength": 1},
+          "toolVersion": {"type": "string"},
+          "config": {"type": "object"},
+          "label": {"type": "string"},
+          "disabled": {"type": "boolean"},
+          "position": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["x", "y"],
+            "properties": {"x": {"type": "number"}, "y": {"type": "number"}}
+          },
+          "annotation": {"type": "string"}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "to"],
+        "properties": {
+          "from": {"$ref": "#/$defs/endpoint"},
+          "to": {"$ref": "#/$defs/endpoint"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node", "anchor"],
+      "properties": {
+        "node": {"type": "string"},
+        "anchor": {"type": "string"}
+      }
+    }
+  }
+}

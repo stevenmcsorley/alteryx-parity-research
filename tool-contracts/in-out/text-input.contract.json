@@ -1,0 +1,208 @@
+{
+  "id": "in-out:text-input",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Text Input",
+  "category": "In/Out",
+  "xml_tool_name": "AlteryxBasePluginsGui.TextInput.TextInput",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/text-input-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "not-tested",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "fields",
+      "rows"
+    ],
+    "properties": {
+      "fields": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "type"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": {
+              "enum": [
+                "bool",
+                "byte",
+                "int16",
+                "int32",
+                "int64",
+                "fixed_decimal",
+                "float",
+                "double",
+                "string",
+                "wstring",
+                "v_string",
+                "v_wstring",
+                "date",
+                "time",
+                "datetime",
+                "blob"
+              ]
+            },
+            "size": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "scale": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "rows": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.text_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.inout",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.TextInput.TextInput"
+    ],
+    "input_anchors": [
+      "Action"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "Data",
+      "Data/r",
+      "Fields",
+      "Fields/Field",
+      "NumRows"
+    ],
+    "nodes_observed": 244
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Text Input Tool",
+    "sha256": "3d6348fb075fc420143fe7abba9b9db770c4196942b6f70bd3a87d5831b2aadf",
+    "retrieved_utc": "2026-10-13T09:33:24.233051+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Text Input and AMP",
+      "Configure the Tool",
+      "Options Menu",
+      "Navigate Cells via Keyboard"
+    ]
+  },
+  "independent_tests": {
+    "count": 41,
+    "passing": 41,
+    "tests": [
+      "test_fe_executor.ExecutionTests.test_cancellation",
+      "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
+      "test_fe_executor.ExecutionTests.test_failure_reports_node_and_skips_downstream",
+      "test_fe_executor.ExecutionTests.test_fan_out_and_release",
+      "test_fe_executor.ExecutionTests.test_jsonl_log_and_retain_none",
+      "test_fe_executor.PropertyTests.test_invariants",
+      "test_fe_executor.ValidationTests.test_catalog_id_resolves_to_implementation",
+      "test_fe_executor.ValidationTests.test_config_schema_errors_name_the_node",
+      "test_fe_executor.ValidationTests.test_graph_problems",
+      "test_fe_executor.ValidationTests.test_static_schema_errors_detected_before_running",
+      "test_fe_executor.ValidationTests.test_static_schemas_propagate",
+      "test_fe_executor.ValidationTests.test_tool_version_mismatch",
+      "test_fe_service.ServiceTests.test_run_previews_and_errors",
+      "test_fe_service.ServiceTests.test_validate_returns_schemas_and_problems",
+      "test_fe_tools.InOutTests.test_browse_captures",
+      "test_fe_tools.InOutTests.test_output_roundtrip_csv_json_and_if_exists",
+      "test_fe_tools.InOutTests.test_text_input_validation",
+      "test_fe_tools.JoinTests.test_append_fields",
+      "test_fe_tools.JoinTests.test_join_case_insensitive_and_type_check",
+      "test_fe_tools.JoinTests.test_join_options",
+      "test_fe_tools.JoinTests.test_join_three_outputs_many_to_many_nulls",
+      "test_fe_tools.JoinTests.test_union_by_name_and_position",
+      "test_fe_tools.ParseTests.test_regex_modes",
+      "test_fe_tools.ParseTests.test_text_to_columns",
+      "test_fe_tools.PreparationTests.test_data_cleansing",
+      "test_fe_tools.PreparationTests.test_filter_basic_and_custom_partition",
+      "test_fe_tools.PreparationTests.test_filter_rejects_non_boolean_and_bad_config",
+      "test_fe_tools.PreparationTests.test_formula_conversion_policy",
+      "test_fe_tools.PreparationTests.test_formula_sequential_and_types",
+      "test_fe_tools.PreparationTests.test_generate_rows",
+      "test_fe_tools.PreparationTests.test_multi_row_formula",
+      "test_fe_tools.PreparationTests.test_record_id_variants",
+      "test_fe_tools.PreparationTests.test_sample_modes",
+      "test_fe_tools.PreparationTests.test_select_rename_retype_reorder_unknown",
+      "test_fe_tools.PreparationTests.test_sort_multikey_stable_nulls",
+      "test_fe_tools.PreparationTests.test_unique",
+      "test_fe_tools.TransformTests.test_count_records",
+      "test_fe_tools.TransformTests.test_running_total",
+      "test_fe_tools.TransformTests.test_summarize",
+      "test_fe_tools.TransformTests.test_summarize_empty_and_errors",
+      "test_fe_tools.TransformTests.test_transpose_and_crosstab_roundtrip"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/in-out-tools/text-input-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.233051+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No differential conformance case yet."
+  ]
+}

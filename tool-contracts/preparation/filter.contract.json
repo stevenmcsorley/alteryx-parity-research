@@ -1,0 +1,243 @@
+{
+  "id": "preparation:filter",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Filter",
+  "category": "Preparation",
+  "xml_tool_name": "AlteryxBasePluginsGui.Filter.Filter",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/filter-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "true",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "True"
+    },
+    {
+      "name": "false",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "False"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "oneOf": [
+      {
+        "required": [
+          "expression"
+        ]
+      },
+      {
+        "required": [
+          "field",
+          "operator"
+        ]
+      }
+    ],
+    "properties": {
+      "expression": {
+        "type": "string",
+        "minLength": 1
+      },
+      "field": {
+        "type": "string"
+      },
+      "operator": {
+        "enum": [
+          "=",
+          "!=",
+          "<",
+          "<=",
+          ">",
+          ">=",
+          "is_null",
+          "is_not_null",
+          "is_empty",
+          "is_not_empty",
+          "contains",
+          "does_not_contain",
+          "is_true",
+          "is_false"
+        ]
+      },
+      "value": {
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "null"
+        ]
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.filter",
+    "version": "1.0.0",
+    "module": "flowengine.tools.preparation",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.Filter.Filter"
+    ],
+    "input_anchors": [
+      "Action",
+      "Input",
+      "Question"
+    ],
+    "output_anchors": [
+      "False",
+      "True"
+    ],
+    "config_elements": [
+      "Expression",
+      "Mode",
+      "Simple",
+      "Simple/Field",
+      "Simple/Operands",
+      "Simple/Operator"
+    ],
+    "nodes_observed": 195
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Filter Tool",
+    "sha256": "826fbc830328eed6f44cfe7c2653ba94d13894ed01cc07f59e50a782f3f264f0",
+    "retrieved_utc": "2026-10-13T09:33:24.897422+00:00",
+    "anchors_extracted": [
+      {
+        "label": "Input",
+        "letter": null,
+        "direction_guess": "input"
+      },
+      {
+        "label": "True",
+        "letter": "T",
+        "direction_guess": "output"
+      },
+      {
+        "label": "False",
+        "letter": "F",
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Build a Basic Filter",
+      "Build a Custom Filter Using Expressions",
+      "Save a Custom Filter",
+      "Tool Examples",
+      "Example 1. Select Rows Using a Basic Comparison",
+      "Example 2. Select Rows With or Without Missing Data",
+      "Example 3. Select Rows Using Date-Time Data",
+      "Example 4. Select Rows Using a Multiple-Column Condition",
+      "Example 5. Select Rows Using a Compound Condition",
+      "Troubleshooting"
+    ]
+  },
+  "independent_tests": {
+    "count": 7,
+    "passing": 7,
+    "tests": [
+      "test_fe_executor.EndToEndTests.test_golden_outputs",
+      "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
+      "test_fe_executor.PropertyTests.test_invariants",
+      "test_fe_executor.ValidationTests.test_graph_problems",
+      "test_fe_executor.ValidationTests.test_static_schema_errors_detected_before_running",
+      "test_fe_tools.PreparationTests.test_filter_basic_and_custom_partition",
+      "test_fe_tools.PreparationTests.test_filter_rejects_non_boolean_and_bad_config"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/preparation/filter-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.897422+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "filter-numeric-gt-null",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#filter-numeric-gt-null",
+        "reference build 2026.2.0.8",
+        "config sha256 7f90171d94e9eac61e85f215e702dbed243d4e8fdf0bfc03e62467bfa9e1ac37"
+      ]
+    },
+    {
+      "case_id": "filter-string-eq-case",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#filter-string-eq-case",
+        "reference build 2026.2.0.8",
+        "config sha256 9ac41e6163e29c99a8df652eb5127ec4b1d3c7ddd5b44d6727c7376a642607c0"
+      ]
+    },
+    {
+      "case_id": "filter-compound-null",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#filter-compound-null",
+        "reference build 2026.2.0.8",
+        "config sha256 371c8638135d2c106998cc0794ba7f2e3cb938d7ac94c76eaa5062e8a8919e7e"
+      ]
+    },
+    {
+      "case_id": "filter-date-literal",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#filter-date-literal",
+        "reference build 2026.2.0.8",
+        "config sha256 8166a6d0c00d8e445289f4c52b42a35079dc864e3b91c0963c453ed5c3ce0ba7"
+      ]
+    },
+    {
+      "case_id": "filter-not-in",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#filter-not-in",
+        "reference build 2026.2.0.8",
+        "config sha256 f57907ea24784f44ab87aab2290a517c40a706bb017107524c3bb32320e2f124"
+      ]
+    }
+  ],
+  "unresolved": []
+}

@@ -1,0 +1,109 @@
+{
+  "id": "calgary:calgary-loader",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Calgary Loader",
+  "category": "Calgary",
+  "xml_tool_name": "CalgaryPluginsGui.CalgaryCrossCountAppend.CalgaryCrossCountAppend",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/calgary/calgary-loader-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "CrossCount",
+      "CrossCount/CrossCountFields",
+      "JoinFields",
+      "JoinFields/Field",
+      "JoinMode",
+      "LinkedTables",
+      "Query",
+      "RootFileName"
+    ],
+    "public_doc_sections": [
+      "Configure the Tool",
+      "Load Base CalgaryDB and/or 1 or More Standard Indexes",
+      "Load a Single Advanced Index"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "licensed-reference-dataset (indexed Calgary data)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": true,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "CalgaryPluginsGui.CalgaryCrossCountAppend.CalgaryCrossCountAppend"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [],
+    "config_elements": [
+      "CrossCount",
+      "CrossCount/CrossCountFields",
+      "JoinFields",
+      "JoinFields/Field",
+      "JoinMode",
+      "LinkedTables",
+      "Query",
+      "RootFileName"
+    ],
+    "nodes_observed": 2
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Calgary Loader Tool",
+    "sha256": "3e398640685cb361537424ff350ad951b399ae3c5b9310adf30c0b8dea61452f",
+    "retrieved_utc": "2026-10-13T09:33:23.173332+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Load Base CalgaryDB and/or 1 or More Standard Indexes",
+      "Load a Single Advanced Index"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/calgary/calgary-loader-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.173332+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified.",
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+  ]
+}

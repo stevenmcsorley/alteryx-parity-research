@@ -1,0 +1,101 @@
+{
+  "id": "transform:arrange",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Arrange",
+  "category": "Transform",
+  "xml_tool_name": "AlteryxBasePluginsGui.Arrange.Arrange",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/transform/arrange-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "reference-observed"
+    }
+  ],
+  "outputs": [],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [
+      "KeyFields",
+      "KeyFields/Field",
+      "OutputFields",
+      "OutputFields/Columns",
+      "OutputFields/Data"
+    ],
+    "public_doc_sections": [
+      "Configure the Tool",
+      "Key Fields",
+      "Output Fields"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.Arrange.Arrange"
+    ],
+    "input_anchors": [
+      "Input"
+    ],
+    "output_anchors": [],
+    "config_elements": [
+      "KeyFields",
+      "KeyFields/Field",
+      "OutputFields",
+      "OutputFields/Columns",
+      "OutputFields/Data"
+    ],
+    "nodes_observed": 4
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Arrange Tool",
+    "sha256": "db46e242599271b0dd64b8e49b6a7069614cd20b48df12026a8583f8a76b4b51",
+    "retrieved_utc": "2026-10-13T09:33:25.452504+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Key Fields",
+      "Output Fields"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/transform/arrange-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:25.452504+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

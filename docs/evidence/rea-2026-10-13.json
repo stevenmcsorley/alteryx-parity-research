@@ -1,0 +1,61 @@
+{
+  "investigation": "REA static provenance inventory of reference engine binaries used for black-box conformance runs",
+  "date_utc": "2026-10-13",
+  "authorisation": "docs/AUTHORISATION.md",
+  "tool": "REA MCP (rea-pe-resources provider v1)",
+  "scope": "PE resource-table inventory and SHA-256 digests only; no disassembly, decompilation, or code extraction",
+  "artifacts": [
+    {
+      "evidence_id": "ev_1058db51f09478d31451af0da9c962993789054c018b9df5b43a7370cf6e0dca",
+      "file": "bin\\Plugins\\AlteryxBasePluginsEngine.dll",
+      "sha256": "405d1992bfa0b131b8e4d1ea7c0f34d5452d455c854214d4aceac3e654144d16",
+      "bytes": 2229432,
+      "format": "pe32-plus",
+      "resources": 2,
+      "confidence": "observed",
+      "limitations": [
+        "Static PE32/PE32+ type/name/language resource inventory; payloads other than RT_GROUP_ICON remain opaque.",
+        "Icon candidates are resource-table relationships. Language fallback, image decoding and actual shell/window loading are not observed.",
+        "Exact shared byte ranges are retained; non-identical overlapping resource structures or payloads are rejected."
+      ]
+    },
+    {
+      "evidence_id": "ev_265f86f721995b971f01249219339e74a5fca11b900db0467f7395a6a8fe657b",
+      "file": "bin\\AlteryxEngineCmd.exe",
+      "sha256": "407d07c411af0ec71ee2341ffd0be6e15ca93b1baa25ad05a671da9e1c3537ad",
+      "bytes": 264888,
+      "format": "pe32-plus",
+      "resources": 2,
+      "confidence": "observed",
+      "limitations": [
+        "Static PE32/PE32+ type/name/language resource inventory; payloads other than RT_GROUP_ICON remain opaque.",
+        "Icon candidates are resource-table relationships. Language fallback, image decoding and actual shell/window loading are not observed.",
+        "Exact shared byte ranges are retained; non-identical overlapping resource structures or payloads are rejected."
+      ]
+    },
+    {
+      "evidence_id": "ev_cb62fb3ea80c038fd945cc513eb74406b3a56304162fe12a00dfef6ca9ecd6f6",
+      "file": "bin\\Plugins\\AlteryxSpatialPluginsEngine.dll",
+      "sha256": "051829ffe17f895509d7cbaa4e0425dad5b40eec4b2188f837b88bdcf217ac31",
+      "bytes": 847032,
+      "format": "pe32-plus",
+      "resources": 2,
+      "confidence": "observed",
+      "limitations": [
+        "Static PE32/PE32+ type/name/language resource inventory; payloads other than RT_GROUP_ICON remain opaque.",
+        "Icon candidates are resource-table relationships. Language fallback, image decoding and actual shell/window loading are not observed.",
+        "Exact shared byte ranges are retained; non-identical overlapping resource structures or payloads are rejected."
+      ]
+    }
+  ],
+  "not_performed": [
+    {
+      "operation": "capture_process_scenario",
+      "reason": "REA reports Windows PTY process capture unavailable (capability_unavailable: descendant cleanup not verified). Requires Linux/macOS host; the reference product is Windows-only."
+    },
+    {
+      "operation": "managed/native code inspection",
+      "reason": "Deliberately out of scope until the authorisation reference and scope are recorded in docs/AUTHORISATION.md."
+    }
+  ]
+}

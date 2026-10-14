@@ -1,0 +1,5682 @@
+{
+  "notes": "Structural facts observed in workflow XML of an authorised reference installation: tool identifiers, connection anchor names, configuration element NAMES only. No values, data, text or binaries. Observed anchors are those used in shipped workflows and may be incomplete.",
+  "authorisation": "docs/AUTHORISATION.md",
+  "reference_build": "2026.2.0.8",
+  "scanned_utc": "2026-10-13T09:34:26+00:00",
+  "sample_languages": [
+    "en"
+  ],
+  "documents_scanned": 292,
+  "documents_by_source": {
+    "sample": 227,
+    "bundled-macro": 65
+  },
+  "parse_errors": 0,
+  "tool_identifiers_observed": 204,
+  "catalog_entries_observed": 127,
+  "catalog_entries_not_observed": [
+    "ab-testing:ab-analysis",
+    "ab-testing:ab-controls",
+    "ab-testing:ab-treatments",
+    "ab-testing:ab-trend",
+    "address:parse-address",
+    "address:reverse-geocoder",
+    "address:us-geocoder",
+    "address:us-zip9-coder",
+    "ai-tools:invoice-extractor",
+    "ai-tools:synthetic-input",
+    "behavior-analysis-deprecated:behavior-metainfo",
+    "behavior-analysis-deprecated:cluster-code",
+    "behavior-analysis-deprecated:compare-behavior",
+    "behavior-analysis-deprecated:create-profile",
+    "behavior-analysis-deprecated:detail-fields",
+    "behavior-analysis-deprecated:profile-comparison-report",
+    "behavior-analysis-deprecated:profile-detail-report",
+    "behavior-analysis-deprecated:profile-input",
+    "behavior-analysis-deprecated:profile-output",
+    "behavior-analysis-deprecated:profile-rank-report",
+    "computer-vision:barcode-tool",
+    "computer-vision:image-input",
+    "computer-vision:image-output",
+    "computer-vision:image-processing",
+    "computer-vision:image-profile",
+    "computer-vision:image-recognition",
+    "computer-vision:image-template",
+    "computer-vision:image-to-text",
+    "computer-vision:pdf-to-text",
+    "connect:connect-json-builder",
+    "connect:connect-output",
+    "connect:odbc-loader",
+    "connectors:adobe-analytics",
+    "connectors:amazon-s3-download",
+    "connectors:amazon-s3-upload",
+    "connectors:anaplan-input",
+    "connectors:anaplan-output",
+    "connectors:automation-anywhere-360",
+    "connectors:azure-data-lake-file-input",
+    "connectors:azure-data-lake-file-output",
+    "connectors:box-input",
+    "connectors:box-output",
+    "connectors:cognitive-services-text-analytics",
+    "connectors:dataverse-input",
+    "connectors:dataverse-output",
+    "connectors:dropbox-input",
+    "connectors:dropbox-output",
+    "connectors:dynamics-crm-input",
+    "connectors:dynamics-crm-output",
+    "connectors:google-analytics",
+    "connectors:google-analytics-4-input",
+    "connectors:google-bigquery-input",
+    "connectors:google-bigquery-output",
+    "connectors:google-drive-input",
+    "connectors:google-drive-output",
+    "connectors:google-sheets-input",
+    "connectors:google-sheets-output",
+    "connectors:marketo-append",
+    "connectors:marketo-input",
+    "connectors:marketo-output",
+    "connectors:microsoft-power-bi-output",
+    "connectors:mongodb-input",
+    "connectors:mongodb-output",
+    "connectors:onedrive-input",
+    "connectors:onedrive-output",
+    "connectors:outlook-365-input",
+    "connectors:power-automate",
+    "connectors:publish-to-tableau-server",
+    "connectors:salesforce-input",
+    "connectors:salesforce-output-new",
+    "connectors:servicenow-input",
+    "connectors:sharepoint-files-input",
+    "connectors:sharepoint-files-output",
+    "connectors:sharepoint-list-input",
+    "connectors:sharepoint-list-output",
+    "connectors:tableau-output",
+    "data-investigation:association-analysis",
+    "data-investigation:contingency-table",
+    "data-investigation:distribution-analysis",
+    "data-investigation:frequency-table",
+    "data-investigation:heat-plot",
+    "data-investigation:histogram",
+    "data-investigation:importance-weights",
+    "data-investigation:plot-of-means",
+    "data-investigation:scatterplot",
+    "data-investigation:violin-plot",
+    "demographic-analysis:allocate-append",
+    "demographic-analysis:allocate-input",
+    "demographic-analysis:allocate-metainfo",
+    "demographic-analysis:allocate-report",
+    "developer:apache-spark-code",
+    "developer:expect-equals",
+    "developer:github-commit",
+    "developer:github-get-last-commit",
+    "developer:json-schema",
+    "developer:license-api",
+    "developer:r",
+    "developer:runner",
+    "developer:server-api",
+    "in-database:browse-in-db",
+    "in-database:connect-in-db",
+    "in-database:data-stream-in",
+    "in-database:data-stream-out",
+    "in-database:dynamic-input-in-db",
+    "in-database:dynamic-output-in-db",
+    "in-database:filter-in-db",
+    "in-database:formula-in-db",
+    "in-database:join-in-db",
+    "in-database:macro-input-in-db",
+    "in-database:macro-output-in-db",
+    "in-database:sample-in-db",
+    "in-database:select-in-db",
+    "in-database:summarize-in-db",
+    "in-database:union-in-db",
+    "in-database:write-data-in-db",
+    "in-out:auto-insights-uploader",
+    "in-out:date-time-now",
+    "interface:dcm-connection",
+    "laboratory:connect-json-builder",
+    "laboratory:connect-output",
+    "laboratory:json-build",
+    "laboratory:jupyter-flow",
+    "laboratory:key-value-pair-extraction",
+    "laboratory:transpose-in-db",
+    "machine-learning:assisted-modeling",
+    "machine-learning:build-features",
+    "machine-learning:classification",
+    "machine-learning:data-health",
+    "machine-learning:feature-types",
+    "machine-learning:fit",
+    "machine-learning:machine-learning-predict",
+    "machine-learning:machine-learning-send",
+    "machine-learning:predict",
+    "machine-learning:regression",
+    "machine-learning:transformation",
+    "predictive-grouping:append-cluster",
+    "predictive-grouping:find-nearest-neighbors",
+    "predictive-grouping:k-centroids-cluster-analysis",
+    "predictive-grouping:k-centroids-diagnostics",
+    "predictive-grouping:mb-affinity",
+    "predictive-grouping:mb-inspect",
+    "predictive-grouping:mb-rules",
+    "predictive-grouping:multidimensional-scaling",
+    "predictive-grouping:principal-components",
+    "predictive:boosted-model",
+    "predictive:count-regression",
+    "predictive:cross-validation",
+    "predictive:datarobot-automodel",
+    "predictive:datarobot-predict",
+    "predictive:decision-tree",
+    "predictive:forest-model",
+    "predictive:gamma-regression",
+    "predictive:lift-chart",
+    "predictive:linear-regression",
+    "predictive:logistic-regression",
+    "predictive:model-coefficients",
+    "predictive:model-comparison",
+    "predictive:naive-bayes-classifier",
+    "predictive:nested-test",
+    "predictive:network-analysis",
+    "predictive:neural-network",
+    "predictive:score",
+    "predictive:spline-model",
+    "predictive:stepwise",
+    "predictive:support-vector-machine",
+    "predictive:survival-analysis",
+    "predictive:survival-score",
+    "predictive:test-of-means",
+    "predictive:variance-inflation-factors",
+    "preparation:rank",
+    "prescriptive:optimization",
+    "prescriptive:simulation-sampling",
+    "prescriptive:simulation-scoring",
+    "prescriptive:simulation-summary",
+    "reporting:email",
+    "reporting:report-header",
+    "sdk-examples:html-gui-library",
+    "spatial:non-overlap-drivetime",
+    "text-mining:named-entity-recognition",
+    "text-mining:part-of-speech-tagger",
+    "text-mining:sentiment-analysis",
+    "text-mining:text-classification",
+    "text-mining:text-pre-processing",
+    "text-mining:text-summary",
+    "text-mining:topic-modeling",
+    "text-mining:word-cloud",
+    "text-mining:zero-shot-text-classification",
+    "time-series:arima",
+    "time-series:ets",
+    "time-series:ts-compare",
+    "time-series:ts-covariate-forecast",
+    "time-series:ts-filler",
+    "time-series:ts-forecast",
+    "time-series:ts-forecast-factory",
+    "time-series:ts-model-factory",
+    "time-series:ts-plot"
+  ],
+  "tools": [
+    {
+      "tool_identifier": "..\\02 Build_a_Macro\\Supporting_Macros\\BatchMacro_FileFinder.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Action",
+        "Control"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": ".\\GoogleAnalytics.Retrieve_Access_Token.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input47"
+      ],
+      "output_anchors": [
+        "Data"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": ".\\LocOpt_RemoveNullFields.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 3,
+      "documents": 1,
+      "input_anchors": [
+        "Input1"
+      ],
+      "output_anchors": [
+        "Output11"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": ".\\Supporting_Macros\\BatchMacro_IndividualToolCount.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Control"
+      ],
+      "output_anchors": [
+        "Output10"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": ".\\Supporting_Macros\\GoogleAnalytics.Build_Data_Table.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input125"
+      ],
+      "output_anchors": [
+        "Data",
+        "Summary"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": ".\\Supporting_Macros\\GoogleAnalytics.Percent_Encoder.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": ".\\Supporting_Macros\\GoogleAnalytics.ResponseBuilder_TESTING.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input28"
+      ],
+      "output_anchors": [
+        "Output27"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": ".\\Supporting_Macros\\GoogleAnalytics.Retrieve_Access_Token.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input47"
+      ],
+      "output_anchors": [
+        "Data"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": ".\\Supporting_Macros\\Google_Analytics.Prep_Query_String.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input11"
+      ],
+      "output_anchors": [
+        "Output13"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": ".\\Supporting_Macros\\Iterative_Supply_and_Demand.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input Fields"
+      ],
+      "output_anchors": [
+        "Assigned Pairs",
+        "Left over Supply"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": ".\\Supporting_Macros\\LocOpt_GravityModel.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Competitor Locations",
+        "Demand Locations",
+        "Existing Locations",
+        "Potential Locations"
+      ],
+      "output_anchors": [
+        "NewLocations",
+        "Report"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": ".\\Supporting_Macros\\LocOpt_MinimizeDistance.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Demand Locations",
+        "Existing Locations",
+        "Potential Locations"
+      ],
+      "output_anchors": [
+        "New Locations",
+        "Report"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": ".\\_CReW_ExpectEqual.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Action",
+        "Actual",
+        "Expected"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2020.2"
+      ]
+    },
+    {
+      "tool_identifier": ".\\_SortAllFieldMacro.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 1,
+      "input_anchors": [
+        "Control",
+        "Input2"
+      ],
+      "output_anchors": [
+        "Output6"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2020.2"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.APIOutput.APIOutput",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:api-output"
+      ],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:select"
+      ],
+      "nodes": 413,
+      "documents": 110,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "CommaDecimal",
+        "OrderChanged",
+        "SelectFields",
+        "SelectFields/SelectField"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.2",
+        "2019.3",
+        "2019.4",
+        "2020.1",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2023.1",
+        "2023.2",
+        "2024.1",
+        "2024.2",
+        "2025.1",
+        "2025.2",
+        "2026.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.AppendFields.AppendFields",
+      "kind": "plugin",
+      "catalog_ids": [
+        "join:append-fields"
+      ],
+      "nodes": 46,
+      "documents": 28,
+      "input_anchors": [
+        "Action",
+        "Source",
+        "Targets"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "CartesianMode",
+        "SelectConfiguration",
+        "SelectConfiguration/Configuration"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2019.4",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Arrange.Arrange",
+      "kind": "plugin",
+      "catalog_ids": [
+        "transform:arrange"
+      ],
+      "nodes": 4,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "KeyFields",
+        "KeyFields/Field",
+        "OutputFields",
+        "OutputFields/Columns",
+        "OutputFields/Data"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.AutoField.AutoField",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:auto-field"
+      ],
+      "nodes": 6,
+      "documents": 5,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Fields",
+        "Fields/Field"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "2025.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.BasicDataProfile.BasicDataProfile",
+      "kind": "plugin",
+      "catalog_ids": [
+        "data-investigation:basic-data-profile"
+      ],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "IsMetric",
+        "Limit_UniqueCount",
+        "Limit_UniqueValuesSize"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.BlobConvert.BlobConvert",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:blob-convert"
+      ],
+      "nodes": 11,
+      "documents": 2,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "ToBlob",
+        "from_Field",
+        "from_Mode",
+        "from_textCodePage",
+        "to_Field",
+        "to_Mode",
+        "to_textCodePage"
+      ],
+      "doc_versions": [
+        "2020.2",
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.BlobInput.BlobInput",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:blob-input"
+      ],
+      "nodes": 5,
+      "documents": 3,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "BlobChunkSize",
+        "FileName",
+        "ModifyFilename_Field",
+        "ModifyFilename_StopOnError",
+        "ModifyMethod",
+        "SplitBlobs"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.BlobOutput.BlobOutput",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:blob-output"
+      ],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "BlobField",
+        "FileName",
+        "ModifyFilename_Field",
+        "ModifyMethod"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.BlockUntilDone.BlockUntilDone",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:block-until-done"
+      ],
+      "nodes": 3,
+      "documents": 3,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output",
+        "Output2",
+        "Output3"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.BrowseV2.BrowseV2",
+      "kind": "plugin",
+      "catalog_ids": [
+        "in-out:browse"
+      ],
+      "nodes": 276,
+      "documents": 110,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Layout",
+        "Layout/View1",
+        "Layout/View2",
+        "Layout/ViewMode",
+        "Layout/ViewSize",
+        "TempFile",
+        "TempFileDataProfiling"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "2024.1",
+        "2024.2",
+        "2025.1",
+        "2025.2",
+        "2026.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.CrossTab.CrossTab",
+      "kind": "plugin",
+      "catalog_ids": [
+        "transform:cross-tab"
+      ],
+      "nodes": 60,
+      "documents": 27,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "DataField",
+        "GroupFields",
+        "GroupFields/Field",
+        "HeaderField",
+        "Methods",
+        "Methods/FieldSize",
+        "Methods/Method",
+        "Methods/Separator"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.3",
+        "2022.1",
+        "2022.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.DataCleansePro.DataCleansePro",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:data-cleanse-pro"
+      ],
+      "nodes": 9,
+      "documents": 6,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "CheckBox_ModifyCase",
+        "Checkbox_ReplaceNumericColumns",
+        "Checkbox_ReplaceStringColumns",
+        "Exceptions",
+        "Fields",
+        "Fields/Field",
+        "Letters",
+        "ModifyCase",
+        "Numbers",
+        "Punctuations",
+        "RemoveAllWhitespaces",
+        "RemoveHTMLTags",
+        "RemoveInvisibleCharacters",
+        "RemoveLeadingAndTrailingWhitespace",
+        "RemoveLetters",
+        "RemoveNullColumns",
+        "RemoveNullRows",
+        "RemoveNumbers",
+        "RemovePunctuation",
+        "RemoveTabsLineBreaksAndDuplicates",
+        "ReplaceWithBlanks",
+        "ReplaceWithZero",
+        "radioButton_ReplaceBlankswithNulls",
+        "radioButton_ReplaceNullwithBlanks",
+        "radioButton_ReplaceNullwithZero",
+        "radioButton_ReplaceZerowithNulls"
+      ],
+      "doc_versions": [
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.DateTime.DateTime",
+      "kind": "plugin",
+      "catalog_ids": [
+        "parse:datetime"
+      ],
+      "nodes": 10,
+      "documents": 4,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Format",
+        "InputFieldName",
+        "IsFrom",
+        "Language",
+        "OutputFieldName"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.DbFileInput.DbFileInput",
+      "kind": "plugin",
+      "catalog_ids": [
+        "in-out:input-data"
+      ],
+      "nodes": 190,
+      "documents": 114,
+      "input_anchors": [
+        "Action"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "File",
+        "FormatSpecificOptions",
+        "FormatSpecificOptions/AllStrings",
+        "FormatSpecificOptions/AllowLongLines",
+        "FormatSpecificOptions/AllowShareWrite",
+        "FormatSpecificOptions/AllowShortLines",
+        "FormatSpecificOptions/ChildValues",
+        "FormatSpecificOptions/CodePage",
+        "FormatSpecificOptions/Delimeter",
+        "FormatSpecificOptions/FieldLen",
+        "FormatSpecificOptions/FirstRowData",
+        "FormatSpecificOptions/HeaderRow",
+        "FormatSpecificOptions/IgnoreErrors",
+        "FormatSpecificOptions/IgnoreQuotes",
+        "FormatSpecificOptions/ImportLine",
+        "FormatSpecificOptions/LineEndStyle",
+        "FormatSpecificOptions/NumWarnings",
+        "FormatSpecificOptions/OuterXML",
+        "FormatSpecificOptions/ParseRoot",
+        "FormatSpecificOptions/Path",
+        "FormatSpecificOptions/QuoteRecordBreak",
+        "FormatSpecificOptions/ReadCentroids",
+        "FormatSpecificOptions/SingleThreadRead",
+        "FormatSpecificOptions/TrimWhiteSpace",
+        "FormatSpecificOptions/XmlElement",
+        "Passwords"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2023.1",
+        "2023.2",
+        "2024.1",
+        "2024.2",
+        "2025.1",
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.DbFileOutput.DbFileOutput",
+      "kind": "plugin",
+      "catalog_ids": [
+        "in-out:output-data"
+      ],
+      "nodes": 22,
+      "documents": 14,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "File",
+        "FormatSpecificOptions",
+        "FormatSpecificOptions/CodePage",
+        "FormatSpecificOptions/Delimeter",
+        "FormatSpecificOptions/ForceQuotes",
+        "FormatSpecificOptions/HeaderRow",
+        "FormatSpecificOptions/LineEndStyle",
+        "FormatSpecificOptions/NoSpatialIndex",
+        "FormatSpecificOptions/OutputOption",
+        "FormatSpecificOptions/SaveSource",
+        "FormatSpecificOptions/SkipFieldNames",
+        "FormatSpecificOptions/WriteBOM",
+        "FormatSpecificOptions/WriteCompatibleVersion",
+        "KeepField",
+        "MultiFile",
+        "MultiFileField",
+        "MultiFileType",
+        "Passwords"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "2022.2",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Detour.Detour",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:detour"
+      ],
+      "nodes": 42,
+      "documents": 25,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Left",
+        "Right"
+      ],
+      "config_elements": [
+        "DetourRight"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.3",
+        "2020.1",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "2024.2",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.DetourEnd.DetourEnd",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:detour-end"
+      ],
+      "nodes": 44,
+      "documents": 24,
+      "input_anchors": [
+        "Left",
+        "Right"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.3",
+        "2020.1",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "2024.2",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Directory.Directory",
+      "kind": "plugin",
+      "catalog_ids": [
+        "in-out:directory"
+      ],
+      "nodes": 16,
+      "documents": 12,
+      "input_anchors": [
+        "Action"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Directory",
+        "FileSpec",
+        "IncludeSubDirs"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2023.2",
+        "2024.2",
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.DynamicInput.DynamicInput",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:dynamic-input"
+      ],
+      "nodes": 5,
+      "documents": 2,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "InputConfiguration",
+        "InputConfiguration/Configuration",
+        "Mode",
+        "Modifications",
+        "Modifications/Modify",
+        "ReadList_Field",
+        "ReadList_Type"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2024.2"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.DynamicRename.DynamicRename",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:dynamic-rename"
+      ],
+      "nodes": 24,
+      "documents": 12,
+      "input_anchors": [
+        "Action",
+        "Source",
+        "Targets"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "AddPrefixSuffix",
+        "AddPrefixSuffix/Text",
+        "AddPrefixSuffix/Type",
+        "Expression",
+        "Fields",
+        "Fields/Field",
+        "FirstRow",
+        "FirstRow/OnError",
+        "NamesFromMetadata",
+        "NamesFromMetadata/ChangeFields",
+        "NamesFromMetadata/OnError",
+        "NamesFromRows",
+        "NamesFromRows/InputMode",
+        "NamesFromRows/NewName",
+        "NamesFromRows/OldName",
+        "NamesFromRows/OnError",
+        "RemovePrefixSuffix",
+        "RemovePrefixSuffix/OnError",
+        "RemovePrefixSuffix/Text",
+        "RemovePrefixSuffix/Type",
+        "RenameMode"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.3",
+        "2019.4",
+        "2022.1",
+        "2025.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.DynamicReplace.DynamicReplace",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:dynamic-replace"
+      ],
+      "nodes": 6,
+      "documents": 4,
+      "input_anchors": [
+        "Expressions",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "FieldTypeMode",
+        "Field_Expression",
+        "Field_FieldName",
+        "Field_OutputValue",
+        "OutputFieldType",
+        "Unmatched_Behavior",
+        "ValueIsExpression"
+      ],
+      "doc_versions": [
+        "2019.2",
+        "2022.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.DynamicSelect.DynamicSelect",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:dynamic-select"
+      ],
+      "nodes": 45,
+      "documents": 15,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Expression",
+        "FieldTypes",
+        "Mode"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.3",
+        "2020.2",
+        "2022.1",
+        "2023.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.ExpectEqual.ExpectEqual",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 3,
+      "documents": 1,
+      "input_anchors": [
+        "Actual",
+        "Expected"
+      ],
+      "output_anchors": [],
+      "config_elements": [],
+      "doc_versions": [
+        "2024.2"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.FieldInfo.FieldInfo",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:field-info"
+      ],
+      "nodes": 14,
+      "documents": 10,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.3",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2024.2",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Filter.Filter",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:filter"
+      ],
+      "nodes": 195,
+      "documents": 76,
+      "input_anchors": [
+        "Action",
+        "Input",
+        "Question"
+      ],
+      "output_anchors": [
+        "False",
+        "True"
+      ],
+      "config_elements": [
+        "Expression",
+        "Mode",
+        "Simple",
+        "Simple/Field",
+        "Simple/Operands",
+        "Simple/Operator"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.2",
+        "2019.3",
+        "2019.4",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2022.3",
+        "2023.1",
+        "2023.2",
+        "2024.2",
+        "2025.1",
+        "2025.2",
+        "2026.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.FindReplace.FindReplace",
+      "kind": "plugin",
+      "catalog_ids": [
+        "join:find-replace"
+      ],
+      "nodes": 7,
+      "documents": 4,
+      "input_anchors": [
+        "Source",
+        "Targets"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "FieldFind",
+        "FieldSearch",
+        "FindMode",
+        "MatchWholeWord",
+        "NoCase",
+        "ReplaceAppendFields",
+        "ReplaceAppendFields/Field",
+        "ReplaceFoundField",
+        "ReplaceMode",
+        "ReplaceMultipleFound"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Formula.Formula",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:formula"
+      ],
+      "nodes": 375,
+      "documents": 101,
+      "input_anchors": [
+        "Action",
+        "Input",
+        "Question"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "FormulaFields",
+        "FormulaFields/FormulaField"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.2",
+        "2019.3",
+        "2019.4",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2022.3",
+        "2023.1",
+        "2023.2",
+        "2024.1",
+        "2024.2",
+        "2025.1",
+        "2025.2",
+        "2026.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch",
+      "kind": "plugin",
+      "catalog_ids": [
+        "join:fuzzy-match"
+      ],
+      "nodes": 16,
+      "documents": 6,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "GenerateKeys",
+        "MatchFields",
+        "MatchFields/MatchField",
+        "MatchThreshold",
+        "MergeMode",
+        "OutputKey",
+        "OutputMakeGroup",
+        "OutputScore",
+        "OutputUnmatched",
+        "RecordIdField",
+        "SourceIdField"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.2"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.GenerateRows.GenerateRows",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:generate-rows"
+      ],
+      "nodes": 29,
+      "documents": 15,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "CreateField_Name",
+        "CreateField_Size",
+        "CreateField_Type",
+        "Expression_Cond",
+        "Expression_Init",
+        "Expression_Loop",
+        "RecordCount",
+        "UpdateField",
+        "UpdateField_Name"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.3",
+        "2022.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.JSONParse.JSONParse",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:json-parse"
+      ],
+      "nodes": 20,
+      "documents": 10,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "IncludeInOutput",
+        "JSON_Field",
+        "SingleField"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Join.Join",
+      "kind": "plugin",
+      "catalog_ids": [
+        "join:join"
+      ],
+      "nodes": 169,
+      "documents": 68,
+      "input_anchors": [
+        "Left",
+        "Right"
+      ],
+      "output_anchors": [
+        "Join",
+        "Left",
+        "Right"
+      ],
+      "config_elements": [
+        "JoinInfo",
+        "JoinInfo/Field",
+        "SelectConfiguration",
+        "SelectConfiguration/Configuration"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.3",
+        "2019.4",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2023.1",
+        "2023.2",
+        "2024.2",
+        "2025.1",
+        "2026.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.JoinMultiple.JoinMultiple",
+      "kind": "plugin",
+      "catalog_ids": [
+        "join:join-multiple"
+      ],
+      "nodes": 32,
+      "documents": 22,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "CartesianMode",
+        "JoinByRecPos",
+        "JoinFields",
+        "JoinFields/JoinInfo",
+        "OutputJoinOnly",
+        "SelectConfiguration",
+        "SelectConfiguration/Configuration"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.3",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.MacroInput.MacroInput",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:macro-input"
+      ],
+      "nodes": 100,
+      "documents": 66,
+      "input_anchors": [],
+      "output_anchors": [
+        "Output",
+        "Question"
+      ],
+      "config_elements": [
+        "Abbrev",
+        "FileInput",
+        "FileInput/Configuration",
+        "Name",
+        "Optional",
+        "ShowFieldMap",
+        "TextInput",
+        "TextInput/Configuration",
+        "UseFileInput"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.2",
+        "2019.3",
+        "2019.4",
+        "2020.1",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "2024.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.MacroOutput.MacroOutput",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:macro-output"
+      ],
+      "nodes": 136,
+      "documents": 77,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Abbrev",
+        "Name"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.2",
+        "2019.3",
+        "2019.4",
+        "2020.1",
+        "2022.1",
+        "2022.2",
+        "2022.3",
+        "2023.2",
+        "2024.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.MakeColumns.MakeColumns",
+      "kind": "plugin",
+      "catalog_ids": [
+        "transform:make-columns"
+      ],
+      "nodes": 5,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "GroupFields",
+        "GroupFields/Field",
+        "IsHorizontal",
+        "NumColumns"
+      ],
+      "doc_versions": [
+        "2023.2"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.MakeGroup.MakeGroup",
+      "kind": "plugin",
+      "catalog_ids": [
+        "join:make-group"
+      ],
+      "nodes": 3,
+      "documents": 2,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Key1st",
+        "Key2nd"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Message.Message",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:message"
+      ],
+      "nodes": 58,
+      "documents": 25,
+      "input_anchors": [
+        "Action",
+        "Input",
+        "Question"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Filter",
+        "MessageExpression",
+        "Priority",
+        "Transient",
+        "Type",
+        "When"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.3",
+        "2019.4",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2024.2",
+        "2025.2",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.MultiFieldFormula.MultiFieldFormula",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:multi-field-formula"
+      ],
+      "nodes": 20,
+      "documents": 14,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "ChangeFieldType",
+        "CopyOutput",
+        "Expression",
+        "FieldType",
+        "Fields",
+        "Fields/Field",
+        "NewFieldAddOn",
+        "NewFieldAddOnPos",
+        "OutputFieldType"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.3",
+        "2020.1",
+        "2022.1",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.MultiRowFormula.MultiRowFormula",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:multi-row-formula"
+      ],
+      "nodes": 41,
+      "documents": 12,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "CreateField_Name",
+        "CreateField_Size",
+        "CreateField_Type",
+        "Expression",
+        "GroupByFields",
+        "GroupByFields/Field",
+        "NumRows",
+        "OtherRows",
+        "UpdateField",
+        "UpdateField_Name"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "2023.2",
+        "2024.2",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.PearsonCorrelation.PearsonCorrelation",
+      "kind": "plugin",
+      "catalog_ids": [
+        "data-investigation:pearson-correlation"
+      ],
+      "nodes": 15,
+      "documents": 2,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Covariance",
+        "Fields",
+        "Fields/Field"
+      ],
+      "doc_versions": [
+        "2024.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Rank.Rank",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 7,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "GroupFields",
+        "GroupFields/Field",
+        "RankingModes",
+        "RankingModes/Mode",
+        "SortInfo",
+        "SortInfo/Field"
+      ],
+      "doc_versions": [
+        "2024.2"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.RecordID.RecordID",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:record-id"
+      ],
+      "nodes": 62,
+      "documents": 33,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "FieldName",
+        "FieldSize",
+        "FieldType",
+        "GroupFields",
+        "GroupFields/Field",
+        "Position",
+        "StartValue"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.2",
+        "2019.3",
+        "2019.4",
+        "2020.2",
+        "2022.1",
+        "2023.2",
+        "2024.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.RegEx.RegEx",
+      "kind": "plugin",
+      "catalog_ids": [
+        "parse:regex"
+      ],
+      "nodes": 42,
+      "documents": 15,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "CaseInsensitve",
+        "Field",
+        "Match",
+        "Match/ErrorUnmatched",
+        "Match/Field",
+        "Method",
+        "ParseComplex",
+        "ParseComplex/Field",
+        "ParseSimple",
+        "ParseSimple/ErrorHandling",
+        "ParseSimple/NumFields",
+        "ParseSimple/RootName",
+        "ParseSimple/SplitToRows",
+        "RegExExpression",
+        "Replace",
+        "Replace/CopyUnmatched"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2019.2",
+        "2022.1",
+        "2023.1",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.RunCommand.RunCommand",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:run-command"
+      ],
+      "nodes": 4,
+      "documents": 4,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Arguments",
+        "InputConfiguration",
+        "InputConfiguration/Configuration",
+        "OutputConfiguration",
+        "OutputConfiguration/Configuration",
+        "ProgramName",
+        "RunMinimized",
+        "RunSilent",
+        "WorkingDir"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.3",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.RunningTotal.RunningTotal",
+      "kind": "plugin",
+      "catalog_ids": [
+        "transform:running-total"
+      ],
+      "nodes": 5,
+      "documents": 2,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "GroupByFields",
+        "GroupByFields/Field",
+        "RunningTotalFields",
+        "RunningTotalFields/Field"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Sample.Sample",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:sample"
+      ],
+      "nodes": 49,
+      "documents": 32,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "GroupFields",
+        "GroupFields/Field",
+        "Mode",
+        "N"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.3",
+        "2019.4",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "2024.1",
+        "2026.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Sort.Sort",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:sort"
+      ],
+      "nodes": 87,
+      "documents": 47,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "SortInfo",
+        "SortInfo/Field"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.3",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "2024.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Test.Test",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:test"
+      ],
+      "nodes": 7,
+      "documents": 4,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "DontReportSubsequent",
+        "Tests",
+        "Tests/Test"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2024.2",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.TextInput.TextInput",
+      "kind": "plugin",
+      "catalog_ids": [
+        "in-out:text-input"
+      ],
+      "nodes": 244,
+      "documents": 119,
+      "input_anchors": [
+        "Action"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Data",
+        "Data/r",
+        "Fields",
+        "Fields/Field",
+        "NumRows"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2019.2",
+        "2022.1",
+        "2022.2",
+        "2022.3",
+        "2023.1",
+        "2023.2",
+        "2024.1",
+        "2024.2",
+        "2025.1",
+        "2025.2",
+        "2026.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.TextToColumns.TextToColumns",
+      "kind": "plugin",
+      "catalog_ids": [
+        "parse:text-to-columns"
+      ],
+      "nodes": 29,
+      "documents": 17,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Delimeters",
+        "ErrorHandling",
+        "Field",
+        "Flags",
+        "NumFields",
+        "RootName"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2019.2",
+        "2022.1",
+        "2024.1",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Throttle.Throttle",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:throttle"
+      ],
+      "nodes": 2,
+      "documents": 2,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "RecordsPerMinute"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.2"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Tile.Tile",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:tile"
+      ],
+      "nodes": 15,
+      "documents": 7,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "EqualRecords",
+        "EqualRecords/EqualRecordsGroupField",
+        "EqualRecords/EqualRecordsSortField",
+        "EqualRecords/NumTiles",
+        "EqualSum",
+        "EqualSum/NumTiles",
+        "EqualSum/SumField",
+        "GroupFields",
+        "GroupFields/Field",
+        "Manual",
+        "Manual/Cutoffs",
+        "Manual/Field",
+        "Method",
+        "SmartTile",
+        "SmartTile/Field",
+        "SmartTile/NameField",
+        "UniqueValue",
+        "UniqueValue/DontSort",
+        "UniqueValue/UniqueFields"
+      ],
+      "doc_versions": [
+        "2019.1",
+        "2019.3",
+        "2022.1",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Transpose.Transpose",
+      "kind": "plugin",
+      "catalog_ids": [
+        "transform:transpose"
+      ],
+      "nodes": 63,
+      "documents": 27,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "DataFields",
+        "DataFields/Field",
+        "ErrorWarn",
+        "KeyFields",
+        "KeyFields/Field"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.3",
+        "2019.4",
+        "2020.2",
+        "2022.1",
+        "2023.1",
+        "2023.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Union.Union",
+      "kind": "plugin",
+      "catalog_ids": [
+        "join:union"
+      ],
+      "nodes": 115,
+      "documents": 49,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "AutoResetMode",
+        "ByName_ErrorMode",
+        "ByName_OutputMode",
+        "Mode",
+        "MultiMetaInfo",
+        "MultiMetaInfo/MetaInfo",
+        "OutputOrder",
+        "OutputOrder/Connection",
+        "SetOutputOrder"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.3",
+        "2019.4",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.Unique.Unique",
+      "kind": "plugin",
+      "catalog_ids": [
+        "preparation:unique"
+      ],
+      "nodes": 24,
+      "documents": 12,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Unique"
+      ],
+      "config_elements": [
+        "UniqueFields",
+        "UniqueFields/Field"
+      ],
+      "doc_versions": [
+        "2019.3",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxBasePluginsGui.XMLParse.XMLParse",
+      "kind": "plugin",
+      "catalog_ids": [
+        "parse:xml-parse"
+      ],
+      "nodes": 12,
+      "documents": 4,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "ChildValues",
+        "IgnoreErrors",
+        "OuterXML",
+        "ParseRoot",
+        "XMLElement",
+        "XMLField"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2025.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxCASSGui.CASS.CASS",
+      "kind": "plugin",
+      "catalog_ids": [
+        "address:cass"
+      ],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "AllCAPS",
+        "CASSReport",
+        "CASSReport/Address",
+        "CASSReport/City",
+        "CASSReport/Company",
+        "CASSReport/ListName",
+        "CASSReport/Name",
+        "CASSReport/OutputFile",
+        "CASSReport/ProcessorName",
+        "CASSReport/State",
+        "CASSReport/ZIP",
+        "InputFields",
+        "InputFields/Address",
+        "InputFields/City",
+        "InputFields/LastLineOneField",
+        "InputFields/State",
+        "InputFields/ZIP",
+        "OutputFields",
+        "OutputFields/OutputField",
+        "SOAReport",
+        "SOAReport/Address",
+        "SOAReport/CPC_Num",
+        "SOAReport/Name",
+        "SOAReport/OutputFile"
+      ],
+      "doc_versions": [
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxConnectorGui.Download.Download",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:download"
+      ],
+      "nodes": 16,
+      "documents": 12,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "CodePage",
+        "EncodeURLs",
+        "Headers",
+        "Headers/Fields",
+        "Headers/NameValues",
+        "OutputMode",
+        "Password",
+        "Payload",
+        "Payload/ComposeFields",
+        "Payload/ComposeNameValues",
+        "Payload/ContentType",
+        "Payload/HTTPAction",
+        "Payload/QueryStringBodyMode",
+        "Timeout",
+        "URLField",
+        "UserName",
+        "numConnections"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Action.Action",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:action"
+      ],
+      "nodes": 470,
+      "documents": 79,
+      "input_anchors": [
+        "Condition",
+        "Question"
+      ],
+      "output_anchors": [
+        "Action"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.2",
+        "2019.3",
+        "2020.1",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2022.3",
+        "2023.1",
+        "2023.2",
+        "2024.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Condition.Condition",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:condition"
+      ],
+      "nodes": 34,
+      "documents": 19,
+      "input_anchors": [
+        "Question"
+      ],
+      "output_anchors": [
+        "False Condition",
+        "True Condition"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2019.1",
+        "2022.1",
+        "2023.2",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.ControlContainer.ControlContainer",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:control-container"
+      ],
+      "nodes": 13,
+      "documents": 1,
+      "input_anchors": [
+        "Control"
+      ],
+      "output_anchors": [
+        "Log"
+      ],
+      "config_elements": [
+        "Caption",
+        "Disabled",
+        "Folded",
+        "Style",
+        "SuppressErrorsDesignTime",
+        "SuppressErrorsRunTime"
+      ],
+      "doc_versions": [
+        "2025.2"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Error.Error",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:error-message"
+      ],
+      "nodes": 51,
+      "documents": 18,
+      "input_anchors": [
+        "Question"
+      ],
+      "output_anchors": [],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2019.1",
+        "2022.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.HtmlBox.HtmlBox",
+      "kind": "plugin",
+      "catalog_ids": [
+        "documentation:explorer-box"
+      ],
+      "nodes": 33,
+      "documents": 17,
+      "input_anchors": [],
+      "output_anchors": [],
+      "config_elements": [
+        "HideAddressBar",
+        "URL"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2025.1",
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.CheckBoxGroup.CheckBoxGroup",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:check-box"
+      ],
+      "nodes": 76,
+      "documents": 24,
+      "input_anchors": [],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.3",
+        "2022.1",
+        "2022.2",
+        "2022.3",
+        "2023.2",
+        "2024.2",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.ControlParam.ControlParam",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:control-parameter"
+      ],
+      "nodes": 12,
+      "documents": 8,
+      "input_anchors": [],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2019.3",
+        "2020.1",
+        "2020.2",
+        "2022.1",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.Date.Date",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:date"
+      ],
+      "nodes": 12,
+      "documents": 6,
+      "input_anchors": [],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.DropDownListBox.DropDown",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:drop-down"
+      ],
+      "nodes": 34,
+      "documents": 20,
+      "input_anchors": [
+        "Question Input"
+      ],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "2022.2",
+        "2023.1",
+        "2024.2",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.DropDownListBox.ListBox",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:list-box"
+      ],
+      "nodes": 18,
+      "documents": 14,
+      "input_anchors": [
+        "Question Input"
+      ],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.3",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.FileBrowse.FileBrowse",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:file-browse"
+      ],
+      "nodes": 18,
+      "documents": 12,
+      "input_anchors": [],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "2022.1",
+        "2022.2",
+        "2022.3",
+        "2025.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.FolderBrowse.FolderBrowse",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:folder-browse"
+      ],
+      "nodes": 3,
+      "documents": 3,
+      "input_anchors": [],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "2022.1",
+        "2022.3"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.Label.Label",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 75,
+      "documents": 33,
+      "input_anchors": [],
+      "output_anchors": [],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.2",
+        "2019.3",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.LabelGroup.LabelGroup",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 32,
+      "documents": 14,
+      "input_anchors": [],
+      "output_anchors": [],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.3",
+        "2022.1",
+        "2022.2",
+        "2023.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.Link.Link",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 9,
+      "documents": 9,
+      "input_anchors": [],
+      "output_anchors": [],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.Map.Map",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:map"
+      ],
+      "nodes": 8,
+      "documents": 5,
+      "input_anchors": [
+        "Question Input"
+      ],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "2022.1",
+        "2022.2",
+        "2025.1",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.NumericUpDown.NumericUpDown",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:numeric-up-down"
+      ],
+      "nodes": 64,
+      "documents": 28,
+      "input_anchors": [],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.3",
+        "2022.1",
+        "2023.1",
+        "2023.2",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.RadioButtonGroup.RadioButtonGroup",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:radio-button"
+      ],
+      "nodes": 109,
+      "documents": 28,
+      "input_anchors": [],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.3",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.Tab.Tab",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 172,
+      "documents": 111,
+      "input_anchors": [],
+      "output_anchors": [],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.2",
+        "2019.3",
+        "2019.4",
+        "2020.1",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2022.3",
+        "2023.1",
+        "2023.2",
+        "2024.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.TextBox.QuestionTextBox",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:text-box"
+      ],
+      "nodes": 59,
+      "documents": 24,
+      "input_anchors": [],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2019.2",
+        "2020.1",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2022.3",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.TextBox.TextBox",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 9,
+      "documents": 1,
+      "input_anchors": [],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.Questions.Tree.Tree",
+      "kind": "plugin",
+      "catalog_ids": [
+        "interface:tree"
+      ],
+      "nodes": 17,
+      "documents": 7,
+      "input_anchors": [],
+      "output_anchors": [
+        "Question"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0",
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.TextBox.TextBox",
+      "kind": "plugin",
+      "catalog_ids": [
+        "documentation:comment"
+      ],
+      "nodes": 3557,
+      "documents": 262,
+      "input_anchors": [],
+      "output_anchors": [],
+      "config_elements": [
+        "BG_Image",
+        "FillColor",
+        "Font",
+        "Justification",
+        "Shape",
+        "Text",
+        "TextColor"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.2",
+        "2019.3",
+        "2022.1",
+        "2022.2",
+        "2023.1",
+        "2023.2",
+        "2024.1",
+        "2024.2",
+        "2025.1",
+        "2025.2",
+        "2026.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxGuiToolkit.ToolContainer.ToolContainer",
+      "kind": "plugin",
+      "catalog_ids": [
+        "documentation:tool-container"
+      ],
+      "nodes": 428,
+      "documents": 145,
+      "input_anchors": [
+        "Action"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Caption",
+        "Disabled",
+        "Folded",
+        "Style"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.2",
+        "2019.3",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2023.1",
+        "2023.2",
+        "2024.1",
+        "2024.2",
+        "2025.1",
+        "2025.2",
+        "2026.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxReportChartGui.AlteryxReportChartGui",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 5,
+      "documents": 4,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "AllowMultiple",
+        "ChartType",
+        "ChartTypeStyles",
+        "CombinationChart",
+        "CurrentKnownFields",
+        "CurrentKnownFields/Field",
+        "GeneralStyles",
+        "GroupingFields",
+        "LabelField",
+        "OAxis",
+        "SeriesList",
+        "SeriesList/Series1",
+        "SeriesList/Series2",
+        "SeriesList/Series3",
+        "Styles",
+        "StylesSeries1",
+        "StylesSeries1/SeriesFormulas",
+        "StylesSeries2",
+        "StylesSeries2/SeriesFormulas",
+        "StylesSeries3",
+        "StylesSeries3/SeriesFormulas",
+        "TitleStyles",
+        "WatermarkStyles",
+        "XAxis",
+        "YAxis"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.2"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.Buffer.Buffer",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:buffer"
+      ],
+      "nodes": 8,
+      "documents": 3,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "BufferSizeSource",
+        "BufferSizeSpecificValue",
+        "GeneralizeToOnePercent",
+        "IncludeSourceInOutput",
+        "SpatialObjectField",
+        "Units"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "2022.2"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.CreatePoints.CreatePoints",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:create-points"
+      ],
+      "nodes": 20,
+      "documents": 18,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Fields",
+        "Mode"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "2022.2",
+        "2025.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.Distance.Distance",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:distance"
+      ],
+      "nodes": 9,
+      "documents": 6,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "AllowReverseRoute",
+        "DistToInsideEdge",
+        "DriveDistanceOnly",
+        "DriveTimeDataSet",
+        "IsMetric",
+        "MaxDriveTime",
+        "OutputCardinalDirection",
+        "OutputDirectionDegrees",
+        "OutputDistance",
+        "OutputDriveTimeAndDistance",
+        "OutputUnits",
+        "ReturnNearest",
+        "SortForSpeed",
+        "SpatialObjDest",
+        "SpatialObjSource"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "2025.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.FindNearest.FindNearest",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:find-nearest"
+      ],
+      "nodes": 11,
+      "documents": 8,
+      "input_anchors": [
+        "Targets",
+        "Universe"
+      ],
+      "output_anchors": [
+        "Matched"
+      ],
+      "config_elements": [
+        "DriveTimeDataSet",
+        "HowMany",
+        "Ignore0",
+        "MaxDistance",
+        "MaxDistanceUnits",
+        "SelectConfiguration",
+        "SelectConfiguration/Configuration",
+        "Target",
+        "Universe",
+        "Universe/File",
+        "Universe/Passwords"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.Generalize.Generalize",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:generalize"
+      ],
+      "nodes": 4,
+      "documents": 3,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "IncludeSourceInOutput",
+        "Layerwise",
+        "SpatialObjectField",
+        "Threshold",
+        "Units"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.2",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.MakeGrid.MakeGrid",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:make-grid"
+      ],
+      "nodes": 3,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "ClipToPoly",
+        "GridPerObject",
+        "GridSize",
+        "SpatialObjIn",
+        "Units"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.MapInput.MapInput",
+      "kind": "plugin",
+      "catalog_ids": [
+        "in-out:map-input"
+      ],
+      "nodes": 12,
+      "documents": 6,
+      "input_anchors": [
+        "Action"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "BaseMap",
+        "Bounds",
+        "Bounds/MaxX",
+        "Bounds/MaxY",
+        "Bounds/MinX",
+        "Bounds/MinY",
+        "Data",
+        "Data/r",
+        "Fields",
+        "Fields/Field",
+        "JSMapSettings",
+        "Mode",
+        "NumRows",
+        "ReferenceFile",
+        "ReferenceFileByteCount",
+        "ReferenceFileLabelField",
+        "ReferenceFileRecordCount",
+        "SelectionStack"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.2",
+        "2025.1",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.PolyBuild.PolyBuild",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:poly-build"
+      ],
+      "nodes": 9,
+      "documents": 5,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "BuildType",
+        "GroupField",
+        "SequenceField",
+        "SpatialObj"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "2025.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.PolySplit.PolySplit",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:poly-split"
+      ],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "SpatialObj",
+        "SplitTo"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.ReportMap.ReportMap",
+      "kind": "plugin",
+      "catalog_ids": [
+        "reporting:report-map"
+      ],
+      "nodes": 28,
+      "documents": 17,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "BackgroundColor",
+        "DataConnections",
+        "DataConnections/DataConnection",
+        "DropShadow",
+        "ExpandExtent",
+        "ImageHeight",
+        "ImageResolution",
+        "ImageWidth",
+        "IsMetric",
+        "Layers",
+        "Layers/Layer",
+        "Legend",
+        "Legend/LegendStyle",
+        "MinimumWidth",
+        "ReferenceMap",
+        "ScaleUnits",
+        "TemporaryFileLocationXML"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.Smooth.Smooth",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:smooth"
+      ],
+      "nodes": 4,
+      "documents": 3,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "IncludeSourceInOutput",
+        "Layerwise",
+        "MaximumRadius",
+        "Passes",
+        "PostGeneralize",
+        "PostGenerlizePercent",
+        "SpatialObjectField",
+        "Units"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.2",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.SpatialInfo.SpatialInfo",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:spatial-info"
+      ],
+      "nodes": 16,
+      "documents": 8,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "SelectedItems",
+        "SelectedItems/Item",
+        "SpatialObj"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2022.1",
+        "2023.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.SpatialMatch.SpatialMatch",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:spatial-match"
+      ],
+      "nodes": 10,
+      "documents": 7,
+      "input_anchors": [
+        "Targets",
+        "Universe"
+      ],
+      "output_anchors": [
+        "Matched",
+        "Unmatched"
+      ],
+      "config_elements": [
+        "IntersectPoly",
+        "Method",
+        "SelectConfiguration",
+        "SelectConfiguration/Configuration",
+        "Target",
+        "Universe",
+        "Universe/File",
+        "Universe/Passwords"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.SpatialProcess.SpatialProcess",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:spatial-process"
+      ],
+      "nodes": 8,
+      "documents": 4,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Action",
+        "SpatialObjFields"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2025.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.Summarize.Summarize",
+      "kind": "plugin",
+      "catalog_ids": [
+        "transform:summarize"
+      ],
+      "nodes": 197,
+      "documents": 66,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Separator",
+        "SummarizeFields",
+        "SummarizeFields/SummarizeField"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2018.4",
+        "2019.1",
+        "2019.2",
+        "2019.3",
+        "2019.4",
+        "2020.2",
+        "2022.1",
+        "2022.2",
+        "2023.2",
+        "2024.2",
+        "2025.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "AlteryxSpatialPluginsGui.TradeArea.TradeArea",
+      "kind": "plugin",
+      "catalog_ids": [
+        "spatial:trade-area"
+      ],
+      "nodes": 13,
+      "documents": 8,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "DriveTimeDataSet",
+        "Radii",
+        "Radius_FromField",
+        "SpatialObj",
+        "Units"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.2",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "AssistedModeling_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 8,
+      "documents": 8,
+      "input_anchors": [
+        "Data"
+      ],
+      "output_anchors": [
+        "Model"
+      ],
+      "config_elements": [
+        "AssistedModelingDbFilepath",
+        "AssistedModelingMetadata",
+        "AssistedModelingMetadata/column_name",
+        "AssistedModelingMetadata/column_type",
+        "DatabaseMigrationFailure",
+        "DesignerVersion",
+        "InputMetadataChanged",
+        "LastNumRowsReceived",
+        "MemoryThresholdExceeded",
+        "Port",
+        "PythonArgs",
+        "PythonPath",
+        "RadioSelection",
+        "RawDataDbFilepath",
+        "SerializedData",
+        "SitePackagesPath",
+        "TargetVariable",
+        "logFilePath",
+        "schemaID",
+        "sessionId",
+        "toolId"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "Barcode_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "BarcodeType",
+        "ImageField",
+        "IncludeBounded",
+        "IncludeCrop",
+        "Mode",
+        "Secrets",
+        "TextField"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "Base64_Encoder.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "developer:base64-encoder"
+      ],
+      "nodes": 2,
+      "documents": 2,
+      "input_anchors": [
+        "Macro Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "BuildFeatures_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Secrets",
+        "primary_key",
+        "relationships",
+        "relationships/child",
+        "relationships/child_key",
+        "relationships/key",
+        "relationships/parent",
+        "selected_primitives",
+        "table_depth",
+        "target_table"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "CalgaryLoadersGui.CalgaryLoader.CalgaryLoader",
+      "kind": "plugin",
+      "catalog_ids": [
+        "calgary:calgary-cross-count"
+      ],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Fields",
+        "Fields/Field",
+        "RootFileName",
+        "UseLicenseKey"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "CalgaryPluginsGui.CalgaryCrossCount.CalgaryCrossCount",
+      "kind": "plugin",
+      "catalog_ids": [
+        "calgary:calgary-cross-count-append"
+      ],
+      "nodes": 2,
+      "documents": 1,
+      "input_anchors": [],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "CrossCountFields",
+        "CrossCountFields/CustomField",
+        "CrossCountFields/Field",
+        "LinkedTables",
+        "Query",
+        "RootFileName"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "CalgaryPluginsGui.CalgaryCrossCountAppend.CalgaryCrossCountAppend",
+      "kind": "plugin",
+      "catalog_ids": [
+        "calgary:calgary-loader"
+      ],
+      "nodes": 2,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "CrossCount",
+        "CrossCount/CrossCountFields",
+        "JoinFields",
+        "JoinFields/Field",
+        "JoinMode",
+        "LinkedTables",
+        "Query",
+        "RootFileName"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "CalgaryPluginsGui.CalgaryInput.CalgaryInput",
+      "kind": "plugin",
+      "catalog_ids": [
+        "calgary:calgary-input"
+      ],
+      "nodes": 2,
+      "documents": 1,
+      "input_anchors": [],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "CountOnly",
+        "LinkedTables",
+        "MaxRecords",
+        "Query",
+        "RootFileName",
+        "SkipRecords"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "CalgaryPluginsGui.CalgaryJoin.CalgaryJoin",
+      "kind": "plugin",
+      "catalog_ids": [
+        "calgary:calgary-join"
+      ],
+      "nodes": 2,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "CountOnly",
+        "JoinFields",
+        "JoinFields/Field",
+        "JoinMode",
+        "LinkedTables",
+        "MatchAll",
+        "OutputUnjoined",
+        "Query",
+        "RootFileName"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "Classification_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 5,
+      "documents": 5,
+      "input_anchors": [
+        "Model"
+      ],
+      "output_anchors": [
+        "Model"
+      ],
+      "config_elements": [
+        "DesignerVersion",
+        "algorithm_configs",
+        "algorithm_configs/algorithm_config",
+        "algorithm_configs/algorithm_name",
+        "algorithm_selection",
+        "schemaID"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "Cleanse.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "preparation:data-cleansing"
+      ],
+      "nodes": 4,
+      "documents": 1,
+      "input_anchors": [
+        "Input2"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "CountRecords.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "transform:count-records"
+      ],
+      "nodes": 10,
+      "documents": 7,
+      "input_anchors": [
+        "Input8"
+      ],
+      "output_anchors": [
+        "Output9"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "10.0",
+        "2019.4",
+        "2020.2",
+        "2022.1",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "DateTimeNow.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 3,
+      "documents": 3,
+      "input_anchors": [
+        "Action"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "DateTimeNow\\Supporting_Macros\\DTNEngine.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [],
+      "output_anchors": [
+        "DTN"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "FeatureTypes_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Secrets",
+        "configured_types",
+        "set_types"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "Fit_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 8,
+      "documents": 8,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "DesignerVersion",
+        "ForwardVersion",
+        "Secrets",
+        "classes_",
+        "fitToolID",
+        "modelID",
+        "schemaID"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "FooterMacro.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "reporting:report-footer"
+      ],
+      "nodes": 11,
+      "documents": 7,
+      "input_anchors": [
+        "Report Layout"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2023.1",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "Fuzzy_Match_Supporting_Macros\\01 StrongADD_FuzzyFL.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Fields"
+      ],
+      "output_anchors": [
+        "Output17",
+        "Output18"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "Fuzzy_Match_Supporting_Macros\\02 StrongADD_FuzzyLF.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Fields"
+      ],
+      "output_anchors": [
+        "Output17",
+        "Output18"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "Fuzzy_Match_Supporting_Macros\\03 StrongFL_FuzzyADD.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Fields"
+      ],
+      "output_anchors": [
+        "Output17",
+        "Output18"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "Fuzzy_Match_Supporting_Macros\\04 StrongADD_FuzzyFL_Char.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Fields"
+      ],
+      "output_anchors": [
+        "Output17",
+        "Output18"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "HeaderMacro.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 9,
+      "documents": 6,
+      "input_anchors": [
+        "Report Layout"
+      ],
+      "output_anchors": [
+        "Output13"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2023.1",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "HeatMap.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "spatial:heat-map"
+      ],
+      "nodes": 3,
+      "documents": 2,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output80"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "ImageInput_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 12,
+      "documents": 9,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Field",
+        "FileOption",
+        "FileType",
+        "ModeSelect",
+        "OutputFieldName",
+        "PDFDirectory",
+        "Secrets"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "ImageProcessing_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 9,
+      "documents": 2,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "ImageField",
+        "Secrets",
+        "Steps",
+        "Steps/config",
+        "Steps/name"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "ImageProfile_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "ImageField",
+        "ProfileOption",
+        "ProfileType",
+        "Secrets"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "ImageRecognition_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Training",
+        "Validation"
+      ],
+      "output_anchors": [
+        "ModelOutput"
+      ],
+      "config_elements": [
+        "BatchSize",
+        "Epochs",
+        "ImageFieldTraining",
+        "ImageFieldValidation",
+        "LabelFieldTraining",
+        "LabelFieldValidation",
+        "Model",
+        "Secrets"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "ImageTemplate_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 2,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "BlobField",
+        "Bounds",
+        "FilePath",
+        "Mode",
+        "NumPages",
+        "PageNumber",
+        "RelativePath",
+        "RelativePathResolved",
+        "Secrets",
+        "UNCPath",
+        "UNCPathResolved"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "ImagetoText_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 3,
+      "documents": 2,
+      "input_anchors": [
+        "dataInput",
+        "templateInput"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "ApplyToAllSelect",
+        "FieldSelect",
+        "LanguageSelect",
+        "Secrets"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "Imputation_v3.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "preparation:imputation"
+      ],
+      "nodes": 4,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "Insights",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "InsightFields",
+        "InsightFields/Description",
+        "InsightFields/InsightData",
+        "InsightFields/InsightDescription",
+        "InsightFields/InsightGalleryID"
+      ],
+      "doc_versions": [
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "JupyterCode",
+      "kind": "plugin",
+      "catalog_ids": [
+        "developer:python"
+      ],
+      "nodes": 6,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "AssetManaged",
+        "DefaultVenv",
+        "GuidDir",
+        "JupyterGuidDir",
+        "JupyterProduction",
+        "LastExecutedByEngineVersion",
+        "Notebook",
+        "Port",
+        "WorkflowName",
+        "productionModeScript",
+        "specialCellMetadata",
+        "vEnvName"
+      ],
+      "doc_versions": [
+        "2025.2"
+      ]
+    },
+    {
+      "tool_identifier": "KeyValuePairExtraction_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Data",
+        "Keys"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Fuzzy",
+        "ImageField",
+        "KeyField",
+        "Language",
+        "Secrets"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "LLMOverride_1_0",
+      "kind": "plugin",
+      "catalog_ids": [
+        "ai-tools:llm-override"
+      ],
+      "nodes": 3,
+      "documents": 3,
+      "input_anchors": [],
+      "output_anchors": [
+        "ModelConfig"
+      ],
+      "config_elements": [
+        "Connection",
+        "Secrets",
+        "authServerDetails",
+        "authServerDetails/client_id",
+        "authServerDetails/token_endpoint",
+        "authServerDetails/url",
+        "inputUrl",
+        "keycloakRealm",
+        "llmConnectionId",
+        "platformPortalUrl",
+        "siteName",
+        "url",
+        "validCredentials"
+      ],
+      "doc_versions": [
+        "2024.1",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "Legend_Builder.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "reporting:map-legend-builder"
+      ],
+      "nodes": 5,
+      "documents": 3,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "Legend_Splitter.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "reporting:map-legend-splitter"
+      ],
+      "nodes": 5,
+      "documents": 3,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "LocOpt_GenerateReport.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 2,
+      "input_anchors": [
+        "Demand",
+        "Detail After",
+        "Detail Before",
+        "SupplyLocations"
+      ],
+      "output_anchors": [
+        "Report"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "LocOpt_GravityCreateDemandSurface.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 6,
+      "documents": 2,
+      "input_anchors": [
+        "Action",
+        "Demand",
+        "Supply"
+      ],
+      "output_anchors": [
+        "Demand Surface"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "LocOpt_GravityOptimizer.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Action",
+        "DemandSurface",
+        "NewLocations"
+      ],
+      "output_anchors": [
+        "Optimal New Locations"
+      ],
+      "config_elements": [
+        "LocationOpimizer",
+        "LocationOpimizer/AutoSeed",
+        "LocationOpimizer/GenerationLimit_Generations",
+        "LocationOpimizer/GenerationLimit_Percent",
+        "LocationOpimizer/NumLocations",
+        "LocationOpimizer/SpecifcSeed",
+        "LocationOpimizer/SpeedType",
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "LocOpt_MinDistanceOptimizer.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Action",
+        "Demand Surface",
+        "New"
+      ],
+      "output_anchors": [
+        "Final Locations",
+        "Score"
+      ],
+      "config_elements": [
+        "LocationOpimizer",
+        "LocationOpimizer/AutoSeed",
+        "LocationOpimizer/GenerationLimit_Generations",
+        "LocationOpimizer/GenerationLimit_Percent",
+        "LocationOpimizer/NumLocations",
+        "LocationOpimizer/SpecifcSeed",
+        "LocationOpimizer/SpeedType"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "MultiFieldBinning_v2.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "preparation:multi-field-binning"
+      ],
+      "nodes": 5,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "NamedEntityRecognition_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 1,
+      "input_anchors": [
+        "Data",
+        "Entities"
+      ],
+      "output_anchors": [
+        "Data"
+      ],
+      "config_elements": [
+        "CaseSensitive",
+        "CustomEntities",
+        "EarlyStopping",
+        "Epochs",
+        "Field",
+        "FieldEntities",
+        "FieldLabels",
+        "Language",
+        "MaxBatchSize",
+        "Secrets"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "PDFtoText_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 6,
+      "documents": 1,
+      "input_anchors": [
+        "Data Input",
+        "Template Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "ConfigStore",
+        "ConfigStore/OutputOptions",
+        "ConfigStore/PathInputField",
+        "ConfigStore/PathInputMode",
+        "ConfigStore/TextExtractionImageOfGraphicText",
+        "ConfigStore/TextExtractionLanguage",
+        "ConfigStore/TextExtractionMode",
+        "ConfigStore/TextExtractionRiskScore",
+        "MetadataStore",
+        "NumConnectStore",
+        "OutputOptions",
+        "OutputOptions/OutputAlteryxTable",
+        "OutputOptions/OutputLines",
+        "OutputOptions/OutputPipeDelimitedTable",
+        "OutputOptions/OutputString",
+        "PathInputField",
+        "PathInputMode",
+        "PathInputValue",
+        "Secrets",
+        "TextExtractionImageOfGraphicText",
+        "TextExtractionLanguage",
+        "TextExtractionLanguage/LanguageName",
+        "TextExtractionMode",
+        "TextExtractionRiskScore"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "PartOfSpeechTagger_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Field",
+        "Language",
+        "Secrets"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "PieWedgeTradeArea.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Customers",
+        "Stores"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "PlotlyCharting",
+      "kind": "plugin",
+      "catalog_ids": [
+        "reporting:interactive-chart"
+      ],
+      "nodes": 16,
+      "documents": 5,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "ChartingFields",
+        "ChartingFields/Batch",
+        "ChartingFields/Layout",
+        "ChartingFields/Traces"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2023.2",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "PortfolioPluginsGui.ComposerImage.PortfolioComposerImage",
+      "kind": "plugin",
+      "catalog_ids": [
+        "reporting:image"
+      ],
+      "nodes": 27,
+      "documents": 13,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "BlobField",
+        "EncodedImage",
+        "Filename",
+        "ImageMode",
+        "ImageStyle",
+        "ModifyField",
+        "ModifyFilename",
+        "ModifyMode",
+        "StaticImage",
+        "StaticMode",
+        "StopIfNotFound",
+        "Thumbnail"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.2",
+        "2026.1",
+        "9.0",
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "PortfolioPluginsGui.ComposerLayout.PortfolioComposerLayout",
+      "kind": "plugin",
+      "catalog_ids": [
+        "reporting:layout"
+      ],
+      "nodes": 31,
+      "documents": 17,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "BorderStyle",
+        "GroupingFields",
+        "GroupingFields/Field",
+        "GroupingMode",
+        "Height",
+        "LayoutFields",
+        "LayoutFields/Field",
+        "MergeIntoTable",
+        "Orientation",
+        "Padding",
+        "PreserveSourceFields",
+        "SectionNameForAllRecords",
+        "SectionNameForGroup",
+        "Separator",
+        "SeparatorStyle",
+        "Width"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.2",
+        "2023.1",
+        "2023.2",
+        "2025.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "PortfolioPluginsGui.ComposerOverlay.Overlay",
+      "kind": "plugin",
+      "catalog_ids": [
+        "reporting:overlay"
+      ],
+      "nodes": 3,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Field_Base",
+        "Field_LC",
+        "Field_LL",
+        "Field_LR",
+        "Field_MC",
+        "Field_ML",
+        "Field_MR",
+        "Field_TC",
+        "Field_TL",
+        "Field_TR",
+        "Padding",
+        "PreserveSourceFields"
+      ],
+      "doc_versions": [
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "PortfolioPluginsGui.ComposerRender.PortfolioComposerRender",
+      "kind": "plugin",
+      "catalog_ids": [
+        "reporting:render"
+      ],
+      "nodes": 35,
+      "documents": 25,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "BatchMode",
+        "DataField",
+        "DefaultStyles",
+        "DefaultStyles/Style",
+        "EmbedDependencies",
+        "FilenameModifier",
+        "FooterField",
+        "GroupField",
+        "HeaderField",
+        "HeaderFooterEdge",
+        "OnFirstPage",
+        "OutputFile",
+        "PNGBackColor",
+        "PNGLargerAction",
+        "PNGLargerThanPageChoice",
+        "PNGResolution",
+        "PNGTransparentBG",
+        "PaperType",
+        "PdfCefOutput",
+        "PortraitMode",
+        "Separator",
+        "ShowFooter",
+        "ShowHeader",
+        "TempFileType"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.2",
+        "2023.1",
+        "2023.2",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "PortfolioPluginsGui.ComposerTable.PortfolioComposerTable",
+      "kind": "plugin",
+      "catalog_ids": [
+        "reporting:table"
+      ],
+      "nodes": 39,
+      "documents": 16,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "BarGraphField",
+        "GroupingFields",
+        "GroupingFields/Field",
+        "PivotMode",
+        "PivotTableFields",
+        "PivotTableFields/Field",
+        "ShowBarGraph",
+        "ShowHeader",
+        "StyleRules",
+        "StyleRules/Rule",
+        "TableFields",
+        "TableFields/Field",
+        "TableMode",
+        "TableStyles",
+        "TableStyles/Style",
+        "Width"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.2",
+        "2023.1",
+        "2023.2",
+        "2024.1",
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "PortfolioPluginsGui.ComposerText.PortfolioComposerText",
+      "kind": "plugin",
+      "catalog_ids": [
+        "reporting:report-text"
+      ],
+      "nodes": 67,
+      "documents": 26,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "HeaderField",
+        "HeaderMode",
+        "Images",
+        "Images/Image",
+        "Message",
+        "Output",
+        "Position",
+        "RawMode",
+        "RichTextMode",
+        "RichTextString",
+        "Styles",
+        "Styles/Style",
+        "ValidatePCXML"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2022.2",
+        "2023.1",
+        "2023.2",
+        "2025.1",
+        "9.0"
+      ]
+    },
+    {
+      "tool_identifier": "PortfolioPluginsGui.Geocoder.Geocoder",
+      "kind": "plugin",
+      "catalog_ids": [
+        "address:street-geocoder"
+      ],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "InputFields",
+        "InputFields/Address",
+        "InputFields/City",
+        "InputFields/PostCode",
+        "InputFields/SelectedGeocoder",
+        "InputFields/State",
+        "MultipleMatchMode",
+        "OutputFields",
+        "OutputFields/OutputField"
+      ],
+      "doc_versions": [
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "Precision Match\\Precision_Match.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "ai-tools:precision-match"
+      ],
+      "nodes": 3,
+      "documents": 1,
+      "input_anchors": [
+        "LLM Connection",
+        "Target Data"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "Predict_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 9,
+      "documents": 9,
+      "input_anchors": [
+        "Data",
+        "Model"
+      ],
+      "output_anchors": [
+        "PredictedData"
+      ],
+      "config_elements": [
+        "DesignerVersion",
+        "schemaID"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "Predictive Tools\\Create_Samples.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "preparation:create-samples"
+      ],
+      "nodes": 3,
+      "documents": 3,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Estimation",
+        "Holdout",
+        "Validation"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "Predictive Tools\\Field_Summary_Report.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "data-investigation:field-summary"
+      ],
+      "nodes": 4,
+      "documents": 1,
+      "input_anchors": [
+        "Field Input"
+      ],
+      "output_anchors": [
+        "Interactive",
+        "Reports"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "Predictive Tools\\Oversample_Field.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "preparation:oversample-field"
+      ],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "Predictive Tools\\Supporting_Macros\\IFS.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input111"
+      ],
+      "output_anchors": [
+        "Interactive Output"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "2023.2"
+      ]
+    },
+    {
+      "tool_identifier": "Prompt_1_0",
+      "kind": "plugin",
+      "catalog_ids": [
+        "ai-tools:prompt"
+      ],
+      "nodes": 8,
+      "documents": 1,
+      "input_anchors": [
+        "Input",
+        "Model"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Connection",
+        "Secrets",
+        "authServerDetails",
+        "authServerDetails/client_id",
+        "authServerDetails/token_endpoint",
+        "authServerDetails/url",
+        "editorState",
+        "inputUrl",
+        "keycloakRealm",
+        "llmConnectionId",
+        "modelConfigs",
+        "modelConfigs/modelConfig",
+        "modelName",
+        "platformPortalUrl",
+        "prompt",
+        "responseColumn",
+        "siteName",
+        "url",
+        "validCredentials"
+      ],
+      "doc_versions": [
+        "2024.1"
+      ]
+    },
+    {
+      "tool_identifier": "RandomRecords.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "preparation:random-sample"
+      ],
+      "nodes": 6,
+      "documents": 2,
+      "input_anchors": [
+        "Action",
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1",
+        "2023.2"
+      ]
+    },
+    {
+      "tool_identifier": "Regression_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 3,
+      "documents": 3,
+      "input_anchors": [
+        "Model"
+      ],
+      "output_anchors": [
+        "Model"
+      ],
+      "config_elements": [
+        "DesignerVersion",
+        "algorithm_configs",
+        "algorithm_configs/algorithm_config",
+        "algorithm_configs/algorithm_name",
+        "algorithm_selection",
+        "schemaID"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "Schema Fit\\Schema_Fit.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "ai-tools:schema-fit"
+      ],
+      "nodes": 3,
+      "documents": 1,
+      "input_anchors": [
+        "LLM Connection",
+        "Source Schema",
+        "Target Schema"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2025.1"
+      ]
+    },
+    {
+      "tool_identifier": "SelectRecords.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "preparation:select-records"
+      ],
+      "nodes": 4,
+      "documents": 1,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "SentimentAnalysis_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 6,
+      "documents": 2,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Secrets",
+        "algorithm",
+        "categorical",
+        "field",
+        "language",
+        "negativeThreshold",
+        "positiveThreshold",
+        "tokenize"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "SpearmanCorrCoeff.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "data-investigation:spearman-correlation"
+      ],
+      "nodes": 13,
+      "documents": 2,
+      "input_anchors": [
+        "Field Selection"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2024.1"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\DataCleansing.MultiFieldMacro.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 8,
+      "documents": 1,
+      "input_anchors": [
+        "Action",
+        "Control",
+        "Input5"
+      ],
+      "output_anchors": [
+        "Output6"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.2"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\DataCleansing.MultiFieldNumericMacro.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Control",
+        "Input5"
+      ],
+      "output_anchors": [
+        "Output6"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.2"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\DynamicMetadata.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 3,
+      "documents": 2,
+      "input_anchors": [
+        "Source",
+        "Targets"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2018.4",
+        "2019.3"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\FoursquareDownloadWithRetries.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 6,
+      "documents": 1,
+      "input_anchors": [
+        "Input2"
+      ],
+      "output_anchors": [
+        "Output6"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "9.5"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\GoogleAnalytics.BuildDataTable_v4.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 2,
+      "input_anchors": [
+        "Input75"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\GoogleAnalytics.HTTPQuery_iter.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 2,
+      "input_anchors": [
+        "Input14"
+      ],
+      "output_anchors": [
+        "Finished"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\GoogleAnalytics.Percent_Encoder.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 2,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\GoogleAnalytics.Prep_Date_Range.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 2,
+      "input_anchors": [
+        "Action"
+      ],
+      "output_anchors": [
+        "DateDiff"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\GoogleAnalytics.Reset_Measures.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 2,
+      "input_anchors": [
+        "Input58"
+      ],
+      "output_anchors": [
+        "Output63"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\GoogleAnalytics.Retrieve_Access_Token.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 2,
+      "input_anchors": [
+        "Input47"
+      ],
+      "output_anchors": [
+        "Data"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\GoogleAnalytics.Retrieve_Custom_Parameters_v2.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Credentials"
+      ],
+      "output_anchors": [
+        "Output202",
+        "Output205"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\GoogleAnalytics.Retrieve_Custom_Parameters_v9.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Credentials"
+      ],
+      "output_anchors": [
+        "Output202",
+        "Output205"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\Marketo.errorCheck.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input24"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\Salesforce.dateTimeBatch.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Control",
+        "Input5"
+      ],
+      "output_anchors": [
+        "Output6"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "10.0"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\removeNullColumns.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input2"
+      ],
+      "output_anchors": [
+        "Count",
+        "Output16"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "2022.2"
+      ]
+    },
+    {
+      "tool_identifier": "Supporting_Macros\\removeNullRows.yxmc",
+      "kind": "macro",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Input2"
+      ],
+      "output_anchors": [
+        "Count",
+        "Output18"
+      ],
+      "config_elements": [],
+      "doc_versions": [
+        "2022.2"
+      ]
+    },
+    {
+      "tool_identifier": "TextPreProcessing_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 7,
+      "documents": 4,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Secrets",
+        "addedStopwords",
+        "defaultStopwords",
+        "digits",
+        "field",
+        "language",
+        "lemmatize",
+        "punctuation",
+        "stopwords"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "TextSummary_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 1,
+      "documents": 1,
+      "input_anchors": [
+        "Data"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "Field",
+        "Language",
+        "Secrets",
+        "SummaryLength",
+        "SummaryMethod"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "TopicModelling_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 3,
+      "documents": 2,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Data",
+        "Report"
+      ],
+      "config_elements": [
+        "Secrets",
+        "alpha",
+        "dictMaxFreq",
+        "dictMaxWords",
+        "dictMinFreq",
+        "eta",
+        "field",
+        "reportOutputMode",
+        "topics"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "Transformation_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 17,
+      "documents": 8,
+      "input_anchors": [
+        "Model"
+      ],
+      "output_anchors": [
+        "Model"
+      ],
+      "config_elements": [
+        "DesignerVersion",
+        "schemaID",
+        "transformer_configs",
+        "transformer_configs/column_configs",
+        "transformer_configs/transformer_name",
+        "transformer_selection"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "VisualLayout",
+      "kind": "plugin",
+      "catalog_ids": [
+        "laboratory:visual-layout"
+      ],
+      "nodes": 3,
+      "documents": 3,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "LayoutFields",
+        "LayoutFields/AllowResizing",
+        "LayoutFields/CanJoin",
+        "LayoutFields/Document",
+        "LayoutFields/Layout",
+        "LayoutFields/NumDeletions",
+        "LayoutFields/NumIncomingConnections",
+        "LayoutFields/NumSnippetMoves",
+        "LayoutFields/NumSnippetRearrangements",
+        "LayoutFields/NumTinaToggleUses",
+        "LayoutFields/OriginalSnippets",
+        "LayoutFields/OriginalThumbnails",
+        "LayoutFields/TempFiles",
+        "LayoutFields/VisFolderPath"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "WeightedAvg.yxmc",
+      "kind": "macro",
+      "catalog_ids": [
+        "transform:weighted-average"
+      ],
+      "nodes": 5,
+      "documents": 3,
+      "input_anchors": [
+        "Input"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Value"
+      ],
+      "doc_versions": [
+        "2022.1"
+      ]
+    },
+    {
+      "tool_identifier": "WordCloud_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 4,
+      "documents": 2,
+      "input_anchors": [
+        "imageInput",
+        "textInput"
+      ],
+      "output_anchors": [
+        "Output"
+      ],
+      "config_elements": [
+        "Secrets",
+        "backgroundColor",
+        "backgroundColor/hex",
+        "backgroundColor/hsl",
+        "customize",
+        "field",
+        "height",
+        "mask",
+        "maxWords",
+        "phrases",
+        "theme",
+        "width"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    },
+    {
+      "tool_identifier": "ZeroShotTextClassification_1_0",
+      "kind": "plugin",
+      "catalog_ids": [],
+      "nodes": 2,
+      "documents": 1,
+      "input_anchors": [
+        "Data",
+        "Labels"
+      ],
+      "output_anchors": [],
+      "config_elements": [
+        "LabelField",
+        "MultiCheckbox",
+        "Secrets",
+        "TextField"
+      ],
+      "doc_versions": [
+        "2026.1"
+      ]
+    }
+  ]
+}

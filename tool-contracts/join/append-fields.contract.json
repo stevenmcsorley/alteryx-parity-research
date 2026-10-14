@@ -1,0 +1,142 @@
+{
+  "id": "join:append-fields",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Append Fields",
+  "category": "Join",
+  "xml_tool_name": "AlteryxBasePluginsGui.AppendFields.AppendFields",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/join/append-fields-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "target",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Targets"
+    },
+    {
+      "name": "source",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Source"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "max_source_records": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 16,
+        "description": "Fail when the source exceeds this (guards accidental explosions)"
+      },
+      "source_prefix": {
+        "type": "string",
+        "default": "Source_"
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.append_fields",
+    "version": "1.0.0",
+    "module": "flowengine.tools.join",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.AppendFields.AppendFields"
+    ],
+    "input_anchors": [
+      "Action",
+      "Source",
+      "Targets"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "CartesianMode",
+      "SelectConfiguration",
+      "SelectConfiguration/Configuration"
+    ],
+    "nodes_observed": 46
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Append Fields Tool",
+    "sha256": "8c2e6b7d8ba8162adb206414967287d9ff783fe6604781b30dd8f021ded4c469",
+    "retrieved_utc": "2026-10-13T09:33:24.364181+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Connect Inputs",
+      "Configure the Tool",
+      "Search Columns",
+      "Select, Deselect, Sort, and Reorder Columns",
+      "Modify Data Type and Size",
+      "Rename a Column or Add a Description",
+      "View More Options",
+      "Warn/Error on Too Many Records Being Generated"
+    ]
+  },
+  "independent_tests": {
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools.JoinTests.test_append_fields"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/join/append-fields-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:24.364181+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "append-cartesian",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#append-cartesian",
+        "reference build 2026.2.0.8",
+        "config sha256 f2e71107375dd8ea3c6e48bb428ac6e540869c78432b584ca9d0b2cfd818dc97"
+      ]
+    }
+  ],
+  "unresolved": []
+}

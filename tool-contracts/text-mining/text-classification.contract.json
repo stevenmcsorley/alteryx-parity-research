@@ -1,0 +1,120 @@
+{
+  "id": "text-mining:text-classification",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Text Classification",
+  "category": "Text Mining",
+  "xml_tool_name": "TextClassification",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/text-classification.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Tool Components",
+      "Configure the Tool",
+      "Advanced Options",
+      "Auto Mode",
+      "Multinomial Naïve Bayes",
+      "Linear SVC"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "python-nlp-runtime",
+    "licensed-dataset (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Text Classification",
+    "sha256": "85abf19a8c5098aa5830569716d49cfca52a9d1003d26d4893db7cb4cb358207",
+    "retrieved_utc": "2026-10-13T09:33:23.009702+00:00",
+    "anchors_extracted": [
+      {
+        "label": "input",
+        "letter": "T",
+        "direction_guess": "input"
+      },
+      {
+        "label": "input",
+        "letter": "V",
+        "direction_guess": "input"
+      },
+      {
+        "label": "output",
+        "letter": "M",
+        "direction_guess": "output"
+      },
+      {
+        "label": "output",
+        "letter": "E",
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Advanced Options",
+      "Auto Mode",
+      "Multinomial Naïve Bayes",
+      "Linear SVC"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/text-classification.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.009702+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}

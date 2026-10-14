@@ -1,0 +1,229 @@
+{
+  "id": "transform:summarize",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Summarize",
+  "category": "Transform",
+  "xml_tool_name": "AlteryxSpatialPluginsGui.Summarize.Summarize",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/transform/summarize-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "actions"
+    ],
+    "properties": {
+      "actions": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "op"
+          ],
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "op": {
+              "enum": [
+                "group_by",
+                "sum",
+                "count",
+                "count_non_null",
+                "count_null",
+                "count_distinct",
+                "count_distinct_non_null",
+                "min",
+                "max",
+                "avg",
+                "median",
+                "mode",
+                "std_dev",
+                "variance",
+                "first",
+                "last",
+                "concat",
+                "longest",
+                "shortest",
+                "count_blank",
+                "count_non_blank"
+              ]
+            },
+            "output": {
+              "type": "string",
+              "minLength": 1
+            },
+            "separator": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "sort_groups": {
+        "type": "boolean",
+        "default": true,
+        "description": "Order output groups ascending by group-by values (nulls first). True matches the reference [ref:summarize-basic]; False keeps first-occurrence order"
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.summarize",
+    "version": "1.0.0",
+    "module": "flowengine.tools.transform",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxSpatialPluginsGui.Summarize.Summarize"
+    ],
+    "input_anchors": [
+      "Action",
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "Separator",
+      "SummarizeFields",
+      "SummarizeFields/SummarizeField"
+    ],
+    "nodes_observed": 197
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Summarize Tool",
+    "sha256": "3dfd8daacad4a3ac8136271c9956a00aee12bc4e36ab53fb92343b87d06d13c9",
+    "retrieved_utc": "2026-10-13T09:33:25.499678+00:00",
+    "anchors_extracted": [
+      {
+        "label": "Input",
+        "letter": null,
+        "direction_guess": "input"
+      },
+      {
+        "label": "Output",
+        "letter": null,
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Tool Components",
+      "Configure the Tool",
+      "Fields",
+      "Actions",
+      "Summary Actions",
+      "Summary Actions",
+      "Finance",
+      "Numeric",
+      "String",
+      "Spatial",
+      "Report",
+      "Tool Examples",
+      "Example 1. Simple Sum",
+      "Example 2. Group By",
+      "Additional Examples"
+    ]
+  },
+  "independent_tests": {
+    "count": 5,
+    "passing": 5,
+    "tests": [
+      "test_fe_executor.EndToEndTests.test_golden_outputs",
+      "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
+      "test_fe_executor.PropertyTests.test_invariants",
+      "test_fe_tools.TransformTests.test_summarize",
+      "test_fe_tools.TransformTests.test_summarize_empty_and_errors"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/transform/summarize-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:25.499678+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "summarize-basic",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#summarize-basic",
+        "reference build 2026.2.0.8",
+        "config sha256 2693f7456032e7c41a215869f45afd7acfb59b05da02722db15bd712bbaaecf5"
+      ]
+    },
+    {
+      "case_id": "summarize-text-and-order",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#summarize-text-and-order",
+        "reference build 2026.2.0.8",
+        "config sha256 aceccd5503878a3e25b2c8bda0e18cd72c8771d2d5e8fb8d7442b14f7d6c13b4"
+      ]
+    },
+    {
+      "case_id": "summarize-statistics",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#summarize-statistics",
+        "reference build 2026.2.0.8",
+        "config sha256 304e946c84400dcd7121eb2902b41f12702db54e590a48c25f4739784a2e68bc"
+      ]
+    },
+    {
+      "case_id": "summarize-no-groupby",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#summarize-no-groupby",
+        "reference build 2026.2.0.8",
+        "config sha256 7b22c41cb4c99b046194b5b38d0e4b0e3848901dcedeb0bb9395d858ab2fb285"
+      ]
+    }
+  ],
+  "unresolved": []
+}

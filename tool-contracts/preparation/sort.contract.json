@@ -1,0 +1,161 @@
+{
+  "id": "preparation:sort",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Sort",
+  "category": "Preparation",
+  "xml_tool_name": "AlteryxBasePluginsGui.Sort.Sort",
+  "user_role": "Basic, Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/sort-tool.html",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
+  "configuration_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "keys"
+    ],
+    "properties": {
+      "keys": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field"
+          ],
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "order": {
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "asc"
+            }
+          }
+        }
+      },
+      "case_insensitive": {
+        "type": "boolean",
+        "default": false
+      }
+    }
+  },
+  "deterministic": true,
+  "external_dependencies": [
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.sort",
+    "version": "1.0.0",
+    "module": "flowengine.tools.preparation",
+    "side_effects": "none"
+  },
+  "reference_observation": {
+    "source": "data/reference-observations.json",
+    "build": "2026.2.0.8",
+    "tool_identifiers": [
+      "AlteryxBasePluginsGui.Sort.Sort"
+    ],
+    "input_anchors": [
+      "Action",
+      "Input"
+    ],
+    "output_anchors": [
+      "Output"
+    ],
+    "config_elements": [
+      "SortInfo",
+      "SortInfo/Field"
+    ],
+    "nodes_observed": 87
+  },
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Sort Tool",
+    "sha256": "b47c1775ccbf9562373bfe0bf7aba52a71150586ed3549dbf43c87ac75187655",
+    "retrieved_utc": "2026-10-13T09:33:25.013800+00:00",
+    "anchors_extracted": [],
+    "anchor_extraction": "none-found",
+    "section_headings": [
+      "Configure the Tool",
+      "Sort Priority",
+      "Sort by Columns"
+    ]
+  },
+  "independent_tests": {
+    "count": 6,
+    "passing": 6,
+    "tests": [
+      "test_fe_executor.EndToEndTests.test_golden_outputs",
+      "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
+      "test_fe_executor.PropertyTests.test_invariants",
+      "test_fe_executor.ValidationTests.test_config_schema_errors_name_the_node",
+      "test_fe_executor.ValidationTests.test_cycle",
+      "test_fe_tools.PreparationTests.test_sort_multikey_stable_nulls"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/preparation/sort-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:25.013800+00:00"
+    },
+    {
+      "url": "data/reference-observations.json",
+      "evidence_type": "authorised-reference-structural-scan",
+      "accessed_utc": "2026-10-13T09:34:26+00:00"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "sort-multikey-nulls",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#sort-multikey-nulls",
+        "reference build 2026.2.0.8",
+        "config sha256 3e2c730a67a95a5a01bbc7a2a92db41219a516e0089104bdd6d0f96e9c382aba"
+      ]
+    },
+    {
+      "case_id": "sort-string-case",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/results.json#sort-string-case",
+        "reference build 2026.2.0.8",
+        "config sha256 0245c1031ea360d406778f3702009c5a7caf130490d38e4f500766836f91078d"
+      ]
+    }
+  ],
+  "unresolved": []
+}

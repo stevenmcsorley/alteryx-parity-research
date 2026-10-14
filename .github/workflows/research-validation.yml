@@ -1,4 +1,4 @@
-name: Research baseline, independent engine and coverage
+name: Validation, engine tests, status ledger and coverage
 on:
   push:
   pull_request:
@@ -10,19 +10,31 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install test dependencies
+      - name: Install dependencies
         run: python -m pip install -r requirements-dev.txt
-      - name: Validate all inventory records
+      - name: Validate catalogue records
         run: python scripts/validate_repository.py
-      - name: Verify reproducible artifacts
+      - name: Unit, property, integration and golden end-to-end tests
+        run: python -m unittest discover -s tests -v
+      - name: Workflow validation and real end-to-end run (CLI)
         run: |
-          python scripts/materialize_tool_specs.py
+          python -m flowengine validate examples/sales/monthly_sales.flow.json
+          python -m flowengine run examples/sales/monthly_sales.flow.json --clock 2026-01-15T09:30:00 --log run-events.jsonl --manifest run-manifest.json
+          diff examples/sales/out/monthly_sales.csv tests/golden/monthly_sales/monthly_sales.csv
+          diff examples/sales/out/unmatched_orders.csv tests/golden/monthly_sales/unmatched_orders.csv
+      - name: Legacy testbed smoke test
+        run: python -m engine.independent_engine examples/customer_reconciliation.json
+      - name: Status ledger and contracts are reproducible from evidence
+        run: python scripts/build_status.py --check
+      - name: Generated tracked reports are stable
+        run: |
           python scripts/coverage_report.py
           python scripts/generate_test_matrix.py
-          python scripts/build_fixture_pack.py
-      - name: Unit and integration tests
-        run: python -m unittest discover -s tests -v
-      - name: Real independent workflow smoke test
-        run: python -m engine.independent_engine examples/customer_reconciliation.json
-      - name: Assert generated tracked outputs are stable
-        run: git diff --exit-code data/test-matrix.json docs/COVERAGE.md
+          git diff --exit-code docs/COVERAGE.md data/test-matrix.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: run-evidence
+          path: |
+            run-events.jsonl
+            run-manifest.json

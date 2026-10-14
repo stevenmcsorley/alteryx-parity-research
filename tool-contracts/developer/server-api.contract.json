@@ -1,0 +1,155 @@
+{
+  "id": "developer:server-api",
+  "target_version": "Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8",
+  "name": "Server API",
+  "category": "Developer",
+  "xml_tool_name": "ServerAPI_1_0",
+  "user_role": "Full",
+  "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/server-api-tool.html",
+  "status": "not-started",
+  "implementation_status": "not-started",
+  "verification_status": "not-tested",
+  "inputs": [
+    {
+      "name": "Authorization) input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "Data) input",
+      "direction": "input",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "Output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "authToken) output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "Success) output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "Fail) output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    },
+    {
+      "name": "Logs) output",
+      "direction": "output",
+      "cardinality": "unknown",
+      "provenance": "public-doc-extracted"
+    }
+  ],
+  "configuration_schema": {
+    "status": "not-yet-specified",
+    "reference_config_elements": [],
+    "public_doc_sections": [
+      "Requirements and Compatibility Notes",
+      "Required Package Installation",
+      "Tool Components",
+      "*Example Response",
+      "Configure the Tool",
+      "Authentication",
+      "API Configuration"
+    ]
+  },
+  "deterministic": null,
+  "external_dependencies": [
+    "credentials (public-doc keyword signal; unreviewed)",
+    "python-runtime (public-doc keyword signal; unreviewed)",
+    "vendor-cloud-service (public-doc keyword signal; unreviewed)"
+  ],
+  "external_prerequisites_blocking": false,
+  "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
+  "implementation": null,
+  "reference_observation": null,
+  "public_doc": {
+    "source": "data/public-doc-audit.json",
+    "page_title": "Server API Tool",
+    "sha256": "09985d3d87e4286f370166bf014ab6a37f77e44baa9547afb3bbf5ed14c8a5d2",
+    "retrieved_utc": "2026-10-13T09:33:23.948749+00:00",
+    "anchors_extracted": [
+      {
+        "label": "Authorization) input",
+        "letter": "A",
+        "direction_guess": "input"
+      },
+      {
+        "label": "Data) input",
+        "letter": "D",
+        "direction_guess": "input"
+      },
+      {
+        "label": "Output",
+        "letter": null,
+        "direction_guess": "output"
+      },
+      {
+        "label": "authToken) output",
+        "letter": "A",
+        "direction_guess": "output"
+      },
+      {
+        "label": "Success) output",
+        "letter": "S",
+        "direction_guess": "output"
+      },
+      {
+        "label": "Fail) output",
+        "letter": "F",
+        "direction_guess": "output"
+      },
+      {
+        "label": "Logs) output",
+        "letter": "L",
+        "direction_guess": "output"
+      }
+    ],
+    "anchor_extraction": "tool-components-section",
+    "section_headings": [
+      "Requirements and Compatibility Notes",
+      "Required Package Installation",
+      "Tool Components",
+      "*Example Response",
+      "Configure the Tool",
+      "Authentication",
+      "API Configuration"
+    ]
+  },
+  "independent_tests": {
+    "count": 0,
+    "passing": 0,
+    "tests": []
+  },
+  "sources": [
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
+      "evidence_type": "public-tool-list",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
+    },
+    {
+      "url": "https://help.alteryx.com/current/en/designer/tools/developer/server-api-tool.html",
+      "evidence_type": "public-tool-help-page-metadata",
+      "accessed_utc": "2026-10-13T09:33:23.948749+00:00"
+    }
+  ],
+  "cases": [],
+  "unresolved": [
+    "No independent kernel yet; configuration semantics not specified."
+  ]
+}
