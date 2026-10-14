@@ -50,7 +50,7 @@ class MacroOutput(Tool):
 class WorkflowMacro(Tool):
     manifest = ToolManifest(
         tool_id='flowengine.macro', version='1.0.0', display_name='Workflow Macro', catalog_ids=(),
-        inputs=(Anchor('input', 'I'),), outputs=(Anchor('output', 'O'),),
+        inputs=(Anchor('input', 'I', multiple=True),), outputs=(Anchor('output', 'O'),),
         config_schema={
             'type': 'object', 'additionalProperties': False,
             'properties': {
@@ -58,6 +58,9 @@ class WorkflowMacro(Tool):
                 'definition_path': {'type': 'string', 'minLength': 1},
                 'macro_id': {'type': 'string'},
                 'input_bindings': {'type': 'object', 'default': {'Input': 'Input'},
+                                   'description': 'Map every child Macro Input name to a parent anchor. '
+                                                  'When the parent anchor has multiple connections, select one '
+                                                  'by index, for example input[0].',
                                    'additionalProperties': {'type': 'string'}},
                 'output_name': {'type': 'string'},
                 'max_depth': {'type': 'integer', 'minimum': 1, 'maximum': 128, 'default': 32},
@@ -112,21 +115,37 @@ class WorkflowMacro(Tool):
         bindings = {}
         input_names = [(n.get('config') or {}).get('name') for n in doc.get('nodes', [])
                        if n.get('tool') == 'flowengine.macro_input']
+        if len(set(input_names)) != len(input_names):
+            raise ConfigError('Macro definition has duplicate Macro Input names', node_id=ctx.node_id)
         configured = dict(config['input_bindings'])
-        if len(inputs) == len(configured) == 1 and next(iter(configured.values())) not in inputs:
-            configured[next(iter(configured))] = next(iter(inputs))
         if (len(input_names) == len(configured) == 1 and input_names[0] not in configured
                 and 'Input' in configured):
             # Alteryx macro names its lone Macro Input in the child document; map the one parent table by position.
             configured[input_names[0]] = configured.pop('Input')
+        if set(configured) != set(input_names):
+            missing = sorted(set(input_names) - set(configured))
+            extra = sorted(set(configured) - set(input_names))
+            raise ConfigError(f'Macro input bindings must map every child input exactly once '
+                              f'(missing={missing}, unknown={extra})', node_id=ctx.node_id)
         for macro_input, parent_anchor in configured.items():
-            if parent_anchor not in inputs:
-                raise ConfigError(f"Macro input {macro_input!r} refers to unconnected parent anchor {parent_anchor!r}",
+            anchor, index = _parse_macro_input_binding(parent_anchor, inputs, ctx.node_id)
+            connected = inputs.get(anchor)
+            if connected is None:
+                raise ConfigError(f"Macro input {macro_input!r} refers to unconnected parent anchor {anchor!r}",
                                   node_id=ctx.node_id)
-            value = inputs[parent_anchor]
+            candidates = connected if isinstance(connected, list) else [connected]
+            if index is None:
+                if len(candidates) != 1:
+                    raise ConfigError(f"Parent anchor {anchor!r} has {len(candidates)} connections; "
+                                      'select one with an indexed binding such as input[0]', node_id=ctx.node_id)
+                value = candidates[0]
+            else:
+                if index >= len(candidates):
+                    raise ConfigError(f"Parent anchor {anchor!r} has no connection at index {index}",
+                                      node_id=ctx.node_id)
+                value = candidates[index]
             if not isinstance(value, Table):
-                raise ConfigError(f"Parent anchor {parent_anchor!r} must provide one table per macro input",
-                                  node_id=ctx.node_id)
+                raise ConfigError(f"Parent anchor {anchor!r} must provide a table", node_id=ctx.node_id)
             bindings[macro_input] = value
 
         outputs = [n for n in doc.get('nodes', []) if n.get('tool') == 'flowengine.macro_output']
@@ -409,6 +428,24 @@ def _plan_macro(doc, base_dir, ctx, macro_input_schemas):
     from ..executor import plan_workflow
     return plan_workflow(doc, base_dir=base_dir, profile=ctx.profile,
                          macro_input_schemas=macro_input_schemas)
+
+
+def _parse_macro_input_binding(binding, inputs, node_id):
+    """Resolve an input anchor name with an optional connection index (`input[1]`)."""
+    if not isinstance(binding, str) or not binding:
+        raise ConfigError('Macro input binding must name a parent input anchor', node_id=node_id)
+    anchor, index = binding, None
+    if binding.endswith(']') and '[' in binding:
+        anchor, raw_index = binding.rsplit('[', 1)
+        raw_index = raw_index[:-1]
+        if not anchor or not raw_index.isdecimal():
+            raise ConfigError(f'Invalid indexed macro input binding {binding!r}', node_id=node_id)
+        index = int(raw_index)
+    # Backwards-compatible lone-input form: the old default used `Input` as a
+    # placeholder even though the runtime anchor is named `input`.
+    if anchor == 'Input' and anchor not in inputs and len(inputs) == 1:
+        anchor = next(iter(inputs))
+    return anchor, index
 
 
 def _control_json_value(value, name):

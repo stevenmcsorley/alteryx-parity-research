@@ -22,7 +22,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 160 run, 0 failed |
+| Unit/integration tests in last ledger build | 161 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -30,12 +30,12 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 
 | Catalogue id | Kernel | Tests | Reference cases (passed/run) | Verification |
 |---|---|---:|---:|---|
-| `in-out:browse` | `core.browse` | 21 | 0/0 | not-tested |
+| `in-out:browse` | `core.browse` | 22 | 0/0 | not-tested |
 | `in-out:date-time-now` | `core.date_time_now` | 1 | 0/0 | not-tested |
 | `in-out:directory` | `core.directory` | 1 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 12 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 8 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 86 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 87 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleansing` | `core.data_cleansing` | 3 | 0/0 | not-tested |
@@ -58,7 +58,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `preparation:unique` | `core.unique` | 5 | 2/2 | partial |
 | `join:append-fields` | `core.append_fields` | 1 | 1/1 | partial |
 | `join:find-replace` | `core.find_replace` | 1 | 1/1 | partial |
-| `join:join` | `core.join` | 7 | 4/4 | partial |
+| `join:join` | `core.join` | 8 | 4/4 | partial |
 | `join:join-multiple` | `core.join_multiple` | 1 | 0/0 | not-tested |
 | `join:make-group` | `core.make_group` | 1 | 1/1 | partial |
 | `join:union` | `core.union` | 5 | 1/1 | partial |
@@ -73,8 +73,8 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `transform:summarize` | `core.summarize` | 9 | 4/4 | partial |
 | `transform:transpose` | `core.transpose` | 1 | 1/1 | partial |
 | `transform:weighted-average` | `core.weighted_average` | 1 | 1/1 | partial |
-| `interface:macro-input` | `flowengine.macro_input` | 11 | 0/0 | not-tested |
-| `interface:macro-output` | `flowengine.macro_output` | 11 | 0/0 | not-tested |
+| `interface:macro-input` | `flowengine.macro_input` | 12 | 0/0 | not-tested |
+| `interface:macro-output` | `flowengine.macro_output` | 12 | 0/0 | not-tested |
 | `developer:base64-encoder` | `core.base64_encoder` | 1 | 0/0 | not-tested |
 | `developer:blob-convert` | `core.blob_convert` | 1 | 0/0 | not-tested |
 | `developer:block-until-done` | `core.block_until_done` | 1 | 0/0 | not-tested |

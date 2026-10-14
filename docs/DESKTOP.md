@@ -17,7 +17,8 @@ browser build used for automated UI tests). Source: `desktop/`.
   tool cannot be used.
 * **Macro runtimes:** the Macro runtimes palette contains Workflow Macro, Batch Macro, and Iterative Macro.
   Workflow Macro runs a child workflow or relative `.yxmc` definition through typed Macro Input/Output boundaries,
-  including nested calls. Batch Macro runs once per ordered control-table record and applies declared updates to
+  including nested calls and multiple parent tables mapped with explicit `input[n]` connection indices. Batch
+  Macro runs once per ordered control-table record and applies declared updates to
   existing child tool configuration paths; output schemas must match. Iterative Macro feeds output back as the next
   input until all rows satisfy the configured termination expression, or fails on its iteration limit. Native
   Alteryx Action and Control Parameter XML settings are not yet mapped into these runtimes.

@@ -108,6 +108,37 @@ class StandardMacroTests(unittest.TestCase):
         self.assertEqual(sum(event['event_type'] == 'macro-started' for event in nested), 1)
         self.assertEqual(sum(event['event_type'] == 'macro-completed' for event in nested), 1)
 
+    def test_macro_binds_multiple_parent_connections_to_distinct_child_inputs(self):
+        left = text_input('left', [('id', 'int32'), ('left_value', 'string')], [[1, 'L1'], [2, 'L2']])
+        right = text_input('right', [('id', 'int32'), ('right_value', 'string')], [[1, 'R1'], [3, 'R3']])
+        child = workflow([
+            {'id': 'left-in', 'tool': 'flowengine.macro_input', 'config': {'name': 'Left'}},
+            {'id': 'right-in', 'tool': 'flowengine.macro_input', 'config': {'name': 'Right'}},
+            {'id': 'join', 'tool': 'core.join', 'config': {'by': 'fields',
+                'keys': [{'left': 'id', 'right': 'id'}]}},
+            {'id': 'out', 'tool': 'flowengine.macro_output', 'config': {'name': 'Joined'}},
+        ], [edge('left-in', 'output', 'join', 'left'), edge('right-in', 'output', 'join', 'right'),
+            edge('join', 'joined', 'out', 'input')], name='Two input macro')
+        macro = {'id': 'macro', 'tool': 'flowengine.macro', 'config': {
+            'workflow': child, 'input_bindings': {'Left': 'input[0]', 'Right': 'input[1]'},
+            'output_name': 'Joined'}}
+        outer = workflow([left, right, macro, {'id': 'browse', 'tool': 'core.browse', 'config': {}}],
+                         [edge('left', 'output', 'macro', 'input'), edge('right', 'output', 'macro', 'input'),
+                          edge('macro', 'output', 'browse', 'input')])
+        result = run_workflow(outer, base_dir=ROOT)
+        self.assertTrue(result.ok, result.error)
+        self.assertEqual(rows(result.output('macro', 'output')), [[1, 'L1', 1, 'R1']])
+
+        macro['config']['input_bindings'] = {'Left': 'input', 'Right': 'input'}
+        ambiguous = run_workflow(outer, base_dir=ROOT)
+        self.assertFalse(ambiguous.ok)
+        self.assertIn('select one with an indexed binding', ambiguous.error['message'])
+
+        macro['config']['input_bindings'] = {'Left': 'unknown[0]', 'Right': 'input[1]'}
+        unknown_anchor = run_workflow(outer, base_dir=ROOT)
+        self.assertFalse(unknown_anchor.ok)
+        self.assertIn("unconnected parent anchor 'unknown'", unknown_anchor.error['message'])
+
     def test_imported_yxmc_macro_input_output_runs_from_relative_path(self):
         from flowengine.interop.yxmd import import_file
         macro_xml = '''<?xml version="1.0"?>

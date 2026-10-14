@@ -87,8 +87,8 @@
     ]
   },
   "independent_tests": {
-    "count": 21,
-    "passing": 21,
+    "count": 22,
+    "passing": 22,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
@@ -109,6 +109,7 @@
       "test_macros.IterativeMacroTests.test_state_is_fed_back_until_all_rows_meet_termination",
       "test_macros.IterativeMacroTests.test_zero_rows_terminate_and_iteration_limit_is_a_failure",
       "test_macros.StandardMacroTests.test_imported_yxmc_macro_input_output_runs_from_relative_path",
+      "test_macros.StandardMacroTests.test_macro_binds_multiple_parent_connections_to_distinct_child_inputs",
       "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
       "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level"
     ]

@@ -117,7 +117,8 @@ def render() -> str:
         "## Priority sequence",
         "",
         "1. Macro runtime checkpoint: standard and nested typed workflows, batch execution over ordered control "
-        "records using explicitly declared child-config Actions, and iterative state feedback with termination, "
+        "records using explicitly declared child-config Actions, indexed multi-parent-input binding, and iterative "
+        "state feedback with termination, "
         "limits and cancellation execute in the Flowbench extension runtime. Imported Alteryx Macro Input/Output "
         "settings that are not mapped are rejected. **Next item: map native imported Action/Control Parameter "
         "nodes, their configuration and anchors into batch execution, then validate against authorized reference "
