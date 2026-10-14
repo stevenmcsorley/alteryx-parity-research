@@ -2,7 +2,7 @@
 
 > **Generated source of truth.** Rebuild with `python scripts/build_parity_roadmap.py`; do not hand-edit rows. Catalogue identity comes from `data/catalog.json`; implementation and E1/E2 test status come from `data/tool-status.json`, generated from registered kernels, executed test attribution and conformance evidence. Contracts provide observed anchors, declared configuration evidence, dependencies and unresolved behaviour. Unknown means unknown; it is never inferred as supported.
 
-Catalogue snapshot: Designer 2026.1.4.126 (pinned project reference; current online catalog may differ) (do not sync rolling changes without review). Behavioural reference: Designer 2026.2.0.8, E1 and E2. Entries: **323**. Last evidence-ledger test run: 168 run, 0 failed. See `docs/TOOL_STATUS_RULES.md` for status definitions.
+Catalogue snapshot: Designer 2026.1.4.126 (pinned project reference; current online catalog may differ) (do not sync rolling changes without review). Behavioural reference: Designer 2026.2.0.8, E1 and E2. Entries: **323**. Last evidence-ledger test run: 174 run, 0 failed. See `docs/TOOL_STATUS_RULES.md` for status definitions.
 
 ## Per-entry work queue
 
