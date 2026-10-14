@@ -20,6 +20,7 @@ class ResearchCoverageTests(unittest.TestCase):
     def test_every_category_occurrence_has_a_brief_and_valid_contract(self):
         schema = json.loads((ROOT / 'schemas/tool-contract.schema.json').read_text(encoding='utf-8'))
         validator = jsonschema.Draft202012Validator(schema)
+        ledger = {r['id']: r for r in json.loads((ROOT / 'data/tool-status.json').read_text(encoding='utf-8'))['tools']}
         paths = []
         for row in self.rows:
             base = ROOT / 'tool-contracts' / slug(row['category'])
@@ -28,7 +29,12 @@ class ResearchCoverageTests(unittest.TestCase):
             self.assertTrue(brief.is_file(), row['id'])
             self.assertTrue(contract.is_file(), row['id'])
             text = brief.read_text(encoding='utf-8')
-            self.assertTrue('NOT a working tool implementation' in text or 'NOT a verified specification' in text, row['id'])
+            status_marker = 'NOT a working tool implementation' in text or 'NOT a verified specification' in text
+            if not status_marker and ledger[row['id']]['implementation_status'] == 'implemented' and ledger[row['id']]['verification_status'] == 'not-tested':
+                self.assertIn('not reference verified', text.lower(), row['id'])
+                self.assertIn('evidence limits', text.lower(), row['id'])
+            else:
+                self.assertTrue(status_marker, row['id'])
             doc = json.loads(contract.read_text(encoding='utf-8'))
             validator.validate(doc)
             self.assertEqual(doc['id'], row['id'])

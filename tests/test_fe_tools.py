@@ -246,6 +246,40 @@ class PreparationTests(unittest.TestCase):
         out, _ = run_tool('core.data_cleansing', {'remove_null_rows': True}, {'input': data})
         self.assertEqual(len(out['output']), 2)
 
+    def test_data_cleanse_pro_unicode_characters_nulls_and_selected_fields(self):
+        data = ([('text', 'v_wstring'), ('amount', 'fixed_decimal'), ('untouched', 'v_string')], [
+            [' <h1>Zoë</h1>\u200b A\t  B! ', None, 'keep'],
+            ['A1-B!', '0.00', 'same'],
+            [None, '2.50', 'null text'],
+        ])
+        cfg = {'fields': ['text', 'amount'], 'remove_html_tags': True, 'remove_invisible_characters': True,
+               'remove_tabs_line_breaks_and_duplicates': True, 'remove_leading_and_trailing_whitespace': True,
+               'modify_case': True, 'case': 'upper', 'replace_string_columns': True, 'string_nulls': 'blank',
+               'replace_numeric_columns': True, 'numeric_nulls': 'zero'}
+        out, _ = run_tool('core.data_cleanse_pro', cfg, {'input': data})
+        self.assertEqual(rows(out['output']), [['ZOË A B!', Decimal('0'), 'keep'], ['A1-B!', Decimal('0'), 'same'],
+                                               ['', Decimal('2.50'), 'null text']])
+        self.assertEqual(out['output'].schema.field('amount').type, T.FIXED_DECIMAL)
+
+    def test_data_cleanse_pro_unicode_categories_exceptions_and_null_filtering(self):
+        data = ([('s', 'v_wstring'), ('n', 'int32'), ('empty', 'v_string')], [
+            ['A٢½–💷!', 0, ''], [None, None, ''], [None, None, None],
+        ])
+        cfg = {'remove_letters': True, 'letters_except': 'A', 'remove_numbers': True, 'numbers_except': '٢',
+               'remove_punctuation': True, 'punctuation_except': '!', 'replace_numeric_columns': True,
+               'numeric_nulls': 'nullify_zero', 'remove_null_rows': True, 'fields': ['s', 'n']}
+        out, _ = run_tool('core.data_cleanse_pro', cfg, {'input': data})
+        self.assertEqual(rows(out['output']), [['A٢!', None, ''], [None, None, '']])
+        self.assertEqual(out['output'].schema.names, ['s', 'n', 'empty'])
+        cfg['remove_null_columns'] = True
+        out, _ = run_tool('core.data_cleanse_pro', cfg, {'input': data})
+        self.assertEqual(out['output'].schema.names, ['s', 'empty'])
+
+    def test_data_cleanse_pro_rejects_missing_selected_field(self):
+        from flowengine.errors import WorkflowValidationError
+        with self.assertRaises(WorkflowValidationError):
+            run_tool_result('core.data_cleanse_pro', {'fields': ['missing']}, {'input': PEOPLE})
+
 
 class JoinTests(unittest.TestCase):
     L = ([('id', 'int32'), ('v', 'v_string')], [[1, 'a'], [2, 'b'], [2, 'b2'], [3, 'c'], [None, 'n']])

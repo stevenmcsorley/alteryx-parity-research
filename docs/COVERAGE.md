@@ -12,7 +12,7 @@
 | Machine-readable contracts generated | 323 |
 | Entries with known anchors (manifest, reference-observed or public-doc) | 183 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 60 |
+| Independent kernels implemented and passing tests | 61 |
 | Independently implemented application adapters (in progress) | 1 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 174 run, 0 failed |
+| Unit/integration tests in last ledger build | 177 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -36,9 +36,10 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:directory` | `core.directory` | 1 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 13 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 8 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 92 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 95 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
+| `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
 | `preparation:data-cleansing` | `core.data_cleansing` | 3 | 0/0 | not-tested |
 | `preparation:filter` | `core.filter` | 21 | 5/5 | partial |
 | `preparation:formula` | `core.formula` | 21 | 12/12 | partial |
@@ -118,7 +119,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Parse | 4 | 4 | 4 | 4 | 0 |
 | Predictive | 25 | 0 | 0 | 8 | 0 |
 | Predictive Grouping | 9 | 0 | 0 | 3 | 0 |
-| Preparation | 21 | 20 | 12 | 21 | 0 |
+| Preparation | 21 | 21 | 12 | 21 | 0 |
 | Prescriptive | 4 | 0 | 0 | 3 | 0 |
 | Reporting | 13 | 0 | 0 | 11 | 0 |
 | SDK Examples | 1 | 0 | 0 | 0 | 0 |

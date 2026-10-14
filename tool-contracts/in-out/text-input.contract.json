@@ -138,8 +138,8 @@
     ]
   },
   "independent_tests": {
-    "count": 92,
-    "passing": 92,
+    "count": 95,
+    "passing": 95,
     "tests": [
       "test_fe_executor.ExecutionTests.test_cancellation",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
@@ -177,6 +177,9 @@
       "test_fe_tools.JoinTests.test_union_by_name_and_position",
       "test_fe_tools.ParseTests.test_regex_modes",
       "test_fe_tools.ParseTests.test_text_to_columns",
+      "test_fe_tools.PreparationTests.test_data_cleanse_pro_rejects_missing_selected_field",
+      "test_fe_tools.PreparationTests.test_data_cleanse_pro_unicode_categories_exceptions_and_null_filtering",
+      "test_fe_tools.PreparationTests.test_data_cleanse_pro_unicode_characters_nulls_and_selected_fields",
       "test_fe_tools.PreparationTests.test_data_cleansing",
       "test_fe_tools.PreparationTests.test_filter_basic_and_custom_partition",
       "test_fe_tools.PreparationTests.test_filter_rejects_non_boolean_and_bad_config",

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import functools
 import re
+import unicodedata
 from decimal import Decimal
 
 from ..errors import ConfigError, DataError, ExpressionError, SchemaError
@@ -708,4 +709,126 @@ class DataCleansing(Tool):
         return v
 
 
-TOOLS = [Filter, Formula, Select, Sort, RecordID, Sample, Unique, GenerateRows, MultiRowFormula, DataCleansing]
+# ======================================================================== Data Cleanse Pro
+
+class DataCleansePro(Tool):
+    """Independent Unicode-aware implementation of the documented AMP cleanse options.
+
+    This is a distinct tool from the legacy Data Cleansing macro. Unverified
+    ICU edge cases are intentionally not described as reference-equivalent.
+    """
+    streaming = 'row-local'
+
+    def can_stream(self, cfg):
+        return not (cfg['remove_null_rows'] or cfg['remove_null_columns'])
+
+    def infer(self, ctx, cfg, inputs):
+        # Column removal depends on values and cannot be known from empty-schema inference.
+        if cfg['remove_null_columns']:
+            return None
+        return super().infer(ctx, cfg, inputs)
+
+    manifest = ToolManifest(
+        tool_id='core.data_cleanse_pro', version='1.0.0', display_name='Data Cleanse Pro',
+        catalog_ids=('preparation:data-cleanse-pro',), inputs=(Anchor('input', 'Input'),),
+        outputs=(Anchor('output', 'Output'),),
+        description='AMP-style cleansing for selected fields: null handling, Unicode character removal, whitespace, HTML tags and case.',
+        config_schema={
+            'type': 'object', 'additionalProperties': False,
+            'properties': {
+                'fields': {'type': ['array', 'null'], 'items': {'type': 'string'}, 'default': None,
+                           'description': 'Selected columns; null selects every input column.'},
+                'remove_null_rows': {'type': 'boolean', 'default': False},
+                'remove_null_columns': {'type': 'boolean', 'default': False},
+                'remove_leading_and_trailing_whitespace': {'type': 'boolean', 'default': True},
+                'remove_tabs_line_breaks_and_duplicates': {'type': 'boolean', 'default': False},
+                'remove_all_whitespace': {'type': 'boolean', 'default': False},
+                'remove_html_tags': {'type': 'boolean', 'default': False},
+                'remove_invisible_characters': {'type': 'boolean', 'default': False},
+                'remove_letters': {'type': 'boolean', 'default': False},
+                'letters_except': {'type': 'string', 'default': ''},
+                'remove_numbers': {'type': 'boolean', 'default': False},
+                'numbers_except': {'type': 'string', 'default': ''},
+                'remove_punctuation': {'type': 'boolean', 'default': False},
+                'punctuation_except': {'type': 'string', 'default': ''},
+                'replace_string_columns': {'type': 'boolean', 'default': False},
+                'string_nulls': {'enum': ['preserve', 'blank', 'nullify_blank'], 'default': 'blank'},
+                'replace_numeric_columns': {'type': 'boolean', 'default': False},
+                'numeric_nulls': {'enum': ['preserve', 'zero', 'nullify_zero'], 'default': 'zero'},
+                'modify_case': {'type': 'boolean', 'default': False},
+                'case': {'enum': ['upper', 'lower', 'title'], 'default': 'upper'},
+            },
+        })
+
+    def run(self, ctx, cfg, inputs):
+        table: Table = inputs['input']
+        selected = set(table.schema.names if cfg['fields'] is None else cfg['fields'])
+        require_fields(table.schema, list(selected))
+        fields = list(table.schema)
+        cols = [list(c) for c in table.columns]
+        for fi, field in enumerate(fields):
+            if field.name not in selected:
+                continue
+            values = cols[fi]
+            if field.type.is_string:
+                values = [self._clean_string(v, cfg) for v in values]
+                if cfg['replace_string_columns']:
+                    if cfg['string_nulls'] == 'blank':
+                        values = ['' if v is None else v for v in values]
+                    elif cfg['string_nulls'] == 'nullify_blank':
+                        values = [None if v == '' else v for v in values]
+            elif field.type.is_numeric and cfg['replace_numeric_columns']:
+                if cfg['numeric_nulls'] == 'zero':
+                    zero = (Decimal(0).quantize(Decimal(1).scaleb(-field.scale)) if field.type is FieldType.FIXED_DECIMAL
+                            else (0.0 if field.type in (FieldType.FLOAT, FieldType.DOUBLE) else 0))
+                    values = [zero if v is None else v for v in values]
+                elif cfg['numeric_nulls'] == 'nullify_zero':
+                    values = [None if v == 0 else v for v in values]
+            cols[fi] = values
+        # The documented null row/column removals occur after all other steps.
+        result = Table(fields, cols)
+        if cfg['remove_null_rows']:
+            keep = [i for i, row in enumerate(result.rows()) if not all(v is None for v in row)]
+            result = result.take(keep)
+        if cfg['remove_null_columns']:
+            keep_fields = [f.name for f, values in zip(result.schema, result.columns)
+                           if not all(v is None for v in values)]
+            result = result.select(keep_fields)
+        return {'output': result}
+
+    @staticmethod
+    def _clean_string(value, cfg):
+        if value is None:
+            return None
+        value = str(value)
+        if cfg['remove_html_tags']:
+            value = re.sub(r'<[^>]*>', '', value)
+        if cfg['remove_invisible_characters']:
+            value = ''.join(ch for ch in value if unicodedata.category(ch) != 'Cf')
+        if cfg['remove_letters']:
+            exceptions = cfg['letters_except']
+            value = ''.join(ch for ch in value if not (unicodedata.category(ch).startswith('L') and ch not in exceptions))
+        if cfg['remove_numbers']:
+            exceptions = cfg['numbers_except']
+            value = ''.join(ch for ch in value if not (unicodedata.category(ch).startswith('N') and ch not in exceptions))
+        if cfg['remove_punctuation']:
+            exceptions = cfg['punctuation_except']
+            value = ''.join(ch for ch in value if not (unicodedata.category(ch)[0] in ('P', 'S') and ch not in exceptions))
+        if cfg['remove_all_whitespace']:
+            value = ''.join(ch for ch in value if not ch.isspace())
+        elif cfg['remove_tabs_line_breaks_and_duplicates']:
+            value = re.sub(r'\s+', ' ', value)
+        if cfg['remove_leading_and_trailing_whitespace']:
+            value = value.strip()
+        if cfg['modify_case']:
+            if cfg['case'] == 'upper':
+                value = value.upper()
+            elif cfg['case'] == 'lower':
+                value = value.lower()
+            else:
+                value = value.title()
+        return value
+
+
+TOOLS = [Filter, Formula, Select, Sort, RecordID, Sample, Unique, GenerateRows, MultiRowFormula, DataCleansing,
+         DataCleansePro]
