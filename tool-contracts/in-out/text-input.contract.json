@@ -138,8 +138,8 @@
     ]
   },
   "independent_tests": {
-    "count": 88,
-    "passing": 88,
+    "count": 90,
+    "passing": 90,
     "tests": [
       "test_fe_executor.ExecutionTests.test_cancellation",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
@@ -159,9 +159,11 @@
       "test_fe_scale.ArrowTests.test_parquet_and_ipc_io_through_tools",
       "test_fe_scale.HistoryAndProfileTests.test_history_records_runs",
       "test_fe_scale.HistoryAndProfileTests.test_profiles_change_only_evidenced_behaviour",
+      "test_fe_service.ServiceTests.test_application_values_are_not_persisted_in_run_history",
       "test_fe_service.ServiceTests.test_async_run_streams_events_and_finishes",
       "test_fe_service.ServiceTests.test_history_through_service",
       "test_fe_service.ServiceTests.test_run_previews_and_errors",
+      "test_fe_service.ServiceTests.test_typed_application_answers_bind_actions_for_real_execution",
       "test_fe_service.ServiceTests.test_validate_returns_schemas_and_problems",
       "test_fe_tools.InOutTests.test_browse_captures",
       "test_fe_tools.InOutTests.test_output_roundtrip_csv_json_and_if_exists",

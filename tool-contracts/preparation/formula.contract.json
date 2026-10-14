@@ -144,8 +144,8 @@
     ]
   },
   "independent_tests": {
-    "count": 19,
-    "passing": 19,
+    "count": 21,
+    "passing": 21,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
@@ -156,7 +156,9 @@
       "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
       "test_fe_scale.StreamingTests.test_streamed_equals_batch",
       "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",
+      "test_fe_service.ServiceTests.test_application_values_are_not_persisted_in_run_history",
       "test_fe_service.ServiceTests.test_cancel_running_workflow",
+      "test_fe_service.ServiceTests.test_typed_application_answers_bind_actions_for_real_execution",
       "test_fe_service.ServiceTests.test_validate_returns_schemas_and_problems",
       "test_fe_tools.PreparationTests.test_formula_conversion_policy",
       "test_fe_tools.PreparationTests.test_formula_sequential_and_types",
