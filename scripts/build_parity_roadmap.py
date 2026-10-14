@@ -116,7 +116,9 @@ def render() -> str:
         "",
         "## Priority sequence",
         "",
-        "1. Executable standard macros, then batch and iterative macros, with parent/child provenance and nested calls.",
+        "1. Standard macros: current checkpoint executes nested typed workflows and imported `.yxmc` boundaries. "
+        "**Next item: Batch Macro control-record invocation with Action-driven child configuration binding.** "
+        "Then implement iterative loop state, termination, limits and cancellation.",
         "2. Interface tool semantics and analytic application execution in the existing desktop.",
         "3. Remaining core, Developer and Documentation tools, selected by dependencies and evidence in the table.",
         "4. Spatial, licensed-data, external-service and other blocked tools when their stated prerequisites are available.",
