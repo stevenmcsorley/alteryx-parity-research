@@ -91,7 +91,8 @@ class Plan:
 
 
 def plan_workflow(doc: dict, registry: Registry | None = None, *, base_dir: Path | None = None,
-                  infer_schemas: bool = True, profile=None) -> tuple[Plan | None, list[dict]]:
+                  infer_schemas: bool = True, profile=None,
+                  macro_input_schemas: dict | None = None) -> tuple[Plan | None, list[dict]]:
     """Validate a document and build an execution plan. Returns (plan, problems)."""
     registry = registry or default_registry()
     problems = list(_schema_problems(doc))
@@ -193,11 +194,12 @@ def plan_workflow(doc: dict, registry: Registry | None = None, *, base_dir: Path
         return plan, problems
     if infer_schemas:
         from .profiles import get_profile
-        _infer(plan, base_dir or Path.cwd(), problems, profile or get_profile(doc.get('metadata', {}).get('profile')))
+        _infer(plan, base_dir or Path.cwd(), problems, profile or get_profile(doc.get('metadata', {}).get('profile')),
+               macro_input_schemas or {})
     return plan, problems
 
 
-def _infer(plan: Plan, base_dir: Path, problems: list, profile=None):
+def _infer(plan: Plan, base_dir: Path, problems: list, profile=None, macro_input_schemas=None):
     """Static schema propagation; stops at nodes whose schema needs runtime data."""
     events = []
     for nid in plan.order:
@@ -215,7 +217,7 @@ def _infer(plan: Plan, base_dir: Path, problems: list, profile=None):
         if unknown:
             continue
         ctx = RunContext(nid, base_dir, _dt.datetime.now, lambda *a, **k: events.append((a, k)), CancelToken(),
-                         dry_run=True, profile=profile)
+                         dry_run=True, profile=profile, macro_input_schemas=dict(macro_input_schemas or {}))
         try:
             out = pn.tool.infer(ctx, pn.config, ins)
         except (SchemaError, ConfigError, ExpressionError) as e:
@@ -292,7 +294,8 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                  profile: str | None = None, workers: int = 1, memory_budget: int | None = None,
                  history=None, spill_dir: Path | None = None, batch_rows: int | None = None,
                  enable_pushdown: bool = True, result_sink=None,
-                 _macro_inputs: dict | None = None, _macro_stack: tuple[str, ...] = ()) -> RunResult:
+                 _macro_inputs: dict | None = None, _macro_input_schemas: dict | None = None,
+                 _macro_stack: tuple[str, ...] = ()) -> RunResult:
     """Validate then execute ``doc``. Raises WorkflowValidationError if invalid.
 
     ``retain``: 'all' keeps every output table; 'preview' keeps the first 1000 rows of each;
@@ -369,7 +372,8 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
         return RunContext(nid, base_dir, clock, lambda t, **d: elog.emit(t, nid, **d), cancel_token,
                           limits=dict(limits or {}), browse_sink=capture_browse,
                           constants=dict(doc.get('constants', {})), profile=prof,
-                          macro_inputs=dict(_macro_inputs or {}), macro_stack=_macro_stack)
+                          macro_inputs=dict(_macro_inputs or {}),
+                          macro_input_schemas=dict(_macro_input_schemas or {}), macro_stack=_macro_stack)
     elog.emit('run-started', engine_version=__version__, workflow_digest=workflow_digest(doc), profile=prof.name,
               node_count=len(plan.order), workers=workers, memory_budget=memory_budget)
     if db_plan:
@@ -384,7 +388,8 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
         ctx = RunContext(nid, base_dir, clock, lambda t, **d: buffered.append((t, d)), cancel_token,
                          limits=dict(limits or {}), browse_sink=capture_browse,
                          constants=dict(doc.get('constants', {})), profile=prof,
-                         macro_inputs=dict(_macro_inputs or {}), macro_stack=_macro_stack)
+                         macro_inputs=dict(_macro_inputs or {}),
+                         macro_input_schemas=dict(_macro_input_schemas or {}), macro_stack=_macro_stack)
         started = time.perf_counter()
         try:
             out = pn.tool.run(ctx, pn.config, inputs)

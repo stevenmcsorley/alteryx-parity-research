@@ -219,6 +219,12 @@ test('code tools run only after the user allows them', async ({ page }) => {
 
 test('database extensions are available and the connection manager opens', async ({ page }) => {
   await ready(page);
+  await expect(page.getByTestId('palette-extension-flowengine.macro')).toContainText('Workflow Macro');
+  await expect(page.getByTestId('palette-extension-flowengine.batch_macro')).toContainText('Batch Macro');
+  await page.getByTestId('palette-extension-flowengine.macro').dblclick();
+  await expect(page.getByTestId('inspector')).toContainText('Workflow Macro');
+  await page.getByRole('radio', { name: 'Basic: definition_path' }).click();
+  await expect(page.getByTestId('inspector').getByLabel('Definition path')).toBeVisible();
   await expect(page.getByTestId('palette-extension-core.db_input')).toContainText('Database Input');
   await page.getByRole('toolbar').getByRole('button', { name: 'Databases' }).click();
   const dialog = page.getByRole('dialog', { name: 'Database connections' });
@@ -232,4 +238,7 @@ test('database extensions are available and the connection manager opens', async
   await expect(page.getByTestId('inspector')).toContainText('Write-enabled connection');
   await expect(page.getByTestId('inspector')).toContainText('Append to existing table');
   await expect(page.getByTestId('inspector')).toContainText('confirmation on every workflow run');
+  await page.getByTestId('palette-extension-flowengine.batch_macro').dblclick();
+  await expect(page.getByTestId('inspector')).toContainText('Batch Macro');
+  await expect(page.getByTestId('inspector').getByLabel('Max iterations')).toBeVisible();
 });

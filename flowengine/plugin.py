@@ -101,6 +101,7 @@ class RunContext:
     constants: dict = field(default_factory=dict)
     profile: Any = None  # flowengine.profiles.Profile
     macro_inputs: dict = field(default_factory=dict)
+    macro_input_schemas: dict = field(default_factory=dict)
     macro_stack: tuple[str, ...] = ()
 
     def warn(self, message: str, **data):

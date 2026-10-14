@@ -31,6 +31,26 @@ def standard_macro_workflow():
     return outer, direct
 
 
+def batch_macro_workflow(control_rows, *, max_iterations=10):
+    data = text_input('source', [('value', 'int32')], [[1], [2], [3]])
+    controls = text_input('controls', [('threshold', 'int32')], control_rows)
+    child = workflow([
+        {'id': 'input', 'tool': 'flowengine.macro_input', 'config': {'name': 'Input'}},
+        {'id': 'filter', 'tool': 'core.filter', 'config': {
+            'field': 'value', 'operator': '>=', 'value': 0}},
+        {'id': 'output', 'tool': 'flowengine.macro_output', 'config': {'name': 'Output'}},
+    ], [edge('input', 'output', 'filter', 'input'), edge('filter', 'true', 'output', 'input')])
+    batch = {'id': 'batch', 'tool': 'flowengine.batch_macro', 'config': {
+        'workflow': child, 'input_name': 'Input', 'output_name': 'Output',
+        'parameters': [{'name': 'threshold', 'field': 'threshold'}],
+        'actions': [{'parameter': 'threshold', 'target_node': 'filter', 'config_path': '/config/value'}],
+        'max_iterations': max_iterations}}
+    doc = workflow([data, controls, batch, {'id': 'browse', 'tool': 'core.browse', 'config': {}}],
+                   [edge('source', 'output', 'batch', 'input'), edge('controls', 'output', 'batch', 'control'),
+                    edge('batch', 'output', 'browse', 'input')], name='Batch macro acceptance')
+    return doc
+
+
 class StandardMacroTests(unittest.TestCase):
     def test_macro_input_filter_formula_output_matches_direct_workflow(self):
         macro_doc, direct_doc = standard_macro_workflow()
@@ -97,6 +117,45 @@ class StandardMacroTests(unittest.TestCase):
             result = run_workflow(doc, base_dir=Path(temp))
             self.assertTrue(result.ok, result.error)
             self.assertEqual(rows(result.output('macro', 'output')), [[3], [8]])
+
+
+class BatchMacroTests(unittest.TestCase):
+    def test_control_records_reconfigure_and_run_in_input_order(self):
+        result = run_workflow(batch_macro_workflow([[3], [2]]), base_dir=ROOT)
+        self.assertTrue(result.ok, result.error)
+        self.assertEqual(rows(result.output('batch', 'output')), [[3], [2], [3]])
+        events = [event for event in result.events if event['type'] == 'batch-iteration-completed']
+        self.assertEqual([event['iteration'] for event in events], [1, 2])
+        self.assertEqual([event['rows'] for event in events], [1, 2])
+        self.assertTrue(all(event['child_run_id'] for event in events))
+
+    def test_empty_control_table_returns_inferred_empty_schema(self):
+        result = run_workflow(batch_macro_workflow([]), base_dir=ROOT)
+        self.assertTrue(result.ok, result.error)
+        table = result.output('batch', 'output')
+        self.assertEqual(len(table), 0)
+        self.assertEqual(table.schema.names, ['value'])
+
+    def test_batch_iteration_limit_and_bad_action_fail_explicitly(self):
+        limited = run_workflow(batch_macro_workflow([[1], [2]], max_iterations=1), base_dir=ROOT)
+        self.assertFalse(limited.ok)
+        self.assertEqual(limited.error['node_id'], 'batch')
+        self.assertIn('iteration limit', limited.error['message'])
+
+        bad = batch_macro_workflow([[2]])
+        bad['nodes'][2]['config']['actions'][0]['config_path'] = '/tool/core.filter'
+        failed = run_workflow(bad, base_dir=ROOT)
+        self.assertFalse(failed.ok)
+        self.assertIn('must target an existing child tool config path', failed.error['message'])
+
+    def test_batch_child_validation_failure_reports_iteration_and_call_node(self):
+        doc = batch_macro_workflow([[2]])
+        doc['nodes'][2]['config']['actions'][0]['config_path'] = '/config/field'
+        result = run_workflow(doc, base_dir=ROOT)
+        self.assertFalse(result.ok)
+        self.assertEqual(result.error['node_id'], 'batch')
+        self.assertEqual(result.error['code'], 'batch-macro-iteration-failed')
+        self.assertIn('iteration 1 failed validation', result.error['message'])
 
     def test_macro_child_failure_reports_call_node_and_stack(self):
         doc, _ = standard_macro_workflow()

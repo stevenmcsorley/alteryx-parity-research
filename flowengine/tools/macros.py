@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import copy
+from decimal import Decimal
 from pathlib import Path
 
 from ..errors import ConfigError, DataError, EngineError
@@ -20,7 +22,8 @@ class MacroInput(Tool):
         description='Expose a typed parent workflow input table inside a macro definition.')
 
     def infer(self, ctx, config, inputs):
-        return None
+        schema = ctx.macro_input_schemas.get(config['name'])
+        return {'output': schema} if schema is not None else None
 
     def run(self, ctx: RunContext, config, inputs):
         ctx.check_cancelled()
@@ -129,10 +132,17 @@ class WorkflowMacro(Tool):
                               node_id=ctx.node_id)
         target = matches[0]
         ctx.emit('macro-started', definition=identity, depth=len(stack), input_names=sorted(bindings))
-        result = run_workflow(doc, base_dir=child_base, registry=None, clock=ctx.clock,
-                              cancel_token=ctx.cancel_token, limits=ctx.limits,
-                              profile=ctx.profile.name if ctx.profile else None,
-                              _macro_inputs=bindings, _macro_stack=stack)
+        try:
+            result = run_workflow(doc, base_dir=child_base, registry=None, clock=ctx.clock,
+                                  cancel_token=ctx.cancel_token, limits=ctx.limits,
+                                  profile=ctx.profile.name if ctx.profile else None,
+                                  _macro_inputs=bindings,
+                                  _macro_input_schemas={name: table.schema for name, table in bindings.items()},
+                                  _macro_stack=stack)
+        except EngineError as e:
+            raise EngineError(f'Macro child validation failed at {e.node_id or "-"}: {e.message}; '
+                              f'call stack: {" -> ".join(ctx.macro_stack + (identity,))}',
+                              node_id=ctx.node_id, code='macro-execution-failed') from None
         if not result.ok:
             nested = result.error or {'code': result.status}
             raise EngineError(f"Macro child failed at {nested.get('node_id') or '-'}: {nested.get('message') or nested['code']}; "
@@ -152,9 +162,183 @@ class WorkflowMacro(Tool):
         return {'output': child_table}
 
 
+class BatchMacro(Tool):
+    """Re-run one child workflow for each ordered control record and combine matching schemas."""
+    manifest = ToolManifest(
+        tool_id='flowengine.batch_macro', version='1.0.0', display_name='Batch Macro', catalog_ids=(),
+        inputs=(Anchor('input', 'I'), Anchor('control', 'C')),
+        outputs=(Anchor('output', 'O'),),
+        config_schema={
+            'type': 'object', 'additionalProperties': False,
+            'properties': {
+                'workflow': {'type': 'object'},
+                'definition_path': {'type': 'string', 'minLength': 1},
+                'macro_id': {'type': 'string'},
+                'input_name': {'type': 'string', 'minLength': 1, 'default': 'Input'},
+                'output_name': {'type': 'string', 'default': 'Output'},
+                'parameters': {'type': 'array', 'default': [], 'items': {
+                    'type': 'object', 'additionalProperties': False, 'required': ['name', 'field'],
+                    'properties': {'name': {'type': 'string', 'minLength': 1},
+                                   'field': {'type': 'string', 'minLength': 1}}}},
+                'actions': {'type': 'array', 'default': [], 'items': {
+                    'type': 'object', 'additionalProperties': False,
+                    'required': ['parameter', 'target_node', 'config_path'],
+                    'properties': {'parameter': {'type': 'string', 'minLength': 1},
+                                   'target_node': {'type': 'string', 'minLength': 1},
+                                   'config_path': {'type': 'string', 'minLength': 1}}}},
+                'max_iterations': {'type': 'integer', 'minimum': 1, 'default': 10000},
+                'max_depth': {'type': 'integer', 'minimum': 1, 'maximum': 128, 'default': 32},
+            },
+            'oneOf': [{'required': ['workflow']}, {'required': ['definition_path']}],
+        },
+        description='Run one child workflow per control-table record. Declared actions update existing child '
+                    'tool configuration paths; outputs require an identical schema for every iteration.')
+
+    def infer(self, ctx, config, inputs):
+        # Static inference requires the child definition; runtime validates and infers with actual parent schemas.
+        return None
+
+    def run(self, ctx: RunContext, config, inputs):
+        ctx.check_cancelled()
+        doc, child_base = WorkflowMacro()._definition(ctx, config)
+        identity = config.get('macro_id') or _macro_identity(doc)
+        if identity in ctx.macro_stack:
+            raise ConfigError('Recursive batch macro invocation detected: ' +
+                              ' -> '.join(ctx.macro_stack + (identity,)), node_id=ctx.node_id)
+        if len(ctx.macro_stack) >= config['max_depth']:
+            raise ConfigError(f"Macro nesting exceeds configured limit {config['max_depth']}", node_id=ctx.node_id)
+        data = inputs['input']
+        controls = inputs['control']
+        parameters = {p['name']: p['field'] for p in config['parameters']}
+        if len(parameters) != len(config['parameters']):
+            raise ConfigError('Batch macro parameter names must be unique', node_id=ctx.node_id)
+        for field_name in parameters.values():
+            if field_name not in controls.schema:
+                raise DataError(f'Control input has no parameter field {field_name!r}', node_id=ctx.node_id)
+        if not parameters:
+            raise ConfigError('At least one named control parameter is required', node_id=ctx.node_id)
+        for action in config['actions']:
+            if action['parameter'] not in parameters:
+                raise ConfigError(f"Action refers to undefined control parameter {action['parameter']!r}",
+                                  node_id=ctx.node_id)
+        child_inputs = [n for n in doc.get('nodes', []) if n.get('tool') == 'flowengine.macro_input']
+        if not any(n.get('config', {}).get('name') == config['input_name'] for n in child_inputs):
+            raise ConfigError(f"Child macro has no Macro Input named {config['input_name']!r}", node_id=ctx.node_id)
+        output_nodes = [n for n in doc.get('nodes', []) if n.get('tool') == 'flowengine.macro_output'
+                        and n.get('config', {}).get('name', 'Output') == config['output_name']]
+        if len(output_nodes) != 1:
+            raise ConfigError(f"Expected one child Macro Output named {config['output_name']!r}; "
+                              f'found {len(output_nodes)}', node_id=ctx.node_id)
+        output_node = output_nodes[0]['id']
+        run_stack = (*ctx.macro_stack, identity)
+        child_schemas = {config['input_name']: data.schema}
+        planned, problems = _plan_macro(doc, child_base, ctx, child_schemas)
+        if problems:
+            issue = problems[0]
+            raise ConfigError(f"Child macro does not validate before batch execution: {issue['message']}",
+                              node_id=ctx.node_id)
+        empty_schema = planned.schemas.get((output_node, 'output')) if planned else None
+        if not len(controls):
+            if empty_schema is None:
+                raise DataError('Cannot infer batch output schema for zero control records', node_id=ctx.node_id)
+            ctx.emit('batch-completed', definition=identity, iterations=0, rows=0,
+                     digest=Table.empty(empty_schema).canonical_digest())
+            return {'output': Table.empty(empty_schema)}
+
+        limit = min(config['max_iterations'], int(ctx.limits.get('macro_max_iterations', config['max_iterations'])))
+        if len(controls) > limit:
+            raise DataError(f'Batch has {len(controls)} control records, exceeding iteration limit {limit}',
+                            node_id=ctx.node_id)
+        output_parts = []
+        expected_schema = None
+        for index, row in enumerate(controls.rows()):
+            ctx.check_cancelled()
+            iteration_values = {name: _control_json_value(row[controls.schema.index(field_name)], name)
+                                for name, field_name in parameters.items()}
+            iteration_doc = copy.deepcopy(doc)
+            _apply_batch_actions(iteration_doc, config['actions'], iteration_values, ctx.node_id, index)
+            ctx.emit('batch-iteration-started', definition=identity, iteration=index + 1,
+                     parameter_names=sorted(iteration_values))
+            try:
+                result = run_workflow(iteration_doc, base_dir=child_base, clock=ctx.clock,
+                                      cancel_token=ctx.cancel_token, limits=ctx.limits,
+                                      profile=ctx.profile.name if ctx.profile else None,
+                                      _macro_inputs={config['input_name']: data},
+                                      _macro_input_schemas=child_schemas, _macro_stack=run_stack)
+            except EngineError as e:
+                raise EngineError(f'Batch iteration {index + 1} failed validation at {e.node_id or "-"}: '
+                                  f'{e.message}; call stack: {" -> ".join(run_stack)}', node_id=ctx.node_id,
+                                  code='batch-macro-iteration-failed') from None
+            if not result.ok:
+                failure = result.error or {'code': result.status, 'message': 'child execution failed'}
+                raise EngineError(f"Batch iteration {index + 1} failed at {failure.get('node_id') or '-'}: "
+                                  f"{failure.get('message') or failure['code']}; call stack: "
+                                  f"{' -> '.join(run_stack)}", node_id=ctx.node_id,
+                                  code='batch-macro-iteration-failed')
+            output = result.outputs.get(output_node, {}).get('output')
+            if output is None:
+                raise EngineError(f'Batch iteration {index + 1} did not produce the selected macro output',
+                                  node_id=ctx.node_id, code='macro-output-missing')
+            if expected_schema is None:
+                expected_schema = output.schema
+            elif output.schema != expected_schema:
+                raise DataError(f'Batch iteration {index + 1} output schema differs from iteration 1',
+                                node_id=ctx.node_id)
+            output_parts.append(output)
+            ctx.emit('batch-iteration-completed', definition=identity, iteration=index + 1,
+                     rows=len(output), digest=output.canonical_digest(), child_run_id=result.run_id)
+        merged = Table.from_rows(expected_schema, (row for part in output_parts for row in part.rows()))
+        ctx.emit('batch-completed', definition=identity, iterations=len(output_parts), rows=len(merged),
+                 digest=merged.canonical_digest())
+        return {'output': merged}
+
+
+def _plan_macro(doc, base_dir, ctx, macro_input_schemas):
+    from ..executor import plan_workflow
+    return plan_workflow(doc, base_dir=base_dir, profile=ctx.profile,
+                         macro_input_schemas=macro_input_schemas)
+
+
+def _control_json_value(value, name):
+    if value is None or isinstance(value, (str, bool, int, float)):
+        return value
+    if isinstance(value, Decimal):
+        as_float = float(value)
+        if Decimal(str(as_float)) != value:
+            raise DataError(f'Control parameter {name!r} cannot be represented exactly in child JSON configuration')
+        return as_float
+    raise DataError(f'Control parameter {name!r} has unsupported configuration value type {type(value).__name__}')
+
+
+def _apply_batch_actions(doc, actions, values, node_id, iteration):
+    nodes = {node['id']: node for node in doc.get('nodes', [])}
+    for action in actions:
+        target_id = action['target_node']
+        if target_id not in nodes:
+            raise ConfigError(f"Action target node {target_id!r} does not exist", node_id=node_id)
+        segments = action['config_path'].split('/')
+        if not action['config_path'].startswith('/config/') or len(segments) < 3:
+            raise ConfigError('Batch actions must target an existing child tool config path beginning with /config/',
+                              node_id=node_id)
+        try:
+            segments = [part.replace('~1', '/').replace('~0', '~') for part in segments[1:]]
+            cursor = nodes[target_id]
+            for segment in segments[:-1]:
+                if not isinstance(cursor, dict) or segment not in cursor:
+                    raise KeyError(segment)
+                cursor = cursor[segment]
+            leaf = segments[-1]
+            if not isinstance(cursor, dict) or leaf not in cursor:
+                raise KeyError(leaf)
+        except KeyError as exc:
+            raise ConfigError(f"Action config path {action['config_path']!r} does not exist on node {target_id!r}",
+                              node_id=node_id) from None
+        cursor[leaf] = values[action['parameter']]
+
+
 def _macro_identity(doc):
     from ..executor import workflow_digest
     return workflow_digest(doc)
 
 
-TOOLS = [MacroInput, MacroOutput, WorkflowMacro]
+TOOLS = [MacroInput, MacroOutput, WorkflowMacro, BatchMacro]

@@ -15,6 +15,11 @@ browser build used for automated UI tests). Source: `desktop/`.
 * **Palette:** all 323 catalogue entries, search, category filter, "implemented only", status badges derived
   from the evidence ledger (Ready / Ref-tested / Ref-diff / In progress / Unavailable / Blocked) and the reason a
   tool cannot be used.
+* **Macro runtimes:** the Macro runtimes palette contains Workflow Macro and Batch Macro. Workflow Macro runs a
+  child workflow or relative `.yxmc` definition through typed Macro Input/Output boundaries, including nested
+  calls. Batch Macro runs once per ordered control-table record and applies declared updates to existing child
+  tool configuration paths; output schemas must match. Native Alteryx Action and Control Parameter XML settings
+  are not yet mapped into this runtime.
 * **Configuration:** forms generated from each tool's JSON Schema; field pickers per input anchor; expression
   editor with field insertion; Text Input grid; live validation (problems name the node); anchor table;
   incoming/outgoing schema previews; compatibility profile selection.

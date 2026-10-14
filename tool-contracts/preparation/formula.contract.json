@@ -161,7 +161,7 @@
       "test_fe_tools.PreparationTests.test_formula_conversion_policy",
       "test_fe_tools.PreparationTests.test_formula_sequential_and_types",
       "test_fe_tools_wave2.DeveloperWave2.test_detour_and_block_until_done",
-      "test_macros.StandardMacroTests.test_macro_child_failure_reports_call_node_and_stack",
+      "test_macros.BatchMacroTests.test_macro_child_failure_reports_call_node_and_stack",
       "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
       "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level"
     ]
