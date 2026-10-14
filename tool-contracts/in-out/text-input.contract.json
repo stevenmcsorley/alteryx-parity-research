@@ -138,8 +138,8 @@
     ]
   },
   "independent_tests": {
-    "count": 95,
-    "passing": 95,
+    "count": 97,
+    "passing": 97,
     "tests": [
       "test_fe_executor.ExecutionTests.test_cancellation",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
@@ -192,6 +192,8 @@
       "test_fe_tools.PreparationTests.test_select_rename_retype_reorder_unknown",
       "test_fe_tools.PreparationTests.test_sort_multikey_stable_nulls",
       "test_fe_tools.PreparationTests.test_unique",
+      "test_fe_tools.TransformTests.test_arrange_empty_input_preserves_configured_schema_and_bad_config_fails",
+      "test_fe_tools.TransformTests.test_arrange_expands_records_with_keys_literals_names_descriptions_and_typed_values",
       "test_fe_tools.TransformTests.test_count_records",
       "test_fe_tools.TransformTests.test_running_total",
       "test_fe_tools.TransformTests.test_summarize",

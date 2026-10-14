@@ -39,7 +39,7 @@ parse:datetime,Parse,DateTime,AlteryxBasePluginsGui.DateTime.DateTime,"Basic, Fu
 parse:regex,Parse,RegEx,AlteryxBasePluginsGui.RegEx.RegEx,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/parse/regex-tool.html,official-catalog-verified,implemented,partial
 parse:text-to-columns,Parse,Text To Columns,AlteryxBasePluginsGui.TextToColumns.TextToColumns,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/parse/text-to-columns-tool.html,official-catalog-verified,implemented,partial
 parse:xml-parse,Parse,XML Parse,AlteryxBasePluginsGui.XMLParse.XMLParse,Full,https://help.alteryx.com/current/en/designer/tools/parse/xml-parse-tool.html,official-catalog-verified,implemented,partial
-transform:arrange,Transform,Arrange,AlteryxBasePluginsGui.Arrange.Arrange,Full,https://help.alteryx.com/current/en/designer/tools/transform/arrange-tool.html,official-catalog-verified,not-started,not-tested
+transform:arrange,Transform,Arrange,AlteryxBasePluginsGui.Arrange.Arrange,Full,https://help.alteryx.com/current/en/designer/tools/transform/arrange-tool.html,official-catalog-verified,implemented,not-tested
 transform:count-records,Transform,Count Records,CountRecords.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/transform/count-records-tool.html,official-catalog-verified,implemented,partial
 transform:cross-tab,Transform,Cross Tab,AlteryxBasePluginsGui.CrossTab.CrossTab,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/transform/cross-tab-tool.html,official-catalog-verified,implemented,partial
 transform:make-columns,Transform,Make Columns,AlteryxBasePluginsGui.MakeColumns.MakeColumns,Full,https://help.alteryx.com/current/en/designer/tools/transform/make-columns-tool.html,official-catalog-verified,implemented,partial

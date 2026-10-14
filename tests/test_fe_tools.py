@@ -347,6 +347,36 @@ class TransformTests(unittest.TestCase):
     SALES = ([('r', 'v_string'), ('p', 'v_string'), ('amt', 'fixed_decimal'), ('q', 'int32')],
              [['N', 'x', '1.10', 1], ['S', 'y', '2.00', None], ['N', 'y', '3.30', 3], ['N', 'x', None, 4]])
 
+    def test_arrange_expands_records_with_keys_literals_names_descriptions_and_typed_values(self):
+        data = ([{'name': 'store', 'type': 'int32'},
+                 {'name': 'Jan', 'type': 'fixed_decimal', 'size': 8, 'scale': 2},
+                 {'name': 'Feb', 'type': 'fixed_decimal', 'size': 8, 'scale': 2}],
+                [[1, '1.25', '2.50'], [2, '3.00', None]])
+        cfg = {'key_fields': ['store'], 'columns': [
+            {'name': 'Period', 'mode': 'literal'}, {'name': 'Source', 'mode': 'field_name'},
+            {'name': 'Description', 'mode': 'field_description'}, {'name': 'Amount', 'mode': 'field'}],
+            'rows': [['January', 'Jan', 'Jan', 'Jan'], ['February', 'Feb', 'Feb', 'Feb']]}
+        out, _ = run_tool('core.arrange', cfg, {'input': data})
+        table = out['output']
+        self.assertEqual(table.schema.names, ['store', 'Period', 'Source', 'Description', 'Amount'])
+        self.assertEqual(table.schema.field('Amount').type, T.FIXED_DECIMAL)
+        self.assertEqual(rows(table), [[1, 'January', 'Jan', None, Decimal('1.25')],
+                                       [1, 'February', 'Feb', None, Decimal('2.50')],
+                                       [2, 'January', 'Jan', None, Decimal('3.00')],
+                                       [2, 'February', 'Feb', None, None]])
+
+    def test_arrange_empty_input_preserves_configured_schema_and_bad_config_fails(self):
+        data = ([('id', 'int32'), ('amount', 'double')], [])
+        cfg = {'key_fields': ['id'], 'columns': [{'name': 'Amount', 'mode': 'field'}], 'rows': [['amount']]}
+        out, _ = run_tool('core.arrange', cfg, {'input': data})
+        self.assertEqual(out['output'].schema.names, ['id', 'Amount'])
+        self.assertEqual(len(out['output']), 0)
+        from flowengine.errors import WorkflowValidationError
+        with self.assertRaises(WorkflowValidationError):
+            run_tool_result('core.arrange', {**cfg, 'rows': [['missing']]}, {'input': data})
+        with self.assertRaises(WorkflowValidationError):
+            run_tool_result('core.arrange', {**cfg, 'rows': [['amount', 'extra']]}, {'input': data})
+
     def test_summarize(self):
         out, _ = run_tool('core.summarize', {'actions': [
             {'field': 'r', 'op': 'group_by'}, {'field': 'amt', 'op': 'sum'}, {'field': 'q', 'op': 'avg'},

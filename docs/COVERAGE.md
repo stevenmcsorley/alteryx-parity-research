@@ -12,7 +12,7 @@
 | Machine-readable contracts generated | 323 |
 | Entries with known anchors (manifest, reference-observed or public-doc) | 183 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 61 |
+| Independent kernels implemented and passing tests | 62 |
 | Independently implemented application adapters (in progress) | 1 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 177 run, 0 failed |
+| Unit/integration tests in last ledger build | 179 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -36,7 +36,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:directory` | `core.directory` | 1 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 13 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 8 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 95 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 97 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -68,6 +68,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `parse:regex` | `core.regex` | 1 | 3/3 | partial |
 | `parse:text-to-columns` | `core.text_to_columns` | 1 | 1/1 | partial |
 | `parse:xml-parse` | `core.xml_parse` | 1 | 1/1 | partial |
+| `transform:arrange` | `core.arrange` | 2 | 0/0 | not-tested |
 | `transform:count-records` | `core.count_records` | 7 | 1/1 | partial |
 | `transform:cross-tab` | `core.cross_tab` | 1 | 3/3 | partial |
 | `transform:make-columns` | `core.make_columns` | 1 | 1/1 | partial |
@@ -126,7 +127,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Spatial | 15 | 0 | 0 | 14 | 0 |
 | Text Mining | 9 | 0 | 0 | 9 | 0 |
 | Time Series | 9 | 0 | 0 | 4 | 0 |
-| Transform | 8 | 7 | 7 | 8 | 0 |
+| Transform | 8 | 8 | 7 | 8 | 0 |
 
 ## Interpretation
 

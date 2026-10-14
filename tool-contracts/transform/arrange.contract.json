@@ -6,40 +6,100 @@
   "xml_tool_name": "AlteryxBasePluginsGui.Arrange.Arrange",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/transform/arrange-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "KeyFields",
-      "KeyFields/Field",
-      "OutputFields",
-      "OutputFields/Columns",
-      "OutputFields/Data"
-    ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Key Fields",
-      "Output Fields"
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "key_fields": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": [],
+        "description": "Input fields copied to every arranged output row."
+      },
+      "columns": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "mode"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "mode": {
+              "enum": [
+                "literal",
+                "field",
+                "field_name",
+                "field_description",
+                "empty"
+              ]
+            }
+          }
+        },
+        "default": []
+      },
+      "rows": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "default": []
+      }
+    },
+    "required": [
+      "columns",
+      "rows"
     ]
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.arrange",
+    "version": "1.0.0",
+    "module": "flowengine.tools.transform",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -73,9 +133,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_fe_tools.TransformTests.test_arrange_empty_input_preserves_configured_schema_and_bad_config_fails",
+      "test_fe_tools.TransformTests.test_arrange_expands_records_with_keys_literals_names_descriptions_and_typed_values"
+    ]
   },
   "sources": [
     {
@@ -96,6 +159,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

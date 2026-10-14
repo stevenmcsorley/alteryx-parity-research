@@ -62,7 +62,12 @@ class ResearchCoverageTests(unittest.TestCase):
 
     def test_unimplemented_catalogue_tools_fail_clearly(self):
         from flowengine.executor import plan_workflow
-        unimplemented = [r for r in self.rows if r['implementation_status'] == 'not-started']
+        from flowengine.plugin import default_registry
+        registered = {cid for tool in default_registry().tools() for cid in tool.manifest.catalog_ids}
+        # Use the live registry here: build_status regenerates catalogue status from
+        # test evidence, so consulting the previous generated status makes this test
+        # order-dependent for a newly added, tested kernel.
+        unimplemented = [r for r in self.rows if r['id'] not in registered]
         self.assertTrue(unimplemented)
         for r in unimplemented[:25]:
             doc = {'format': 'flowengine.workflow', 'formatVersion': 1,

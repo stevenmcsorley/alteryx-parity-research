@@ -8,7 +8,7 @@ from decimal import Decimal
 from ..errors import ConfigError, DataError, SchemaError
 from ..plugin import Anchor, Tool, ToolManifest
 from ..table import Table
-from ..types import Field, FieldType, Schema, format_value, cast_value, CastFailure
+from ..types import Field, FieldType, Schema, format_value, cast_value, CastFailure, unify_fields
 from ._common import require_fields
 
 TEXT = 2**30 - 1
@@ -367,4 +367,105 @@ class CrossTab(Tool):
         return {'output': Table.from_rows(out_fields, rows)}
 
 
-TOOLS = [Summarize, CountRecords, RunningTotal, Transpose, CrossTab]
+# =============================================================================== Arrange
+
+class Arrange(Tool):
+    """Expand each input record into configured rows while retaining selected key fields."""
+    streaming = 'row-local'
+
+    manifest = ToolManifest(
+        tool_id='core.arrange', version='1.0.0', display_name='Arrange',
+        catalog_ids=('transform:arrange',), inputs=(Anchor('input', 'Input'),), outputs=(Anchor('output', 'Output'),),
+        description='Manually expand each input record into configured output rows, preserving selected key fields.',
+        config_schema={
+            'type': 'object', 'additionalProperties': False,
+            'properties': {
+                'key_fields': {'type': 'array', 'items': {'type': 'string'}, 'default': [],
+                               'description': 'Input fields copied to every arranged output row.'},
+                'columns': {'type': 'array', 'minItems': 1, 'items': {'type': 'object',
+                    'additionalProperties': False, 'required': ['name', 'mode'], 'properties': {
+                        'name': {'type': 'string', 'minLength': 1},
+                        'mode': {'enum': ['literal', 'field', 'field_name', 'field_description', 'empty']},
+                    }}, 'default': []},
+                'rows': {'type': 'array', 'minItems': 1, 'items': {'type': 'array',
+                    'items': {'type': ['string', 'null']}}, 'default': []},
+            },
+            'required': ['columns', 'rows'],
+        })
+
+    def check_config(self, cfg):
+        names = [c['name'] for c in cfg['columns']]
+        if any(not n for n in names) or len(set(names)) != len(names):
+            raise ConfigError('Arrange output column names must be unique and non-empty')
+        if len(set(cfg['key_fields'])) != len(cfg['key_fields']):
+            raise ConfigError('Arrange key fields must be unique')
+        for i, row in enumerate(cfg['rows']):
+            if len(row) != len(cfg['columns']):
+                raise ConfigError(f'Arrange row {i + 1} has {len(row)} cells; expected {len(cfg["columns"])}')
+
+    def run(self, ctx, cfg, inputs):
+        table: Table = inputs['input']
+        require_fields(table.schema, cfg['key_fields'])
+        collisions = set(cfg['key_fields']) & {c['name'] for c in cfg['columns']}
+        if collisions:
+            raise ConfigError('Arrange output names collide with key fields: ' + ', '.join(sorted(collisions)))
+        referenced = {cell for col_i, col in enumerate(cfg['columns']) if col['mode'] in ('field', 'field_name', 'field_description')
+                      for row in cfg['rows'] if (cell := row[col_i]) is not None}
+        require_fields(table.schema, list(referenced))
+
+        result_fields = [table.schema.field(n) for n in cfg['key_fields']]
+        for col_i, col in enumerate(cfg['columns']):
+            mode = col['mode']
+            if mode == 'field':
+                sources = [table.schema.field(row[col_i]) for row in cfg['rows'] if row[col_i] is not None]
+                if not sources:
+                    result_fields.append(Field(col['name'], FieldType.V_WSTRING))
+                else:
+                    common = sources[0]
+                    for field in sources[1:]:
+                        common = unify_fields(common, field)
+                    result_fields.append(Field(col['name'], common.type, common.size, common.scale, common.description))
+            else:
+                vals = []
+                for row in cfg['rows']:
+                    ref = row[col_i]
+                    if mode == 'literal':
+                        vals.append(ref)
+                    elif mode == 'field_name':
+                        vals.append(ref)
+                    elif mode == 'field_description':
+                        vals.append(table.schema.field(ref).description if ref is not None else None)
+                    else:
+                        vals.append(None)
+                max_size = max((len(v) for v in vals if isinstance(v, str)), default=1)
+                result_fields.append(Field(col['name'], FieldType.V_WSTRING, max_size))
+
+        output = []
+        key_indexes = [table.schema.index(n) for n in cfg['key_fields']]
+        for record in table.rows():
+            key = tuple(record[i] for i in key_indexes)
+            for row in cfg['rows']:
+                arranged = []
+                for col_i, col in enumerate(cfg['columns']):
+                    cell, mode = row[col_i], col['mode']
+                    if mode == 'field':
+                        value = record[table.schema.index(cell)] if cell is not None else None
+                        if value is not None:
+                            try:
+                                value, warning = cast_value(value, result_fields[len(key_indexes) + col_i])
+                                if warning:
+                                    ctx.warn(warning)
+                            except CastFailure as e:
+                                raise DataError(f"Arrange value for {cell!r}: {e}") from None
+                    elif mode in ('literal', 'field_name'):
+                        value = cell
+                    elif mode == 'field_description':
+                        value = table.schema.field(cell).description if cell is not None else None
+                    else:
+                        value = None
+                    arranged.append(value)
+                output.append(key + tuple(arranged))
+        return {'output': Table.from_rows(result_fields, output)}
+
+
+TOOLS = [Summarize, CountRecords, RunningTotal, Transpose, CrossTab, Arrange]
