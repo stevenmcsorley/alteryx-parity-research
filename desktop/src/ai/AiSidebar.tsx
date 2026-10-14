@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AGENT_TOOLS, dispatchAgentTool, type AgentToolName } from './protocol';
+import { dispatchAgentTool, type AgentToolName } from './protocol';
 import { useEditor } from '../state/store';
 import { validateNow } from '../state/engineActions';
 
@@ -37,7 +37,6 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   const [activity, setActivity] = useState<string[]>([]);
   const [routingConsent, setRoutingConsent] = useState(false);
   const [consentUpdating, setConsentUpdating] = useState(false);
-  const conversation = useRef<ValueItem[]>([]);
   const currentText = useRef('');
   const stopRequested = useRef(false);
   const name = useEditor((s) => s.name);
@@ -82,7 +81,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     setBusy(true); setError('');
     try {
       const status = await native<{ remote_revocation_confirmed: boolean }>('ai_sign_out');
-      setConnected(false); setAuthorized(false); setAccount(''); setModels([]); setModel(''); setRoutingConsent(false); conversation.current = []; setMessages([]);
+      setConnected(false); setAuthorized(false); setAccount(''); setModels([]); setModel(''); setRoutingConsent(false); setMessages([]);
       if (!status.remote_revocation_confirmed) setError('Disconnected locally. OpenAI could not confirm remote token revocation; the local protected session has been removed.');
     }
     catch (e) { setError(messageOf(e)); }
@@ -105,19 +104,15 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   async function send() {
     const text = draft.trim();
     if (!text || !model || streaming || !authorized || !routingConsent) return;
-    try { await native('ai_begin'); } catch (e) { setError(messageOf(e)); return; }
+    try { await native('ai_begin', { prompt: text }); } catch (e) { setError(messageOf(e)); return; }
     setError(''); setDraft(''); setStreaming(true); setActivity([]); stopRequested.current = false;
-    conversation.current.push({ role: 'user', content: [{ type: 'input_text', text }] });
     setMessages((items) => [...items, { role: 'user', text }, { role: 'assistant', text: '' }]);
     currentText.current = '';
-    const toolDefs = AGENT_TOOLS.map((t) => ({ type: 'function', name: t.name, description: t.description, parameters: t.parameters, strict: true }));
     try {
       for (let turn = 0; turn < 5; turn++) {
-        const output = await native('ai_respond', { model, input: conversation.current, tools: toolDefs });
-        const completed = output as { output?: ValueItem[] };
-        const items = completed.output ?? [];
-        conversation.current.push(...items);
-        const calls = items.filter((item) => item.type === 'function_call');
+        const output = await native('ai_respond', { model });
+        const completed = output as { calls?: ValueItem[] };
+        const calls = completed.calls ?? [];
         if (!calls.length) break;
         if (turn === 4) throw new Error('The assistant reached the read-only tool-call limit for this turn.');
         for (const call of calls) {
@@ -127,10 +122,8 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           try {
             result = await dispatchAgentTool({ getState: () => useEditor.getState(), validate: async () => { await validateNow(); } }, toolName,
               JSON.parse(call.arguments ?? '{}'));
-          } catch (e) { result = { error: messageOf(e) }; }
-          let serialized = JSON.stringify(result);
-          if (serialized.length > 16_000) serialized = `${serialized.slice(0, 16_000)}… (bounded by Flowbench)`;
-          conversation.current.push({ type: 'function_call_output', call_id: call.call_id, output: serialized });
+          } catch { result = { error: 'The requested read-only tool could not complete.' }; }
+          await native('ai_submit_tool_result', { callId: call.call_id, result });
         }
         currentText.current = '';
         setMessages((itemsNow) => [...itemsNow, { role: 'assistant', text: '' }]);

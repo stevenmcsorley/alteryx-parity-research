@@ -31,8 +31,9 @@ Record the Flowbench build/version, Windows version, date, whether login and sco
 ## Current implementation boundaries
 
 - The currently exposed agent registry is read-only. It cannot edit a graph, execute a workflow, read raw rows, browse arbitrary files, or perform database writes.
-- Flowbench sends the user's explicitly submitted prompt and bounded results returned by the existing safe projections after the checkbox is selected. The native Rust service independently checks a consent latch before every Responses request; sign-out and app restart clear it. The app does not automatically send the open workflow's configuration or dataset.
-- ChatGPT conversations are kept in the current UI session only; requests disable server-side response storage. The selected model slug and chat text are held in application memory while the session is open.
+- Flowbench sends the user's explicitly submitted prompt and bounded results returned by the existing safe projections only after both the checkbox and native Windows confirmation are accepted. Rust owns the fixed tool definitions and conversation transcript, and verifies tool calls and outputs against native allowlists. The renderer cannot submit system/developer messages or prebuilt tool-result transcript entries. Sign-out and app restart clear the in-memory transcript and consent; requests disable server-side response storage.
+- Native code projects and bounds each read-only result before adding it to the transcript. Unknown fields and diagnostic prose are rejected; graph snapshots and capability lists are truncated with explicit indicators when large. The app does not automatically send the open workflow's configuration, schema, or dataset.
+- ChatGPT conversation history remains in native process memory for the current application session; the UI keeps its rendered copy in memory. No server-side response storage is enabled. The selected model slug and conversation are cleared at sign-out/restart.
 - A deterministic mock-provider UI test proves stream rendering and function routing. It is not evidence that live account registration, a given plan's eligibility, or real account inference succeeded. Record owner-run evidence separately.
 - Sign-in currently keeps one active ChatGPT account. The UI refreshes the available model list from that account. Multi-account selection is not included in this checkpoint.
 
@@ -41,3 +42,5 @@ Record the Flowbench build/version, Windows version, date, whether login and sco
 - [Sign in with ChatGPT: registration and sign-in](https://developers.openai.com/siwc/token-sharing-open-source/sign-in)
 - [Sign in with ChatGPT: models and inference](https://developers.openai.com/siwc/token-sharing-open-source/models-and-inference)
 - [Sign in with ChatGPT: accounts and sessions](https://developers.openai.com/siwc/token-sharing-open-source/profiles-and-sessions)
+
+The implementation follows the public loopback/PKCE registration flow, requests the documented `chatgpt.tokens.use.direct` permission, checks the token response's granted scopes, filters `/v1/models` by `visibility == "list"`, and sends streaming `/v1/responses` requests with `store: false`. Recheck the linked OpenAI documentation when changing this integration because account eligibility and protocol details can evolve.

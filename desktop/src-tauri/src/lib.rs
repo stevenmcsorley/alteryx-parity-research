@@ -43,7 +43,8 @@ pub fn run() {
             ai::ai_cancel,
             ai::ai_begin,
             ai::ai_set_data_consent,
-            ai::ai_respond
+            ai::ai_respond,
+            ai::ai_submit_tool_result
         ])
         .run(tauri::generate_context!())
         .expect("error while running Flowbench");

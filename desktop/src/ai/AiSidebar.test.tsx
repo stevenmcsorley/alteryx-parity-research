@@ -47,7 +47,7 @@ describe('Flowbench AI workspace shell', () => {
       if (command === 'ai_respond') {
         const first = responseNumber++ === 0;
         tauriMock.handler?.({ payload: { type: 'delta', text: first ? 'Checking the workflow. ' : 'It currently has no nodes.' } });
-        return { output: first ? [{ type: 'function_call', name: 'workflow.get_snapshot', call_id: 'call-1', arguments: '{}' }] : [] };
+        return { calls: first ? [{ name: 'workflow.get_snapshot', call_id: 'call-1', arguments: '{}' }] : [] };
       }
       return undefined;
     });
@@ -61,6 +61,8 @@ describe('Flowbench AI workspace shell', () => {
     expect(await screen.findByText('Using workflow.get_snapshot')).toBeTruthy();
     expect(await screen.findByText('It currently has no nodes.')).toBeTruthy();
     expect(tauriMock.invoke.mock.calls.filter(([command]) => command === 'ai_respond')).toHaveLength(2);
-    expect(tauriMock.invoke.mock.calls.some(([command, args]) => command === 'ai_respond' && JSON.stringify(args).includes('workflow.get_snapshot'))).toBe(true);
+    expect(tauriMock.invoke.mock.calls.some(([command, args]) => command === 'ai_respond' && JSON.stringify(args) === JSON.stringify({ model: 'model-a' }))).toBe(true);
+    expect(tauriMock.invoke.mock.calls.some(([command, args]) => command === 'ai_submit_tool_result' && args.callId === 'call-1')).toBe(true);
+    expect(tauriMock.invoke.mock.calls.some(([command, args]) => command === 'ai_begin' && args.prompt === 'What does this workflow contain?')).toBe(true);
   });
 });
