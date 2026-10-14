@@ -129,6 +129,11 @@ class StandardMacroTests(unittest.TestCase):
         outer = workflow([left, right, macro, {'id': 'browse', 'tool': 'core.browse', 'config': {}}],
                          [edge('left', 'output', 'macro', 'input'), edge('right', 'output', 'macro', 'input'),
                           edge('macro', 'output', 'browse', 'input')])
+        from flowengine.executor import plan_workflow
+        plan, problems = plan_workflow(outer, base_dir=ROOT)
+        self.assertEqual(problems, [])
+        self.assertEqual(plan.schemas[('macro', 'output')].names,
+                         ['id', 'left_value', 'Right_id', 'right_value'])
         result = run_workflow(outer, base_dir=ROOT)
         self.assertTrue(result.ok, result.error)
         self.assertEqual(rows(result.output('macro', 'output')), [[1, 'L1', 1, 'R1']])
