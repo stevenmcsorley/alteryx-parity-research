@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import type { FieldDef, JsonSchema } from '../engine/types';
 
 // Property names that hold a field name / list of field names / an expression (engine conventions).
-const FIELD_KEYS = /^(field|header_field|value_field|left|right|rename_from)$/;
+const FIELD_KEYS = /^(field|header_field|value_field|left|right|rename_from|record_id_field|source_id_field)$/;
 const FIELD_LIST_KEYS = /^(fields|group_by|key_fields|data_fields|right_fields|left_fields)$/;
 const EXPR_KEYS = /^(expression|init|condition|loop)$/;
 const LABELS: Record<string, string> = { group_by: 'Group by', on_conversion_error: 'On conversion error' };
@@ -174,7 +174,9 @@ function Field({ name, schema, required, value, fields, id, onChange, onBeginEdi
     return <ExpressionField id={id} label={label} help={help} value={String(value ?? '')} fields={anchorFields}
       onBeginEdit={onBeginEdit} onChange={onChange} />;
   }
-  if (main === 'string' && FIELD_KEYS.test(name) && anchorFields.length) {
+  const declaresOutputField = name === 'field' &&
+    (id.includes('-formulas-') || id.includes('-generate_rows-field') || id.includes('-multi_row_formula-field'));
+  if (main === 'string' && FIELD_KEYS.test(name) && !declaresOutputField && anchorFields.length) {
     const known = anchorFields.map((f) => f.name);
     const v = String(value ?? '');
     return (

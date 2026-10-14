@@ -12,7 +12,7 @@
 | Machine-readable contracts generated | 323 |
 | Entries with known anchors (manifest, reference-observed or public-doc) | 183 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 62 |
+| Independent kernels implemented and passing tests | 63 |
 | Independently implemented application adapters (in progress) | 1 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 181 run, 0 failed |
+| Unit/integration tests in last ledger build | 202 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -36,7 +36,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:directory` | `core.directory` | 1 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 13 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 8 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 98 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 114 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -60,6 +60,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `preparation:unique` | `core.unique` | 5 | 2/2 | partial |
 | `join:append-fields` | `core.append_fields` | 1 | 1/1 | partial |
 | `join:find-replace` | `core.find_replace` | 1 | 1/1 | partial |
+| `join:fuzzy-match` | `core.fuzzy_match` | 16 | 0/0 | not-tested |
 | `join:join` | `core.join` | 8 | 4/4 | partial |
 | `join:join-multiple` | `core.join_multiple` | 1 | 0/0 | not-tested |
 | `join:make-group` | `core.make_group` | 1 | 1/1 | partial |
@@ -114,7 +115,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | In-Database | 16 | 0 | 0 | 0 | 0 |
 | In/Out | 8 | 6 | 0 | 7 | 0 |
 | Interface | 18 | 2 | 0 | 17 | 0 |
-| Join | 7 | 6 | 5 | 7 | 0 |
+| Join | 7 | 7 | 5 | 7 | 0 |
 | Laboratory | 7 | 0 | 0 | 3 | 0 |
 | Machine Learning | 11 | 0 | 0 | 3 | 0 |
 | Parse | 4 | 4 | 4 | 4 | 0 |

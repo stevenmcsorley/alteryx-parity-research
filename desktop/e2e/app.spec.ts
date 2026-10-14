@@ -80,6 +80,48 @@ test('build, configure, connect and run a workflow from scratch', async ({ page 
   await expect(page.getByTestId('fields-table')).toContainText('int32');
 });
 
+test('configure Fuzzy Match through field selectors and execute indexed matching', async ({ page }) => {
+  await ready(page);
+  await addFromPalette(page, 'in-out:text-input');
+  const editor = page.getByTestId('text-input-editor');
+  await editor.getByRole('button', { name: '+ field' }).click();
+  await editor.getByRole('button', { name: '+ field' }).click();
+  await editor.getByRole('button', { name: '+ field' }).click();
+  await editor.getByLabel('Field 1 name').fill('id');
+  await editor.getByLabel('Field 1 type').selectOption('int32');
+  await editor.getByLabel('Field 2 name').fill('name');
+  await editor.getByLabel('Field 3 name').fill('source');
+  for (const [name, source] of [['Robert', 'A'], ['Rupert', 'A'], ['Jones', 'B']]) {
+    await editor.getByRole('button', { name: '+ row' }).click();
+    const row = await editor.locator('tbody tr').count();
+    await editor.getByLabel(`Row ${row} field 1`).fill(String(row));
+    await editor.getByLabel(`Row ${row} field 2`).fill(name);
+    await editor.getByLabel(`Row ${row} field 3`).fill(source);
+  }
+  await addFromPalette(page, 'join:fuzzy-match');
+  await connect(page, 'out-text_input_1-output', 'in-fuzzy_match_1-input');
+  await page.getByLabel('Record id field').selectOption('id');
+  await page.getByRole('button', { name: '+ Add match field' }).click();
+  await page.locator('#cfg-fuzzy_match_1-match_fields-0-field').selectOption('name');
+  await page.locator('#cfg-fuzzy_match_1-match_fields-0-key_method').selectOption('soundex');
+  await page.locator('#cfg-fuzzy_match_1-match_fields-0-match_method').selectOption('levenshtein');
+  await page.locator('#cfg-fuzzy_match_1-match_fields-0-threshold').fill('0');
+  await page.locator('#cfg-fuzzy_match_1-match_threshold').fill('40');
+  await expect(page.getByTestId('valid')).toBeVisible({ timeout: 10_000 });
+  await page.getByTestId('run').click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+  await page.getByLabel('Output to display').selectOption('fuzzy_match_1::output');
+  await expect(page.getByTestId('results-grid')).toContainText('1');
+  await expect(page.getByTestId('results-grid')).toContainText('2');
+  await page.getByLabel('Mode').selectOption('merge');
+  await page.getByLabel('Source id field').selectOption('source');
+  await expect(page.getByTestId('valid')).toBeVisible({ timeout: 10_000 });
+  await page.getByTestId('run').click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+  await page.getByLabel('Output to display').selectOption('fuzzy_match_1::output');
+  await expect(page.getByTestId('result-count')).toContainText('0 rows');
+});
+
 test('run a typed analytic application and apply its configuration action', async ({ page }) => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'flowbench-app-'));
   const wf = path.join(dir, 'application.flow.json');

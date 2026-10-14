@@ -6,52 +6,209 @@
   "xml_tool_name": "AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/join/fuzzy-match-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "GenerateKeys",
-      "MatchFields",
-      "MatchFields/MatchField",
-      "MatchThreshold",
-      "MergeMode",
-      "OutputKey",
-      "OutputMakeGroup",
-      "OutputScore",
-      "OutputUnmatched",
-      "RecordIdField",
-      "SourceIdField"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "record_id_field",
+      "match_fields"
     ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "properties": {
+      "mode": {
+        "enum": [
+          "purge",
+          "merge"
+        ],
+        "default": "purge"
+      },
+      "record_id_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "source_id_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "match_threshold": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100,
+        "default": 80
+      },
+      "match_fields": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field"
+          ],
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1
+            },
+            "key_method": {
+              "enum": [
+                "whole_field_ci",
+                "alphanumeric",
+                "digits_only",
+                "soundex",
+                "double_metaphone",
+                "soundex_digits",
+                "double_metaphone_digits"
+              ],
+              "default": "double_metaphone"
+            },
+            "per_word": {
+              "type": "boolean",
+              "default": false
+            },
+            "ignore_words": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            },
+            "ignore_single_letter_words": {
+              "type": "boolean",
+              "default": false
+            },
+            "max_key_length": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            },
+            "preprocess": {
+              "enum": [
+                "none",
+                "strip_punctuation",
+                "strip_punctuation_salutations",
+                "strip_punctuation_stop_words",
+                "basic_address"
+              ],
+              "default": "none"
+            },
+            "match_method": {
+              "enum": [
+                "key_only",
+                "exact",
+                "levenshtein",
+                "jaro",
+                "best_jaro_levenshtein"
+              ],
+              "default": "jaro"
+            },
+            "granularity": {
+              "enum": [
+                "character",
+                "character_no_spaces",
+                "words",
+                "words_digits"
+              ],
+              "default": "character"
+            },
+            "threshold": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 0
+            },
+            "weight": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "default": 1
+            },
+            "empty_policy": {
+              "enum": [
+                "ignore",
+                "match",
+                "no_match"
+              ],
+              "default": "ignore"
+            }
+          }
+        }
+      },
+      "output_score": {
+        "type": "boolean",
+        "default": true
+      },
+      "output_keys": {
+        "type": "boolean",
+        "default": false
+      },
+      "output_unmatched": {
+        "type": "boolean",
+        "default": false
+      },
+      "output_groups": {
+        "type": "boolean",
+        "default": false
+      },
+      "generate_keys_only": {
+        "type": "boolean",
+        "default": false
+      },
+      "skip_pairs_in_same_match_group": {
+        "type": "boolean",
+        "default": false
+      },
+      "max_candidate_pairs": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10000000,
+        "default": 1000000
+      },
+      "max_candidate_work": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100000000,
+        "default": 20000000
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "licensed-dataset (public-doc keyword signal; unreviewed)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.fuzzy_match",
+    "version": "1.0.0",
+    "module": "flowengine.tools.fuzzy_match",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -91,9 +248,26 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 16,
+    "passing": 16,
+    "tests": [
+      "test_fe_interop.ImportTests.test_imported_fuzzy_match_executes_supported_flowbench_translation_and_roundtrips_xml",
+      "test_fuzzy_match.FuzzyMatchTests.test_10k_records_use_indexed_candidates",
+      "test_fuzzy_match.FuzzyMatchTests.test_cancellation_is_reported_without_partial_results",
+      "test_fuzzy_match.FuzzyMatchTests.test_candidate_work_limit_fails_without_truncating",
+      "test_fuzzy_match.FuzzyMatchTests.test_duplicate_and_null_identifiers_fail",
+      "test_fuzzy_match.FuzzyMatchTests.test_empty_values_can_match_only_when_explicit",
+      "test_fuzzy_match.FuzzyMatchTests.test_invalid_settings_and_field_names_fail_clearly",
+      "test_fuzzy_match.FuzzyMatchTests.test_key_only_scoring_accepts_key_collisions_without_string_score",
+      "test_fuzzy_match.FuzzyMatchTests.test_merge_excludes_same_sources_and_requires_source_field",
+      "test_fuzzy_match.FuzzyMatchTests.test_multiple_weighted_fields_threshold_and_punctuation_preprocessing",
+      "test_fuzzy_match.FuzzyMatchTests.test_purge_emits_candidate_pairs_scores_and_stable_order",
+      "test_fuzzy_match.FuzzyMatchTests.test_purge_ignores_source_id_even_if_imported_xml_reuses_record_id",
+      "test_fuzzy_match.FuzzyMatchTests.test_repeated_block_keys_have_an_explicit_generation_work_limit",
+      "test_fuzzy_match.FuzzyMatchTests.test_threshold_boundary_is_inclusive",
+      "test_fuzzy_match.FuzzyMatchTests.test_unicode_exact_supported_phonetic_boundary_is_explicit",
+      "test_fuzzy_match.FuzzyMatchTests.test_unmatched_null_empty_and_keys_only"
+    ]
   },
   "sources": [
     {
@@ -114,6 +288,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

@@ -475,6 +475,84 @@ def c_dynamic_select(cfg):
     raise Unsupported(f"Dynamic Select mode {_t(cfg, 'Mode')!r}")
 
 
+def c_fuzzy_match(cfg):
+    """Translate the narrow, independently executable subset of Fuzzy Match XML.
+
+    Vendor score aggregation, custom regex preprocessing, Japanese transforms and
+    licensed word/nickname tables are deliberately rejected.  The imported XML is
+    still retained verbatim by the normal importer for lossless unchanged export.
+    """
+    record_id = _t(cfg, 'RecordIdField')
+    if not record_id:
+        raise Unsupported('Fuzzy Match requires RecordIdField')
+    merge = _b(_v(cfg, 'MergeMode', 'False'))
+    source_id = _t(cfg, 'SourceIdField')
+    if merge and not source_id:
+        raise Unsupported('Fuzzy Match Merge mode requires SourceIdField')
+    generated_only = _b(_v(cfg, 'GenerateKeys', 'False'))
+    match_fields = []
+    for item in cfg.findall('MatchFields/MatchField'):
+        name = _t(item, 'FieldName')
+        style = item.find('Style')
+        if not name or style is None:
+            raise Unsupported('Fuzzy Match MatchField requires FieldName and Style')
+        if style.find('PreProcess') is not None:
+            raise Unsupported('Fuzzy Match custom/vendor preprocessing is not translated')
+        if style.find('Match/WordStats') is not None and (style.findtext('Match/WordStats') or '').strip():
+            raise Unsupported('Fuzzy Match WordStats requires an Alteryx runtime dataset')
+        if style.find('Match/NicknameFile') is not None:
+            raise Unsupported('Fuzzy Match NicknameFile requires an Alteryx runtime dataset')
+        if style.find('Match/NicknamePenalty') is not None:
+            raise Unsupported('Fuzzy Match nickname scoring is not translated')
+        key_fn = _t(style, 'KeyGeneration/KeyFunction', 'None')
+        key_methods = {'DblMetaphone': 'double_metaphone', 'Soundex': 'soundex',
+                       'DigitsOnly': 'digits_only', 'WholeFieldCI': 'whole_field_ci',
+                       'Alphanumeric': 'alphanumeric', 'SoundexDigits': 'soundex_digits',
+                       'DblMetaphoneDigits': 'double_metaphone_digits'}
+        if key_fn not in key_methods:
+            raise Unsupported(f'Fuzzy Match key function {key_fn!r} is not translated')
+        match_fn = _t(style, 'Match/MatchFunction', 'None')
+        match_methods = {'None': 'key_only', 'Levenshtein': 'levenshtein',
+                         'Jaro': 'jaro', 'BestJaroLevenshtein': 'best_jaro_levenshtein'}
+        if match_fn not in match_methods:
+            raise Unsupported(f'Fuzzy Match function {match_fn!r} is not translated')
+        additional = _t(style, 'Match/AdditionalMatchFunction', 'None')
+        if additional not in ('None', ''):
+            raise Unsupported(f'Fuzzy Match additional function {additional!r} is not translated')
+        match = style.find('Match')
+        kg = style.find('KeyGeneration')
+        max_len = int(_v(kg, 'MaxKeyLen', '100')) if kg is not None else 100
+        match_fields.append({
+            'field': name, 'key_method': key_methods[key_fn],
+            'per_word': _b(_v(kg, 'UseWords', 'False')) if kg is not None else False,
+            'ignore_words': ( _t(kg, 'IgnoreWords', '') or '').split() if kg is not None else [],
+            'ignore_single_letter_words': _b(_v(kg, 'IgnoreSingleLetterWords', 'False')) if kg is not None else False,
+            'max_key_length': max_len, 'preprocess': 'none',
+            'match_method': match_methods[match_fn],
+            'granularity': 'character',
+            'threshold': float(_v(match, 'MatchThreshold', '0')) if match is not None else 0,
+            'weight': float(_v(match, 'MatchWeight', '100')) if match is not None else 100,
+            'empty_policy': 'ignore' if _b(_v(kg, 'IgnoreEmpty', 'True')) else 'match',
+        })
+    if not match_fields:
+        raise Unsupported('Fuzzy Match has no configured MatchField')
+    conf = {
+        'mode': 'merge' if merge else 'purge', 'record_id_field': record_id,
+        'source_id_field': source_id or None,
+        'match_threshold': float(_v(cfg, 'MatchThreshold', '80')),
+        'match_fields': match_fields,
+        'output_score': _b(_v(cfg, 'OutputScore', 'True')),
+        'output_keys': _b(_v(cfg, 'OutputKey', 'False')),
+        'output_unmatched': _b(_v(cfg, 'OutputUnmatched', 'False')),
+        'output_groups': _b(_v(cfg, 'OutputMakeGroup', 'False')),
+        'generate_keys_only': generated_only,
+        'skip_pairs_in_same_match_group': False,
+    }
+    return Converted('core.fuzzy_match', conf, inputs={'Input': 'input'}, outputs={'Output': 'output'},
+                     warnings=['Imported Alteryx options were translated to Flowbench v1 scoring; '
+                               'pair scores and grouping have not been reference-verified'])
+
+
 def c_macro_input(cfg):
     values = {v.get('name'): (v.text or '') for v in cfg.findall('Value')}
     converted = Converted('flowengine.macro_input', {'name': values.get('Name') or 'Input'},
@@ -510,6 +588,7 @@ CONVERTERS = {
     'MakeGroup': c_make_group, 'DateTime': c_datetime, 'XMLParse': c_xml_parse, 'MakeColumns': c_make_columns,
     'FieldInfo': c_field_info, 'JSONParse': c_json_parse, 'DynamicRename': c_dynamic_rename,
     'DynamicSelect': c_dynamic_select,
+    'FuzzyMatch': c_fuzzy_match,
     'MacroInput': c_macro_input,
     'MacroOutput': c_macro_output,
 }
@@ -927,7 +1006,15 @@ def export_document(doc: dict) -> tuple[str, list[str]]:
     for n in doc['nodes']:
         tid = ids[n['id']]
         o = original.get(n['id'])
-        if o and o.get('config_digest') == _digest(n['config']):
+        preserve_unsupported_original = False
+        if o and o.get('config_digest') is None and not n.get('config'):
+            try:
+                source_el = ET.fromstring(o['xml'])
+                source_plugin, _ = _identity(source_el)
+                preserve_unsupported_original = bool(source_plugin and source_plugin == n['tool'])
+            except (ET.ParseError, KeyError):
+                pass
+        if o and (o.get('config_digest') == _digest(n['config']) or preserve_unsupported_original):
             # unchanged imported node: emit the original XML, renumbered
             el = ET.fromstring(o['xml'])
             el.set('ToolID', str(tid))
@@ -936,7 +1023,11 @@ def export_document(doc: dict) -> tuple[str, list[str]]:
             xml_nodes.append(ET.tostring(el, encoding='unicode'))
             short = ((el.find('GuiSettings').get('Plugin') if el.find('GuiSettings') is not None else '') or '').split('.')[-1]
             fn = CONVERTERS.get(short)
-            conv = fn(el.find('Properties/Configuration')) if fn else None
+            try:
+                conv = fn(el.find('Properties/Configuration')) if fn else None
+            except Unsupported as exc:
+                conv = None
+                problems.append(f"{n['id']}: original {short} settings retained but anchors are not translated ({exc})")
             maps[n['id']] = ({v: k for k, v in conv.inputs.items()}, {v: k for k, v in conv.outputs.items()}) if conv else ({}, {})
             continue
         fn = EXPORTERS.get(n['tool'])
