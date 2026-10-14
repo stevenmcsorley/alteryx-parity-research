@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { Canvas } from './canvas/Canvas';
 import { Palette } from './panels/Palette';
@@ -9,6 +9,7 @@ import { Toasts } from './ui/toast';
 import { DialogHost } from './ui/dialogs';
 import { useEditor } from './state/store';
 import { cancelRun, initEngine, runWorkflow, scheduleValidate } from './state/engineActions';
+import { AiSidebar } from './ai/AiSidebar';
 
 function isTyping(e: KeyboardEvent) {
   const t = e.target as HTMLElement | null;
@@ -71,19 +72,20 @@ function EngineOffline() {
 }
 
 export default function App() {
+  const [aiOpen, setAiOpen] = useState(false);
   useShortcuts();
   useAutoValidate();
   useEffect(() => { void initEngine(); }, []);
   return (
     <ReactFlowProvider>
       <div className="app">
-        <Toolbar />
+        <Toolbar onToggleAi={() => setAiOpen((open) => !open)} aiOpen={aiOpen} />
         <Palette />
         <div style={{ gridArea: 'canvas', position: 'relative', minHeight: 0, display: 'flex' }}>
           <Canvas />
           <EngineOffline />
         </div>
-        <Inspector />
+        {aiOpen ? <AiSidebar close={() => setAiOpen(false)} /> : <Inspector />}
         <ResultsPanel />
       </div>
       <Toasts />

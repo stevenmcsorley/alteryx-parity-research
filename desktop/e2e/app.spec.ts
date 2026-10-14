@@ -315,3 +315,18 @@ test('database extensions are available and the connection manager opens', async
   await expect(page.getByTestId('inspector')).toContainText('Iterative Macro');
   await expect(page.getByTestId('inspector').getByLabel('Terminate expression')).toBeVisible();
 });
+
+test('Flowbench AI workspace exposes bounded local tools and honest provider state', async ({ page }) => {
+  await ready(page);
+  await page.getByRole('toolbar').getByRole('button', { name: 'Flowbench AI' }).click();
+  const sidebar = page.getByTestId('ai-sidebar');
+  await expect(sidebar).toBeVisible();
+  await expect(sidebar).toContainText('No model connected');
+  await expect(sidebar).toContainText('does not send workflow data');
+  await expect(sidebar.getByRole('button', { name: 'Continue with ChatGPT' })).toBeDisabled();
+  await sidebar.getByLabel('Search Flowbench tool catalogue').fill('Fuzzy Match');
+  await sidebar.getByRole('button', { name: 'Search' }).click();
+  await expect(sidebar.getByLabel('Tool result')).toContainText('join:fuzzy-match');
+  await sidebar.getByRole('button', { name: 'Inspect active workflow' }).click();
+  await expect(sidebar.getByLabel('Tool result')).toContainText('No option values');
+});
