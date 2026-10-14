@@ -139,11 +139,18 @@ c=json.loads(Path(os.environ['FLOWBENCH_ACCEPTANCE_ENV']).read_text(encoding='ut
 print(c[os.environ['FLOWBENCH_ACCEPTANCE_DATABASE']]['reader']['password'], end='')
 '@
       $env:FLOWBENCH_ACCEPTANCE_DATABASE = $Database
-      $secret = $code | & python -
-      if ($LASTEXITCODE -ne 0 -or -not $secret) { throw 'Could not retrieve the selected fixture reader credential.' }
-      Set-Clipboard -Value ([string]$secret)
-      $secret = $null
-      Write-Host 'Reader password copied to the Windows clipboard; paste it into the matching Flowbench password field, then clear the clipboard with Set-Clipboard -Value "".'
+      $env:FLOWBENCH_ACCEPTANCE_ENV = $EnvFile
+      try {
+        $secret = $code | & python -
+        if ($LASTEXITCODE -ne 0 -or -not $secret) { throw 'Could not retrieve the selected fixture reader credential.' }
+        Set-Clipboard -Value ([string]$secret)
+        $secret = $null
+        Write-Host 'Reader password copied to the Windows clipboard; paste it into the matching Flowbench password field, then clear the clipboard with Set-Clipboard -Value "".'
+      } finally {
+        $secret = $null
+        Remove-Item Env:FLOWBENCH_ACCEPTANCE_ENV -ErrorAction SilentlyContinue
+        Remove-Item Env:FLOWBENCH_ACCEPTANCE_DATABASE -ErrorAction SilentlyContinue
+      }
     }
     { $_ -in 'Mutate', 'Restore' } {
       if (-not (Test-Path -LiteralPath $EnvFile)) { throw 'Fixture settings are missing. Run -Action Up first.' }

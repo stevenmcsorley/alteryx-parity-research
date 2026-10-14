@@ -24,7 +24,7 @@ browser build used for automated UI tests). Source: `desktop/`.
 * **Files:** open/save `*.flow.json`; import `.yxmd/.yxmc/.yxwz/.yxzp` (report shown); export `.yxmd` for
   supported tools (lists what cannot be exported).
 * **Safety:** workflows containing Python, R or Run Command tools ask for permission before each run.
-* **Databases (Milestone 2.1 acceptance pending):** manage PostgreSQL and SQL Server connections, test them,
+* **Databases (owner reports installed-app connection and workflow run; remaining acceptance evidence pending):** manage PostgreSQL and SQL Server connections, test them,
   store credentials in the operating-system credential vault, browse metadata, and configure Database Input
   to read a live table or read-only query on each run. Database Output requires a write-enabled connection and
   per-run confirmation. Cross-database joins execute in the Flowbench engine; safe eligible operations may be
@@ -76,10 +76,12 @@ unsupported expressions/options, fan-out, output-anchor use, ordering, or type/c
 operations local and produce fallback diagnostics. A translator being able to render SQL does not by itself
 mean that a workflow operation was pushed. Consult the run diagnostics/manifest to see what actually executed.
 
-Milestone 2.1 remains **incomplete** until the repository owner completes the documented installed-Tauri
-PostgreSQL + SQL Server [manual acceptance workflow](MILESTONE_2_1_MANUAL_ACCEPTANCE.md) and records the manual
-result. Browser Playwright and engine integration results are automated evidence, not a substitute for that
-manual desktop check.
+Milestone 2.1 remains **incomplete** pending reviewable evidence for the remaining installed-Tauri PostgreSQL +
+SQL Server [manual acceptance workflow](MILESTONE_2_1_MANUAL_ACCEPTANCE.md), including exported-file validation and
+the source mutation/rerun. The owner reports that the installed app connected to both fixtures and ran the
+configured analysis workflow; this is recorded separately from automated evidence in
+[the milestone report](MILESTONE_2_1_REPORT.md). Browser Playwright and engine integration results do not replace
+the installed desktop demonstration.
 
 ## Tests
 

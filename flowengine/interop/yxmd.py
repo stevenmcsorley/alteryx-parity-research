@@ -486,6 +486,11 @@ CONVERTERS = {
     'MakeGroup': c_make_group, 'DateTime': c_datetime, 'XMLParse': c_xml_parse, 'MakeColumns': c_make_columns,
     'FieldInfo': c_field_info, 'JSONParse': c_json_parse, 'DynamicRename': c_dynamic_rename,
     'DynamicSelect': c_dynamic_select,
+    'MacroInput': lambda cfg: Converted('flowengine.macro_input',
+        {'name': _vals(cfg).get('Name') or _t(cfg, 'Name', 'Input')}, outputs={'Output': 'output'}),
+    'MacroOutput': lambda cfg: Converted('flowengine.macro_output',
+        {'name': _vals(cfg).get('Name') or _t(cfg, 'Name', 'Output')},
+        inputs={'Input': 'input'}, outputs={'Output': 'output'}),
 }
 
 
@@ -594,6 +599,10 @@ def import_document(xml_text: str, *, name: str | None = None, source: str | Non
             continue
         ident = plugin or macro or '(unknown)'
         conv_fn = CONVERTERS.get(short) if plugin else MACROS.get(re.split(r'[\\/]', macro or '')[-1].lower())
+        if not plugin and macro and conv_fn is None:
+            # Preserve the macro reference for resolution relative to the parent workflow directory at run time.
+            conv_fn = lambda _cfg, path=macro: Converted('flowengine.macro', {'definition_path': path},
+                                                           inputs={'Input': 'input'}, outputs={'Output': 'output'})
         entry = {'node': nid, 'source': ident}
         try:
             if conv_fn is None or cfg is None:
@@ -670,8 +679,8 @@ def import_file(path: Path) -> tuple[dict, dict]:
         raise ValueError(f'Unsupported file type {ext!r}')
     doc, report = import_document(path.read_text(encoding='utf-8-sig'), name=path.stem, source=path.name)
     if ext == '.yxmc':
-        report['notes'] = ['Macro imported as a workflow; macro inputs/outputs and questions are preserved but the '
-                           'macro runtime is not implemented yet']
+        report['notes'] = ['Macro definition imported as a workflow. Supported Macro Input/Output boundaries can be '
+                           'executed through a Flowbench macro call; unsupported child tools remain explicit.']
     if ext == '.yxwz':
         report['notes'] = ['Analytic app imported as a workflow; interface tools are preserved but the app runtime is '
                            'not implemented yet']

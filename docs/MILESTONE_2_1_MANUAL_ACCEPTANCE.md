@@ -1,9 +1,11 @@
 # Milestone 2.1 — owner-run Windows desktop acceptance
 
-This is the remaining **manual** acceptance gate. The CI installer smoke test, Python/DB suites, and browser
-tests are automated evidence; they do not count as operating this database workflow in the installed Tauri app.
-The repository owner should perform the procedure below on Windows and send the evidence bundle for review.
-Milestone 2.1 stays incomplete until those results have been checked and recorded in the milestone report.
+This procedure is the reproducible **manual** acceptance gate. The repository owner has reported that the installed
+Tauri app connected to the fixture databases and ran the configured analysis workflow. That owner-reported result
+is recorded separately from automated evidence in `MILESTONE_2_1_REPORT.md`. Screenshots, CSV/Parquet validation,
+fixture mutation/rerun, and a redacted run manifest have not been supplied; perform/capture the applicable steps
+below and return the evidence bundle to close those outstanding checks. Do not treat CI or browser tests as the
+installed-app demonstration.
 
 ## Prerequisites
 

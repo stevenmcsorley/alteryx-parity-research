@@ -138,8 +138,8 @@
     ]
   },
   "independent_tests": {
-    "count": 73,
-    "passing": 73,
+    "count": 78,
+    "passing": 78,
     "tests": [
       "test_fe_executor.ExecutionTests.test_cancellation",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
@@ -213,7 +213,12 @@
       "test_fe_tools_wave2.UserCodeTools.test_python_errors_timeouts_and_environment",
       "test_fe_tools_wave2.UserCodeTools.test_python_tool_requires_permission",
       "test_fe_tools_wave2.UserCodeTools.test_python_tool_runs_isolated_code_with_typed_exchange",
-      "test_fe_tools_wave2.UserCodeTools.test_run_command"
+      "test_fe_tools_wave2.UserCodeTools.test_run_command",
+      "test_macros.StandardMacroTests.test_imported_yxmc_macro_input_output_runs_from_relative_path",
+      "test_macros.StandardMacroTests.test_macro_child_failure_reports_call_node_and_stack",
+      "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
+      "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level",
+      "test_macros.StandardMacroTests.test_recursive_macro_definition_is_rejected"
     ]
   },
   "sources": [

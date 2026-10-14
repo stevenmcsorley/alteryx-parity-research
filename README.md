@@ -72,6 +72,7 @@ python scripts/build_status.py          # regenerate contracts + status ledger f
 # Desktop app (see docs/DESKTOP.md)
 cd desktop; npm ci; npx tauri dev
 python scripts/coverage_report.py
+python scripts/build_parity_roadmap.py --check
 
 # Online, metadata only:
 python scripts/sync_official_catalog.py
@@ -86,6 +87,10 @@ python conformance/reference/holdout_samples.py --mode e1
 **Do not extend reference investigation beyond the scope recorded in [`docs/AUTHORISATION.md`](docs/AUTHORISATION.md).** REA is a research tool; it does not confer rights to use the target software or reproduce copyrighted implementation.
 
 ## Full parity is a contract, not a status
+
+[`docs/ALTERYX_PARITY_ROADMAP.md`](docs/ALTERYX_PARITY_ROADMAP.md) is the authoritative full-catalogue work queue. It
+is generated from the catalogue, per-tool contracts, and evidence-derived implementation/conformance ledger; rebuild
+it with `python scripts/build_parity_roadmap.py` after refreshing tool status.
 
 Track independent axes:
 

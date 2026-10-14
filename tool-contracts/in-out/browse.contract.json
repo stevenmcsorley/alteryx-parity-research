@@ -87,8 +87,8 @@
     ]
   },
   "independent_tests": {
-    "count": 10,
-    "passing": 10,
+    "count": 15,
+    "passing": 15,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
@@ -99,7 +99,12 @@
       "test_fe_interop.ImportTests.test_validation_reports_the_unsupported_catalogue_tool",
       "test_fe_service.ServiceTests.test_run_previews_and_errors",
       "test_fe_tools.InOutTests.test_browse_captures",
-      "test_fe_tools.InOutTests.test_text_input_validation"
+      "test_fe_tools.InOutTests.test_text_input_validation",
+      "test_macros.StandardMacroTests.test_imported_yxmc_macro_input_output_runs_from_relative_path",
+      "test_macros.StandardMacroTests.test_macro_child_failure_reports_call_node_and_stack",
+      "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
+      "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level",
+      "test_macros.StandardMacroTests.test_recursive_macro_definition_is_rejected"
     ]
   },
   "sources": [

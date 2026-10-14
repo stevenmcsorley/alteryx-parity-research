@@ -291,7 +291,8 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                  event_time: Callable[[], float] = time.time, listener=None,
                  profile: str | None = None, workers: int = 1, memory_budget: int | None = None,
                  history=None, spill_dir: Path | None = None, batch_rows: int | None = None,
-                 enable_pushdown: bool = True, result_sink=None) -> RunResult:
+                 enable_pushdown: bool = True, result_sink=None,
+                 _macro_inputs: dict | None = None, _macro_stack: tuple[str, ...] = ()) -> RunResult:
     """Validate then execute ``doc``. Raises WorkflowValidationError if invalid.
 
     ``retain``: 'all' keeps every output table; 'preview' keeps the first 1000 rows of each;
@@ -367,7 +368,8 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
     def make_ctx(nid):
         return RunContext(nid, base_dir, clock, lambda t, **d: elog.emit(t, nid, **d), cancel_token,
                           limits=dict(limits or {}), browse_sink=capture_browse,
-                          constants=dict(doc.get('constants', {})), profile=prof)
+                          constants=dict(doc.get('constants', {})), profile=prof,
+                          macro_inputs=dict(_macro_inputs or {}), macro_stack=_macro_stack)
     elog.emit('run-started', engine_version=__version__, workflow_digest=workflow_digest(doc), profile=prof.name,
               node_count=len(plan.order), workers=workers, memory_budget=memory_budget)
     if db_plan:
@@ -381,7 +383,8 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
         buffered = []
         ctx = RunContext(nid, base_dir, clock, lambda t, **d: buffered.append((t, d)), cancel_token,
                          limits=dict(limits or {}), browse_sink=capture_browse,
-                         constants=dict(doc.get('constants', {})), profile=prof)
+                         constants=dict(doc.get('constants', {})), profile=prof,
+                         macro_inputs=dict(_macro_inputs or {}), macro_stack=_macro_stack)
         started = time.perf_counter()
         try:
             out = pn.tool.run(ctx, pn.config, inputs)
