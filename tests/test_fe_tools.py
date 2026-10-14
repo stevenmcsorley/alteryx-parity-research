@@ -246,6 +246,40 @@ class PreparationTests(unittest.TestCase):
         out, _ = run_tool('core.data_cleansing', {'remove_null_rows': True}, {'input': data})
         self.assertEqual(len(out['output']), 2)
 
+    def test_data_cleanse_pro_unicode_characters_nulls_and_selected_fields(self):
+        data = ([('text', 'v_wstring'), ('amount', 'fixed_decimal'), ('untouched', 'v_string')], [
+            [' <h1>Zoë</h1>\u200b A\t  B! ', None, 'keep'],
+            ['A1-B!', '0.00', 'same'],
+            [None, '2.50', 'null text'],
+        ])
+        cfg = {'fields': ['text', 'amount'], 'remove_html_tags': True, 'remove_invisible_characters': True,
+               'remove_tabs_line_breaks_and_duplicates': True, 'remove_leading_and_trailing_whitespace': True,
+               'modify_case': True, 'case': 'upper', 'replace_string_columns': True, 'string_nulls': 'blank',
+               'replace_numeric_columns': True, 'numeric_nulls': 'zero'}
+        out, _ = run_tool('core.data_cleanse_pro', cfg, {'input': data})
+        self.assertEqual(rows(out['output']), [['ZOË A B!', Decimal('0'), 'keep'], ['A1-B!', Decimal('0'), 'same'],
+                                               ['', Decimal('2.50'), 'null text']])
+        self.assertEqual(out['output'].schema.field('amount').type, T.FIXED_DECIMAL)
+
+    def test_data_cleanse_pro_unicode_categories_exceptions_and_null_filtering(self):
+        data = ([('s', 'v_wstring'), ('n', 'int32'), ('empty', 'v_string')], [
+            ['A٢½–💷!', 0, ''], [None, None, ''], [None, None, None],
+        ])
+        cfg = {'remove_letters': True, 'letters_except': 'A', 'remove_numbers': True, 'numbers_except': '٢',
+               'remove_punctuation': True, 'punctuation_except': '!', 'replace_numeric_columns': True,
+               'numeric_nulls': 'nullify_zero', 'remove_null_rows': True, 'fields': ['s', 'n']}
+        out, _ = run_tool('core.data_cleanse_pro', cfg, {'input': data})
+        self.assertEqual(rows(out['output']), [['A٢!', None, ''], [None, None, '']])
+        self.assertEqual(out['output'].schema.names, ['s', 'n', 'empty'])
+        cfg['remove_null_columns'] = True
+        out, _ = run_tool('core.data_cleanse_pro', cfg, {'input': data})
+        self.assertEqual(out['output'].schema.names, ['s', 'empty'])
+
+    def test_data_cleanse_pro_rejects_missing_selected_field(self):
+        from flowengine.errors import WorkflowValidationError
+        with self.assertRaises(WorkflowValidationError):
+            run_tool_result('core.data_cleanse_pro', {'fields': ['missing']}, {'input': PEOPLE})
+
 
 class JoinTests(unittest.TestCase):
     L = ([('id', 'int32'), ('v', 'v_string')], [[1, 'a'], [2, 'b'], [2, 'b2'], [3, 'c'], [None, 'n']])
@@ -312,6 +346,36 @@ class JoinTests(unittest.TestCase):
 class TransformTests(unittest.TestCase):
     SALES = ([('r', 'v_string'), ('p', 'v_string'), ('amt', 'fixed_decimal'), ('q', 'int32')],
              [['N', 'x', '1.10', 1], ['S', 'y', '2.00', None], ['N', 'y', '3.30', 3], ['N', 'x', None, 4]])
+
+    def test_arrange_expands_records_with_keys_literals_names_descriptions_and_typed_values(self):
+        data = ([{'name': 'store', 'type': 'int32'},
+                 {'name': 'Jan', 'type': 'fixed_decimal', 'size': 8, 'scale': 2},
+                 {'name': 'Feb', 'type': 'fixed_decimal', 'size': 8, 'scale': 2}],
+                [[1, '1.25', '2.50'], [2, '3.00', None]])
+        cfg = {'key_fields': ['store'], 'columns': [
+            {'name': 'Period', 'mode': 'literal'}, {'name': 'Source', 'mode': 'field_name'},
+            {'name': 'Description', 'mode': 'field_description'}, {'name': 'Amount', 'mode': 'field'}],
+            'rows': [['January', 'Jan', 'Jan', 'Jan'], ['February', 'Feb', 'Feb', 'Feb']]}
+        out, _ = run_tool('core.arrange', cfg, {'input': data})
+        table = out['output']
+        self.assertEqual(table.schema.names, ['store', 'Period', 'Source', 'Description', 'Amount'])
+        self.assertEqual(table.schema.field('Amount').type, T.FIXED_DECIMAL)
+        self.assertEqual(rows(table), [[1, 'January', 'Jan', None, Decimal('1.25')],
+                                       [1, 'February', 'Feb', None, Decimal('2.50')],
+                                       [2, 'January', 'Jan', None, Decimal('3.00')],
+                                       [2, 'February', 'Feb', None, None]])
+
+    def test_arrange_empty_input_preserves_configured_schema_and_bad_config_fails(self):
+        data = ([('id', 'int32'), ('amount', 'double')], [])
+        cfg = {'key_fields': ['id'], 'columns': [{'name': 'Amount', 'mode': 'field'}], 'rows': [['amount']]}
+        out, _ = run_tool('core.arrange', cfg, {'input': data})
+        self.assertEqual(out['output'].schema.names, ['id', 'Amount'])
+        self.assertEqual(len(out['output']), 0)
+        from flowengine.errors import WorkflowValidationError
+        with self.assertRaises(WorkflowValidationError):
+            run_tool_result('core.arrange', {**cfg, 'rows': [['missing']]}, {'input': data})
+        with self.assertRaises(WorkflowValidationError):
+            run_tool_result('core.arrange', {**cfg, 'rows': [['amount', 'extra']]}, {'input': data})
 
     def test_summarize(self):
         out, _ = run_tool('core.summarize', {'actions': [

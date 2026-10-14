@@ -17,6 +17,7 @@ export function Canvas() {
   const onEdgesChange = useEditor((s) => s.onEdgesChange);
   const connect = useEditor((s) => s.connect);
   const addTool = useEditor((s) => s.addTool);
+  const addApplicationAction = useEditor((s) => s.addApplicationAction);
   const nodeRows = useEditor((s) => s.run.nodeRows);
   const runStatus = useEditor((s) => s.run.status);
   const tools = useEditor((s) => s.tools);
@@ -63,13 +64,18 @@ export function Canvas() {
     const toolId = e.dataTransfer.getData(TOOL_MIME);
     if (!toolId) return;
     e.preventDefault();
+    if (toolId === 'flowengine.application_action') {
+      const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      addApplicationAction({ x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
+      return;
+    }
     if (!tools[toolId]) {
       notify('This tool has no implementation yet and cannot be placed in a runnable workflow.');
       return;
     }
     const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
     addTool(toolId, { x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
-  }, [flow, tools, addTool]);
+  }, [flow, tools, addTool, addApplicationAction]);
 
   const minimapColor = useCallback((n: any) => {
     if (n.type !== 'tool') return 'transparent';

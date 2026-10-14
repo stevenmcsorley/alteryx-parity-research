@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useEditor } from '../state/store';
 import type { FieldDef } from '../engine/types';
-import type { CanvasNode, ToolNodeData } from '../model/workflow';
+import type { ApplicationActionNodeData, CanvasNode, ToolNodeData } from '../model/workflow';
 import { SchemaForm, type FieldContext } from './SchemaForm';
 import { categoryColor, glyph } from '../ui/categories';
 import { engine, describe } from '../state/engineActions';
@@ -13,9 +13,57 @@ export function Inspector() {
   return (
     <aside className="app-right" aria-label="Configuration" data-testid="inspector">
       {!node ? <WorkflowProperties /> : node.data.kind === 'tool' ? <ToolInspector node={node} /> :
+        node.data.kind === 'application-action' ? <ApplicationActionInspector node={node} /> :
         node.data.kind === 'container' ? <ContainerInspector node={node} /> : <CommentInspector node={node} />}
     </aside>
   );
+}
+
+function ApplicationActionInspector({ node }: { node: CanvasNode }) {
+  const d = node.data as ApplicationActionNodeData;
+  const update = useEditor((s) => s.updateNodeData);
+  const checkpoint = useEditor((s) => s.checkpoint);
+  const edges = useEditor((s) => s.edges);
+  const nodes = useEditor((s) => s.nodes);
+  const targetEdge = edges.find((e) => e.source === node.id && e.data?.kind === 'application-action');
+  const target = nodes.find((n) => n.id === targetEdge?.target);
+  const paths: string[][] = [];
+  const walk = (value: unknown, prefix: string[] = []) => {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      for (const [key, child] of Object.entries(value)) walk(child, [...prefix, key]);
+    } else if (prefix.length && (value === null || ['string', 'number', 'boolean'].includes(typeof value))) paths.push(prefix);
+  };
+  if (target?.data.kind === 'tool') walk(target.data.config);
+  const pathKey = d.config_path.join('.');
+  const changeQuestion = (patch: Partial<ApplicationActionNodeData['question']>) => {
+    update(node.id, { question: { ...d.question, ...patch } }, false);
+  };
+  return <>
+    <div className="section"><h3>Flowbench Action</h3><h2>Configuration action</h2>
+      <p className="help">Native Flowbench analytic-app action. This editor representation is distinct from an Alteryx Action XML node; imported XML is retained separately.</p>
+    </div>
+    <div className="section kv">
+      <label>Question ID</label><input aria-label="Action question ID" value={d.question.id} onFocus={checkpoint} onChange={(e) => changeQuestion({ id: e.target.value })} />
+      <label>Prompt</label><input aria-label="Action prompt" value={d.question.prompt} onFocus={checkpoint} onChange={(e) => changeQuestion({ prompt: e.target.value })} />
+      <label>Answer type</label><select aria-label="Action answer type" value={d.question.type} onFocus={checkpoint} onChange={(e) => changeQuestion({ type: e.target.value as any,
+        default: e.target.value === 'text' ? '' : e.target.value === 'number' ? 0 : false })}>
+        <option value="text">Text</option><option value="number">Number</option><option value="boolean">Boolean</option>
+      </select>
+      <label>Required</label><input aria-label="Action answer required" type="checkbox" checked={!!d.question.required} style={{ justifySelf: 'start' }}
+        onFocus={checkpoint} onChange={(e) => changeQuestion({ required: e.target.checked })} />
+      <label>Default answer</label>{d.question.type === 'boolean'
+        ? <input aria-label="Action default answer" type="checkbox" checked={!!d.question.default} style={{ justifySelf: 'start' }} onFocus={checkpoint} onChange={(e) => changeQuestion({ default: e.target.checked })} />
+        : <input aria-label="Action default answer" type={d.question.type === 'number' ? 'number' : 'text'} value={d.question.default == null ? '' : String(d.question.default)}
+          onFocus={checkpoint} onChange={(e) => changeQuestion({ default: d.question.type === 'number' ? Number(e.target.value) : e.target.value })} />}
+      <label>Target</label><span>{target?.data.kind === 'tool' ? target.id : 'Connect Action to a tool’s Action anchor'}</span>
+      <label>Configuration field</label><select aria-label="Action configuration field" value={pathKey} disabled={!target} onFocus={checkpoint}
+        onChange={(e) => update(node.id, { config_path: e.target.value.split('.') })}>
+        {!paths.some((p) => p.join('.') === pathKey) && <option value={pathKey}>{pathKey || 'Choose a field'}</option>}
+        {paths.map((p) => <option key={p.join('.')} value={p.join('.')}>{p.join('.')}</option>)}
+      </select>
+    </div>
+    <div className="section"><p className="help">Run prompts for the question, applies the answer to the selected target field on a private workflow copy, validates, then executes. Action links are configuration dependencies and are not row-data connections.</p></div>
+  </>;
 }
 
 function MultiSelection({ count }: { count: number }) {

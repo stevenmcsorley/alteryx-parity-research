@@ -26,11 +26,13 @@ def report():
     for l in ledger:
         c = bycat[l['category']]
         c['entries'] += 1
-        c['implemented'] += l['implementation_status'] == 'implemented'
+        c['kernels'] += bool(l['kernel'])
         c['ref_partial'] += l['verification_status'] == 'partial'
         c['anchors'] += l['anchors_known']
         c['blocking'] += l['external_prerequisites_blocking']
     impl_rows = [l for l in ledger if l['kernel']]
+    in_progress_kernels = sum(bool(l['kernel']) and l['implementation_status'] == 'in-progress' for l in ledger)
+    adapter_rows = [l for l in ledger if l.get('adapter')]
     lines = [
         '# Research, implementation and conformance status',
         '',
@@ -49,13 +51,14 @@ def report():
         f'| Entries with known anchors (manifest, reference-observed or public-doc) | {t["anchors_known"]} |',
         f'| Entries observed in authorised reference workflows (structure only) | {t["reference_observed"]} |',
         f'| Independent kernels implemented and passing tests | {t["implementation_status"].get("implemented", 0)} |',
+        f'| Independently implemented application adapters (in progress) | {len(adapter_rows)} |',
         f'| Entries with differential reference cases, all passing ("partial") | {t["verification_status"].get("partial", 0)} |',
         f'| Entries with failing reference cases | {t["verification_status"].get("failed", 0)} |',
         f'| Reference cases passed / run — E1 (primary profile) | {t["conformance_cases_passed"]} / {t["conformance_cases"]} |',
         f'| Reference cases passed / run — E2 (AMP profile) | {t.get("e2_cases_passed", 0)} / {t.get("e2_cases", 0)} |',
         *[f'| Holdout: shipped sample workflows fully matching — {m.upper()} | {h["workflows_passed"]} / {h["workflows_run"]} '
           f'(sinks {h["sinks_passed"]} / {h["sinks"]}) |' for m, h in _holdouts()],
-        f'| Kernels registered but without passing evidence (in-progress) | {t["implementation_status"].get("in-progress", 0)} |',
+        f'| Kernels registered but without passing evidence (in-progress) | {in_progress_kernels} |',
         f'| Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | {t["external_prerequisites_blocking"]} |',
         f'| Entries fully verified against the reference | {t["verification_status"].get("verified", 0)} |',
         f'| Unit/integration tests in last ledger build | {status["test_run"]["tests_run"]} run, {status["test_run"]["tests_failed"]} failed |',
@@ -73,9 +76,9 @@ def report():
         '',
         '## By category',
         '',
-        '| Category | Entries | Kernels | Ref-partial | Anchors known | Blocked by external prerequisites |',
+        '| Category | Entries | Registered kernels | Ref-partial | Anchors known | Blocked by external prerequisites |',
         '|---|---:|---:|---:|---:|---:|',
-        *[f'| {cat} | {c["entries"]} | {c["implemented"]} | {c["ref_partial"]} | {c["anchors"]} | {c["blocking"]} |'
+        *[f'| {cat} | {c["entries"]} | {c["kernels"]} | {c["ref_partial"]} | {c["anchors"]} | {c["blocking"]} |'
           for cat, c in sorted(bycat.items())],
         '',
         '## Interpretation',
@@ -85,7 +88,8 @@ def report():
         'the kernel\'s config schema and are rejected at validation.',
         '- "Partial" verification means every recorded differential case passed against the stated reference '
         'build, engine and settings. Coverage of the tool\'s option space is listed per case in the contract JSON.',
-        '- Entries without a kernel fail validation with `tool-unavailable`; nothing is stubbed.',
+        '- Catalogue entries without a registered kernel or a specifically recorded executable adapter fail validation; '
+        'the Action adapter supports only the variants explicitly listed in its contract.',
         '- See docs/TOOL_STATUS_RULES.md, docs/CONFORMANCE.md and docs/AUTHORISATION.md.',
     ]
     return '\n'.join(lines) + '\n'

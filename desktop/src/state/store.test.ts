@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { useEditor } from './store';
 import { statusOf } from '../panels/Palette';
 import { previewToCsv } from './engineActions';
+import { fromDocument, toDocument } from '../model/workflow';
 import type { ToolManifest } from '../engine/types';
 
 const manifest = (id: string, inputs: [string, boolean][], outputs: string[]): ToolManifest => ({
@@ -48,6 +49,24 @@ describe('editor store', () => {
     const f2 = useEditor.getState().addTool('core.filter', { x: 0, y: 0 });
     expect(c({ source: u, sourceHandle: 'output', target: f2, targetHandle: 'input' })).toBeNull();
     expect(useEditor.getState().edges).toHaveLength(4);
+  });
+
+  it('keeps Action target wiring out of row-data edges and round-trips app metadata', () => {
+    const target = useEditor.getState().addTool('core.filter', { x: 400, y: 100 });
+    const action = useEditor.getState().addApplicationAction({ x: 100, y: 100 });
+    const source = useEditor.getState().addTool('core.text_input', { x: 0, y: 0 });
+    expect(useEditor.getState().connect({ source, sourceHandle: 'output', target, targetHandle: '__action__' })).toMatch(/Unknown input anchor/);
+    expect(useEditor.getState().connect({ source: action, sourceHandle: 'Action', target, targetHandle: 'input' })).toMatch(/Action connections/);
+    expect(useEditor.getState().connect({ source: action, sourceHandle: 'Action', target, targetHandle: '__action__' })).toBeNull();
+    const doc = toDocument({ ...useEditor.getState(), description: undefined } as any);
+    expect(doc.edges).toEqual([]);
+    expect(doc.metadata?.application?.questions).toEqual([{ id: 'question_1', label: 'Enter a value', type: 'text' }]);
+    expect(doc.metadata?.application?.actions).toEqual([{ question: 'question_1', node_id: target, config_path: ['expression'] }]);
+    const reopened = fromDocument(doc);
+    expect(reopened.nodes.some((n) => n.data.kind === 'application-action')).toBe(true);
+    expect(reopened.edges).toHaveLength(1);
+    expect(reopened.edges[0].data?.kind).toBe('application-action');
+    expect(toDocument(reopened).edges).toEqual([]);
   });
 
   it('groups, ungroups, copies and pastes', () => {

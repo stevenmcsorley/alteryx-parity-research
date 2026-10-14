@@ -1,0 +1,42 @@
+{
+  "reference_build": "2026.2.0.8",
+  "authorization_basis": "docs/AUTHORISATION.md, structural inspection of installed sample workflows; no sample files or data copied",
+  "fixtures": [
+    {
+      "name": "41 Understanding a Designer Application.yxwz",
+      "sha256": "8f65957dc6a5eec97fe18bce7c16faa901f67b23f84f7080c762fc30dec5209a",
+      "observations": [
+        "Question ToolID 12 uses AlteryxGuiToolkit.Questions.NumericUpDown.NumericUpDown.",
+        "Action ToolID 13 uses AlteryxGuiToolkit.Action.Action with empty node Configuration.",
+        "Target ToolID 9 is Sample; root RuntimeProperties contains the update rule.",
+        "Connections are 12.Question to 13.Question and 13.Action to 9.Action.",
+        "Runtime action is Type UpdateValue, Mode Simple, destination 9/N, ToolId 13."
+      ]
+    },
+    {
+      "name": "Action.yxwz",
+      "sha256": "f2b1b1d710816bb13d706901ccfa47fca549d2a678541acb17f4279ae6027506",
+      "observations": [
+        "RuntimeProperties contains UpdateValue, UpdateValueFormula, Dynamic, UpdateInput, UpdateMap, UpdateSelect and UpdateRawXml action types.",
+        "Observed destinations include Filter Expression and Simple Operands/Operand, Text Input Data/r[1]/c[1], Container Disabled/@value, DetourRight/@value, SortInfo/Field[1]/@order, FormulaFields/FormulaField/@expression and spatial radii.",
+        "Action node Configuration is empty; action configuration and mapping rules are workflow-level RuntimeProperties."
+      ]
+    },
+    {
+      "name": "en/05 Advanced/02 Build_a_Macro/Supporting_Macros/LocOpt_GravityCreateDemandSurface.yxmc",
+      "sha256": "806a9492c7f5c5c6c019566bb42a6457c16ce2df67221a61b6fb85afaa835496",
+      "observations": [
+        "Installed sample contains UpdateValue / Simple actions targeting FormulaFields/FormulaField/@expression on a Formula node.",
+        "The observed target node has one FormulaField; the action destination does not name a FormulaField index.",
+        "The sample also contains DetourRight/@value updates and an UpdateValueFormula action; those variants remain unsupported.",
+        "This is structural configuration evidence only; Designer analytic-app execution behavior was not observed."
+      ]
+    }
+  ],
+  "black_box_execution": {
+    "engine": "AlteryxEngineCmd.exe 2026.2.0.8 E1",
+    "workflow": "project-authored synthetic .yxwz with Text Input, Filter, Action, Text Box and CSV output",
+    "result": "EngineCmd executed the unchanged Filter expression; RuntimeProperties Action was not applied by this command-line invocation.",
+    "limitation": "No claim about Designer analytic-app runner behavior; native Designer UI was unavailable in this environment."
+  }
+}

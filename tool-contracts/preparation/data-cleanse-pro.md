@@ -1,37 +1,41 @@
 # Data Cleanse Pro
 
-> **Research record; NOT a working tool implementation or verified specification.**
-
-## Identity
+## Current Flowbench implementation
 
 - Catalogue ID: `preparation:data-cleanse-pro`
-- Category: Preparation
-- Published XML identifier: `AlteryxBasePluginsGui.DataCleansePro.DataCleansePro` (manual transcription; verify against installed reference)
-- Published user role: Basic, Full
-- Reference build: Designer 2026.1.4.126 (installed-build comparison outstanding)
-- Official catalogue: https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html
-- Specific reference: **NOT YET VERIFIED** — run public catalogue sync
-- Implementation: **not-started**
-- Machine-readable contract: `data-cleanse-pro.contract.json`
-- Conformance verification: **not-tested**
+- Independent kernel: `core.data_cleanse_pro` in `flowengine/tools/preparation.py`
+- Anchors: `input` → `output`
+- Desktop configuration: schema-driven inspector backed by the kernel manifest
+- Independent tests: Unicode and HTML cleanup, invisible format characters, character-category exceptions, null replacement/removal, decimal preservation, selected columns and missing-field errors (`tests/test_fe_tools.py`)
+- Generated status: see `data/tool-status.json` and `docs/ALTERYX_PARITY_ROADMAP.md`
 
-## Research to complete (do not infer)
+The implementation covers the documented cleansing options: selected fields,
+leading/trailing and repeated whitespace, all-whitespace removal, markup and
+format-character removal, Unicode letters/numbers/punctuation and symbols,
+exceptions, string and numeric null/blank replacement, case conversion, and
+post-transform null row/column removal. Value-dependent column removal stops
+static schema inference rather than claiming a fixed output schema. It disables
+streaming where the selected null removal requires a whole-table decision.
 
-- [ ] Pin per-tool public documentation and availability/version history
-- [ ] Define inputs, output anchors, schema and metadata rules
-- [ ] Define configuration fields, defaults, UI validation and errors
-- [ ] Define row order, null semantics, locale/timezone and deterministic behaviour
-- [ ] Identify add-ons, licences, external APIs, services and data-package prerequisites
-- [ ] Define concrete independent fixtures, edge cases and expected outputs
-- [ ] Implement real independently written kernel or adapter
-- [ ] Demonstrate end-to-end workflow execution and unit/integration tests
-- [ ] Where authorised, capture reference evidence and run differential tests
-- [ ] Record limitations, performance, security and version compatibility
+## Evidence limits
 
-## Sources and observations
+This implementation is independently tested, not reference verified. The
+public documentation describes AMP-only behavior; current Alteryx 2026.2.0.8
+GUI execution has not been compared. Python Unicode categories are used for
+letter/number/punctuation/symbol classification; exact equivalence to the
+reference ICU version and its exceptional code points is unknown. Exact default
+and interaction behavior of all target XML options is also unverified. The
+reference configuration element names remain recorded in the machine-readable
+contract. XML configuration import is not currently translated; unsupported
+original settings must remain explicit in import diagnostics.
 
-No application behaviour or compatibility has been verified. Add specific links, observed facts, dates, permission scope and evidence references here. Keep assumptions explicitly labelled.
+The generated ledger's unreviewed `vendor-cloud-service` dependency signal is
+from page keyword scanning and is not required by this local kernel.
 
-## Conformance evidence
+## Public source
 
-Not tested. Do not mark verified without a report, input/config hashes and a reproducible comparison rule.
+Official documentation: <https://help.alteryx.com/current/en/designer/tools/preparation/data-cleanse-pro-tool.html>
+(checked 2026-10-14). It describes the selected-field behavior, null row/column
+removal after other cleanup, whitespace and markup handling, Unicode character
+categories, null/blank replacements, and case modes. Public documentation is
+not used as runtime parity evidence.

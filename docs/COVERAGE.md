@@ -12,7 +12,8 @@
 | Machine-readable contracts generated | 323 |
 | Entries with known anchors (manifest, reference-observed or public-doc) | 183 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 60 |
+| Independent kernels implemented and passing tests | 62 |
+| Independently implemented application adapters (in progress) | 1 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
 | Reference cases passed / run — E1 (primary profile) | 74 / 75 |
@@ -22,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 165 run, 0 failed |
+| Unit/integration tests in last ledger build | 181 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -30,17 +31,18 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 
 | Catalogue id | Kernel | Tests | Reference cases (passed/run) | Verification |
 |---|---|---:|---:|---|
-| `in-out:browse` | `core.browse` | 22 | 0/0 | not-tested |
+| `in-out:browse` | `core.browse` | 23 | 0/0 | not-tested |
 | `in-out:date-time-now` | `core.date_time_now` | 1 | 0/0 | not-tested |
 | `in-out:directory` | `core.directory` | 1 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 13 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 8 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 90 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 98 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
+| `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
 | `preparation:data-cleansing` | `core.data_cleansing` | 3 | 0/0 | not-tested |
-| `preparation:filter` | `core.filter` | 19 | 5/5 | partial |
-| `preparation:formula` | `core.formula` | 21 | 12/12 | partial |
+| `preparation:filter` | `core.filter` | 21 | 5/5 | partial |
+| `preparation:formula` | `core.formula` | 22 | 12/12 | partial |
 | `preparation:generate-rows` | `core.generate_rows` | 3 | 0/0 | not-tested |
 | `preparation:imputation` | `core.imputation` | 1 | 1/1 | partial |
 | `preparation:multi-field-binning` | `core.multi_field_binning` | 1 | 0/0 | not-tested |
@@ -66,6 +68,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `parse:regex` | `core.regex` | 1 | 3/3 | partial |
 | `parse:text-to-columns` | `core.text_to_columns` | 1 | 1/1 | partial |
 | `parse:xml-parse` | `core.xml_parse` | 1 | 1/1 | partial |
+| `transform:arrange` | `core.arrange` | 2 | 0/0 | not-tested |
 | `transform:count-records` | `core.count_records` | 7 | 1/1 | partial |
 | `transform:cross-tab` | `core.cross_tab` | 1 | 3/3 | partial |
 | `transform:make-columns` | `core.make_columns` | 1 | 1/1 | partial |
@@ -94,7 +97,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 
 ## By category
 
-| Category | Entries | Kernels | Ref-partial | Anchors known | Blocked by external prerequisites |
+| Category | Entries | Registered kernels | Ref-partial | Anchors known | Blocked by external prerequisites |
 |---|---:|---:|---:|---:|---:|
 | AB Testing | 4 | 0 | 0 | 1 | 0 |
 | AI Tools | 6 | 0 | 0 | 6 | 6 |
@@ -106,7 +109,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Connectors | 44 | 0 | 0 | 1 | 44 |
 | Data Investigation | 14 | 0 | 0 | 7 | 0 |
 | Demographic Analysis | 4 | 0 | 0 | 0 | 4 |
-| Developer | 30 | 15 | 4 | 28 | 0 |
+| Developer | 30 | 16 | 4 | 28 | 0 |
 | Documentation | 3 | 0 | 0 | 1 | 0 |
 | In-Database | 16 | 0 | 0 | 0 | 0 |
 | In/Out | 8 | 6 | 0 | 7 | 0 |
@@ -117,18 +120,18 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Parse | 4 | 4 | 4 | 4 | 0 |
 | Predictive | 25 | 0 | 0 | 8 | 0 |
 | Predictive Grouping | 9 | 0 | 0 | 3 | 0 |
-| Preparation | 21 | 20 | 12 | 21 | 0 |
+| Preparation | 21 | 21 | 12 | 21 | 0 |
 | Prescriptive | 4 | 0 | 0 | 3 | 0 |
 | Reporting | 13 | 0 | 0 | 11 | 0 |
 | SDK Examples | 1 | 0 | 0 | 0 | 0 |
 | Spatial | 15 | 0 | 0 | 14 | 0 |
 | Text Mining | 9 | 0 | 0 | 9 | 0 |
 | Time Series | 9 | 0 | 0 | 4 | 0 |
-| Transform | 8 | 7 | 7 | 8 | 0 |
+| Transform | 8 | 8 | 7 | 8 | 0 |
 
 ## Interpretation
 
 - "Implemented" means an original kernel runs real data and passes this repository's tests. It does not mean every configuration option of the reference tool is supported; unsupported options are absent from the kernel's config schema and are rejected at validation.
 - "Partial" verification means every recorded differential case passed against the stated reference build, engine and settings. Coverage of the tool's option space is listed per case in the contract JSON.
-- Entries without a kernel fail validation with `tool-unavailable`; nothing is stubbed.
+- Catalogue entries without a registered kernel or a specifically recorded executable adapter fail validation; the Action adapter supports only the variants explicitly listed in its contract.
 - See docs/TOOL_STATUS_RULES.md, docs/CONFORMANCE.md and docs/AUTHORISATION.md.

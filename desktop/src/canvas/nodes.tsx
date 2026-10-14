@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Handle, NodeResizer, Position, type NodeProps } from '@xyflow/react';
 import { useEditor } from '../state/store';
-import type { CanvasNode, CommentNodeData, ContainerNodeData, ToolNodeData } from '../model/workflow';
+import type { ApplicationActionNodeData, CanvasNode, CommentNodeData, ContainerNodeData, ToolNodeData } from '../model/workflow';
 import { categoryColor, glyph } from '../ui/categories';
 
 const PORT_H = 20;
@@ -37,6 +37,10 @@ export const ToolNode = memo(function ToolNode({ id, data, selected }: NodeProps
       </div>
       <div className="ports" style={{ minHeight: portCount * PORT_H + 4 }}>
         <div>
+          <div className="port in" title="Configuration action target">
+            Action<Handle type="target" position={Position.Left} id="__action__" className="multiple"
+              style={{ top: '50%' }} data-testid={`in-${id}-__action__`} />
+          </div>
           {inputs.map((a) => (
             <div key={a.name} className="port in" title={a.description || a.name}>
               <Handle type="target" position={Position.Left} id={a.name} className={a.multiple ? 'multiple' : ''}
@@ -58,6 +62,26 @@ export const ToolNode = memo(function ToolNode({ id, data, selected }: NodeProps
       {d.annotation && <div className="annot">{d.annotation}</div>}
     </div>
   );
+});
+
+export const ApplicationActionNode = memo(function ApplicationActionNode({ id, data, selected }: NodeProps<CanvasNode>) {
+  const d = data as ApplicationActionNodeData;
+  const connected = useEditor((s) => s.edges.some((e) => e.source === id && e.data?.kind === 'application-action'));
+  return <div className={`tool-node application-action-node ${selected ? 'selected' : ''}`} data-testid={`node-${id}`}>
+    <div className="head" style={{ background: 'color-mix(in srgb, #805ad5 13%, transparent)' }}>
+      <div className="glyph" style={{ background: '#805ad5' }} aria-hidden>A</div>
+      <div className="names"><div className="tname">Flowbench Action</div><div className="nid">{id}</div></div>
+    </div>
+    <div className="ports" style={{ minHeight: 44 }}>
+      <div className="port in" title="Question is supplied by the analytic application form">
+        Question <span className="count">{d.question.type}</span>
+      </div>
+      <div className="port out">Action
+        <Handle type="source" position={Position.Right} id="Action" style={{ top: '50%' }} data-testid={`out-${id}-Action`} />
+      </div>
+    </div>
+    <div className="annot">{connected ? `Updates ${d.config_path.join('.')}` : 'Connect Action to a tool target'}</div>
+  </div>;
 });
 
 export const CommentNode = memo(function CommentNode({ id, data, selected }: NodeProps<CanvasNode>) {
@@ -82,4 +106,4 @@ export const ContainerNode = memo(function ContainerNode({ id, data, selected }:
   );
 });
 
-export const nodeTypes = { tool: ToolNode, comment: CommentNode, container: ContainerNode };
+export const nodeTypes = { tool: ToolNode, applicationAction: ApplicationActionNode, comment: CommentNode, container: ContainerNode };

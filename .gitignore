@@ -34,5 +34,7 @@ local-source-audit/
 examples/*/out/
 conformance/work/
 .flowbench/
+artifacts/full-acceptance/
+artifacts/acceptance-benchmarks.md
 !tests/fixtures/yxmd/*.yxmd
 tests/integration/.db_env.json

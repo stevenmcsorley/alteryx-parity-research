@@ -68,6 +68,7 @@ python -m flowengine run examples/sales/monthly_sales.flow.json --log run.jsonl 
 python -m flowengine tools
 python -m flowengine import tests/fixtures/yxmd/regional_sales.yxmd -o imported.flow.json
 python scripts/build_status.py          # regenerate contracts + status ledger from evidence
+python scripts/full_acceptance.py       # acceptance suites; records blocked and not-run gates explicitly
 
 # Desktop app (see docs/DESKTOP.md)
 cd desktop; npm ci; npx tauri dev
@@ -91,6 +92,9 @@ python conformance/reference/holdout_samples.py --mode e1
 [`docs/ALTERYX_PARITY_ROADMAP.md`](docs/ALTERYX_PARITY_ROADMAP.md) is the authoritative full-catalogue work queue. It
 is generated from the catalogue, per-tool contracts, and evidence-derived implementation/conformance ledger; rebuild
 it with `python scripts/build_parity_roadmap.py` after refreshing tool status.
+
+[`docs/FULL_ACCEPTANCE.md`](docs/FULL_ACCEPTANCE.md) describes the end-to-end verification entrypoint, report formats,
+optional isolated installer/performance runs, and how missing external prerequisites are recorded.
 
 Track independent axes:
 

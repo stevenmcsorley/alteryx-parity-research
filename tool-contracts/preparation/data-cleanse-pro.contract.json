@@ -6,73 +6,145 @@
   "xml_tool_name": "AlteryxBasePluginsGui.DataCleansePro.DataCleansePro",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/data-cleanse-pro-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "CheckBox_ModifyCase",
-      "Checkbox_ReplaceNumericColumns",
-      "Checkbox_ReplaceStringColumns",
-      "Exceptions",
-      "Fields",
-      "Fields/Field",
-      "Letters",
-      "ModifyCase",
-      "Numbers",
-      "Punctuations",
-      "RemoveAllWhitespaces",
-      "RemoveHTMLTags",
-      "RemoveInvisibleCharacters",
-      "RemoveLeadingAndTrailingWhitespace",
-      "RemoveLetters",
-      "RemoveNullColumns",
-      "RemoveNullRows",
-      "RemoveNumbers",
-      "RemovePunctuation",
-      "RemoveTabsLineBreaksAndDuplicates",
-      "ReplaceWithBlanks",
-      "ReplaceWithZero",
-      "radioButton_ReplaceBlankswithNulls",
-      "radioButton_ReplaceNullwithBlanks",
-      "radioButton_ReplaceNullwithZero",
-      "radioButton_ReplaceZerowithNulls"
-    ],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Remove Null Data",
-      "Select Columns to Cleanse",
-      "Remove Characters",
-      "Replace String Columns",
-      "Replace Numeric Columns",
-      "Modify Case"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "fields": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string"
+        },
+        "default": null,
+        "description": "Selected columns; null selects every input column."
+      },
+      "remove_null_rows": {
+        "type": "boolean",
+        "default": false
+      },
+      "remove_null_columns": {
+        "type": "boolean",
+        "default": false
+      },
+      "remove_leading_and_trailing_whitespace": {
+        "type": "boolean",
+        "default": true
+      },
+      "remove_tabs_line_breaks_and_duplicates": {
+        "type": "boolean",
+        "default": false
+      },
+      "remove_all_whitespace": {
+        "type": "boolean",
+        "default": false
+      },
+      "remove_html_tags": {
+        "type": "boolean",
+        "default": false
+      },
+      "remove_invisible_characters": {
+        "type": "boolean",
+        "default": false
+      },
+      "remove_letters": {
+        "type": "boolean",
+        "default": false
+      },
+      "letters_except": {
+        "type": "string",
+        "default": ""
+      },
+      "remove_numbers": {
+        "type": "boolean",
+        "default": false
+      },
+      "numbers_except": {
+        "type": "string",
+        "default": ""
+      },
+      "remove_punctuation": {
+        "type": "boolean",
+        "default": false
+      },
+      "punctuation_except": {
+        "type": "string",
+        "default": ""
+      },
+      "replace_string_columns": {
+        "type": "boolean",
+        "default": false
+      },
+      "string_nulls": {
+        "enum": [
+          "preserve",
+          "blank",
+          "nullify_blank"
+        ],
+        "default": "blank"
+      },
+      "replace_numeric_columns": {
+        "type": "boolean",
+        "default": false
+      },
+      "numeric_nulls": {
+        "enum": [
+          "preserve",
+          "zero",
+          "nullify_zero"
+        ],
+        "default": "zero"
+      },
+      "modify_case": {
+        "type": "boolean",
+        "default": false
+      },
+      "case": {
+        "enum": [
+          "upper",
+          "lower",
+          "title"
+        ],
+        "default": "upper"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.data_cleanse_pro",
+    "version": "1.0.0",
+    "module": "flowengine.tools.preparation",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -145,9 +217,13 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 3,
+    "passing": 3,
+    "tests": [
+      "test_fe_tools.PreparationTests.test_data_cleanse_pro_rejects_missing_selected_field",
+      "test_fe_tools.PreparationTests.test_data_cleanse_pro_unicode_categories_exceptions_and_null_filtering",
+      "test_fe_tools.PreparationTests.test_data_cleanse_pro_unicode_characters_nulls_and_selected_fields"
+    ]
   },
   "sources": [
     {
@@ -168,6 +244,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

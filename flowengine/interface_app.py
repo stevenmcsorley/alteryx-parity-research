@@ -41,6 +41,13 @@ def _spec(doc):
         path = a.get('config_path')
         if not isinstance(path, list) or not path or any(not isinstance(k, str) or k in ('__proto__', 'prototype', 'constructor') for k in path):
             raise EngineError('Application action config_path must be a safe list of property names', code='application-invalid')
+    occupied = set()
+    for a in actions:
+        target = (a['node_id'], tuple(a['config_path']))
+        if target in occupied:
+            raise EngineError('Conflicting application actions target the same configuration value',
+                              code='application-invalid', node_id=a['node_id'])
+        occupied.add(target)
     return {'questions': questions, 'actions': actions}
 
 

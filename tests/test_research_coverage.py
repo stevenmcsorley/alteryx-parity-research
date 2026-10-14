@@ -20,6 +20,7 @@ class ResearchCoverageTests(unittest.TestCase):
     def test_every_category_occurrence_has_a_brief_and_valid_contract(self):
         schema = json.loads((ROOT / 'schemas/tool-contract.schema.json').read_text(encoding='utf-8'))
         validator = jsonschema.Draft202012Validator(schema)
+        ledger = {r['id']: r for r in json.loads((ROOT / 'data/tool-status.json').read_text(encoding='utf-8'))['tools']}
         paths = []
         for row in self.rows:
             base = ROOT / 'tool-contracts' / slug(row['category'])
@@ -28,7 +29,12 @@ class ResearchCoverageTests(unittest.TestCase):
             self.assertTrue(brief.is_file(), row['id'])
             self.assertTrue(contract.is_file(), row['id'])
             text = brief.read_text(encoding='utf-8')
-            self.assertTrue('NOT a working tool implementation' in text or 'NOT a verified specification' in text, row['id'])
+            status_marker = 'NOT a working tool implementation' in text or 'NOT a verified specification' in text
+            if not status_marker and ledger[row['id']]['implementation_status'] == 'implemented' and ledger[row['id']]['verification_status'] == 'not-tested':
+                self.assertIn('not reference verified', text.lower(), row['id'])
+                self.assertIn('evidence limits', text.lower(), row['id'])
+            else:
+                self.assertTrue(status_marker, row['id'])
             doc = json.loads(contract.read_text(encoding='utf-8'))
             validator.validate(doc)
             self.assertEqual(doc['id'], row['id'])
@@ -45,7 +51,7 @@ class ResearchCoverageTests(unittest.TestCase):
             if r['implementation_status'] == 'implemented':
                 self.assertTrue(l['kernel'] and l['independent_tests'] > 0, r['id'])
             elif r['implementation_status'] == 'in-progress':  # kernel exists but has no passing test evidence
-                self.assertTrue(l['kernel'], r['id'])
+                self.assertTrue(l['kernel'] or (l.get('adapter') and l['independent_tests'] > 0), r['id'])
             else:
                 self.assertIsNone(l['kernel'], r['id'])
             if r['verification_status'] == 'partial':
@@ -56,7 +62,12 @@ class ResearchCoverageTests(unittest.TestCase):
 
     def test_unimplemented_catalogue_tools_fail_clearly(self):
         from flowengine.executor import plan_workflow
-        unimplemented = [r for r in self.rows if r['implementation_status'] == 'not-started']
+        from flowengine.plugin import default_registry
+        registered = {cid for tool in default_registry().tools() for cid in tool.manifest.catalog_ids}
+        # Use the live registry here: build_status regenerates catalogue status from
+        # test evidence, so consulting the previous generated status makes this test
+        # order-dependent for a newly added, tested kernel.
+        unimplemented = [r for r in self.rows if r['id'] not in registered]
         self.assertTrue(unimplemented)
         for r in unimplemented[:25]:
             doc = {'format': 'flowengine.workflow', 'formatVersion': 1,

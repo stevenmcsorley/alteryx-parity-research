@@ -87,13 +87,14 @@
     ]
   },
   "independent_tests": {
-    "count": 22,
-    "passing": 22,
+    "count": 23,
+    "passing": 23,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
       "test_fe_executor.ExecutionTests.test_jsonl_log_and_retain_none",
+      "test_fe_interop.ImportTests.test_designer_action_acceptance_fixture_executes_on_a_private_copy",
       "test_fe_interop.ImportTests.test_export_round_trip",
       "test_fe_interop.ImportTests.test_runs_once_the_unsupported_branch_is_removed",
       "test_fe_interop.ImportTests.test_validation_reports_the_unsupported_catalogue_tool",

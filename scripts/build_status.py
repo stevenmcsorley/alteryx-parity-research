@@ -44,6 +44,24 @@ sys.path.insert(0, str(ROOT / 'conformance'))
 from catalog_lib import CATALOG, save_catalog  # noqa: E402
 
 TARGET = 'Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8'
+APPLICATION_ADAPTERS = {
+    'interface:action': {
+        'module': 'flowengine.interop.yxmd',
+        'test_ids': [
+            'test_fe_interop.ImportTests.test_imported_alteryx_update_value_action_binds_filter_and_executes',
+            'test_fe_interop.ImportTests.test_imported_update_value_action_targets_single_formula_expression',
+            'test_fe_interop.ImportTests.test_formula_action_with_ambiguous_multiple_formula_fields_is_unsupported',
+            'test_fe_interop.ImportTests.test_designer_action_acceptance_fixture_executes_on_a_private_copy',
+            'test_fe_interop.ImportTests.test_imported_unsupported_action_is_diagnostic_and_password_default_is_not_retained',
+        ],
+        'supported': ['UpdateValue / Simple / Filter Expression / single connected question / NoCondition True',
+                      'UpdateValue / Simple / FormulaFields/FormulaField/@expression / one formula field'],
+        'unsupported': ['UpdateValueFormula', 'Dynamic', 'UpdateInput', 'UpdateMap', 'UpdateSelect', 'UpdateRawXml',
+                        'condition-driven actions', 'multi-question expressions',
+                        'ambiguous Formula targets with multiple FormulaField entries', 'all other unmapped target paths'],
+        'evidence': 'data/action-reference-evidence.json',
+    },
+}
 
 CATEGORY_DEPENDENCIES = {
     'Predictive': ['r-runtime (statistical models; vendor ships R-based macros)'],
@@ -79,6 +97,7 @@ def run_tests_with_tool_map():
     import flowengine.plugin as plugin
     current = {'test': None}
     used = defaultdict(set)
+    seen = set()
     original_get = plugin.Registry.get
 
     def recording_get(self, tool_id):
@@ -91,6 +110,7 @@ def run_tests_with_tool_map():
     class Recorder(unittest.TextTestResult):
         def startTest(self, test):
             current['test'] = test.id()
+            seen.add(test.id())
             super().startTest(test)
 
     suite = unittest.defaultTestLoader.discover(str(ROOT / 'tests'), top_level_dir=str(ROOT / 'tests'))
@@ -99,7 +119,7 @@ def run_tests_with_tool_map():
     plugin.Registry.get = original_get
     bad = {t.id() for t, _ in result.failures + result.errors}
     tests = {}
-    for tid in set(used) | bad:
+    for tid in set(used) | bad | seen:
         tests[tid] = {'ok': tid not in bad, 'tools': used.get(tid, set())}
     return tests, result.testsRun, len(bad)
 
@@ -168,7 +188,10 @@ def build(check=False):
                 if sig in ('r-runtime', 'python-runtime', 'credentials', 'database-driver', 'licensed-dataset',
                            'llm-service', 'alteryx-server', 'vendor-cloud-service') and not any(sig in d for d in deps):
                     deps.append(f'{sig} (public-doc keyword signal; unreviewed)')
+        adapter = APPLICATION_ADAPTERS.get(cid)
         tool_tests = tests_by_tool.get(tool.manifest.tool_id, []) if tool else []
+        if adapter:
+            tool_tests = [(tid, tests.get(tid, {}).get('ok', False)) for tid in adapter['test_ids']]
         if tool and tool_tests and all(ok for _, ok in tool_tests):
             impl_status = 'implemented'
         elif tool:
@@ -222,9 +245,23 @@ def build(check=False):
                              'public_doc_sections': (public or {}).get('section_headings', [])}
             implementation = None
             deterministic = None
+        if adapter:
+            # Interface execution is an importer/application adapter, not a row
+            # kernel registered in the data-processing plugin registry.
+            impl_status = ('in-progress' if not tool_tests or not all(ok for _, ok in tool_tests) or adapter['unsupported']
+                           else 'implemented')
+            implementation = {'engine': 'Alteryx workflow import/application adapter',
+                              'tool_id': cid, 'module': adapter['module'],
+                              'supported_variants': adapter['supported'],
+                              'unimplemented_variants': adapter['unsupported']}
+            config_schema = {'status': 'partially-specified',
+                             'source': adapter['evidence'],
+                             'supported_variants': adapter['supported'],
+                             'unsupported_variants': adapter['unsupported'],
+                             'preserved_runtime_xml': True}
         unresolved = []
         if not tool:
-            unresolved.append('No independent kernel yet; configuration semantics not specified.')
+            unresolved.append('No independent row-processing kernel; this entry is implemented as a workflow application adapter.') if adapter else unresolved.append('No independent kernel yet; configuration semantics not specified.')
             if not inputs and not outputs:
                 unresolved.append('Anchors unknown: not described in public page text and not observed in shipped workflows.')
         if blocking:
@@ -238,6 +275,9 @@ def build(check=False):
         if ref_obs:
             sources.append({'url': 'data/reference-observations.json', 'evidence_type': 'authorised-reference-structural-scan',
                             'accessed_utc': obs.get('scanned_utc')})
+        if adapter:
+            sources.append({'url': adapter['evidence'], 'evidence_type': 'authorised-reference-observation-and-project-authored-execution',
+                            'accessed_utc': catalog_doc['metadata'].get('source_retrieved_at_utc')})
         contract = {
             'id': cid, 'target_version': TARGET, 'name': row['name'], 'category': row['category'],
             'xml_tool_name': row.get('xml_tool_name'), 'user_role': row.get('user_role'),
@@ -282,8 +322,8 @@ def build(check=False):
             changed.append(CATALOG)
             row['implementation_status'] = impl_status
             row['verification_status'] = ver_status
-        ledger.append({'id': cid, 'name': row['name'], 'category': row['category'],
-                       'kernel': implementation['tool_id'] if implementation else None,
+        ledger_row = {'id': cid, 'name': row['name'], 'category': row['category'],
+                       'kernel': tool.manifest.tool_id if tool else None,
                        'implementation_status': impl_status, 'verification_status': ver_status,
                        'independent_tests': contract['independent_tests']['count'],
                        'conformance_cases': len(cases),
@@ -292,7 +332,10 @@ def build(check=False):
                        'e2_passed': sum(c['status'] == 'passed' for c in conf_other.get(cid, [])),
                        'reference_observed': bool(ref_obs),
                        'anchors_known': bool(inputs or outputs),
-                       'external_prerequisites_blocking': blocking})
+                       'external_prerequisites_blocking': blocking}
+        if adapter:
+            ledger_row['adapter'] = adapter['module']
+        ledger.append(ledger_row)
     status_doc = {
         'notes': 'Generated by scripts/build_status.py from evidence; see docs/TOOL_STATUS_RULES.md. '
                  '"partial" verification = every recorded differential case passes on the stated reference build; '
@@ -316,6 +359,7 @@ def summarize(ledger):
     return {
         'catalogue_entries': len(ledger),
         'kernels_registered': sum(1 for l in ledger if l['kernel']),
+        'application_adapters': sum(1 for l in ledger if l.get('adapter')),
         'implementation_status': dict(sorted(Counter(l['implementation_status'] for l in ledger).items())),
         'verification_status': dict(sorted(Counter(l['verification_status'] for l in ledger).items())),
         'anchors_known': sum(l['anchors_known'] for l in ledger),

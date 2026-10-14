@@ -5,7 +5,7 @@
   "flowengine_profile": "ayx-2026.2-e1",
   "holdout": false,
   "authorisation": "docs/AUTHORISATION.md",
-  "executed_utc": "2026-10-13T14:03:41+00:00",
+  "executed_utc": "2026-10-14T15:34:26+00:00",
   "flowengine_clock": "2026-01-15T09:30:00",
   "limits": [
     "CSV output cannot distinguish null from empty string",
@@ -2258,18 +2258,16 @@
       "description": "collation with locale 1033 (English)",
       "status": "failed",
       "differences": [
-        "[output] row 1 field 's': ours='10' ref='4'",
-        "[output] row 2 field 's': ours='22' ref='9'",
-        "[output] row 3 field 's': ours='4' ref='10'",
-        "[output] row 4 field 's': ours='9' ref='22'",
-        "[output] row 5 field 's': ours='A' ref='_x'",
-        "[output] row 6 field 's': ours='B1' ref='a'",
-        "[output] row 7 field 's': ours='E' ref='a b'",
-        "[output] row 8 field 's': ours='Z' ref='A'",
-        "[output] row 9 field 's': ours='_x' ref='ab'",
-        "[output] row 10 field 's': ours='a' ref='a-b'",
-        "[output] row 11 field 's': ours='a b' ref='b1'",
-        "[output] row 12 field 's': ours='a-b' ref='b2'"
+        "[output] row 1 field 's': ours='_x' ref='4'",
+        "[output] row 2 field 's': ours='4' ref='9'",
+        "[output] row 3 field 's': ours='9' ref='10'",
+        "[output] row 4 field 's': ours='10' ref='22'",
+        "[output] row 5 field 's': ours='22' ref='_x'",
+        "[output] row 7 field 's': ours='A' ref='a b'",
+        "[output] row 8 field 's': ours='a b' ref='A'",
+        "[output] row 12 field 's': ours='B1' ref='b2'",
+        "[output] row 13 field 's': ours='b2' ref='b10'",
+        "[output] row 14 field 's': ours='b10' ref='B1'"
       ],
       "config_digest": "c78e3582dc94b862017523216aae225dccd9561d259cd4fe741435d2165914e2",
       "comparison_rule": {
@@ -2279,7 +2277,7 @@
       "ours": {
         "status": "succeeded",
         "digests": {
-          "output": "ff70d05213d3f1d2d09357ed229b31d2c67b7015a7424c77258c93b54cd065bd"
+          "output": "91e15bd6939dace130f6b9c84fc5fee5346191f51e551115bfd6a4fdd739d0fd"
         }
       },
       "reference": {
