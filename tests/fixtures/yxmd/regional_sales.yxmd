@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!-- Original fixture authored for this project (synthetic data). Exercises the importer: supported tools,
+     a container, a comment, a named multi-input connection and one tool without an implementation. -->
+<AlteryxDocument yxmdVer="2026.1">
+  <Nodes>
+    <Node ToolID="1">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.TextInput.TextInput"><Position x="54" y="60" /></GuiSettings>
+      <Properties><Configuration><NumRows value="5" /><Fields><Field name="region" /><Field name="units" /><Field name="price" /></Fields>
+        <Data><r><c>North</c><c>3</c><c>2.5</c></r><r><c>South</c><c>10</c><c>1.0</c></r><r><c>North</c><c>1</c><c>4.0</c></r>
+          <r><c>East</c><c>7</c><c>3.0</c></r><r><c>South</c><c /><c>9.5</c></r></Data></Configuration>
+        <Annotation DisableTool="False"><AnnotationText>synthetic sales</AnnotationText></Annotation></Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxTextInput" />
+    </Node>
+    <Node ToolID="10">
+      <GuiSettings Plugin="AlteryxGuiToolkit.ToolContainer.ToolContainer"><Position x="150" y="20" width="420" height="200" /></GuiSettings>
+      <Properties><Configuration><Caption>Clean and price</Caption><Style /><Disabled value="False" /><Folded value="False" /></Configuration></Properties>
+      <ChildNodes>
+        <Node ToolID="2">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.Filter.Filter"><Position x="180" y="60" /></GuiSettings>
+          <Properties><Configuration><Expression>!IsNull([units])</Expression><Mode>Custom</Mode></Configuration></Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxFilter" />
+        </Node>
+        <Node ToolID="3">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.Formula.Formula"><Position x="300" y="60" /></GuiSettings>
+          <Properties><Configuration><FormulaFields>
+            <FormulaField expression="[units] * [price]" field="revenue" size="8" type="Double" />
+          </FormulaFields></Configuration></Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxFormula" />
+        </Node>
+      </ChildNodes>
+    </Node>
+    <Node ToolID="4">
+      <GuiSettings Plugin="AlteryxSpatialPluginsGui.Summarize.Summarize"><Position x="450" y="60" /></GuiSettings>
+      <Properties><Configuration><SummarizeFields>
+        <SummarizeField field="region" action="GroupBy" rename="region" />
+        <SummarizeField field="revenue" action="Sum" rename="Sum_revenue" />
+      </SummarizeFields></Configuration></Properties>
+      <EngineSettings EngineDll="AlteryxSpatialPluginsEngine.dll" EngineDllEntryPoint="AlteryxSummarize" />
+    </Node>
+    <Node ToolID="5">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.Sort.Sort"><Position x="560" y="60" /></GuiSettings>
+      <Properties><Configuration><SortInfo locale="0"><Field field="Sum_revenue" order="Descending" /></SortInfo></Configuration></Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxSort" />
+    </Node>
+    <Node ToolID="6">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.Union.Union"><Position x="660" y="60" /></GuiSettings>
+      <Properties><Configuration><ByName_ErrorMode>Warning</ByName_ErrorMode><ByName_OutputMode>All</ByName_OutputMode>
+        <Mode>ByName</Mode><SetOutputOrder value="False" /></Configuration></Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxUnion" />
+    </Node>
+    <Node ToolID="7">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2"><Position x="760" y="60" /></GuiSettings>
+      <Properties><Configuration /></Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+    </Node>
+    <Node ToolID="8">
+      <GuiSettings Plugin="AlteryxSpatialPluginsGui.Buffer.Buffer"><Position x="560" y="200" /></GuiSettings>
+      <Properties><Configuration><BufferDistance value="5" /><Units>Miles</Units></Configuration></Properties>
+      <EngineSettings EngineDll="AlteryxSpatialPluginsEngine.dll" EngineDllEntryPoint="AlteryxBuffer" />
+    </Node>
+    <Node ToolID="9">
+      <GuiSettings Plugin="AlteryxGuiToolkit.TextBox.TextBox"><Position x="54" y="200" width="200" height="60" /></GuiSettings>
+      <Properties><Configuration><Text>Sums revenue by region.</Text></Configuration></Properties>
+    </Node>
+  </Nodes>
+  <Connections>
+    <Connection><Origin ToolID="1" Connection="Output" /><Destination ToolID="2" Connection="Input" /></Connection>
+    <Connection><Origin ToolID="2" Connection="True" /><Destination ToolID="3" Connection="Input" /></Connection>
+    <Connection><Origin ToolID="3" Connection="Output" /><Destination ToolID="4" Connection="Input" /></Connection>
+    <Connection><Origin ToolID="4" Connection="Output" /><Destination ToolID="5" Connection="Input" /></Connection>
+    <Connection name="#1"><Origin ToolID="5" Connection="Output" /><Destination ToolID="6" Connection="Input" /></Connection>
+    <Connection name="#2"><Origin ToolID="5" Connection="Output" /><Destination ToolID="6" Connection="Input" /></Connection>
+    <Connection><Origin ToolID="6" Connection="Output" /><Destination ToolID="7" Connection="Input" /></Connection>
+    <Connection><Origin ToolID="3" Connection="Output" /><Destination ToolID="8" Connection="Input" /></Connection>
+  </Connections>
+  <Properties><Memory default="True" /><RunWithE2 value="False" /></Properties>
+</AlteryxDocument>

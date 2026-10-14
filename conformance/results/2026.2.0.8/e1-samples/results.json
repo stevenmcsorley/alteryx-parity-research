@@ -1,0 +1,1353 @@
+{
+  "kind": "holdout: reference sample workflows, imported and run by both engines",
+  "reference_build": "2026.2.0.8",
+  "engine_mode": "e1",
+  "authorisation": "docs/AUTHORISATION.md",
+  "executed_utc": "2026-10-13T14:04:05+00:00",
+  "limits": [
+    "Only samples that validate cleanly after import are run",
+    "Differences are recorded by location only; vendor data values are never stored",
+    "E2 comparisons are order-insensitive (AMP does not define output order)"
+  ],
+  "workflows_run": 31,
+  "workflows_passed": 15,
+  "sinks": 126,
+  "sinks_passed": 87,
+  "results": [
+    {
+      "sample": "02 Learn_one_tool_at_a_time/01 In Out/Auto Insights Uploader.yxmd",
+      "sinks": 1,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_130_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 5448,
+          "digest_ours": "b3ab66b530fe4adc1995aa67617c1b5ec8978ba9bb595a3c1abc9f38082da9dc",
+          "digest_reference": "b3ab66b530fe4adc1995aa67617c1b5ec8978ba9bb595a3c1abc9f38082da9dc"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/01 In Out/Browse.yxmd",
+      "sinks": 4,
+      "reference_exit_ok": true,
+      "flowengine_status": "failed",
+      "flowengine_error": {
+        "code": "data-error",
+        "node": "t95"
+      },
+      "sink_results": {
+        "sink_96": {
+          "status": "failed",
+          "differences": [
+            "missing output: flowengine"
+          ],
+          "rows_reference": 42458,
+          "digest_ours": null,
+          "digest_reference": "037c2a56c7c51aa018b4e63876cd3455602ca9f68fe18331dcbaa98497456eb7"
+        },
+        "sink_87": {
+          "status": "failed",
+          "differences": [
+            "missing output: flowengine"
+          ],
+          "rows_reference": 1,
+          "digest_ours": null,
+          "digest_reference": "6e5826a5ee140bf074238de5b96992f2041535c871645f212490a1f68afcc293"
+        },
+        "sink_84": {
+          "status": "failed",
+          "differences": [
+            "missing output: flowengine"
+          ],
+          "rows_reference": 42458,
+          "digest_ours": null,
+          "digest_reference": "2854482be37cd0d728d804174fcfbefdacfab66b524b2fcc91e160811c9d7678"
+        },
+        "sink_81": {
+          "status": "failed",
+          "differences": [
+            "missing output: flowengine"
+          ],
+          "rows_reference": 42458,
+          "digest_ours": null,
+          "digest_reference": "037c2a56c7c51aa018b4e63876cd3455602ca9f68fe18331dcbaa98497456eb7"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/01 In Out/Text_Input.yxmd",
+      "sinks": 1,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_98_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "a7db440ceed687b9ec567a1751bdd91885fff88df0a65c1ffff68db25d8924dd",
+          "digest_reference": "a7db440ceed687b9ec567a1751bdd91885fff88df0a65c1ffff68db25d8924dd"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/02 Preparation/Auto_Field.yxmd",
+      "sinks": 1,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_5_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 29514,
+          "digest_ours": "f76b9269258935ad600847a58f70d461624445bb42fcbbb35abcfb39896538a4",
+          "digest_reference": "f76b9269258935ad600847a58f70d461624445bb42fcbbb35abcfb39896538a4"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/02 Preparation/Formula.yxmd",
+      "sinks": 7,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_115_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "f088be861bd381b1921673b9394b8db6bb3b6754bcb640a5f4e9c4414bfd7609",
+          "digest_reference": "f088be861bd381b1921673b9394b8db6bb3b6754bcb640a5f4e9c4414bfd7609"
+        },
+        "sink_116_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "5dd2594baab20811aa012a90dedeae023825f810c3cf3c9c119586f06248cfc2",
+          "digest_reference": "5dd2594baab20811aa012a90dedeae023825f810c3cf3c9c119586f06248cfc2"
+        },
+        "sink_117_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "fd51c7dfe8c9cd8e870f243d929580efeb11a820f8e725225957ad85ffb9f0e8",
+          "digest_reference": "fd51c7dfe8c9cd8e870f243d929580efeb11a820f8e725225957ad85ffb9f0e8"
+        },
+        "sink_118_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "7ef9649b7ac89d1c82c365968e347df59c0c400f7df569ba605efedb3025a943",
+          "digest_reference": "7ef9649b7ac89d1c82c365968e347df59c0c400f7df569ba605efedb3025a943"
+        },
+        "sink_119_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "75a4e9b822f7cf643971ad3ed931f7d21e3b430bdd7cda3f0e361e6761eeee92",
+          "digest_reference": "75a4e9b822f7cf643971ad3ed931f7d21e3b430bdd7cda3f0e361e6761eeee92"
+        },
+        "sink_120_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "01e9876cfc003e561c45c3f1d444c01524ba5fdfe91202d56055a7fe1ce0ae36",
+          "digest_reference": "01e9876cfc003e561c45c3f1d444c01524ba5fdfe91202d56055a7fe1ce0ae36"
+        },
+        "sink_121_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "386db021e8db7d7d2555a26f5b8cfaad5dd83d6c359d4ee05fc42c516457ed2b",
+          "digest_reference": "386db021e8db7d7d2555a26f5b8cfaad5dd83d6c359d4ee05fc42c516457ed2b"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/02 Preparation/Generate_Rows.yxmd",
+      "sinks": 5,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_151_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 10,
+          "digest_ours": "b6894d5c468ddca0bcfb3eea27f8dbb0df988de65fbfc55a1e3ddfc88e2a2b15",
+          "digest_reference": "b6894d5c468ddca0bcfb3eea27f8dbb0df988de65fbfc55a1e3ddfc88e2a2b15"
+        },
+        "sink_153_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 15,
+          "digest_ours": "59e3e7e03fec74c1d8bcfe0e46204c899c62f3fce6482b4e176fd33c1be348cf",
+          "digest_reference": "59e3e7e03fec74c1d8bcfe0e46204c899c62f3fce6482b4e176fd33c1be348cf"
+        },
+        "sink_159_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 8,
+          "digest_ours": "1d361de51b9b29298652e2cdd8e926c70ba3376954d0d79fd15477b715a6abd3",
+          "digest_reference": "1d361de51b9b29298652e2cdd8e926c70ba3376954d0d79fd15477b715a6abd3"
+        },
+        "sink_164_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 16,
+          "digest_ours": "f76622cc72f4d88de1c440ec94fa347c819ae32cc3ab381c2e6c5512574a9710",
+          "digest_reference": "f76622cc72f4d88de1c440ec94fa347c819ae32cc3ab381c2e6c5512574a9710"
+        },
+        "sink_168_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 29,
+          "digest_ours": "0dc70edb295db1dc952196d326c8cd2d59a0f3197d6a0ff6eb4a6a2fa37eff84",
+          "digest_reference": "0dc70edb295db1dc952196d326c8cd2d59a0f3197d6a0ff6eb4a6a2fa37eff84"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/02 Preparation/Imputation.yxmd",
+      "sinks": 4,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_171_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 5,
+          "digest_ours": "fb27d2fb7f365f020f818a305d6a7147f5a0b8ccf24728651a770f669d7127e9",
+          "digest_reference": "fb27d2fb7f365f020f818a305d6a7147f5a0b8ccf24728651a770f669d7127e9"
+        },
+        "sink_173_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 4 fields, reference 8 fields; names equal=False)"
+          ],
+          "rows_reference": 5,
+          "digest_ours": "fb27d2fb7f365f020f818a305d6a7147f5a0b8ccf24728651a770f669d7127e9",
+          "digest_reference": "f8e4516ed61b128718085653a66e1b5c60bd6ee8097a1d5525dedbf264e96e6b"
+        },
+        "sink_176_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 5,
+          "digest_ours": "f9d99103bc74e790ce2a67e20d29c3d31a1d8ddd54f6fc628fb45a6b18157965",
+          "digest_reference": "f9d99103bc74e790ce2a67e20d29c3d31a1d8ddd54f6fc628fb45a6b18157965"
+        },
+        "sink_180_Output": {
+          "status": "failed",
+          "differences": [
+            "row 4 field '2012_sales'",
+            "row 5 field '2012_sales'",
+            "row 5 field '2013_sales'"
+          ],
+          "rows_reference": 5,
+          "digest_ours": "0ee65ff69bf88e668226e889004ead709f4adfe11bc7e9675320a4331a56880e",
+          "digest_reference": "f07717e05b1414330e408902d1a2448fbfe57519a380a6534e4999e7dc856fed"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/02 Preparation/Multi-Field_Formula.yxmd",
+      "sinks": 3,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_36_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 13,
+          "digest_ours": "88b0b2a823b4dfe1a7ac7438e6484fc532e2861b2d0c8e873dc0b3746356641d",
+          "digest_reference": "88b0b2a823b4dfe1a7ac7438e6484fc532e2861b2d0c8e873dc0b3746356641d"
+        },
+        "sink_37_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 13,
+          "digest_ours": "987bafa019af1b797c20e1c4eadf5f3f1a68c06b25c0234fb8fdae7222f79cbc",
+          "digest_reference": "987bafa019af1b797c20e1c4eadf5f3f1a68c06b25c0234fb8fdae7222f79cbc"
+        },
+        "sink_38_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 31 fields, reference 30 fields; names equal=False)"
+          ],
+          "rows_reference": 13,
+          "digest_ours": "09bced191b84c7ec8b123224ca4a6e1f7e9b3621242dc7846eff287183565feb",
+          "digest_reference": "199ff4a5e4850333768a210b5dd526e712a05ca8ffc213691c32a0f4651f4e77"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/02 Preparation/Record_ID.yxmd",
+      "sinks": 3,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_124_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "86b273f46a9226e2a4a4ee457b6b0ff8144d156bc216c3eef550ec888d4eaf46",
+          "digest_reference": "86b273f46a9226e2a4a4ee457b6b0ff8144d156bc216c3eef550ec888d4eaf46"
+        },
+        "sink_125_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "ace48394c92154680d47c3c4f0dc9ac8bbe86c281db7387f5eb4eaa3cf0acaf1",
+          "digest_reference": "ace48394c92154680d47c3c4f0dc9ac8bbe86c281db7387f5eb4eaa3cf0acaf1"
+        },
+        "sink_138_Output": {
+          "status": "failed",
+          "differences": [
+            "row 1 field 'CustomerID'",
+            "row 1 field 'FirstName'",
+            "row 1 field 'LastName'",
+            "row 1 field 'JoinDate'",
+            "row 1 field 'Region'",
+            "row 2 field 'CustomerID'",
+            "row 2 field 'FirstName'",
+            "row 2 field 'LastName'"
+          ],
+          "rows_reference": 6,
+          "digest_ours": "a9b9b1dcc711c165d41322dbb6682e1235890ee5b1e7f36a13560eed1d7fc435",
+          "digest_reference": "ef9a14f999ec36b4ad8dca24bf17988de67dc81dbd8f74e3ae30ba3c01c23539"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/02 Preparation/Select.yxmd",
+      "sinks": 5,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_74_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "c3c85a58951399fc7d8877ab3bc631c366cc50b4997ee4b68ad08daf5f8e8151",
+          "digest_reference": "c3c85a58951399fc7d8877ab3bc631c366cc50b4997ee4b68ad08daf5f8e8151"
+        },
+        "sink_75_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 15 fields, reference 14 fields; names equal=False)"
+          ],
+          "rows_reference": 90,
+          "digest_ours": "bda8e5b8eeaa46aeab8049a7db71a36ba6580a1669745312b415f9db7d756a85",
+          "digest_reference": "1acbad0e0cb5f4a9183acc4515836138dfba6f582ee60a6d1120f8c6b522ba93"
+        },
+        "sink_76_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 15 fields, reference 14 fields; names equal=False)"
+          ],
+          "rows_reference": 90,
+          "digest_ours": "904de58f59d4cf6f3794582d678fe63086a378813f09a6f32ddd2f58218d5e57",
+          "digest_reference": "54f616de844737a5cad101bcc02d524c8534b073cefb3ab33753f467fced33f3"
+        },
+        "sink_77_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 15 fields, reference 14 fields; names equal=False)"
+          ],
+          "rows_reference": 90,
+          "digest_ours": "f5c7e08362f12a5f456ada120e7122ebea550aa64063c30e2737ff3a7f27dabe",
+          "digest_reference": "cf396e2804c2d4816f5ec45b31ef7166017e9b9882459d3d023f60f90fe7f521"
+        },
+        "sink_81_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 15 fields, reference 14 fields; names equal=False)"
+          ],
+          "rows_reference": 90,
+          "digest_ours": "9b93c71ffd9eafb2a158aff33c11f5936dd27bf616e8d319e629324b3f998543",
+          "digest_reference": "dbb2187e066a033bbda90d1c48775e950b9a1c92f2a3cfc448da59bd74fd5ed0"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/02 Preparation/Select_Records.yxmd",
+      "sinks": 4,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_10_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 551,
+          "digest_ours": "497a3a609e6564e546a4cb7e0c975dfc630b03747c59e12028c64f6337d33d1b",
+          "digest_reference": "497a3a609e6564e546a4cb7e0c975dfc630b03747c59e12028c64f6337d33d1b"
+        },
+        "sink_13_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 5,
+          "digest_ours": "73f3e5d322178863e641e563a9ae3444d3c66b50fe460e66ee7937f3d1c7410e",
+          "digest_reference": "73f3e5d322178863e641e563a9ae3444d3c66b50fe460e66ee7937f3d1c7410e"
+        },
+        "sink_15_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 1,
+          "digest_ours": "d6d82492f50474135b787838ba87a2e7e7459fe1455744187e6f9678209b6f38",
+          "digest_reference": "d6d82492f50474135b787838ba87a2e7e7459fe1455744187e6f9678209b6f38"
+        },
+        "sink_17_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 458,
+          "digest_ours": "5f75052a8521a52a1a288fdf5514bb55bfa65b573a609052aed3dcfc5d585b33",
+          "digest_reference": "5f75052a8521a52a1a288fdf5514bb55bfa65b573a609052aed3dcfc5d585b33"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/02 Preparation/Sort.yxmd",
+      "sinks": 4,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_11_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "47a2f3fcd08de1e31965a8260e54feaff25d5dc0652f1509a5cf575aa15f75cd",
+          "digest_reference": "47a2f3fcd08de1e31965a8260e54feaff25d5dc0652f1509a5cf575aa15f75cd"
+        },
+        "sink_26_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "e1c02f3160e664cd367ff4dc979baa830c586dc06cd60c5a5461f7d6b4bc7a9a",
+          "digest_reference": "e1c02f3160e664cd367ff4dc979baa830c586dc06cd60c5a5461f7d6b4bc7a9a"
+        },
+        "sink_37_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "d35341237ac5d4610d3dcd7f48829fb314024dec14ae70d607333b7a48b399cd",
+          "digest_reference": "d35341237ac5d4610d3dcd7f48829fb314024dec14ae70d607333b7a48b399cd"
+        },
+        "sink_42_Output": {
+          "status": "failed",
+          "differences": [
+            "row 4 field 'CustomerID'",
+            "row 4 field 'FirstName'",
+            "row 4 field 'LastName'",
+            "row 4 field 'Gender'",
+            "row 4 field 'JoinDate'",
+            "row 4 field 'Region'",
+            "row 4 field 'Score'",
+            "row 5 field 'CustomerID'"
+          ],
+          "rows_reference": 6,
+          "digest_ours": "47a2f3fcd08de1e31965a8260e54feaff25d5dc0652f1509a5cf575aa15f75cd",
+          "digest_reference": "141b36f3d40ca56eeb07b04979ad2c3ec21d06976b210c653dd29037267dcd6f"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/02 Preparation/Unique.yxmd",
+      "sinks": 4,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_8_Unique": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "999139de56d05086b6c094554b36af530fb12be82374bf829dfd8bb2a2980738",
+          "digest_reference": "999139de56d05086b6c094554b36af530fb12be82374bf829dfd8bb2a2980738"
+        },
+        "sink_8_Duplicates": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "485f5ffea5a49efab27217df44621cff96510fc078388d12a838ebd6a8cb3f67",
+          "digest_reference": "485f5ffea5a49efab27217df44621cff96510fc078388d12a838ebd6a8cb3f67"
+        },
+        "sink_11_Unique": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 91,
+          "digest_ours": "74c2fd98b43e97f00b6b895cde5d85aa6bd54ab6bda6b97ba112833eef9a312a",
+          "digest_reference": "74c2fd98b43e97f00b6b895cde5d85aa6bd54ab6bda6b97ba112833eef9a312a"
+        },
+        "sink_11_Duplicates": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 5,
+          "digest_ours": "487657ced6fd1f4ebd1a9644e862df66c35c84809ee44ee81e078f0142a3d9aa",
+          "digest_reference": "487657ced6fd1f4ebd1a9644e862df66c35c84809ee44ee81e078f0142a3d9aa"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/03 Join/Append.yxmd",
+      "sinks": 2,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_1_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 208,
+          "digest_ours": "0eba3cfdbd550cac0f20369ecdfa16f3503eb78e1ce3a3089c6090d3be56a38b",
+          "digest_reference": "0eba3cfdbd550cac0f20369ecdfa16f3503eb78e1ce3a3089c6090d3be56a38b"
+        },
+        "sink_19_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 208,
+          "digest_ours": "abc6a1df98bd00b31c5f955efe929a6233afc210dcdae72c014d37fe506c9e75",
+          "digest_reference": "abc6a1df98bd00b31c5f955efe929a6233afc210dcdae72c014d37fe506c9e75"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/03 Join/Find_Replace.yxmd",
+      "sinks": 4,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_257_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 15,
+          "digest_ours": "a7207fd7a3f5a685fda9da1abdc95b2f377a7ad0e2403e94e8b622e7582a021f",
+          "digest_reference": "a7207fd7a3f5a685fda9da1abdc95b2f377a7ad0e2403e94e8b622e7582a021f"
+        },
+        "sink_264_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 15,
+          "digest_ours": "1ee14c6cf15e3c32d108234f54542401d5e2b66e0829c9f746ede9dc49a9fc4e",
+          "digest_reference": "1ee14c6cf15e3c32d108234f54542401d5e2b66e0829c9f746ede9dc49a9fc4e"
+        },
+        "sink_268_Output": {
+          "status": "failed",
+          "differences": [
+            "row 1 field 'acct_holder'"
+          ],
+          "rows_reference": 15,
+          "digest_ours": "1d463c6d10c74998df02b2934233de59d51b8e882b0630bd20d59050080da147",
+          "digest_reference": "985ac8ddba345d851d8385f708120b4c11485d4c80cca6f6de96c03d3823a914"
+        },
+        "sink_274_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 15,
+          "digest_ours": "2091102139faaf8383840a74869712c6775cf96376cbaf542427e3ca63a56d31",
+          "digest_reference": "2091102139faaf8383840a74869712c6775cf96376cbaf542427e3ca63a56d31"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/03 Join/Join.yxmd",
+      "sinks": 13,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_79_Left": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 1,
+          "digest_ours": "b4a76ea7177551c39fb3a7b0e3b256d632447a7d309a9bb5c2ae990c790938f3",
+          "digest_reference": "b4a76ea7177551c39fb3a7b0e3b256d632447a7d309a9bb5c2ae990c790938f3"
+        },
+        "sink_79_Join": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 5,
+          "digest_ours": "14eef3e0614327fb7b5ba5a149cd5c0adb2a593f0314607ead20c16ab72b3b99",
+          "digest_reference": "14eef3e0614327fb7b5ba5a149cd5c0adb2a593f0314607ead20c16ab72b3b99"
+        },
+        "sink_79_Right": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 0,
+          "digest_ours": "1ee7d48a2461310da2d8636d72c31a5f0a51ea15a7ce6a105e05e6fac2904773",
+          "digest_reference": "1ee7d48a2461310da2d8636d72c31a5f0a51ea15a7ce6a105e05e6fac2904773"
+        },
+        "sink_85_Left": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 0,
+          "digest_ours": "48c48a515eaf523cf0d5acc6e9ab13247aa94cfef7fe8f62b05865fa8bb4ea86",
+          "digest_reference": "48c48a515eaf523cf0d5acc6e9ab13247aa94cfef7fe8f62b05865fa8bb4ea86"
+        },
+        "sink_85_Join": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 8 fields, reference 6 fields; names equal=False)"
+          ],
+          "rows_reference": 6,
+          "digest_ours": "f3ba65ec5eeb7334299e185665b78374c856bb764cc7149cf900e959f9018657",
+          "digest_reference": "185b0bc756b9859eade4a29f6b3a05b2d86d74bf45d39c2fcc6e8df1902672a5"
+        },
+        "sink_85_Right": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 0,
+          "digest_ours": "b2f68ae326a447b63f1b24453654b885359780db3dc595504dee2e3b88cbd63f",
+          "digest_reference": "b2f68ae326a447b63f1b24453654b885359780db3dc595504dee2e3b88cbd63f"
+        },
+        "sink_91_Left": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 0,
+          "digest_ours": "48c48a515eaf523cf0d5acc6e9ab13247aa94cfef7fe8f62b05865fa8bb4ea86",
+          "digest_reference": "48c48a515eaf523cf0d5acc6e9ab13247aa94cfef7fe8f62b05865fa8bb4ea86"
+        },
+        "sink_91_Join": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "afd0517f04c422ddc531dd9aba622618f904638475085eb619a7345603a0a690",
+          "digest_reference": "afd0517f04c422ddc531dd9aba622618f904638475085eb619a7345603a0a690"
+        },
+        "sink_91_Right": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 0,
+          "digest_ours": "b2f68ae326a447b63f1b24453654b885359780db3dc595504dee2e3b88cbd63f",
+          "digest_reference": "b2f68ae326a447b63f1b24453654b885359780db3dc595504dee2e3b88cbd63f"
+        },
+        "sink_99_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 4,
+          "digest_ours": "927ebcd61cdcc131ae7e1409f27a9c19891bcf41a19359f8daf0d24024a999e1",
+          "digest_reference": "927ebcd61cdcc131ae7e1409f27a9c19891bcf41a19359f8daf0d24024a999e1"
+        },
+        "sink_101_Left": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 0,
+          "digest_ours": "2517978f1ebeab7d73afd812d52be49d92d865de2ff6918325803e17b84f3ec8",
+          "digest_reference": "2517978f1ebeab7d73afd812d52be49d92d865de2ff6918325803e17b84f3ec8"
+        },
+        "sink_101_Join": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 2,
+          "digest_ours": "1b53bff0bbb063db9381a5bf2a51b8b3afebd6d0390e522c086554724c8fe783",
+          "digest_reference": "1b53bff0bbb063db9381a5bf2a51b8b3afebd6d0390e522c086554724c8fe783"
+        },
+        "sink_101_Right": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 0,
+          "digest_ours": "2517978f1ebeab7d73afd812d52be49d92d865de2ff6918325803e17b84f3ec8",
+          "digest_reference": "2517978f1ebeab7d73afd812d52be49d92d865de2ff6918325803e17b84f3ec8"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/04 Parse/DateTime.yxmd",
+      "sinks": 6,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_135_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "1392ab1b1a7946ab7fad1a70afead218d5680a8b65f40f4692d0fe8ec3cddbf9",
+          "digest_reference": "1392ab1b1a7946ab7fad1a70afead218d5680a8b65f40f4692d0fe8ec3cddbf9"
+        },
+        "sink_136_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "610f0065412ffa713b16499b2a1702ed57bc4668d554449d2502a40195999e50",
+          "digest_reference": "610f0065412ffa713b16499b2a1702ed57bc4668d554449d2502a40195999e50"
+        },
+        "sink_140_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "ae6de67ccece9ac83edd6f6794d6d5ad50ca40d22be9292a469b3beed0ef9843",
+          "digest_reference": "ae6de67ccece9ac83edd6f6794d6d5ad50ca40d22be9292a469b3beed0ef9843"
+        },
+        "sink_143_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "205614a589cea75a0b0982033e942ca132e4fd984526e7bbcc7ac4b1d03a968e",
+          "digest_reference": "205614a589cea75a0b0982033e942ca132e4fd984526e7bbcc7ac4b1d03a968e"
+        },
+        "sink_159_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "6019afa7ad75460f56332041e2bc49920f02dafad01924eee6add17e9abe0717",
+          "digest_reference": "6019afa7ad75460f56332041e2bc49920f02dafad01924eee6add17e9abe0717"
+        },
+        "sink_163_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 6,
+          "digest_ours": "dc8660f76283d3828b6dc2ca2cf1c13e8f8f0174baab0716bbcd728aa1a4a553",
+          "digest_reference": "dc8660f76283d3828b6dc2ca2cf1c13e8f8f0174baab0716bbcd728aa1a4a553"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/04 Parse/RegEx.yxmd",
+      "sinks": 5,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_1_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "26bbc281c13662854c395becde8214241d46fe973af6a8a76acd13330fa318b6",
+          "digest_reference": "26bbc281c13662854c395becde8214241d46fe973af6a8a76acd13330fa318b6"
+        },
+        "sink_8_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "440587a7749db213163143e326293943e97a211793545dd60501f9a12b2869f3",
+          "digest_reference": "440587a7749db213163143e326293943e97a211793545dd60501f9a12b2869f3"
+        },
+        "sink_12_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "063e6c1b044ec77108ebcb55fab9f1664f6d6bfa305e16cd4060089508d1237b",
+          "digest_reference": "063e6c1b044ec77108ebcb55fab9f1664f6d6bfa305e16cd4060089508d1237b"
+        },
+        "sink_15_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "e9dbf6afcd2fc149f3e884e5457eda847327a67a449784ecde2f3deb7baa286b",
+          "digest_reference": "e9dbf6afcd2fc149f3e884e5457eda847327a67a449784ecde2f3deb7baa286b"
+        },
+        "sink_18_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "414d356c31e1e0d8f8cb892fc4b3b7afb77e42f15b6cda2fa6005e1280cc4b3e",
+          "digest_reference": "414d356c31e1e0d8f8cb892fc4b3b7afb77e42f15b6cda2fa6005e1280cc4b3e"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/04 Parse/XML_Parse.yxmd",
+      "sinks": 7,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_278_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 6 fields, reference 7 fields; names equal=False)"
+          ],
+          "rows_reference": 3,
+          "digest_ours": "c7af085c0053d16ed49685d1b6c4fa6c18dfacb554a5e208bf45f454c42a72c5",
+          "digest_reference": "961f8cf6bb6ae116425358a28d464506a501d78255bb92ccaf7be8e961bf8e4b"
+        },
+        "sink_286_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 3 fields, reference 5 fields; names equal=False)"
+          ],
+          "rows_reference": 3,
+          "digest_ours": "afd3b47bcbcd7d85f8f50f032c9f1a75e78a75fab6f71c89f31552dd0aff1440",
+          "digest_reference": "4d6ebfbf015d31d23be310b68a587600083b2152591ff021282f2fb4c88c939d"
+        },
+        "sink_289_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 2 fields, reference 4 fields; names equal=False)"
+          ],
+          "rows_reference": 3,
+          "digest_ours": "8822a45c25cbf93ef221d8029b0a92b98b3db5cdd1f23006caa5ca5800497d24",
+          "digest_reference": "285376c0027434a7181c0026252c787b5d269cd166a36112b561448745e29ae9"
+        },
+        "sink_292_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 3 fields, reference 4 fields; names equal=False)"
+          ],
+          "rows_reference": 3,
+          "digest_ours": "7f89f3f8ae245eeb89c6afec318b3ae0df1a08af31c34860cd6c2b61422b22f8",
+          "digest_reference": "d85001ca3ac5ff8c3311b50e44a060806c721103ca34e53567654e6c57479a8e"
+        },
+        "sink_295_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 5 fields, reference 6 fields; names equal=False)"
+          ],
+          "rows_reference": 8,
+          "digest_ours": "bbc3dff4b1f4d4a39de46b024ce602bc541992926411a6dacc3d8b2d391ec03e",
+          "digest_reference": "aadd64c10389b892c562f2a3340d97a45a253e250f14a495e514e4bc67062193"
+        },
+        "sink_298_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 6 fields, reference 6 fields; names equal=False)"
+          ],
+          "rows_reference": 8,
+          "digest_ours": "c7af085c0053d16ed49685d1b6c4fa6c18dfacb554a5e208bf45f454c42a72c5",
+          "digest_reference": "aadd64c10389b892c562f2a3340d97a45a253e250f14a495e514e4bc67062193"
+        },
+        "sink_301_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 6 fields, reference 3 fields; names equal=False)"
+          ],
+          "rows_reference": 3,
+          "digest_ours": "92c901d60e9c221cb491f8220e3db46cf1bb0a359804f83782cad2460176ce29",
+          "digest_reference": "e1edcfb945d6d4f4efc3010c957293e6cd372e86b14e7d3e187e3ec9cb278a7f"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/05 Transform/Count_Records.yxmd",
+      "sinks": 1,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_113_Output9": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 1,
+          "digest_ours": "875612e4b04c3b94a13f0b5249224b0d64cb4f946699b00048568e4304656b8b",
+          "digest_reference": "875612e4b04c3b94a13f0b5249224b0d64cb4f946699b00048568e4304656b8b"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/05 Transform/Cross_Tab.yxmd",
+      "sinks": 7,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_141_Output": {
+          "status": "failed",
+          "differences": [
+            "row 3 field 'Vice_President'",
+            "row 16 field 'Vice_President'",
+            "row 18 field 'Vice_President'",
+            "row 25 field 'Vice_President'",
+            "row 32 field 'Vice_President'",
+            "row 37 field 'Vice_President'"
+          ],
+          "rows_reference": 44,
+          "digest_ours": "d65dbfe61dfd7bb3b6f88833b009640879858099a231a78699866f01b4487289",
+          "digest_reference": "cceaa3d01ccb3620a37119a7969f8421d52437a6849b465cd4f1b3f112a88bbe"
+        },
+        "sink_143_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 44,
+          "digest_ours": "0d19980d85f4403300fccd13a15fca8f50aa9163ba1d93e194e514598e9cecd3",
+          "digest_reference": "0d19980d85f4403300fccd13a15fca8f50aa9163ba1d93e194e514598e9cecd3"
+        },
+        "sink_155_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 5 fields, reference 5 fields; names equal=True)"
+          ],
+          "rows_reference": 91,
+          "digest_ours": "ca1aa29f8a88a53dcc59334e8eda3f2d94b5190a99fa3a78b4976c0fbed472f7",
+          "digest_reference": "b31acd87bd9dd9deb7318f21a7e62862fe4cb64a86c604f36e232b979f2c3ac3"
+        },
+        "sink_188_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 4 fields, reference 4 fields; names equal=True)"
+          ],
+          "rows_reference": 84,
+          "digest_ours": "9e20d67c84f1b92638045ad7a8298d9463d042372a5ea561e9dcc93546065efc",
+          "digest_reference": "bc6c28af2055733b12b964e2058c57059491e388a56b20f7bcade01ed53ca774"
+        },
+        "sink_207_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 15 fields, reference 15 fields; names equal=True)"
+          ],
+          "rows_reference": 10,
+          "digest_ours": "e5577d77d0766dd96a3959fd6d15d6108ee34b9836409de3fc36c99c52552c20",
+          "digest_reference": "850eb919dffdf536abb482c9b02c081635d755e3c50b050aae776e73e11fbfdb"
+        },
+        "sink_210_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 4,
+          "digest_ours": "1cb9af51e15eeb004c5aff3f33355c4055cd24a0c7ad39b91608bcd8ad7a0b10",
+          "digest_reference": "1cb9af51e15eeb004c5aff3f33355c4055cd24a0c7ad39b91608bcd8ad7a0b10"
+        },
+        "sink_216_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 5 fields, reference 5 fields; names equal=True)"
+          ],
+          "rows_reference": 6,
+          "digest_ours": "c7395e0be705d4b21311f409a3eb8ab13ebb0082c47faa8104ddc400c6b5c652",
+          "digest_reference": "45358cfb48a7bbf2c967a8aad640aa424d74880d7ecfe1305618833e5ef32d4a"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/05 Transform/Running_Total.yxmd",
+      "sinks": 4,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_1_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "0e77483e944be86d8d23d50486da1ec89ae560f5a2e5efc6fef6d96c410053c2",
+          "digest_reference": "0e77483e944be86d8d23d50486da1ec89ae560f5a2e5efc6fef6d96c410053c2"
+        },
+        "sink_8_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "ab4d85e99ac69366f7334a623ff60081a0ef2a819b43acaa65840ff38b061a59",
+          "digest_reference": "ab4d85e99ac69366f7334a623ff60081a0ef2a819b43acaa65840ff38b061a59"
+        },
+        "sink_12_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "ef9ffe54e7577580c14f1a07e568632e0ae0263d7286e9261461d3bd05dc419d",
+          "digest_reference": "ef9ffe54e7577580c14f1a07e568632e0ae0263d7286e9261461d3bd05dc419d"
+        },
+        "sink_13_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 90,
+          "digest_ours": "fdaecb2c14092f1cad7414ecb49d67082401913cbddd7e571b0a1f99c073ece0",
+          "digest_reference": "fdaecb2c14092f1cad7414ecb49d67082401913cbddd7e571b0a1f99c073ece0"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/05 Transform/Transpose.yxmd",
+      "sinks": 5,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_133_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 120,
+          "digest_ours": "3588a0cd3051a1a69bca3d9b7d5b3a94f809efa98e4b8bd3453ded88cb229994",
+          "digest_reference": "3588a0cd3051a1a69bca3d9b7d5b3a94f809efa98e4b8bd3453ded88cb229994"
+        },
+        "sink_134_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 30,
+          "digest_ours": "23463ce5df02aa8fc2b0e0e0225e960e43bdd705eb4aeb04ffb87ab7b27b320b",
+          "digest_reference": "23463ce5df02aa8fc2b0e0e0225e960e43bdd705eb4aeb04ffb87ab7b27b320b"
+        },
+        "sink_135_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 120,
+          "digest_ours": "039e8859971e80cb7a1bd9608a8ed588bdc935423c2eba6afe44fae924ae10c3",
+          "digest_reference": "039e8859971e80cb7a1bd9608a8ed588bdc935423c2eba6afe44fae924ae10c3"
+        },
+        "sink_199_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 15 fields, reference 15 fields; names equal=True)"
+          ],
+          "rows_reference": 10,
+          "digest_ours": "e5577d77d0766dd96a3959fd6d15d6108ee34b9836409de3fc36c99c52552c20",
+          "digest_reference": "850eb919dffdf536abb482c9b02c081635d755e3c50b050aae776e73e11fbfdb"
+        },
+        "sink_204_Output": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 5 fields, reference 5 fields; names equal=True)"
+          ],
+          "rows_reference": 6,
+          "digest_ours": "c7395e0be705d4b21311f409a3eb8ab13ebb0082c47faa8104ddc400c6b5c652",
+          "digest_reference": "45358cfb48a7bbf2c967a8aad640aa424d74880d7ecfe1305618833e5ef32d4a"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/05 Transform/WeightedAverage.yxmd",
+      "sinks": 3,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_110_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 1,
+          "digest_ours": "8aac9c32335cf3a95b66a6bcaee7bb2b3b0ffd046863dc34084742a1e6e39b50",
+          "digest_reference": "8aac9c32335cf3a95b66a6bcaee7bb2b3b0ffd046863dc34084742a1e6e39b50"
+        },
+        "sink_111_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 10,
+          "digest_ours": "eed94def16b45c28d59d56b2552b6189a0d06641c2e1cf5128f5c1a601fd1a11",
+          "digest_reference": "eed94def16b45c28d59d56b2552b6189a0d06641c2e1cf5128f5c1a601fd1a11"
+        },
+        "sink_112_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 1,
+          "digest_ours": "abf1c8ec9ea0afd7a22e67b913eb67956d9cb7e5ac0f48f889e2f33a78cb4659",
+          "digest_reference": "abf1c8ec9ea0afd7a22e67b913eb67956d9cb7e5ac0f48f889e2f33a78cb4659"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/22 Developer/Field_Info.yxmd",
+      "sinks": 1,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_7_Output": {
+          "status": "failed",
+          "differences": [
+            "row 1 field 'Type'",
+            "row 1 field 'Size'",
+            "row 1 field 'Source'",
+            "row 2 field 'Type'",
+            "row 2 field 'Size'",
+            "row 2 field 'Source'",
+            "row 3 field 'Type'",
+            "row 3 field 'Size'"
+          ],
+          "rows_reference": 16,
+          "digest_ours": "2d0a46b56d624d116f330620db204a9ba1fde0d934084fc25ab173c850b66b16",
+          "digest_reference": "5f196b72ffd78a1c2be7ec05dec102cb8f06d8cc644bfdabf3a2b91bef6aad88"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "02 Learn_one_tool_at_a_time/22 Developer/JSON_Parse.yxmd",
+      "sinks": 2,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_1_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 11,
+          "digest_ours": "bc9e9eb7c20c9a206b04380e5fd5a65ad78f4beefb7bf9ff9c2a5c12d55b2013",
+          "digest_reference": "bc9e9eb7c20c9a206b04380e5fd5a65ad78f4beefb7bf9ff9c2a5c12d55b2013"
+        },
+        "sink_7_Output": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 11,
+          "digest_ours": "358d21144a9b1c29ead993cc6fc0f24f011983be652662c8d5078a7eef1d4586",
+          "digest_reference": "358d21144a9b1c29ead993cc6fc0f24f011983be652662c8d5078a7eef1d4586"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "04 Basic/01 Normalize_a_string_field.yxmd",
+      "sinks": 9,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_116": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 12,
+          "digest_ours": "a82c4001fb6faf9b7e723f9585acf2bffd50ab286a0ceb6d6ec171605b24ba6b",
+          "digest_reference": "a82c4001fb6faf9b7e723f9585acf2bffd50ab286a0ceb6d6ec171605b24ba6b"
+        },
+        "sink_117": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 12,
+          "digest_ours": "a82c4001fb6faf9b7e723f9585acf2bffd50ab286a0ceb6d6ec171605b24ba6b",
+          "digest_reference": "a82c4001fb6faf9b7e723f9585acf2bffd50ab286a0ceb6d6ec171605b24ba6b"
+        },
+        "sink_118": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 12,
+          "digest_ours": "f8ba0cfaa43bd7d98db2837cda5148232c934ce06d4fa1119296b0419a8ae84e",
+          "digest_reference": "f8ba0cfaa43bd7d98db2837cda5148232c934ce06d4fa1119296b0419a8ae84e"
+        },
+        "sink_119": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 12,
+          "digest_ours": "f8ba0cfaa43bd7d98db2837cda5148232c934ce06d4fa1119296b0419a8ae84e",
+          "digest_reference": "f8ba0cfaa43bd7d98db2837cda5148232c934ce06d4fa1119296b0419a8ae84e"
+        },
+        "sink_120": {
+          "status": "failed",
+          "differences": [
+            "row 1 field 'ITEM1'",
+            "row 1 field 'ITEM2'",
+            "row 1 field 'ITEM3'",
+            "row 2 field 'ITEM1'",
+            "row 2 field 'ITEM2'",
+            "row 2 field 'ITEM3'",
+            "row 3 field 'ITEM1'",
+            "row 3 field 'ITEM2'"
+          ],
+          "rows_reference": 12,
+          "digest_ours": "3aa4ddd02584dc23b42b8b797b004521c67bbff783beefc42025b3423035a8fb",
+          "digest_reference": "865ab82dc64f95ec4c59540e86f949a00804a16e9495405f041b9213d547d9bb"
+        },
+        "sink_121": {
+          "status": "failed",
+          "differences": [
+            "row 1 field 'Code'",
+            "row 2 field 'Code'",
+            "row 3 field 'Code'",
+            "row 4 field 'Code'",
+            "row 5 field 'Code'",
+            "row 6 field 'Code'",
+            "row 7 field 'Code'",
+            "row 8 field 'Code'"
+          ],
+          "rows_reference": 12,
+          "digest_ours": "224ad35749a0b679b4ba31b5d36ade100ed00ba57d06f30a5869dc35141a7c51",
+          "digest_reference": "f8ba0cfaa43bd7d98db2837cda5148232c934ce06d4fa1119296b0419a8ae84e"
+        },
+        "sink_122": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 12,
+          "digest_ours": "f8ba0cfaa43bd7d98db2837cda5148232c934ce06d4fa1119296b0419a8ae84e",
+          "digest_reference": "f8ba0cfaa43bd7d98db2837cda5148232c934ce06d4fa1119296b0419a8ae84e"
+        },
+        "sink_123": {
+          "status": "failed",
+          "differences": [
+            "row 1 field 'Code'",
+            "row 1 field 'Code2'",
+            "row 2 field 'Code'",
+            "row 2 field 'Code2'",
+            "row 3 field 'Code'",
+            "row 3 field 'Code2'",
+            "row 5 field 'Code'",
+            "row 5 field 'Code2'"
+          ],
+          "rows_reference": 12,
+          "digest_ours": "26240cf0fd0eddaa09f2028220dcdafa151d88bb5125d22f83d2d3456da213a3",
+          "digest_reference": "e93039616b6cefae65fbab781c348f2cde11f3821993929e846a97129bdfc818"
+        },
+        "sink_124": {
+          "status": "failed",
+          "differences": [
+            "row 1 field 'ITEM1'",
+            "row 1 field 'ITEM2'",
+            "row 2 field 'ITEM1'",
+            "row 2 field 'ITEM2'",
+            "row 3 field 'ITEM1'",
+            "row 3 field 'ITEM2'",
+            "row 4 field 'ITEM1'",
+            "row 4 field 'ITEM2'"
+          ],
+          "rows_reference": 12,
+          "digest_ours": "bc42578e195135f473369a6600c2b185b3977afac69a4d74b0d50256bd5d8bc4",
+          "digest_reference": "4c6b5752294d125fe4fc6399b7e49dea094d87686bbedd1d6fece0f5721298d0"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "04 Basic/02 Learn_frequently-used_tools.yxmd",
+      "sinks": 4,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_7": {
+          "status": "failed",
+          "differences": [
+            "header differs (ours 12 fields, reference 11 fields; names equal=False)"
+          ],
+          "rows_reference": 10,
+          "digest_ours": "8eba9ed265ac3f79e1f262a85d2eede7ed70e039b0267285fd3b1e9c0782c80f",
+          "digest_reference": "695124875f528d42802d909e4dc14f4f55952449c5778873a1614f7f1ed57aa3"
+        },
+        "sink_6_Left": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 0,
+          "digest_ours": "751cb2b925335f035a485afbb2ed9b2764c08d780f5e34fb7b318fc4670bc19f",
+          "digest_reference": "751cb2b925335f035a485afbb2ed9b2764c08d780f5e34fb7b318fc4670bc19f"
+        },
+        "sink_6_Right": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 0,
+          "digest_ours": "acfccc3538acd37c00763bd04901dfd67447d02738832a33d8298907b663e7cf",
+          "digest_reference": "acfccc3538acd37c00763bd04901dfd67447d02738832a33d8298907b663e7cf"
+        },
+        "sink_15_Duplicates": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 9,
+          "digest_ours": "68b788260898ea2ea74d9aab1d7e57528e1d9459f64abc043c005911ea13dafb",
+          "digest_reference": "68b788260898ea2ea74d9aab1d7e57528e1d9459f64abc043c005911ea13dafb"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "04 Basic/02 Normalize_phone_numbers.yxmd",
+      "sinks": 3,
+      "reference_exit_ok": true,
+      "flowengine_status": "succeeded",
+      "flowengine_error": null,
+      "sink_results": {
+        "sink_45": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 940,
+          "digest_ours": "96e2029f8b29295195d307190cefe9b02d172b30def4d68fcb4690383b30a4a6",
+          "digest_reference": "96e2029f8b29295195d307190cefe9b02d172b30def4d68fcb4690383b30a4a6"
+        },
+        "sink_72_False": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 13,
+          "digest_ours": "4964e23bb26b3eaa29cf4c5cbf207208bbf744a22ce6cd71384402548f789fa4",
+          "digest_reference": "4964e23bb26b3eaa29cf4c5cbf207208bbf744a22ce6cd71384402548f789fa4"
+        },
+        "sink_11_False": {
+          "status": "passed",
+          "differences": [],
+          "rows_reference": 47,
+          "digest_ours": "5a5b53984bd0a7efc4e3c297cff8cdd7b4b89f0ea562d06b13b387e726e38b27",
+          "digest_reference": "5a5b53984bd0a7efc4e3c297cff8cdd7b4b89f0ea562d06b13b387e726e38b27"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "sample": "04 Basic/06 Calculate_a_trend_and_sort_data.yxmd",
+      "sinks": 2,
+      "reference_exit_ok": true,
+      "flowengine_status": "invalid",
+      "flowengine_error": {
+        "code": "WorkflowValidationError",
+        "node": null
+      },
+      "sink_results": {
+        "sink_85": {
+          "status": "failed",
+          "differences": [
+            "missing output: flowengine"
+          ],
+          "rows_reference": 10,
+          "digest_ours": null,
+          "digest_reference": "8e8863278de4608d1c2641fbaffffd76482a79e0223d7e927b3b5e56020720df"
+        },
+        "sink_69_False": {
+          "status": "failed",
+          "differences": [
+            "missing output: flowengine"
+          ],
+          "rows_reference": 349,
+          "digest_ours": null,
+          "digest_reference": "1e5bf06879270eeec5d1cff588f8471ed5f6a7c7d42b8f50fc1d0b3782a57e54"
+        }
+      },
+      "status": "failed"
+    },
+    {
+      "sample": "05 Advanced/06 Calculate_a_trend_and_sort_data.yxmd",
+      "sinks": 2,
+      "reference_exit_ok": true,
+      "flowengine_status": "invalid",
+      "flowengine_error": {
+        "code": "WorkflowValidationError",
+        "node": null
+      },
+      "sink_results": {
+        "sink_85": {
+          "status": "failed",
+          "differences": [
+            "missing output: flowengine"
+          ],
+          "rows_reference": 10,
+          "digest_ours": null,
+          "digest_reference": "8e8863278de4608d1c2641fbaffffd76482a79e0223d7e927b3b5e56020720df"
+        },
+        "sink_69_False": {
+          "status": "failed",
+          "differences": [
+            "missing output: flowengine"
+          ],
+          "rows_reference": 349,
+          "digest_ours": null,
+          "digest_reference": "1e5bf06879270eeec5d1cff588f8471ed5f6a7c7d42b8f50fc1d0b3782a57e54"
+        }
+      },
+      "status": "failed"
+    }
+  ]
+}

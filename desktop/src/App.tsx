@@ -1,0 +1,93 @@
+import { useEffect } from 'react';
+import { ReactFlowProvider } from '@xyflow/react';
+import { Canvas } from './canvas/Canvas';
+import { Palette } from './panels/Palette';
+import { Inspector } from './panels/Inspector';
+import { ResultsPanel } from './panels/ResultsPanel';
+import { Toolbar, doNew, doOpen, doSave } from './panels/Toolbar';
+import { Toasts } from './ui/toast';
+import { DialogHost } from './ui/dialogs';
+import { useEditor } from './state/store';
+import { cancelRun, initEngine, runWorkflow, scheduleValidate } from './state/engineActions';
+
+function isTyping(e: KeyboardEvent) {
+  const t = e.target as HTMLElement | null;
+  return !!t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable);
+}
+
+export function useShortcuts() {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const s = useEditor.getState();
+      const mod = e.ctrlKey || e.metaKey;
+      if (e.key === 'F5') { e.preventDefault(); void runWorkflow(); return; }
+      if (mod && e.key.toLowerCase() === 's') { e.preventDefault(); void doSave(e.shiftKey); return; }
+      if (mod && e.key.toLowerCase() === 'o') { e.preventDefault(); void doOpen(); return; }
+      if (mod && e.key.toLowerCase() === 'n') { e.preventDefault(); doNew(); return; }
+      if (isTyping(e)) return;
+      if (e.key === 'Escape' && s.run.status === 'running') { void cancelRun(); return; }
+      if (mod && e.key.toLowerCase() === 'z' && !e.shiftKey) { e.preventDefault(); s.undo(); return; }
+      if (mod && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) { e.preventDefault(); s.redo(); return; }
+      if (mod && e.key.toLowerCase() === 'a') { e.preventDefault(); s.selectAll(); return; }
+      if (mod && e.key.toLowerCase() === 'c') { s.copySelected(); return; }
+      if (mod && e.key.toLowerCase() === 'v') { s.paste(); return; }
+      if (mod && e.key.toLowerCase() === 'd') { e.preventDefault(); s.duplicateSelected(); return; }
+      if (mod && e.key.toLowerCase() === 'g') { e.preventDefault(); s.groupSelected(); return; }
+      if (e.key === 'Delete' || e.key === 'Backspace') { s.deleteSelected(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+}
+
+/** Re-validate whenever the document (not selection/run state) changes. */
+function useAutoValidate() {
+  useEffect(() => {
+    let prev = useEditor.getState();
+    return useEditor.subscribe((s) => {
+      const changed = s.edges !== prev.edges || s.profile !== prev.profile || s.baseDir !== prev.baseDir ||
+        s.engineInfo !== prev.engineInfo ||
+        (s.nodes !== prev.nodes && (s.nodes.length !== prev.nodes.length ||
+          s.nodes.some((n, i) => n.data !== prev.nodes[i]?.data || n.parentId !== prev.nodes[i]?.parentId)));
+      prev = s;
+      if (changed) scheduleValidate();
+    });
+  }, []);
+}
+
+function EngineOffline() {
+  const err = useEditor((s) => s.engineError);
+  if (!err) return null;
+  return (
+    <div className="engine-down" role="alert">
+      <div className="card">
+        <h3 style={{ marginTop: 0 }}>The workflow engine is not reachable</h3>
+        <p>{err}</p>
+        <p>The desktop build starts the engine automatically. For the browser build run <code>python -m flowengine serve --http 8765 --history .flowbench/history.sqlite</code> from the repository root.</p>
+        <button className="primary" onClick={() => initEngine()}>Retry</button>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  useShortcuts();
+  useAutoValidate();
+  useEffect(() => { void initEngine(); }, []);
+  return (
+    <ReactFlowProvider>
+      <div className="app">
+        <Toolbar />
+        <Palette />
+        <div style={{ gridArea: 'canvas', position: 'relative', minHeight: 0, display: 'flex' }}>
+          <Canvas />
+          <EngineOffline />
+        </div>
+        <Inspector />
+        <ResultsPanel />
+      </div>
+      <Toasts />
+      <DialogHost />
+    </ReactFlowProvider>
+  );
+}

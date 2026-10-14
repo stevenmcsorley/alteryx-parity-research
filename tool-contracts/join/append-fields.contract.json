@@ -132,8 +132,17 @@
       "case_id": "append-cartesian",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#append-cartesian",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#append-cartesian",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 f2e71107375dd8ea3c6e48bb428ac6e540869c78432b584ca9d0b2cfd818dc97"
+      ]
+    },
+    {
+      "case_id": "append-cartesian",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#append-cartesian",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 f2e71107375dd8ea3c6e48bb428ac6e540869c78432b584ca9d0b2cfd818dc97"
       ]
     }

@@ -1,0 +1,576 @@
+{
+  "notes": "Aggregate importer coverage over the reference install's shipped sample workflows (counts only).",
+  "authorisation": "docs/AUTHORISATION.md",
+  "surveyed_utc": "2026-10-13T11:01:10+00:00",
+  "documents": 181,
+  "documents_imported": 181,
+  "documents_fully_runnable_after_import": 32,
+  "node_status": {
+    "mapped": 3094,
+    "unsupported": 714,
+    "partial": 279
+  },
+  "top_unsupported_reasons": [
+    [
+      "no converter for this tool",
+      641
+    ],
+    [
+      "Input format 2 (only delimited text and yxdb)",
+      10
+    ],
+    [
+      "Input format 14 (only delimited text and yxdb)",
+      9
+    ],
+    [
+      "Input format 25 (only delimited text and yxdb)",
+      7
+    ],
+    [
+      "Filter without an expression",
+      6
+    ],
+    [
+      "Output format 19 (only delimited text, format 0)",
+      3
+    ],
+    [
+      "Sample mode 'Random'",
+      3
+    ],
+    [
+      "Union mode 'ManualDelayed' (manual field mapping)",
+      3
+    ],
+    [
+      "Dynamic Select mode 'Formula'",
+      3
+    ],
+    [
+      "Tile method 'UniqueValue'",
+      2
+    ],
+    [
+      "Text To Columns flags 1 (split to rows / quote handling not mapped)",
+      2
+    ],
+    [
+      "Summarize action 'SpatialObjCombine'",
+      2
+    ],
+    [
+      "Dynamic Rename mode 'Formula'",
+      2
+    ],
+    [
+      "Dynamic Rename mode 'RightInputRows'",
+      2
+    ],
+    [
+      "Delimiter '\\\\0'",
+      2
+    ],
+    [
+      "Input format 37 (only delimited text and yxdb)",
+      2
+    ],
+    [
+      "Multi-Row 'other rows' = 'Nearest'",
+      1
+    ],
+    [
+      "Tile method 'EqualSum'",
+      1
+    ],
+    [
+      "Tile method 'SmartTile'",
+      1
+    ],
+    [
+      "Tile method 'Manual'",
+      1
+    ],
+    [
+      "Union mode 'Manual' (manual field mapping)",
+      1
+    ],
+    [
+      "Text To Columns flags 32 (split to rows / quote handling not mapped)",
+      1
+    ],
+    [
+      "Text To Columns flags 17 (split to rows / quote handling not mapped)",
+      1
+    ],
+    [
+      "Dynamic Rename mode 'Add'",
+      1
+    ],
+    [
+      "Dynamic Rename mode 'Remove'",
+      1
+    ]
+  ],
+  "per_tool": {
+    "AlteryxGuiToolkit.TextBox.TextBox": {
+      "mapped": 2308
+    },
+    "AlteryxBasePluginsGui.BrowseV2.BrowseV2": {
+      "mapped": 205,
+      "unsupported": 1
+    },
+    "AlteryxBasePluginsGui.TextInput.TextInput": {
+      "partial": 145
+    },
+    "AlteryxBasePluginsGui.DbFileInput.DbFileInput": {
+      "partial": 107,
+      "unsupported": 31
+    },
+    "AlteryxGuiToolkit.ToolContainer.ToolContainer": {
+      "mapped": 121
+    },
+    "AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect": {
+      "mapped": 100
+    },
+    "AlteryxBasePluginsGui.Formula.Formula": {
+      "mapped": 59,
+      "unsupported": 1
+    },
+    "AlteryxSpatialPluginsGui.Summarize.Summarize": {
+      "mapped": 41,
+      "unsupported": 2
+    },
+    "AlteryxBasePluginsGui.Join.Join": {
+      "partial": 26,
+      "mapped": 13
+    },
+    "PortfolioPluginsGui.ComposerText.PortfolioComposerText": {
+      "unsupported": 37
+    },
+    "AlteryxBasePluginsGui.Filter.Filter": {
+      "unsupported": 6,
+      "mapped": 29
+    },
+    "PortfolioPluginsGui.ComposerRender.PortfolioComposerRender": {
+      "unsupported": 27
+    },
+    "AlteryxGuiToolkit.HtmlBox.HtmlBox": {
+      "unsupported": 25
+    },
+    "PortfolioPluginsGui.ComposerTable.PortfolioComposerTable": {
+      "unsupported": 24
+    },
+    "AlteryxSpatialPluginsGui.ReportMap.ReportMap": {
+      "unsupported": 23
+    },
+    "PortfolioPluginsGui.ComposerImage.PortfolioComposerImage": {
+      "unsupported": 23
+    },
+    "AlteryxBasePluginsGui.Union.Union": {
+      "mapped": 17,
+      "unsupported": 4
+    },
+    "AlteryxBasePluginsGui.CrossTab.CrossTab": {
+      "mapped": 19
+    },
+    "AlteryxBasePluginsGui.Sort.Sort": {
+      "mapped": 19
+    },
+    "PortfolioPluginsGui.ComposerLayout.PortfolioComposerLayout": {
+      "unsupported": 19
+    },
+    "AlteryxBasePluginsGui.Message.Message": {
+      "unsupported": 17
+    },
+    "Transformation_1_0": {
+      "unsupported": 17
+    },
+    "AlteryxBasePluginsGui.TextToColumns.TextToColumns": {
+      "mapped": 12,
+      "unsupported": 4
+    },
+    "AlteryxBasePluginsGui.JoinMultiple.JoinMultiple": {
+      "unsupported": 16
+    },
+    "AlteryxBasePluginsGui.Sample.Sample": {
+      "unsupported": 3,
+      "mapped": 13
+    },
+    "PlotlyCharting": {
+      "unsupported": 15
+    },
+    "AlteryxBasePluginsGui.PearsonCorrelation.PearsonCorrelation": {
+      "unsupported": 15
+    },
+    "AlteryxBasePluginsGui.RegEx.RegEx": {
+      "mapped": 14
+    },
+    "AlteryxSpatialPluginsGui.CreatePoints.CreatePoints": {
+      "unsupported": 14
+    },
+    "AlteryxBasePluginsGui.Unique.Unique": {
+      "mapped": 13
+    },
+    "AlteryxBasePluginsGui.Transpose.Transpose": {
+      "mapped": 13
+    },
+    "SpearmanCorrCoeff.yxmc": {
+      "unsupported": 13
+    },
+    "AlteryxGuiToolkit.ControlContainer.ControlContainer": {
+      "unsupported": 13
+    },
+    "AlteryxSpatialPluginsGui.TradeArea.TradeArea": {
+      "unsupported": 12
+    },
+    "ImageInput_1_0": {
+      "unsupported": 12
+    },
+    "AlteryxBasePluginsGui.Directory.Directory": {
+      "unsupported": 11
+    },
+    "AlteryxBasePluginsGui.XMLParse.XMLParse": {
+      "mapped": 11
+    },
+    "AlteryxBasePluginsGui.DbFileOutput.DbFileOutput": {
+      "unsupported": 5,
+      "mapped": 5
+    },
+    "AlteryxBasePluginsGui.RecordID.RecordID": {
+      "mapped": 10
+    },
+    "AlteryxSpatialPluginsGui.SpatialMatch.SpatialMatch": {
+      "unsupported": 10
+    },
+    "AlteryxBasePluginsGui.DynamicRename.DynamicRename": {
+      "mapped": 3,
+      "unsupported": 7
+    },
+    "AlteryxBasePluginsGui.DataCleansePro.DataCleansePro": {
+      "unsupported": 9
+    },
+    "AlteryxSpatialPluginsGui.SpatialInfo.SpatialInfo": {
+      "unsupported": 9
+    },
+    "AlteryxBasePluginsGui.BlobConvert.BlobConvert": {
+      "unsupported": 9
+    },
+    "ImageProcessing_1_0": {
+      "unsupported": 9
+    },
+    "Predict_1_0": {
+      "unsupported": 9
+    },
+    "AlteryxBasePluginsGui.FuzzyMatch.FuzzyMatch": {
+      "unsupported": 8
+    },
+    "AlteryxBasePluginsGui.DateTime.DateTime": {
+      "mapped": 8
+    },
+    "FooterMacro.yxmc": {
+      "unsupported": 8
+    },
+    "Prompt_1_0": {
+      "unsupported": 8
+    },
+    "AssistedModeling_1_0": {
+      "unsupported": 8
+    },
+    "Fit_1_0": {
+      "unsupported": 8
+    },
+    "AlteryxBasePluginsGui.MultiRowFormula.MultiRowFormula": {
+      "mapped": 6,
+      "unsupported": 1
+    },
+    "AlteryxBasePluginsGui.Rank.Rank": {
+      "unsupported": 7
+    },
+    "AlteryxBasePluginsGui.Tile.Tile": {
+      "mapped": 2,
+      "unsupported": 5
+    },
+    "AlteryxSpatialPluginsGui.Distance.Distance": {
+      "unsupported": 7
+    },
+    "AlteryxSpatialPluginsGui.SpatialProcess.SpatialProcess": {
+      "unsupported": 7
+    },
+    "TextPreProcessing_1_0": {
+      "unsupported": 7
+    },
+    "AlteryxBasePluginsGui.GenerateRows.GenerateRows": {
+      "mapped": 6
+    },
+    "AlteryxBasePluginsGui.FindReplace.FindReplace": {
+      "mapped": 6
+    },
+    "HeaderMacro.yxmc": {
+      "unsupported": 6
+    },
+    "AlteryxSpatialPluginsGui.Buffer.Buffer": {
+      "unsupported": 6
+    },
+    "AlteryxSpatialPluginsGui.FindNearest.FindNearest": {
+      "unsupported": 6
+    },
+    "JupyterCode": {
+      "unsupported": 6
+    },
+    "SentimentAnalysis_1_0": {
+      "unsupported": 6
+    },
+    "PDFtoText_1_0": {
+      "unsupported": 6
+    },
+    "MultiFieldBinning_v2.yxmc": {
+      "unsupported": 5
+    },
+    "AlteryxBasePluginsGui.MultiFieldFormula.MultiFieldFormula": {
+      "mapped": 5
+    },
+    "AlteryxBasePluginsGui.AppendFields.AppendFields": {
+      "mapped": 5
+    },
+    "AlteryxBasePluginsGui.MakeColumns.MakeColumns": {
+      "mapped": 5
+    },
+    "AlteryxBasePluginsGui.BlobInput.BlobInput": {
+      "unsupported": 5
+    },
+    "AlteryxBasePluginsGui.DynamicInput.DynamicInput": {
+      "unsupported": 5
+    },
+    "AlteryxBasePluginsGui.DynamicSelect.DynamicSelect": {
+      "mapped": 2,
+      "unsupported": 3
+    },
+    "AlteryxBasePluginsGui.Test.Test": {
+      "unsupported": 5
+    },
+    "Classification_1_0": {
+      "unsupported": 5
+    },
+    "AlteryxSpatialPluginsGui.MapInput.MapInput": {
+      "unsupported": 4
+    },
+    "Cleanse.yxmc": {
+      "unsupported": 4
+    },
+    "Imputation_v3.yxmc": {
+      "mapped": 3,
+      "partial": 1
+    },
+    "RandomRecords.yxmc": {
+      "unsupported": 4
+    },
+    "SelectRecords.yxmc": {
+      "mapped": 4
+    },
+    "AlteryxBasePluginsGui.Arrange.Arrange": {
+      "unsupported": 4
+    },
+    "AlteryxBasePluginsGui.RunningTotal.RunningTotal": {
+      "mapped": 4
+    },
+    "AlteryxSpatialPluginsGui.PolyBuild.PolyBuild": {
+      "unsupported": 4
+    },
+    "Predictive Tools\\Field_Summary_Report.yxmc": {
+      "unsupported": 4
+    },
+    "WordCloud_1_0": {
+      "unsupported": 4
+    },
+    "AlteryxBasePluginsGui.AutoField.AutoField": {
+      "mapped": 3
+    },
+    "Predictive Tools\\Create_Samples.yxmc": {
+      "unsupported": 3
+    },
+    "AlteryxBasePluginsGui.MakeGroup.MakeGroup": {
+      "mapped": 3
+    },
+    "WeightedAvg.yxmc": {
+      "mapped": 3
+    },
+    "VisualLayout": {
+      "unsupported": 3
+    },
+    "HeatMap.yxmc": {
+      "unsupported": 3
+    },
+    "AlteryxSpatialPluginsGui.MakeGrid.MakeGrid": {
+      "unsupported": 3
+    },
+    "AlteryxBasePluginsGui.ExpectEqual.ExpectEqual": {
+      "unsupported": 3
+    },
+    "TopicModelling_1_0": {
+      "unsupported": 3
+    },
+    "ImagetoText_1_0": {
+      "unsupported": 3
+    },
+    "LLMOverride_1_0": {
+      "unsupported": 3
+    },
+    "Precision Match\\Precision_Match.yxmc": {
+      "unsupported": 3
+    },
+    "Schema Fit\\Schema_Fit.yxmc": {
+      "unsupported": 3
+    },
+    "Regression_1_0": {
+      "unsupported": 3
+    },
+    "Legend_Splitter.yxmc": {
+      "unsupported": 2
+    },
+    "Legend_Builder.yxmc": {
+      "unsupported": 2
+    },
+    "AlteryxSpatialPluginsGui.Smooth.Smooth": {
+      "unsupported": 2
+    },
+    "AlteryxSpatialPluginsGui.Generalize.Generalize": {
+      "unsupported": 2
+    },
+    "CalgaryPluginsGui.CalgaryCrossCount.CalgaryCrossCount": {
+      "unsupported": 2
+    },
+    "CalgaryPluginsGui.CalgaryCrossCountAppend.CalgaryCrossCountAppend": {
+      "unsupported": 2
+    },
+    "CalgaryPluginsGui.CalgaryInput.CalgaryInput": {
+      "unsupported": 2
+    },
+    "CalgaryPluginsGui.CalgaryJoin.CalgaryJoin": {
+      "unsupported": 2
+    },
+    "Base64_Encoder.yxmc": {
+      "unsupported": 2
+    },
+    "AlteryxBasePluginsGui.DynamicReplace.DynamicReplace": {
+      "unsupported": 2
+    },
+    "AlteryxBasePluginsGui.JSONParse.JSONParse": {
+      "mapped": 2
+    },
+    "FeatureTypes_1_0": {
+      "unsupported": 2
+    },
+    "NamedEntityRecognition_1_0": {
+      "unsupported": 2
+    },
+    "ZeroShotTextClassification_1_0": {
+      "unsupported": 2
+    },
+    "Barcode_1_0": {
+      "unsupported": 2
+    },
+    "ImageProfile_1_0": {
+      "unsupported": 2
+    },
+    "ImageTemplate_1_0": {
+      "unsupported": 2
+    },
+    "AlteryxReportChartGui.AlteryxReportChartGui": {
+      "unsupported": 2
+    },
+    "DateTimeNow": {
+      "unsupported": 1
+    },
+    "Predictive Tools\\Oversample_Field.yxmc": {
+      "unsupported": 1
+    },
+    "CountRecords.yxmc": {
+      "mapped": 1
+    },
+    "AlteryxSpatialPluginsGui.PolySplit.PolySplit": {
+      "unsupported": 1
+    },
+    "AlteryxBasePluginsGui.BasicDataProfile.BasicDataProfile": {
+      "unsupported": 1
+    },
+    "CalgaryLoadersGui.CalgaryLoader.CalgaryLoader": {
+      "unsupported": 1
+    },
+    "AlteryxBasePluginsGui.APIOutput.APIOutput": {
+      "unsupported": 1
+    },
+    "AlteryxBasePluginsGui.BlobOutput.BlobOutput": {
+      "unsupported": 1
+    },
+    "AlteryxBasePluginsGui.BlockUntilDone.BlockUntilDone": {
+      "unsupported": 1
+    },
+    "AlteryxBasePluginsGui.Detour.Detour": {
+      "unsupported": 1
+    },
+    "AlteryxBasePluginsGui.DetourEnd.DetourEnd": {
+      "unsupported": 1
+    },
+    "AlteryxBasePluginsGui.FieldInfo.FieldInfo": {
+      "mapped": 1
+    },
+    "AlteryxBasePluginsGui.RunCommand.RunCommand": {
+      "unsupported": 1
+    },
+    "AlteryxBasePluginsGui.Throttle.Throttle": {
+      "unsupported": 1
+    },
+    "BuildFeatures_1_0": {
+      "unsupported": 1
+    },
+    "PartOfSpeechTagger_1_0": {
+      "unsupported": 1
+    },
+    "TextSummary_1_0": {
+      "unsupported": 1
+    },
+    "ImageRecognition_1_0": {
+      "unsupported": 1
+    },
+    "KeyValuePairExtraction_1_0": {
+      "unsupported": 1
+    },
+    ".\\Supporting_Macros\\Iterative_Supply_and_Demand.yxmc": {
+      "unsupported": 1
+    },
+    "PieWedgeTradeArea.yxmc": {
+      "unsupported": 1
+    },
+    ".\\Supporting_Macros\\BatchMacro_IndividualToolCount.yxmc": {
+      "unsupported": 1
+    },
+    ".\\Supporting_Macros\\LocOpt_MinimizeDistance.yxmc": {
+      "unsupported": 1
+    },
+    ".\\Supporting_Macros\\LocOpt_GravityModel.yxmc": {
+      "unsupported": 1
+    },
+    "Fuzzy_Match_Supporting_Macros\\01 StrongADD_FuzzyFL.yxmc": {
+      "unsupported": 1
+    },
+    "Fuzzy_Match_Supporting_Macros\\02 StrongADD_FuzzyLF.yxmc": {
+      "unsupported": 1
+    },
+    "Fuzzy_Match_Supporting_Macros\\03 StrongFL_FuzzyADD.yxmc": {
+      "unsupported": 1
+    },
+    "Fuzzy_Match_Supporting_Macros\\04 StrongADD_FuzzyFL_Char.yxmc": {
+      "unsupported": 1
+    },
+    "Insights": {
+      "unsupported": 1
+    },
+    "AlteryxConnectorGui.Download.Download": {
+      "unsupported": 1
+    },
+    "DateTimeNow.yxmc": {
+      "unsupported": 1
+    }
+  }
+}

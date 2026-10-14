@@ -101,6 +101,14 @@
         ],
         "default": "error"
       },
+      "order": {
+        "enum": [
+          "listed",
+          "input"
+        ],
+        "default": "listed",
+        "description": "listed = output in the order configured; input = keep incoming field order"
+      },
       "on_conversion_error": {
         "enum": [
           "error",
@@ -163,12 +171,15 @@
     ]
   },
   "independent_tests": {
-    "count": 4,
-    "passing": 4,
+    "count": 7,
+    "passing": 7,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.ExecutionTests.test_failure_reports_node_and_skips_downstream",
+      "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
+      "test_fe_scale.StreamingTests.test_streamed_equals_batch",
+      "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",
       "test_fe_tools.PreparationTests.test_select_rename_retype_reorder_unknown"
     ]
   },
@@ -194,8 +205,8 @@
       "case_id": "select-cast-rename-drop",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#select-cast-rename-drop",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#select-cast-rename-drop",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 8b999a673ca59eeec130a383c729500ccb4ca0aeaccdb162bc981cf78bddee0c"
       ]
     },
@@ -203,8 +214,26 @@
       "case_id": "probe-select-int-rounding",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#probe-select-int-rounding",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#probe-select-int-rounding",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 6d013b43b79df6709a3898f806695d4df25a6ee62aa2d1c18e1d901cf5d6a2fa"
+      ]
+    },
+    {
+      "case_id": "select-cast-rename-drop",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#select-cast-rename-drop",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 8b999a673ca59eeec130a383c729500ccb4ca0aeaccdb162bc981cf78bddee0c"
+      ]
+    },
+    {
+      "case_id": "probe-select-int-rounding",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-select-int-rounding",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 6d013b43b79df6709a3898f806695d4df25a6ee62aa2d1c18e1d901cf5d6a2fa"
       ]
     }

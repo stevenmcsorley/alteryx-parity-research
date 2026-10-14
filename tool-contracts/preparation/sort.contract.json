@@ -8,7 +8,7 @@
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/sort-tool.html",
   "status": "implemented",
   "implementation_status": "implemented",
-  "verification_status": "partial",
+  "verification_status": "failed",
   "inputs": [
     {
       "name": "input",
@@ -60,6 +60,14 @@
       "case_insensitive": {
         "type": "boolean",
         "default": false
+      },
+      "collation": {
+        "enum": [
+          "ordinal",
+          "locale"
+        ],
+        "default": "ordinal",
+        "description": "ordinal = code-point order; locale = culture-aware order (source documents with a non-zero sort locale)"
       }
     }
   },
@@ -109,14 +117,20 @@
     ]
   },
   "independent_tests": {
-    "count": 6,
-    "passing": 6,
+    "count": 12,
+    "passing": 12,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.PropertyTests.test_invariants",
       "test_fe_executor.ValidationTests.test_config_schema_errors_name_the_node",
       "test_fe_executor.ValidationTests.test_cycle",
+      "test_fe_interop.ImportTests.test_export_round_trip",
+      "test_fe_interop.ImportTests.test_runs_once_the_unsupported_branch_is_removed",
+      "test_fe_interop.ImportTests.test_validation_reports_the_unsupported_catalogue_tool",
+      "test_fe_scale.SpillAndParallelTests.test_spill_and_parallel_give_identical_results",
+      "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
+      "test_fe_service.ServiceTests.test_cancel_running_workflow",
       "test_fe_tools.PreparationTests.test_sort_multikey_stable_nulls"
     ]
   },
@@ -142,8 +156,8 @@
       "case_id": "sort-multikey-nulls",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#sort-multikey-nulls",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#sort-multikey-nulls",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 3e2c730a67a95a5a01bbc7a2a92db41219a516e0089104bdd6d0f96e9c382aba"
       ]
     },
@@ -151,9 +165,45 @@
       "case_id": "sort-string-case",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#sort-string-case",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#sort-string-case",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 0245c1031ea360d406778f3702009c5a7caf130490d38e4f500766836f91078d"
+      ]
+    },
+    {
+      "case_id": "probe-sort-locale-1033",
+      "status": "failed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#probe-sort-locale-1033",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 c78e3582dc94b862017523216aae225dccd9561d259cd4fe741435d2165914e2"
+      ]
+    },
+    {
+      "case_id": "sort-multikey-nulls",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#sort-multikey-nulls",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 3e2c730a67a95a5a01bbc7a2a92db41219a516e0089104bdd6d0f96e9c382aba"
+      ]
+    },
+    {
+      "case_id": "sort-string-case",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#sort-string-case",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 0245c1031ea360d406778f3702009c5a7caf130490d38e4f500766836f91078d"
+      ]
+    },
+    {
+      "case_id": "probe-sort-locale-1033",
+      "status": "failed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-sort-locale-1033",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 c78e3582dc94b862017523216aae225dccd9561d259cd4fe741435d2165914e2"
       ]
     }
   ],

@@ -99,6 +99,7 @@ class RunContext:
     limits: dict = field(default_factory=dict)
     browse_sink: Callable[[str, Table], None] | None = None
     constants: dict = field(default_factory=dict)
+    profile: Any = None  # flowengine.profiles.Profile
 
     def warn(self, message: str, **data):
         self.emit('warning', message=message, **data)
@@ -118,8 +119,16 @@ class RunContext:
 
 
 class Tool:
-    """Base class for tool kernels. Subclasses set ``manifest`` and implement ``run``."""
+    """Base class for tool kernels. Subclasses set ``manifest`` and implement ``run``.
+
+    Streaming (see flowengine/streaming.py): ``streaming = 'row-local'`` means ``run`` may be applied
+    to consecutive batches independently; ``'stateful'`` means the tool implements ``open_stream``.
+    Sources implement ``iter_batches``; sinks implement ``open_sink``."""
     manifest: ToolManifest
+    streaming: str | None = None
+
+    def can_stream(self, config: dict) -> bool:
+        return True
 
     def normalize_config(self, config: dict) -> dict:
         """Validate against the JSON schema, apply defaults, then semantic checks."""
@@ -188,7 +197,7 @@ class Registry:
             tool = self._tools.get(tool_id2) if tool_id2 else None
         if tool is None:
             from . import catalog
-            entry = catalog.lookup(tool_id)
+            entry = catalog.lookup(tool_id) or catalog.lookup_xml(tool_id)
             if entry:
                 raise ToolUnavailableError(
                     f"Catalogue tool '{entry['name']}' ({entry['id']}) has no working implementation yet "

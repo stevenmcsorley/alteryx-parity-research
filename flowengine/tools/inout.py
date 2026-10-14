@@ -8,6 +8,7 @@ import io
 import json
 import os
 import tempfile
+from itertools import chain as _chain
 from pathlib import Path
 
 from ..errors import ConfigError, DataError, SchemaError
@@ -18,7 +19,8 @@ from ._common import FIELD_SPEC, ON_ERROR, cast_column, field_from_spec
 
 UNBOUNDED_TEXT = 2**30 - 1  # declared size for untyped text fields: never truncates
 
-_FORMATS = ['auto', 'csv', 'tsv', 'delimited', 'json', 'jsonl']
+_FORMATS = ['auto', 'csv', 'tsv', 'delimited', 'json', 'jsonl', 'parquet', 'arrow', 'yxdb']
+_BINARY = ('parquet', 'arrow')
 
 
 def _resolve_format(fmt: str, path: Path) -> str:
@@ -26,7 +28,8 @@ def _resolve_format(fmt: str, path: Path) -> str:
         return fmt
     ext = path.suffix.lower()
     return {'.csv': 'csv', '.tsv': 'tsv', '.tab': 'tsv', '.txt': 'delimited', '.json': 'json',
-            '.jsonl': 'jsonl', '.ndjson': 'jsonl'}.get(ext) or _unsupported(ext)
+            '.jsonl': 'jsonl', '.ndjson': 'jsonl', '.parquet': 'parquet', '.arrow': 'arrow',
+            '.feather': 'arrow', '.ipc': 'arrow', '.yxdb': 'yxdb'}.get(ext) or _unsupported(ext)
 
 
 def _unsupported(ext):
@@ -46,8 +49,8 @@ class InputData(Tool):
         inputs=(),
         outputs=(Anchor('output', 'O', description='Records read from the file'),),
         side_effects='reads-files', deterministic=True,
-        description='Read a delimited text (CSV/TSV/custom) or JSON/JSON Lines file. Database and other '
-                    'file formats are separate adapters, not yet implemented.',
+        description='Read delimited text (CSV/TSV/custom), JSON/JSON Lines, Parquet or Arrow IPC. Database and '
+                    'other formats are separate adapters, not yet implemented.',
         config_schema={
             'type': 'object', 'additionalProperties': False, 'required': ['path'],
             'properties': {
@@ -73,7 +76,10 @@ class InputData(Tool):
         for spec in cfg.get('fields', []):
             field_from_spec(spec)
 
-    def _read_delimited(self, ctx, cfg, path, fmt, header_only=False):
+    def _delimited_rows(self, ctx, cfg, path, fmt, header_only=False):
+        """Generator: yields the header name list first, then normalised body rows (lists of str/None).
+
+        Shared by batch reads and streaming reads so both parse identically."""
         delim = _delimiter(fmt, cfg)
         try:
             fh = open(path, 'r', encoding=cfg['encoding'], newline='')
@@ -90,47 +96,112 @@ class InputData(Tool):
                 if first is None:
                     if cfg['has_header']:
                         raise DataError(f'{path.name}: file is empty; a header row was expected')
-                    return [], []
+                    yield []
+                    return
                 if cfg['has_header']:
                     names = [n.strip() for n in first]
-                    body = []
+                    pending = None
                 else:
                     names = [f'Field_{i + 1}' for i in range(len(first))]
-                    body = [first]
+                    pending = first
                 if '' in names:
                     raise DataError(f'{path.name}: header contains an empty field name')
                 if len(set(names)) != len(names):
                     raise DataError(f'{path.name}: duplicate header names '
                                     f'{sorted({n for n in names if names.count(n) > 1})}')
+                yield names
                 if header_only:
-                    return names, []
-                limit = cfg['max_records']
-                for row in reader:
-                    if limit is not None and len(body) >= limit:
+                    return
+                limit, width, count, ragged = cfg['max_records'], len(names), 0, 0
+                body = reader if pending is None else _chain([pending], reader)
+                for row in body:
+                    if limit is not None and count >= limit:
                         break
                     if not row:  # blank line
                         continue
-                    body.append(row)
-                    if len(body) % 50000 == 0:
+                    if len(row) != width:
+                        if cfg['ragged_rows'] == 'error':
+                            raise DataError(f'{path.name}: record {count + 1} has {len(row)} values; expected {width}')
+                        row = (row + [None] * width)[:width]
+                        ragged += 1
+                    count += 1
+                    if count % 50000 == 0:
                         ctx.check_cancelled()
+                    yield row
+                if ragged:
+                    ctx.warn(f'{ragged} record(s) had a different number of values and were padded/truncated',
+                             count=ragged)
             except csv.Error as e:
                 raise DataError(f'{path.name}: malformed delimited data at line {reader.line_num}: {e}') from None
             except UnicodeDecodeError as e:
                 raise DataError(f"{path.name}: cannot decode as {cfg['encoding']}: {e.reason}") from None
-        if limit is not None and not cfg['has_header']:
-            body = body[:limit]
-        width = len(names)
-        rows = []
-        for i, r in enumerate(body):
-            if len(r) != width:
-                if cfg['ragged_rows'] == 'error':
-                    raise DataError(f'{path.name}: record {i + 1} has {len(r)} values; expected {width}')
-                r = (r + [None] * width)[:width]
-            rows.append(r)
-        ragged = sum(1 for r in body if len(r) != width)
-        if ragged:
-            ctx.warn(f'{ragged} record(s) had a different number of values and were padded/truncated', count=ragged)
-        return names, rows
+
+    def _read_delimited(self, ctx, cfg, path, fmt, header_only=False):
+        gen = self._delimited_rows(ctx, cfg, path, fmt, header_only)
+        names = next(gen)
+        return names, list(gen)
+
+    # ---------------------------------------------------------------- streaming source
+    streaming_source = True
+
+    def can_stream(self, cfg):
+        return True
+
+    def iter_batches(self, ctx, cfg, batch_rows):
+        """Yield typed batches of at most ``batch_rows`` records. Delimited text and Parquet are read
+        incrementally; JSON/Arrow IPC are read whole and then batched."""
+        path = ctx.resolve_path(cfg['path'])
+        fmt = _resolve_format(cfg['format'], path)
+        declared = [field_from_spec(s) for s in cfg['fields']] if cfg.get('fields') else None
+        fname = cfg['add_file_name_field']
+        if fmt in ('csv', 'tsv', 'delimited'):
+            gen = self._delimited_rows(ctx, cfg, path, fmt)
+            names = next(gen)
+            if declared and [f.name for f in declared] != names:
+                raise SchemaError(f'{path.name}: declared fields {[f.name for f in declared]} do not match file '
+                                  f'fields {names}')
+            fields = declared or [Field(n, FieldType.V_WSTRING, UNBOUNDED_TEXT) for n in names]
+            if fname:
+                fields = fields + [Field(fname, FieldType.V_WSTRING, UNBOUNDED_TEXT)]
+            schema = Schema(fields)
+            empty_null = cfg['empty_as_null']
+            buf, offset = [], 0
+            for row in _chain(gen, [None]):
+                if row is not None:
+                    buf.append(row)
+                if buf and (len(buf) >= batch_rows or row is None):
+                    cols = [[(None if (empty_null and r[i] == '') else r[i]) for r in buf] for i in range(len(names))]
+                    if declared:
+                        cols = [cast_column(c, f, ctx, cfg['on_conversion_error'], row_offset=offset)
+                                for c, f in zip(cols, declared)]
+                    if fname:
+                        cols.append([str(path)] * len(buf))
+                    yield Table(schema, cols)
+                    offset += len(buf)
+                    buf = []
+            return
+        if fmt == 'parquet' and not declared and not fname:
+            from .. import arrow
+            arrow.require()
+            import pyarrow.parquet as pq
+            try:
+                pf = pq.ParquetFile(path)
+            except FileNotFoundError:
+                raise DataError(f'Input file not found: {path}') from None
+            remaining = cfg['max_records']
+            for rb in pf.iter_batches(batch_size=batch_rows):
+                t = arrow.from_arrow(arrow.pa.Table.from_batches([rb]))
+                if remaining is not None:
+                    if remaining <= 0:
+                        return
+                    t = t.take(range(min(remaining, len(t))))
+                    remaining -= len(t)
+                yield t
+            return
+        schema, cols = self._schema_and_columns(ctx, cfg)
+        t = Table(schema, cols) if cols else Table.empty(schema)
+        for i in range(0, len(t), batch_rows):
+            yield t.take(range(i, min(i + batch_rows, len(t))))
 
     def _read_json(self, ctx, cfg, path, fmt):
         try:
@@ -165,7 +236,22 @@ class InputData(Tool):
     def _schema_and_columns(self, ctx, cfg, header_only=False):
         path = ctx.resolve_path(cfg['path'])
         fmt = _resolve_format(cfg['format'], path)
-        if fmt in ('json', 'jsonl'):
+        if fmt == 'yxdb':
+            names, cols, natural = _read_yxdb(path, cfg['max_records'], ctx)
+        elif fmt in _BINARY:
+            from .. import arrow
+            if not path.is_file():
+                raise DataError(f'Input file not found: {path}')
+            try:
+                t = arrow.read_parquet(path) if fmt == 'parquet' else arrow.read_ipc(path)
+            except DataError:
+                raise
+            except Exception as e:  # pyarrow raises many exception types for corrupt files
+                raise DataError(f'{path.name}: cannot read {fmt}: {e}') from None
+            if cfg['max_records'] is not None:
+                t = t.take(range(min(cfg['max_records'], len(t))))
+            names, cols, natural = t.schema.names, [list(c) for c in t.columns], list(t.schema)
+        elif fmt in ('json', 'jsonl'):
             names, cols = self._read_json(ctx, cfg, path, fmt)
             natural = []
             for n, col in zip(names, cols):
@@ -203,7 +289,7 @@ class InputData(Tool):
         path = ctx.resolve_path(cfg['path'])
         if not path.is_file():
             return None  # reported at run time
-        if _resolve_format(cfg['format'], path) in ('json', 'jsonl'):
+        if _resolve_format(cfg['format'], path) in ('json', 'jsonl', 'yxdb') + _BINARY:
             return {'output': self._schema_and_columns(ctx, cfg)[0]}
         return {'output': self._schema_and_columns(ctx, cfg, header_only=True)[0]}
 
@@ -212,6 +298,48 @@ class InputData(Tool):
         table = Table(schema, cols) if cols else Table.empty(schema)
         ctx.info(f'read {len(table)} records', path=str(ctx.resolve_path(cfg['path'])))
         return {'output': table}
+
+
+def _read_yxdb(path, max_records, ctx):
+    """Read a .yxdb data file with the MIT-licensed third-party 'yxdb' package (optional dependency).
+    Its type model is coarse: text -> v_wstring, integers -> int64, decimals -> double; original sizes,
+    integer widths and fixed-decimal precision are not available."""
+    try:
+        from yxdb.yxdb_reader import YxdbReader
+        from yxdb.yxdb_field import DataType
+    except ImportError:
+        raise DataError('Reading .yxdb needs the optional "yxdb" package (pip install yxdb)') from None
+    if not path.is_file():
+        raise DataError(f'Input file not found: {path}')
+    try:
+        r = YxdbReader(path=str(path))
+    except Exception as e:
+        raise DataError(f'{path.name}: cannot read yxdb: {e}') from None
+    try:
+        fl = r.list_fields()
+        cols = [[] for _ in fl]
+        n = 0
+        while (max_records is None or n < max_records) and r.next():
+            for i, c in enumerate(cols):
+                c.append(r.read_index(i))
+            n += 1
+            if n % 50000 == 0:
+                ctx.check_cancelled()
+    finally:
+        r.close()
+    tmap = {DataType.BLOB: FieldType.BLOB, DataType.BOOLEAN: FieldType.BOOL, DataType.BYTE: FieldType.BYTE,
+            DataType.DOUBLE: FieldType.DOUBLE, DataType.LONG: FieldType.INT64, DataType.STRING: FieldType.V_WSTRING}
+    fields = []
+    for f, c in zip(fl, cols):
+        if f.data_type == DataType.DATE:
+            t = FieldType.DATETIME if any(isinstance(v, _dt.datetime) for v in c) else FieldType.DATE
+        else:
+            t = tmap[f.data_type]
+        if t is FieldType.DOUBLE:
+            c[:] = [None if v is None else float(v) for v in c]
+        fields.append(Field(f.name, t, UNBOUNDED_TEXT if t is FieldType.V_WSTRING else None))
+    ctx.info('yxdb read with coarse types (text/int64/double/date/bool/blob); original field sizes not preserved')
+    return [f.name for f in fields], cols, fields
 
 
 # =========================================================================== Output Data
@@ -223,7 +351,7 @@ class OutputData(Tool):
         inputs=(Anchor('input', 'I', description='Records to write'),),
         outputs=(),
         side_effects='writes-files', deterministic=True,
-        description='Write records to a delimited text or JSON/JSON Lines file atomically.',
+        description='Write records atomically to delimited text, JSON/JSON Lines, Parquet or Arrow IPC.',
         config_schema={
             'type': 'object', 'additionalProperties': False, 'required': ['path'],
             'properties': {
@@ -242,48 +370,125 @@ class OutputData(Tool):
     def infer(self, ctx, cfg, inputs):
         return {}
 
+    def can_stream(self, cfg):
+        return True
+
+    def open_sink(self, ctx, cfg, schema):
+        return _FileSink(ctx, cfg, schema)
+
     def run(self, ctx, cfg, inputs):
         table: Table = inputs['input']
-        path = ctx.resolve_path(cfg['path'])
-        fmt = _resolve_format(cfg['format'], path)
-        if path.exists() and cfg['if_exists'] == 'error':
-            raise DataError(f'Output file already exists: {path}')
-        path.parent.mkdir(parents=True, exist_ok=True)
-        fd, tmp = tempfile.mkstemp(dir=path.parent, prefix='.flowengine-', suffix=path.suffix)
+        sink = self.open_sink(ctx, cfg, table.schema)
         try:
-            with os.fdopen(fd, 'w', encoding=cfg['encoding'], newline='') as fh:
-                if fmt in ('json', 'jsonl'):
-                    recs = [{k: _json_value(v) for k, v in zip(table.schema.names, r)} for r in table.rows()]
-                    if fmt == 'json':
-                        json.dump(recs, fh, ensure_ascii=False, indent=2)
-                        fh.write('\n')
-                    else:
-                        for r in recs:
-                            fh.write(json.dumps(r, ensure_ascii=False) + '\n')
-                else:
-                    w = csv.writer(fh, delimiter=_delimiter(fmt, cfg), lineterminator=cfg['line_terminator'],
-                                   quoting=csv.QUOTE_ALL if cfg['quoting'] == 'all' else csv.QUOTE_MINIMAL)
-                    if cfg['write_header']:
-                        w.writerow(table.schema.names)
-                    null = cfg['null_text']
-                    for i, r in enumerate(table.rows()):
-                        w.writerow([null if v is None else format_value(v) for v in r])
-                        if i % 50000 == 0:
-                            ctx.check_cancelled()
-            os.replace(tmp, path)
-        except UnicodeEncodeError as e:
-            raise DataError(f"Value cannot be encoded as {cfg['encoding']}: {e.reason}") from None
-        finally:
-            if os.path.exists(tmp):
-                os.unlink(tmp)
-        ctx.info(f'wrote {len(table)} records', path=str(path))
+            sink.write(table)
+            sink.close()
+        except BaseException:
+            sink.abort()
+            raise
         return {}
 
 
-def _json_value(v):
-    if v is None or isinstance(v, (bool, int, float, str)):
+class _FileSink:
+    """Atomic, incremental writer for every Output Data format (temp file, then rename)."""
+
+    def __init__(self, ctx, cfg, schema):
+        self.ctx, self.cfg, self.schema = ctx, cfg, schema
+        self.path = ctx.resolve_path(cfg['path'])
+        self.fmt = _resolve_format(cfg['format'], self.path)
+        if self.path.exists() and cfg['if_exists'] == 'error':
+            raise DataError(f'Output file already exists: {self.path}')
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        fd, self.tmp = tempfile.mkstemp(dir=self.path.parent, prefix='.flowengine-', suffix=self.path.suffix)
+        self.rows = 0
+        self.dt = ctx.profile.double_text if ctx.profile else 'g15'
+        self._writer = None
+        self._sink = None
+        if self.fmt in _BINARY:
+            os.close(fd)
+            from .. import arrow
+            arrow.require()
+            self.fh = None
+            empty = arrow.to_arrow(Table.empty(schema))
+            if self.fmt == 'parquet':
+                import pyarrow.parquet as pq
+                self._writer = pq.ParquetWriter(self.tmp, empty.schema)
+            else:
+                self._sink = arrow.pa.OSFile(self.tmp, 'wb')  # closed explicitly: the IPC writer does not
+                self._writer = arrow.pa.ipc.new_file(self._sink, empty.schema)
+            return
+        self.fh = os.fdopen(fd, 'w', encoding=cfg['encoding'], newline='')
+        if self.fmt == 'json':
+            self.fh.write('[')
+        elif self.fmt not in ('jsonl',):
+            self._csv = csv.writer(self.fh, delimiter=_delimiter(self.fmt, cfg), lineterminator=cfg['line_terminator'],
+                                   quoting=csv.QUOTE_ALL if cfg['quoting'] == 'all' else csv.QUOTE_MINIMAL)
+            if cfg['write_header']:
+                self._csv.writerow(schema.names)
+
+    def write(self, table: Table):
+        if tuple(table.schema) != tuple(self.schema):
+            raise DataError('Output Data received batches with differing schemas')
+        try:
+            if self._writer is not None:
+                from .. import arrow
+                if len(table):
+                    at = arrow.to_arrow(table)
+                    if self.fmt == 'parquet':
+                        self._writer.write_table(at)
+                    else:
+                        self._writer.write_table(at)
+            elif self.fmt in ('json', 'jsonl'):
+                names = table.schema.names
+                for r in table.rows():
+                    rec = json.dumps({k: _json_value(v, self.dt) for k, v in zip(names, r)}, ensure_ascii=False)
+                    if self.fmt == 'json':
+                        self.fh.write(('\n  ' if self.rows == 0 else ',\n  ') + rec)
+                    else:
+                        self.fh.write(rec + '\n')
+                    self.rows += 1
+            else:
+                null = self.cfg['null_text']
+                for r in table.rows():
+                    self._csv.writerow([null if v is None else format_value(v, self.dt) for v in r])
+                    self.rows += 1
+                    if self.rows % 50000 == 0:
+                        self.ctx.check_cancelled()
+        except UnicodeEncodeError as e:
+            raise DataError(f"Value cannot be encoded as {self.cfg['encoding']}: {e.reason}") from None
+        if self._writer is not None:
+            self.rows += len(table)
+
+    def close(self):
+        if self._writer is not None:
+            self._writer.close()
+            if self._sink is not None:
+                self._sink.close()
+        else:
+            if self.fmt == 'json':
+                self.fh.write('\n]\n' if self.rows else ']\n')
+            self.fh.close()
+        os.replace(self.tmp, self.path)
+        self.ctx.info(f'wrote {self.rows} records', path=str(self.path))
+
+    def abort(self):
+        try:
+            if self._writer is not None:
+                self._writer.close()
+                if self._sink is not None:
+                    self._sink.close()
+            elif self.fh and not self.fh.closed:
+                self.fh.close()
+        finally:
+            if os.path.exists(self.tmp):
+                os.unlink(self.tmp)
+
+
+def _json_value(v, double_text='g15'):
+    if v is None or isinstance(v, (bool, int, str)):
         return v
-    return format_value(v)
+    if isinstance(v, float):
+        return v
+    return format_value(v, double_text)
 
 
 # =========================================================================== Text Input

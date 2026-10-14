@@ -6,47 +6,76 @@
   "xml_tool_name": "AlteryxBasePluginsGui.XMLParse.XMLParse",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/parse/xml-parse-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
-  "verification_status": "not-tested",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "ChildValues",
-      "IgnoreErrors",
-      "OuterXML",
-      "ParseRoot",
-      "XMLElement",
-      "XMLField"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "field"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "How Auto Detect Child Works"
-    ]
+    "properties": {
+      "field": {
+        "type": "string"
+      },
+      "element": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Element name to return (null = the root element)"
+      },
+      "child_values": {
+        "type": "boolean",
+        "default": true
+      },
+      "attributes": {
+        "type": "boolean",
+        "default": true
+      },
+      "outer_xml": {
+        "type": "boolean",
+        "default": false
+      },
+      "ignore_errors": {
+        "type": "boolean",
+        "default": false
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.xml_parse",
+    "version": "1.0.0",
+    "module": "flowengine.tools.join_parse_extra",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -82,9 +111,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.JoinParseTransformWave2.test_xml_parse"
+    ]
   },
   "sources": [
     {
@@ -103,8 +134,25 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
-  ]
+  "cases": [
+    {
+      "case_id": "xml-parse-children",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#xml-parse-children",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 67be00f27966eada795fd5d971be03ed1e5d47a59dae087c89aae243b5f6145f"
+      ]
+    },
+    {
+      "case_id": "xml-parse-children",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#xml-parse-children",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 67be00f27966eada795fd5d971be03ed1e5d47a59dae087c89aae243b5f6145f"
+      ]
+    }
+  ],
+  "unresolved": []
 }

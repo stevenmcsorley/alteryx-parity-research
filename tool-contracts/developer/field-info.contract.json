@@ -6,38 +6,46 @@
   "xml_tool_name": "AlteryxBasePluginsGui.FieldInfo.FieldInfo",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/field-info-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
-  "verification_status": "not-tested",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": []
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "licensed-dataset (public-doc keyword signal; unreviewed)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.field_info",
+    "version": "1.0.0",
+    "module": "flowengine.tools.developer",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -63,9 +71,11 @@
     "section_headings": []
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.DeveloperWave2.test_field_info_and_dynamic_select"
+    ]
   },
   "sources": [
     {
@@ -84,8 +94,25 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
-  ]
+  "cases": [
+    {
+      "case_id": "field-info-basic",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#field-info-basic",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 5928b02113187f3b4d8ecf4f55a380333cdfb1017ffc77f0985a1a9b65531ae9"
+      ]
+    },
+    {
+      "case_id": "field-info-basic",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#field-info-basic",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 5928b02113187f3b4d8ecf4f55a380333cdfb1017ffc77f0985a1a9b65531ae9"
+      ]
+    }
+  ],
+  "unresolved": []
 }

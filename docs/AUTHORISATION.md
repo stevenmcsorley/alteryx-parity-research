@@ -4,13 +4,17 @@
 
 ## Basis
 
-- **Date recorded:** 2026-10-13
-- **Statement:** The repository owner stated in the working session that they hold **written authorisation** to investigate the locally installed reference software.
-- **Authorisation reference / issuer / date:** _TO BE COMPLETED BY OWNER_
-- **Scope as written in the authorisation:** _TO BE COMPLETED BY OWNER_ (e.g. black-box testing, configuration-file inspection, decompilation for interoperability, use for developing a competing product)
-- **Licence/EULA terms considered:** Alteryx EULA §3.3 restricts reverse engineering and use to develop competing products; the authorisation must address these. UK CDPA s.50A–50C considered as background only.
+- **Statements recorded (2026-10-13, from the repository owner):**
+  1. The owner personally spoke with Alteryx by telephone about this project.
+  2. Following that conversation, the owner reports having received **written authorisation** from Alteryx relating to the project.
+- These are the owner's statements of fact; the project treats the authorisation as obtained.
+- **Authorisation document reference / issuer / date:** _owner to record (e.g. email or letter reference, Alteryx contact, date)_
+- **Activities the written authorisation covers:** _owner to record verbatim or summarise (e.g. black-box testing, configuration/format inspection, decompilation for interoperability, use for developing a competing product)_
+- **Licence/EULA terms considered:** Alteryx EULA §3.3 restricts reverse engineering and use to develop competing products; the written authorisation is the basis for work that would otherwise fall under those restrictions. UK CDPA s.50A–50C noted as background.
 
-Until the scope fields are completed, work is limited to the **conservative scope** below.
+### Operating rule while the scope fields are blank
+
+Independent development from public specifications and original fixtures continues, together with the activities already in use (black-box differential execution, structural workflow-XML scan, static provenance hashing). **Held** until the covered activities are written down here: decompilation/disassembly (Ghidra, managed-metadata inspection), runtime instrumentation of vendor processes, and any network observation. Holding these is a record-keeping step, not doubt about the authorisation.
 
 ## Reference installation
 

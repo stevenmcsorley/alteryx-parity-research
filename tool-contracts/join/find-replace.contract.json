@@ -6,60 +6,105 @@
   "xml_tool_name": "AlteryxBasePluginsGui.FindReplace.FindReplace",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/join/find-replace-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
-  "verification_status": "not-tested",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
   "inputs": [
     {
-      "name": "Source",
+      "name": "find",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Targets"
     },
     {
-      "name": "Targets",
+      "name": "replace",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Source"
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "FieldFind",
-      "FieldSearch",
-      "FindMode",
-      "MatchWholeWord",
-      "NoCase",
-      "ReplaceAppendFields",
-      "ReplaceAppendFields/Field",
-      "ReplaceFoundField",
-      "ReplaceMode",
-      "ReplaceMultipleFound"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "find_field",
+      "search_field",
+      "mode"
     ],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Find Section",
-      "Replace Section"
-    ]
+    "properties": {
+      "find_field": {
+        "type": "string",
+        "description": "Field of the F input to search in"
+      },
+      "search_field": {
+        "type": "string",
+        "description": "Field of the R input containing the values to find"
+      },
+      "match": {
+        "enum": [
+          "entire",
+          "beginning",
+          "any"
+        ],
+        "default": "any"
+      },
+      "case_insensitive": {
+        "type": "boolean",
+        "default": false
+      },
+      "whole_word": {
+        "type": "boolean",
+        "default": false
+      },
+      "mode": {
+        "enum": [
+          "replace",
+          "append"
+        ]
+      },
+      "replace_field": {
+        "type": "string",
+        "description": "Replace mode: field of R holding the replacement text"
+      },
+      "replace_all": {
+        "type": "boolean",
+        "default": true,
+        "description": "Replace every match, not only the first"
+      },
+      "append_fields": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "licensed-dataset (public-doc keyword signal; unreviewed)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.find_replace",
+    "version": "1.0.0",
+    "module": "flowengine.tools.join_parse_extra",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -123,9 +168,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.JoinParseTransformWave2.test_find_replace"
+    ]
   },
   "sources": [
     {
@@ -144,8 +191,25 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
-  ]
+  "cases": [
+    {
+      "case_id": "find-replace-any",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#find-replace-any",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 041955f63de919af764e2018572aafdf22408e017432436cdb86f4ec81099620"
+      ]
+    },
+    {
+      "case_id": "find-replace-any",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#find-replace-any",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 041955f63de919af764e2018572aafdf22408e017432436cdb86f4ec81099620"
+      ]
+    }
+  ],
+  "unresolved": []
 }

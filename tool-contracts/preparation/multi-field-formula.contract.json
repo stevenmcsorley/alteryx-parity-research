@@ -6,56 +6,108 @@
   "xml_tool_name": "AlteryxBasePluginsGui.MultiFieldFormula.MultiFieldFormula",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/multi-field-formula-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
-  "verification_status": "not-tested",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
   "inputs": [
     {
-      "name": "Action",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
-    },
-    {
-      "name": "Input",
-      "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "ChangeFieldType",
-      "CopyOutput",
-      "Expression",
-      "FieldType",
-      "Fields",
-      "Fields/Field",
-      "NewFieldAddOn",
-      "NewFieldAddOnPos",
-      "OutputFieldType"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "fields",
+      "expression"
     ],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool"
-    ]
+    "properties": {
+      "fields": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "string"
+        }
+      },
+      "expression": {
+        "type": "string",
+        "minLength": 1
+      },
+      "copy_output": {
+        "type": "boolean",
+        "default": false
+      },
+      "prefix": {
+        "type": "string",
+        "default": ""
+      },
+      "suffix": {
+        "type": "string",
+        "default": "_out"
+      },
+      "output_type": {
+        "enum": [
+          null,
+          "bool",
+          "byte",
+          "int16",
+          "int32",
+          "int64",
+          "fixed_decimal",
+          "float",
+          "double",
+          "string",
+          "wstring",
+          "v_string",
+          "v_wstring",
+          "date",
+          "time",
+          "datetime",
+          "blob"
+        ],
+        "default": null,
+        "description": "null = keep each field's own type"
+      },
+      "output_size": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "on_conversion_error": {
+        "enum": [
+          "error",
+          "null"
+        ],
+        "default": "error",
+        "description": "Conversion failure policy: fail the node, or emit null and a warning"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.multi_field_formula",
+    "version": "1.0.0",
+    "module": "flowengine.tools.prep_extra",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -106,9 +158,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.PreparationWave2.test_multi_field_formula"
+    ]
   },
   "sources": [
     {
@@ -127,8 +181,25 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
-  ]
+  "cases": [
+    {
+      "case_id": "multi-field-formula-upper",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#multi-field-formula-upper",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 db5c468feb2d2d3265af2d46b8526cf1b024d0d31606a37fd49f9adcce66aee8"
+      ]
+    },
+    {
+      "case_id": "multi-field-formula-upper",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#multi-field-formula-upper",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 db5c468feb2d2d3265af2d46b8526cf1b024d0d31606a37fd49f9adcce66aee8"
+      ]
+    }
+  ],
+  "unresolved": []
 }

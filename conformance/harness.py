@@ -58,7 +58,10 @@ def default_engine() -> Path:
 
 # =========================================================================== reference document
 
-def _node(tool_id, plugin, dll, entry, config_xml, x):
+def _node(tool_id, plugin, dll, entry, config_xml, x, macro=None):
+    if macro:  # macro tools: no plugin; the engine loads the bundled macro by name
+        return (f'<Node ToolID="{tool_id}"><GuiSettings><Position x="{x}" y="60" /></GuiSettings>'
+                f'<Properties>{config_xml}</Properties><EngineSettings Macro={quoteattr(macro)} /></Node>')
     return (f'<Node ToolID="{tool_id}"><GuiSettings Plugin={quoteattr(plugin)}><Position x="{x}" y="60" />'
             f'</GuiSettings><Properties>{config_xml}</Properties>'
             f'<EngineSettings EngineDll={quoteattr(dll)} EngineDllEntryPoint={quoteattr(entry)} /></Node>')
@@ -103,7 +106,7 @@ def _input_chain(start_id, inp, x, workdir: Path, tag: str):
     return nodes, conns, start_id + 2
 
 
-def build_reference_document(case: dict, outdir: Path) -> tuple[str, dict]:
+def build_reference_document(case: dict, outdir: Path, mode: str = 'e1') -> tuple[str, dict]:
     ref = case['reference']
     nodes, conns = [], []
     next_id = 1
@@ -114,9 +117,11 @@ def build_reference_document(case: dict, outdir: Path) -> tuple[str, dict]:
             n, c, last = _input_chain(next_id, spec, 40, outdir, f'{case["case_id"]}__in_{anchor}_{k}')
             nodes += n
             conns += c
-            conns.append((last, 'Output', subject, ref['input_anchors'][anchor]))
+            # multi-connection anchors carry ordered connection names "#1", "#2", ... (observed format)
+            conns.append((last, 'Output', subject, ref['input_anchors'][anchor], f'#{k + 1}' if len(specs) > 1 else None))
             next_id += 10
-    nodes.append(_node(subject, ref['plugin'], ref['engine_dll'], ref['entry_point'], ref['configuration'], 400))
+    nodes.append(_node(subject, ref.get('plugin'), ref.get('engine_dll'), ref.get('entry_point'), ref['configuration'], 400,
+                       macro=ref.get('macro')))
     outputs = {}
     for k, (ours, theirs) in enumerate(sorted(case['outputs'].items())):
         path = outdir / f'{case["case_id"]}__{ours}.csv'
@@ -129,17 +134,19 @@ def build_reference_document(case: dict, outdir: Path) -> tuple[str, dict]:
         nodes.append(_node(oid, 'AlteryxBasePluginsGui.DbFileOutput.DbFileOutput', 'AlteryxBasePluginsEngine.dll',
                            'AlteryxDbFileOutput', cfg, 600))
         conns.append((subject, theirs, oid, 'Input'))
-    conn_xml = ''.join(f'<Connection><Origin ToolID="{a}" Connection="{b}" /><Destination ToolID="{c}" '
-                       f'Connection="{d}" /></Connection>' for a, b, c, d in conns)
+    conn_xml = ''.join(f'<Connection{f" name={quoteattr(rest[0])}" if rest and rest[0] else ""}><Origin ToolID="{a}" '
+                       f'Connection="{b}" /><Destination ToolID="{c}" Connection="{d}" /></Connection>'
+                       for a, b, c, d, *rest in conns)
     doc = ('<?xml version="1.0"?>\n<AlteryxDocument yxmdVer="2026.1"><Nodes>' + ''.join(nodes) + '</Nodes>'
            f'<Connections>{conn_xml}</Connections><Properties><Memory default="True" />'
-           '<GlobalRecordLimit value="0" /><TempFiles default="True" /><RunWithE2 value="False" />'
+           '<GlobalRecordLimit value="0" /><TempFiles default="True" />'
+           f'<RunWithE2 value="{mode == "e2"}" />'
            '</Properties></AlteryxDocument>\n')
     return doc, outputs
 
 
-def run_reference(case: dict, engine: Path, workdir: Path) -> dict:
-    doc, outputs = build_reference_document(case, workdir)
+def run_reference(case: dict, engine: Path, workdir: Path, mode: str = 'e1') -> dict:
+    doc, outputs = build_reference_document(case, workdir, mode)
     wf = workdir / f'{case["case_id"]}.yxmd'
     wf.write_text(doc, encoding='utf-8')
     for p in outputs.values():
@@ -164,7 +171,7 @@ def run_reference(case: dict, engine: Path, workdir: Path) -> dict:
 
 # =========================================================================== flowengine side
 
-def run_ours(case: dict) -> dict:
+def run_ours(case: dict, profile: str | None = None) -> dict:
     fe = case['flowengine']
     nodes, edges = [], []
     for anchor, inp in case['inputs'].items():
@@ -177,7 +184,7 @@ def run_ours(case: dict) -> dict:
     nodes.append({'id': 'subject', 'tool': fe['tool'], 'config': fe['config']})
     doc = {'format': 'flowengine.workflow', 'formatVersion': 1, 'nodes': nodes, 'edges': edges}
     try:
-        r = run_workflow(doc, base_dir=ROOT, clock=lambda: FIXED_CLOCK)
+        r = run_workflow(doc, base_dir=ROOT, clock=lambda: FIXED_CLOCK, **({'profile': profile} if profile else {}))
     except Exception as e:  # validation error is a legitimate, comparable outcome
         return {'status': 'invalid', 'error': str(e), 'outputs': {}}
     if not r.ok:
@@ -185,7 +192,8 @@ def run_ours(case: dict) -> dict:
     out = {}
     for anchor in case['outputs']:
         t = r.outputs['subject'][anchor]
-        out[anchor] = [t.schema.names] + [['' if v is None else format_value(v) for v in row] for row in t.rows()]
+        dt = r.manifest['profile']['double_text']
+        out[anchor] = [t.schema.names] + [['' if v is None else format_value(v, dt) for v in row] for row in t.rows()]
     return {'status': 'succeeded', 'outputs': out}
 
 
@@ -206,6 +214,10 @@ def compare(ours, theirs, rule: dict) -> list[str]:
         diffs.append(f'header: ours={ours[0]} ref={theirs[0]}')
         return diffs
     a, b = ours[1:], theirs[1:]
+    ignore = [ours[0].index(f) for f in rule.get('ignore_fields', []) if f in ours[0]]
+    if ignore:
+        a = [[v for i, v in enumerate(r) if i not in ignore] for r in a]
+        b = [[v for i, v in enumerate(r) if i not in ignore] for r in b]
     if not rule.get('ordered', True):
         a, b = sorted(a), sorted(b)
     if len(a) != len(b):
@@ -236,7 +248,7 @@ def case_digest(case) -> str:
     return hashlib.sha256(json.dumps(keep, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
 
-def evaluate(case, ours, ref) -> tuple[str, list[str]]:
+def evaluate(case, ours, ref, mode='e1') -> tuple[str, list[str]]:
     expect = case.get('expect', 'match')
     if expect == 'both-reject':
         ref_rejected = ref['exit_code'] >= 2 or bool(ref['errors'])
@@ -247,9 +259,15 @@ def evaluate(case, ours, ref) -> tuple[str, list[str]]:
         return 'failed', [f"flowengine {ours['status']}: {ours.get('error')}"]
     if ref['exit_code'] >= 2 or ref['errors']:  # exit 1 = completed with warnings
         return 'failed', [f"reference error (exit {ref['exit_code']}): {ref['errors'][:3]}"]
+    from flowengine.profiles import get_profile
+    rule = dict(case.get('compare', {}))
+    unspecified = get_profile(f'ayx-2026.2-{mode}').order_unspecified
+    grouped = bool(case['flowengine']['config'].get('group_by'))
+    if case['catalog_id'] in unspecified or (grouped and f"{case['catalog_id']}[grouped]" in unspecified):
+        rule['ordered'] = False  # order not defined by the reference under this profile; values still exact
     diffs = []
     for anchor in case['outputs']:
-        for d in compare(ours['outputs'][anchor], ref['outputs'].get(anchor), case.get('compare', {})):
+        for d in compare(ours['outputs'][anchor], ref['outputs'].get(anchor), rule):
             diffs.append(f'[{anchor}] {d}')
     return ('passed' if not diffs else 'failed'), diffs
 
@@ -265,10 +283,15 @@ def reference_build(engine: Path) -> str:
 
 
 def main():
-    from cases import CASES
+    if '--holdout' in sys.argv:
+        from holdout_cases import CASES
+    else:
+        from cases import CASES
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--engine', type=Path, default=default_engine())
     p.add_argument('--only', nargs='*', help='case_id prefixes to run')
+    p.add_argument('--mode', choices=['e1', 'e2'], default='e1', help='Reference engine: E1 original or E2 (AMP)')
+    p.add_argument('--holdout', action='store_true', help='Run holdout cases (conformance/holdout_cases.py) instead')
     p.add_argument('--keep-workdir', type=Path, help='Keep generated reference documents here (outside Git)')
     args = p.parse_args()
     if not args.engine.is_file():
@@ -282,9 +305,9 @@ def main():
     workdir.mkdir(parents=True, exist_ok=True)
     results = []
     for case in cases:
-        ours = run_ours(case)
-        ref = run_reference(case, args.engine, workdir)
-        status, diffs = evaluate(case, ours, ref)
+        ours = run_ours(case, profile=f'ayx-2026.2-{args.mode}')
+        ref = run_reference(case, args.engine, workdir, args.mode)
+        status, diffs = evaluate(case, ours, ref, args.mode)
         results.append({
             'case_id': case['case_id'], 'catalog_id': case['catalog_id'], 'description': case['description'],
             'status': status, 'differences': diffs, 'config_digest': case_digest(case),
@@ -298,7 +321,7 @@ def main():
         print(f"{status.upper():7} {case['case_id']}" + (f"  -> {diffs[0]}" if diffs else ''))
     if workdir_ctx:
         workdir_ctx.cleanup()
-    out_dir = RESULTS_DIR / build
+    out_dir = RESULTS_DIR / build / (f'{args.mode}-holdout' if args.holdout else args.mode)
     out_dir.mkdir(parents=True, exist_ok=True)
     out = out_dir / 'results.json'
     previous = json.loads(out.read_text(encoding='utf-8'))['results'] if out.exists() and args.only else []
@@ -310,7 +333,8 @@ def main():
         s = summary.setdefault(r['catalog_id'], {'passed': 0, 'failed': 0})
         s[r['status']] += 1
     out.write_text(json.dumps({
-        'reference_build': build, 'reference_engine': 'AlteryxEngineCmd (E1 engine; RunWithE2=False)',
+        'reference_build': build, 'reference_engine': f'AlteryxEngineCmd ({args.mode.upper()}; RunWithE2={args.mode == "e2"})', 'engine_mode': args.mode,
+        'flowengine_profile': f'ayx-2026.2-{args.mode}', 'holdout': args.holdout,
         'authorisation': 'docs/AUTHORISATION.md', 'executed_utc': datetime.now(timezone.utc).isoformat(timespec='seconds'),
         'flowengine_clock': FIXED_CLOCK.isoformat(),
         'limits': ['CSV output cannot distinguish null from empty string',

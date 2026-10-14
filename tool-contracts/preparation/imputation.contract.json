@@ -6,35 +6,84 @@
   "xml_tool_name": "Imputation_v3.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/preparation/imputation-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
-  "verification_status": "not-tested",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
     }
   ],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Value"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "fields"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "View the Output"
-    ]
+    "properties": {
+      "fields": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "string"
+        }
+      },
+      "replace": {
+        "enum": [
+          "null",
+          "value"
+        ],
+        "default": "null"
+      },
+      "replace_value": {
+        "type": "number",
+        "default": 0
+      },
+      "with": {
+        "enum": [
+          "mean",
+          "median",
+          "mode",
+          "value"
+        ],
+        "default": "mean"
+      },
+      "with_value": {
+        "type": "number",
+        "default": 0
+      },
+      "indicator": {
+        "type": "boolean",
+        "default": false
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.imputation",
+    "version": "1.0.0",
+    "module": "flowengine.tools.prep_extra",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -63,9 +112,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.PreparationWave2.test_imputation_and_binning"
+    ]
   },
   "sources": [
     {
@@ -84,8 +135,25 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
-  ]
+  "cases": [
+    {
+      "case_id": "imputation-mean-macro",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#imputation-mean-macro",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 be047c99ca28688be82126d1f9382c6cd475e2f39379ae512605f47b2a98e54b"
+      ]
+    },
+    {
+      "case_id": "imputation-mean-macro",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#imputation-mean-macro",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 be047c99ca28688be82126d1f9382c6cd475e2f39379ae512605f47b2a98e54b"
+      ]
+    }
+  ],
+  "unresolved": []
 }

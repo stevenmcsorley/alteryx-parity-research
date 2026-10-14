@@ -52,6 +52,7 @@ def basic_filter_expression(field: str, op: str, value) -> str:
 
 
 class Filter(Tool):
+    streaming = 'row-local'
     manifest = ToolManifest(
         tool_id='core.filter', version='1.0.0', display_name='Filter',
         catalog_ids=('preparation:filter',),
@@ -89,6 +90,7 @@ class Filter(Tool):
 # =========================================================================== Formula
 
 class Formula(Tool):
+    streaming = 'row-local'
     manifest = ToolManifest(
         tool_id='core.formula', version='1.0.0', display_name='Formula',
         catalog_ids=('preparation:formula',),
@@ -137,6 +139,7 @@ class Formula(Tool):
 # =========================================================================== Select
 
 class Select(Tool):
+    streaming = 'row-local'
     manifest = ToolManifest(
         tool_id='core.select', version='1.0.0', display_name='Select',
         catalog_ids=('preparation:select',),
@@ -157,6 +160,8 @@ class Select(Tool):
                 'unknown_fields': {'enum': ['include', 'exclude'], 'default': 'include',
                                    'description': 'Fields not listed (e.g. new upstream fields) are appended or dropped'},
                 'missing_fields': {'enum': ['error', 'ignore'], 'default': 'error'},
+                'order': {'enum': ['listed', 'input'], 'default': 'listed',
+                          'description': 'listed = output in the order configured; input = keep incoming field order'},
                 'on_conversion_error': ON_ERROR,
             },
         })
@@ -178,6 +183,9 @@ class Select(Tool):
         if cfg['unknown_fields'] == 'include':
             known = {f['field'] for f in listed}
             listed += [{'field': n, 'selected': True} for n in t.schema.names if n not in known]
+        if cfg['order'] == 'input':  # [ref:holdout Select sample, OrderChanged=False]
+            pos = {n: i for i, n in enumerate(t.schema.names)}
+            listed.sort(key=lambda spec: pos[spec['field']])
         fields, cols = [], []
         for spec in listed:
             if not spec.get('selected', True):
@@ -242,6 +250,9 @@ class Sort(Tool):
                     'type': 'object', 'additionalProperties': False, 'required': ['field'],
                     'properties': {'field': {'type': 'string'}, 'order': {'enum': ['asc', 'desc'], 'default': 'asc'}}}},
                 'case_insensitive': {'type': 'boolean', 'default': False},
+                'collation': {'enum': ['ordinal', 'locale'], 'default': 'ordinal',
+                              'description': 'ordinal = code-point order; locale = culture-aware order '
+                                             '(source documents with a non-zero sort locale)'},
             },
         })
 
@@ -249,14 +260,76 @@ class Sort(Tool):
         t: Table = inputs['input']
         require_fields(t.schema, [k['field'] for k in cfg['keys']])
         rows = list(t.rows())
-        key = sort_key_fn(t.schema, cfg['keys'], cfg['case_insensitive'])
+        if cfg['collation'] == 'locale':
+            key = locale_sort_key(t.schema, cfg['keys'])
+            ctx.info('Culture-aware collation is the platform collation (Windows: en-US, digits as numbers); '
+                     'it is known not to match the reference order exactly (probe-sort-locale-1033)')
+        else:
+            key = sort_key_fn(t.schema, cfg['keys'], cfg['case_insensitive'])
         order = sorted(range(len(rows)), key=lambda i: key(rows[i]))
         return {'output': t.take(order)}
+
+
+def _culture_compare():
+    """Platform culture-aware string comparison (Windows CompareStringEx, en-US, digits as numbers);
+    elsewhere a case-insensitive natural-number approximation. Engine policy, not reference-equal."""
+    import os
+    import re as _re
+    if os.name == 'nt':
+        import ctypes
+        from ctypes import wintypes
+        k = ctypes.WinDLL('kernel32')
+        f = k.CompareStringEx
+        f.argtypes = [wintypes.LPCWSTR, wintypes.DWORD, wintypes.LPCWSTR, ctypes.c_int, wintypes.LPCWSTR, ctypes.c_int,
+                      ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p]
+        return lambda a, b: f('en-US', 0x8, a, len(a), b, len(b), None, None, None) - 2
+
+    def key(s):
+        return [(0, int(p)) if p.isdigit() else (1, p.casefold()) for p in _re.split(r'(\d+)', s) if p]
+    return lambda a, b: (key(a) > key(b)) - (key(a) < key(b))
+
+
+def locale_sort_key(schema, keys):
+    cmp_text = _culture_compare()
+    idx = [(schema.index(k['field']), k.get('order', 'asc') == 'desc') for k in keys]
+
+    def cmp(a, b):
+        for i, desc in idx:
+            x, y = a[i], b[i]
+            if x == y:
+                continue
+            if x is None:
+                r = -1
+            elif y is None:
+                r = 1
+            elif isinstance(x, str) and isinstance(y, str):
+                r = cmp_text(x, y)
+                if r == 0:
+                    continue
+            else:
+                r = -1 if x < y else 1
+            return -r if desc else r
+        return 0
+    return functools.cmp_to_key(cmp)
 
 
 # =========================================================================== Record ID
 
 class RecordID(Tool):
+    streaming = 'stateful'
+
+
+    def open_stream(self, ctx, cfg):
+        tool = self
+
+        class _State:
+            def __init__(self):
+                self.counters = {}
+
+            def process(self, batch):
+                return tool._number(ctx, cfg, batch, self.counters)
+        return _State()
+
     manifest = ToolManifest(
         tool_id='core.record_id', version='1.0.0', display_name='Record ID',
         catalog_ids=('preparation:record-id',),
@@ -279,9 +352,13 @@ class RecordID(Tool):
         t: Table = inputs['input']
         if cfg['field_name'] in t.schema:
             raise SchemaError(f"Field {cfg['field_name']!r} already exists")
+        return self._number(ctx, cfg, t, {})
+
+    def _number(self, ctx, cfg, t, counters):
+        if cfg['field_name'] in t.schema:
+            raise SchemaError(f"Field {cfg['field_name']!r} already exists")
         require_fields(t.schema, cfg['group_by'])
         gi = [t.schema.index(g) for g in cfg['group_by']]
-        counters: dict = {}
         ids = []
         for row in t.rows():
             k = tuple(row[i] for i in gi)
@@ -295,7 +372,8 @@ class RecordID(Tool):
         else:
             field = Field(cfg['field_name'], ftype)
         ids = cast_column(ids, field, ctx, 'error')
-        return {'output': t.with_column(field, ids, 0 if cfg['position'] == 'first' else None)}
+        out = t.with_column(field, ids, 0 if cfg['position'] == 'first' else None)
+        return {'output': out}
 
 
 # =========================================================================== Sample
@@ -434,7 +512,9 @@ class GenerateRows(Tool):
         ec = _eval_ctx(ctx)
         limit = cfg['max_rows_per_record']
         out_rows = []
-        for row in base_rows if src is None or len(src) else []:
+        if ctx.dry_run:  # schema inference only: never generate data (a source with no input would loop)
+            base_rows = []
+        for row in base_rows:
             value, _ = _cast(init.evaluate(row, ec), target)
             count = 0
             while True:
@@ -547,6 +627,11 @@ class MultiRowFormula(Tool):
 # =========================================================================== Data Cleansing
 
 class DataCleansing(Tool):
+    streaming = 'row-local'
+
+    def can_stream(self, cfg):
+        return not cfg['remove_null_columns']  # column removal needs the whole table
+
     manifest = ToolManifest(
         tool_id='core.data_cleansing', version='1.0.0', display_name='Data Cleansing',
         catalog_ids=('preparation:data-cleansing',),

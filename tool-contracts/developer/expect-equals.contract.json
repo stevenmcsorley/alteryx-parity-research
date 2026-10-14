@@ -6,46 +6,57 @@
   "xml_tool_name": "ExpectEqual.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/expect-equal-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Expected",
+      "name": "expected",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "Actual",
+      "name": "actual",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Tool Examples",
-      "Example 1: Fields Differ",
-      "Example 2: Fields Are in a Different Order",
-      "Example 3: Fields Are Different Types",
-      "Example 4: Data Values Differ",
-      "Example 5: Different Number of Rows",
-      "Example 6: Too Many Messages"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "compare_types": {
+        "type": "boolean",
+        "default": true
+      },
+      "tolerance": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "default": null,
+        "description": "Absolute tolerance for numeric values (null = exact)"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.expect_equals",
+    "version": "1.0.0",
+    "module": "flowengine.tools.developer",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -78,9 +89,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.DeveloperWave2.test_message_test_and_expect_equals"
+    ]
   },
   "sources": [
     {
@@ -96,6 +109,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

@@ -1,9 +1,43 @@
-name: Validation, engine tests, status ledger and coverage
+name: Engine, desktop and evidence ledger
 on:
   push:
   pull_request:
 jobs:
-  validate:
+  r-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.6.0'
+      - name: Install engine dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Verify pinned R runtime and execute R tool integration test
+        run: |
+          Rscript --version
+          python -m unittest discover -s tests -p 'test_fe_tools_wave2.py' -k test_r_tool -v
+
+  database-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install database drivers and engine dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Start isolated PostgreSQL and SQL Server fixtures
+        run: python tests/integration/db_env.py up
+      - name: Exercise real database connectivity and cross-engine workflows
+        run: python -m unittest discover -s tests/integration -p 'test_database_integration.py' -v
+      - name: Remove database containers
+        if: always()
+        run: python tests/integration/db_env.py down
+
+  engine:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,14 +48,18 @@ jobs:
         run: python -m pip install -r requirements-dev.txt
       - name: Validate catalogue records
         run: python scripts/validate_repository.py
-      - name: Unit, property, integration and golden end-to-end tests
+      - name: Unit, property, integration, interop, service and golden tests
         run: python -m unittest discover -s tests -v
-      - name: Workflow validation and real end-to-end run (CLI)
+      - name: Real end-to-end run through the CLI (golden outputs)
         run: |
           python -m flowengine validate examples/sales/monthly_sales.flow.json
           python -m flowengine run examples/sales/monthly_sales.flow.json --clock 2026-01-15T09:30:00 --log run-events.jsonl --manifest run-manifest.json
           diff examples/sales/out/monthly_sales.csv tests/golden/monthly_sales/monthly_sales.csv
           diff examples/sales/out/unmatched_orders.csv tests/golden/monthly_sales/unmatched_orders.csv
+          python -m flowengine run examples/sales/monthly_sales.flow.json --clock 2026-01-15T09:30:00 --batch-rows 3 --workers 2
+          diff examples/sales/out/monthly_sales.csv tests/golden/monthly_sales/monthly_sales.csv
+      - name: Import an original .yxmd fixture
+        run: python -m flowengine import tests/fixtures/yxmd/regional_sales.yxmd -o imported.flow.json
       - name: Legacy testbed smoke test
         run: python -m engine.independent_engine examples/customer_reconciliation.json
       - name: Status ledger and contracts are reproducible from evidence
@@ -38,3 +76,66 @@ jobs:
           path: |
             run-events.jsonl
             run-manifest.json
+
+  desktop:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - run: python -m pip install -r ../requirements.txt
+      - run: npm ci
+      - name: Type-check and unit tests
+        run: |
+          npx tsc --noEmit -p .
+          npx vitest run
+      - name: End-to-end UI tests against the real engine
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test app.spec
+
+  desktop-shell:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.10'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - run: python -m pip install -r requirements.txt
+      - run: npm ci
+        working-directory: desktop
+      - name: Assemble the pinned bundled Windows runtime
+        shell: pwsh
+        run: ./desktop/scripts/package_windows_runtime.ps1
+      - name: Rust shell tests (sidecar protocol incl. real engine round trip)
+        working-directory: desktop/src-tauri
+        run: |
+          New-Item -ItemType Directory -Force ..\dist | Out-Null
+          cargo test
+      - name: Build self-contained Windows NSIS installer
+        working-directory: desktop
+        run: npm run tauri -- build
+      - name: Install, launch without system runtimes, upgrade and uninstall
+        shell: pwsh
+        run: ./desktop/scripts/windows_installer_smoke.ps1
+      - name: Publish clean-runner installer evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: flowbench-windows-installer
+          path: desktop/src-tauri/target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error
+          retention-days: 7

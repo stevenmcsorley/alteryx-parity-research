@@ -163,7 +163,7 @@ for mode, n, ours, cid in [('First', 2, ('first', 2), 'sample-first'), ('Last', 
 case('sample-first-grouped', 'preparation:sample', 'first N per group', {'input': PEOPLE}, 'core.sample',
      {'mode': 'first', 'n': 1, 'group_by': ['region']},
      ref('Sample', '<Mode>First</Mode><N>1</N><GroupFields orderChanged="False">'
-         + fields_xml('Field', ['region']) + '</GroupFields>'), {'output': 'Output'})
+         + '<Field name="region" />' + '</GroupFields>'), {'output': 'Output'})
 case('record-id-default', 'preparation:record-id', 'Int32 ids starting at 10, first position', {'input': SALES},
      'core.record_id', {'field_name': 'RID', 'start': 10, 'type': 'int32'},
      ref('RecordID', '<FieldName>RID</FieldName><StartValue>10</StartValue><FieldType>Int32</FieldType>'
@@ -344,3 +344,8 @@ formula_case('probe-contains-flag-and-codepoints', 'third Contains argument; cha
     ('c0', 'Contains([a], "ABC", 0)', 'Bool', 1), ('c1', 'Contains([a], "ABC", 1)', 'Bool', 1),
     ('s0', 'StartsWith([a], "AB")', 'Bool', 1), ('cp', 'ToString(CharToInt(Substring([a], 2, 1)))', 'V_WString', 10),
     ('ln', 'Length([a])', 'Int64', 8)])
+
+
+# wave-2 cases live in their own module
+from cases_wave2 import CASES_WAVE2  # noqa: E402
+CASES.extend(CASES_WAVE2)

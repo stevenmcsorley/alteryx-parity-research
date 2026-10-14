@@ -61,6 +61,24 @@
         ],
         "default": "sum"
       },
+      "methods": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "enum": [
+            "sum",
+            "count",
+            "avg",
+            "min",
+            "max",
+            "first",
+            "last",
+            "concat"
+          ]
+        },
+        "description": "Several methods (overrides method): columns named <Method>_<header>"
+      },
       "separator": {
         "type": "string",
         "default": ","
@@ -148,9 +166,54 @@
       "case_id": "crosstab-sum",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#crosstab-sum",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#crosstab-sum",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 533d1ebd0ee1b38a54058a06d8880cc954829e239b3583fc31da15b39a9fbce0"
+      ]
+    },
+    {
+      "case_id": "probe-crosstab-space-headers",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#probe-crosstab-space-headers",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 ee533b890b4dd253d8a71de25c7077bc514a3d0135918e1e196ca8afae598a7b"
+      ]
+    },
+    {
+      "case_id": "crosstab-two-methods",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#crosstab-two-methods",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 671180ea5171c2843be9e71fb0dee8d725b6c041e81ee66d13618df4d6069c08"
+      ]
+    },
+    {
+      "case_id": "crosstab-sum",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#crosstab-sum",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 533d1ebd0ee1b38a54058a06d8880cc954829e239b3583fc31da15b39a9fbce0"
+      ]
+    },
+    {
+      "case_id": "probe-crosstab-space-headers",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-crosstab-space-headers",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 ee533b890b4dd253d8a71de25c7077bc514a3d0135918e1e196ca8afae598a7b"
+      ]
+    },
+    {
+      "case_id": "crosstab-two-methods",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#crosstab-two-methods",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 671180ea5171c2843be9e71fb0dee8d725b6c041e81ee66d13618df4d6069c08"
       ]
     }
   ],

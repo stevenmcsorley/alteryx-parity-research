@@ -8,14 +8,14 @@
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/transform/count-records-tool.html",
   "status": "implemented",
   "implementation_status": "implemented",
-  "verification_status": "not-tested",
+  "verification_status": "partial",
   "inputs": [
     {
       "name": "input",
       "direction": "input",
       "cardinality": "one",
       "provenance": "flowengine-manifest",
-      "reference_name": null
+      "reference_name": "Input8"
     }
   ],
   "outputs": [
@@ -24,7 +24,7 @@
       "direction": "output",
       "cardinality": "one",
       "provenance": "flowengine-manifest",
-      "reference_name": null
+      "reference_name": "Output9"
     }
   ],
   "configuration_schema": {
@@ -80,14 +80,15 @@
     ]
   },
   "independent_tests": {
-    "count": 6,
-    "passing": 6,
+    "count": 7,
+    "passing": 7,
     "tests": [
       "test_fe_executor.ExecutionTests.test_cancellation",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
       "test_fe_executor.ExecutionTests.test_failure_reports_node_and_skips_downstream",
       "test_fe_executor.ExecutionTests.test_fan_out_and_release",
       "test_fe_executor.ValidationTests.test_catalog_id_resolves_to_implementation",
+      "test_fe_service.ServiceTests.test_async_run_streams_events_and_finishes",
       "test_fe_tools.TransformTests.test_count_records"
     ]
   },
@@ -108,8 +109,25 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No differential conformance case yet."
-  ]
+  "cases": [
+    {
+      "case_id": "count-records-macro",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#count-records-macro",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 0086dfb807a2972a395dad30a3e842ea4b3eb781fd9b381091f19535ef3576e5"
+      ]
+    },
+    {
+      "case_id": "count-records-macro",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#count-records-macro",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 0086dfb807a2972a395dad30a3e842ea4b3eb781fd9b381091f19535ef3576e5"
+      ]
+    }
+  ],
+  "unresolved": []
 }

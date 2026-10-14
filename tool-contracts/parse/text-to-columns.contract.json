@@ -158,8 +158,17 @@
       "case_id": "text-to-columns-3",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#text-to-columns-3",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#text-to-columns-3",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 bf96f8a58264187df54e41bf77e0b85dd471623bdc53dfd03caea078e012dde3"
+      ]
+    },
+    {
+      "case_id": "text-to-columns-3",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#text-to-columns-3",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 bf96f8a58264187df54e41bf77e0b85dd471623bdc53dfd03caea078e012dde3"
       ]
     }

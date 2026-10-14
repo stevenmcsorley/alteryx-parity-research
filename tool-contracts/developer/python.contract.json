@@ -6,49 +6,78 @@
   "xml_tool_name": "JupyterCode",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/python-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "inputs",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "many",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output1",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "output2",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "output3",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "output4",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "output5",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "AssetManaged",
-      "DefaultVenv",
-      "GuidDir",
-      "JupyterGuidDir",
-      "JupyterProduction",
-      "LastExecutedByEngineVersion",
-      "Notebook",
-      "Port",
-      "WorkflowName",
-      "productionModeScript",
-      "specialCellMetadata",
-      "vEnvName"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "code"
     ],
-    "public_doc_sections": [
-      "Get Started",
-      "Install the Data-Science Packages You Need",
-      "Additional Package Installation",
-      "Configure the Tool",
-      "Environment",
-      "Python Script",
-      "Connect to Workflow Data",
-      "Notes and Limitations",
-      "Pandas String Dtype",
-      "IPython",
-      "Python Tool Doesn't Load Script with Disable Auto Configure"
-    ]
+    "properties": {
+      "code": {
+        "type": "string",
+        "minLength": 1
+      },
+      "environment": {
+        "type": "string",
+        "default": "default"
+      },
+      "timeout_seconds": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 600
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "database-driver (public-doc keyword signal; unreviewed)",
     "python-runtime (public-doc keyword signal; unreviewed)",
@@ -56,7 +85,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.python",
+    "version": "1.0.0",
+    "module": "flowengine.tools.developer",
+    "side_effects": "process"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -105,9 +140,14 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 4,
+    "passing": 4,
+    "tests": [
+      "test_fe_tools_wave2.ManagedEnvironmentTests.test_python_tool_runs_in_a_named_isolated_environment",
+      "test_fe_tools_wave2.UserCodeTools.test_python_errors_timeouts_and_environment",
+      "test_fe_tools_wave2.UserCodeTools.test_python_tool_requires_permission",
+      "test_fe_tools_wave2.UserCodeTools.test_python_tool_runs_isolated_code_with_typed_exchange"
+    ]
   },
   "sources": [
     {
@@ -128,6 +168,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

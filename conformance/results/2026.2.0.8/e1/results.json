@@ -1,0 +1,2416 @@
+{
+  "reference_build": "2026.2.0.8",
+  "reference_engine": "AlteryxEngineCmd (E1; RunWithE2=False)",
+  "engine_mode": "e1",
+  "flowengine_profile": "ayx-2026.2-e1",
+  "holdout": false,
+  "authorisation": "docs/AUTHORISATION.md",
+  "executed_utc": "2026-10-13T14:03:41+00:00",
+  "flowengine_clock": "2026-01-15T09:30:00",
+  "limits": [
+    "CSV output cannot distinguish null from empty string",
+    "CSV output does not carry field types; types compared only through rendered values",
+    "Reference inputs are typed by a Select from text; casts use canonical literals only"
+  ],
+  "summary": {
+    "preparation:filter": {
+      "passed": 5,
+      "failed": 0
+    },
+    "preparation:formula": {
+      "passed": 12,
+      "failed": 0
+    },
+    "preparation:select": {
+      "passed": 2,
+      "failed": 0
+    },
+    "preparation:sort": {
+      "passed": 2,
+      "failed": 1
+    },
+    "preparation:unique": {
+      "passed": 2,
+      "failed": 0
+    },
+    "preparation:sample": {
+      "passed": 6,
+      "failed": 0
+    },
+    "preparation:record-id": {
+      "passed": 1,
+      "failed": 0
+    },
+    "transform:summarize": {
+      "passed": 4,
+      "failed": 0
+    },
+    "join:join": {
+      "passed": 4,
+      "failed": 0
+    },
+    "join:union": {
+      "passed": 1,
+      "failed": 0
+    },
+    "join:append-fields": {
+      "passed": 1,
+      "failed": 0
+    },
+    "transform:running-total": {
+      "passed": 1,
+      "failed": 0
+    },
+    "transform:transpose": {
+      "passed": 1,
+      "failed": 0
+    },
+    "transform:cross-tab": {
+      "passed": 3,
+      "failed": 0
+    },
+    "parse:text-to-columns": {
+      "passed": 1,
+      "failed": 0
+    },
+    "parse:regex": {
+      "passed": 3,
+      "failed": 0
+    },
+    "preparation:multi-row-formula": {
+      "passed": 1,
+      "failed": 0
+    },
+    "preparation:auto-field": {
+      "passed": 1,
+      "failed": 0
+    },
+    "preparation:multi-field-formula": {
+      "passed": 1,
+      "failed": 0
+    },
+    "preparation:tile": {
+      "passed": 1,
+      "failed": 0
+    },
+    "join:find-replace": {
+      "passed": 1,
+      "failed": 0
+    },
+    "join:make-group": {
+      "passed": 1,
+      "failed": 0
+    },
+    "parse:datetime": {
+      "passed": 8,
+      "failed": 0
+    },
+    "parse:xml-parse": {
+      "passed": 1,
+      "failed": 0
+    },
+    "transform:make-columns": {
+      "passed": 1,
+      "failed": 0
+    },
+    "developer:field-info": {
+      "passed": 1,
+      "failed": 0
+    },
+    "developer:json-parse": {
+      "passed": 2,
+      "failed": 0
+    },
+    "developer:dynamic-rename": {
+      "passed": 1,
+      "failed": 0
+    },
+    "developer:dynamic-select": {
+      "passed": 1,
+      "failed": 0
+    },
+    "transform:count-records": {
+      "passed": 1,
+      "failed": 0
+    },
+    "transform:weighted-average": {
+      "passed": 1,
+      "failed": 0
+    },
+    "preparation:select-records": {
+      "passed": 1,
+      "failed": 0
+    },
+    "preparation:imputation": {
+      "passed": 1,
+      "failed": 0
+    }
+  },
+  "results": [
+    {
+      "case_id": "filter-numeric-gt-null",
+      "catalog_id": "preparation:filter",
+      "description": "numeric comparison; null score must not pass",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "7f90171d94e9eac61e85f215e702dbed243d4e8fdf0bfc03e62467bfa9e1ac37",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "true": "9b1b78f9a934648583f7879b02a779ec629770dbd55c131824abec580df7be4d",
+          "false": "225c7e5d626d4de80fb5ca30a84a3ded314e2a16c18aaf3c816560bc47697d82"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 3 records were True and 3 were False"
+        ],
+        "digests": {
+          "false": "225c7e5d626d4de80fb5ca30a84a3ded314e2a16c18aaf3c816560bc47697d82",
+          "true": "9b1b78f9a934648583f7879b02a779ec629770dbd55c131824abec580df7be4d"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "filter-string-eq-case",
+      "catalog_id": "preparation:filter",
+      "description": "string equality case sensitivity",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "9ac41e6163e29c99a8df652eb5127ec4b1d3c7ddd5b44d6727c7376a642607c0",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "true": "cf1ebda93c203cebf4773f98e87afae4eadcc42e8348c8b6c9aae85669be9d2f",
+          "false": "ad0fab0940604decf06b3d7c278b674c8243b40c5f882bcba2a16ddd407a6467"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 2 records were True and 4 were False"
+        ],
+        "digests": {
+          "false": "ad0fab0940604decf06b3d7c278b674c8243b40c5f882bcba2a16ddd407a6467",
+          "true": "cf1ebda93c203cebf4773f98e87afae4eadcc42e8348c8b6c9aae85669be9d2f"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "filter-compound-null",
+      "catalog_id": "preparation:filter",
+      "description": "OR with IsNull",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "371c8638135d2c106998cc0794ba7f2e3cb938d7ac94c76eaa5062e8a8919e7e",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "true": "225c7e5d626d4de80fb5ca30a84a3ded314e2a16c18aaf3c816560bc47697d82",
+          "false": "9b1b78f9a934648583f7879b02a779ec629770dbd55c131824abec580df7be4d"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 3 records were True and 3 were False"
+        ],
+        "digests": {
+          "false": "9b1b78f9a934648583f7879b02a779ec629770dbd55c131824abec580df7be4d",
+          "true": "225c7e5d626d4de80fb5ca30a84a3ded314e2a16c18aaf3c816560bc47697d82"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "filter-date-literal",
+      "catalog_id": "preparation:filter",
+      "description": "date compared with ISO string literal; null date",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "8166a6d0c00d8e445289f4c52b42a35079dc864e3b91c0963c453ed5c3ce0ba7",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "true": "9b1b78f9a934648583f7879b02a779ec629770dbd55c131824abec580df7be4d",
+          "false": "225c7e5d626d4de80fb5ca30a84a3ded314e2a16c18aaf3c816560bc47697d82"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 3 records were True and 3 were False"
+        ],
+        "digests": {
+          "false": "225c7e5d626d4de80fb5ca30a84a3ded314e2a16c18aaf3c816560bc47697d82",
+          "true": "9b1b78f9a934648583f7879b02a779ec629770dbd55c131824abec580df7be4d"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "filter-not-in",
+      "catalog_id": "preparation:filter",
+      "description": "IN list with NOT and null operand",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "f57907ea24784f44ab87aab2290a517c40a706bb017107524c3bb32320e2f124",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "true": "77ae9b2283944efb1f067526d78294555a52ad527108da28a7a3f85d860e483b",
+          "false": "eda96a9d23803e10dc2be7548c99365d1d691347c06c4e9364ac9e3dde52a144"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 1 records were True and 5 were False"
+        ],
+        "digests": {
+          "false": "eda96a9d23803e10dc2be7548c99365d1d691347c06c4e9364ac9e3dde52a144",
+          "true": "77ae9b2283944efb1f067526d78294555a52ad527108da28a7a3f85d860e483b"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "formula-arithmetic",
+      "catalog_id": "preparation:formula",
+      "description": "arithmetic, precedence and null propagation",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "ab8da7e01752d3adfe0362e10fe40ee7c10e8c83cd9f4bf16b81ef46f56f04da",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "80dfb34ea71deda6cdc91cfc2797b3e3a401d732c521ec9df5392491fff49ecd"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "80dfb34ea71deda6cdc91cfc2797b3e3a401d732c521ec9df5392491fff49ecd"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "formula-strings",
+      "catalog_id": "preparation:formula",
+      "description": "string functions on text, padding, unicode and nulls",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "0de8f839986fef4559971c27eea9b30e93efca1373535eebbcd6e139518d6dbf",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "e6c8de2d1a89fecc6251bc5f63516245a80d58c460babb9e76969792c95c9c69"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "e6c8de2d1a89fecc6251bc5f63516245a80d58c460babb9e76969792c95c9c69"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "formula-null-concat",
+      "catalog_id": "preparation:formula",
+      "description": "concatenation with a null operand",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "d734901c60768a345f8ff68e7cd05bc478664466edc1978743d523e55796ea6e",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "8831133ad3035d7e07ec616ef26e9c0a0501f05ba4407b883cae8193306fbf1b"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "8831133ad3035d7e07ec616ef26e9c0a0501f05ba4407b883cae8193306fbf1b"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "formula-conditionals",
+      "catalog_id": "preparation:formula",
+      "description": "IF/ELSEIF/ELSE and IIF over nulls",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "a12957bf840a8bc82cffde3deeec3660530f8bdeadc3543c7054953030e3a1fb",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "31bf7dc997f187e899d58d1e913d4ec71768213afded7cee0cf0dccea088b270"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "31bf7dc997f187e899d58d1e913d4ec71768213afded7cee0cf0dccea088b270"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "formula-dates",
+      "catalog_id": "preparation:formula",
+      "description": "date arithmetic at month ends and leap days",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "5dc8535fbee12ba449a2cc76f725c658535b1871f52c2f507caab3e81652f70d",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "e1e37ad147d0d045f85d6a06772cce1d1da28bff6798bfffffce344d063291bf"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "e1e37ad147d0d045f85d6a06772cce1d1da28bff6798bfffffce344d063291bf"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "formula-rounding",
+      "catalog_id": "preparation:formula",
+      "description": "Round half cases, Mod with negatives, Ceil/Floor",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "01ce4678fb86b018c729fa65952fc1a7d77efb720aa372496a29791412f19ada",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "834b07f23051ed001a7b29c11c94e64b62d527d496f4e26a2731c61a7a9e6543"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "834b07f23051ed001a7b29c11c94e64b62d527d496f4e26a2731c61a7a9e6543"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "formula-divide-by-zero",
+      "catalog_id": "preparation:formula",
+      "description": "division by zero result",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "4c57e522b2e401a04a71da92d0780ba41671a929234bae0ec1aa589d84733d2b",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "6086850b79f7c848b69fed31cfab8a0cd581113c3249d162b4e905af76865d85"
+        }
+      },
+      "reference": {
+        "exit_code": 1,
+        "errors": [],
+        "warnings": [
+          "Warning - ToolId 900: Divide by 0 error on record #1 in field q",
+          "Warning - ToolId 900: Divide by 0 error on record #2 in field q"
+        ],
+        "messages": [],
+        "digests": {
+          "output": "6086850b79f7c848b69fed31cfab8a0cd581113c3249d162b4e905af76865d85"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "formula-tonumber",
+      "catalog_id": "preparation:formula",
+      "description": "ToNumber on clean, padded and invalid text",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "4a396c57b69b48f879d65173e2bf051e44f6d1ac2c0271ff1dabd5903dd114a1",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "afc0bdea1589f3a31b0b16e9ad98c0391c1beb3bad4cfec5cd86c01a3619da8e"
+        }
+      },
+      "reference": {
+        "exit_code": 1,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "afc0bdea1589f3a31b0b16e9ad98c0391c1beb3bad4cfec5cd86c01a3619da8e"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "select-cast-rename-drop",
+      "catalog_id": "preparation:select",
+      "description": "retype double->Int32 (non-whole values), rename, drop",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "8b999a673ca59eeec130a383c729500ccb4ca0aeaccdb162bc981cf78bddee0c",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "1ec1e4770ed2d8abaae04a776d5be6864d3d3d8aa83f1e8942373c8fd14c2e04"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "1ec1e4770ed2d8abaae04a776d5be6864d3d3d8aa83f1e8942373c8fd14c2e04"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "sort-multikey-nulls",
+      "catalog_id": "preparation:sort",
+      "description": "two keys, desc numeric with null, null region",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "3e2c730a67a95a5a01bbc7a2a92db41219a516e0089104bdd6d0f96e9c382aba",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "1eed3ee11b8507ac57f723d5f0e637589f515ea73e5b2c9db27139e2972b8dce"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "1eed3ee11b8507ac57f723d5f0e637589f515ea73e5b2c9db27139e2972b8dce"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "sort-string-case",
+      "catalog_id": "preparation:sort",
+      "description": "collation of mixed-case and unicode strings",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "0245c1031ea360d406778f3702009c5a7caf130490d38e4f500766836f91078d",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "9d91cc85c76e1beb810b017f3d887083c0ec3132b0adf520bd8dbd13432e5998"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "9d91cc85c76e1beb810b017f3d887083c0ec3132b0adf520bd8dbd13432e5998"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "unique-case-null",
+      "catalog_id": "preparation:unique",
+      "description": "case variants and nulls in the key",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "988bf5ea5203ee0e03fbe9b2be34767fc6fb8fec3151b9464948fa0c5a69f10f",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "unique": "eca3cd480b3ff15ccc05d46c32c64a6301b2707635616541e7cb967251fc34b1",
+          "duplicates": "4c26a1ed711ed09f15348188d332179233fa1fd8875d9e263e8a4910b5692ac5"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 4 unique records and 2 duplicates were found"
+        ],
+        "digests": {
+          "duplicates": "4c26a1ed711ed09f15348188d332179233fa1fd8875d9e263e8a4910b5692ac5",
+          "unique": "eca3cd480b3ff15ccc05d46c32c64a6301b2707635616541e7cb967251fc34b1"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "sample-first",
+      "catalog_id": "preparation:sample",
+      "description": "positional sample mode First N=2",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "5a12763ce433c2497449fb1c27450caaf0f074f64d0de1f48e8e7b161ba444b0",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "87004889e29a35b1810ae23d961ba28ec002bb2e53aab9f6c9aec04ddccefe83"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "87004889e29a35b1810ae23d961ba28ec002bb2e53aab9f6c9aec04ddccefe83"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "sample-last",
+      "catalog_id": "preparation:sample",
+      "description": "positional sample mode Last N=2",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "6cbb36c3d068628c53ef37a4f2b0177797320d20946b77e0e206af4ac18d988c",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "a94f356472548f896d608d6780e95ba40ff85a043bf8f8e717bfaaefc492c61d"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "a94f356472548f896d608d6780e95ba40ff85a043bf8f8e717bfaaefc492c61d"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "sample-skip",
+      "catalog_id": "preparation:sample",
+      "description": "positional sample mode Skip N=4",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "4b51cf5917cd804452190164028a6459074c9eeee393e284c41d0477e7dd35f4",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "a94f356472548f896d608d6780e95ba40ff85a043bf8f8e717bfaaefc492c61d"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "a94f356472548f896d608d6780e95ba40ff85a043bf8f8e717bfaaefc492c61d"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "sample-every-nth",
+      "catalog_id": "preparation:sample",
+      "description": "positional sample mode Sample N=2",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "701b527fe3501a44823bedd639442e1d4cb2e70dc7b13739bf4062c82bb4ee58",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "f8de8bd14e40f657927d5b97efb5608440463676f13110def205e8bde28c64de"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "f8de8bd14e40f657927d5b97efb5608440463676f13110def205e8bde28c64de"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "sample-percent",
+      "catalog_id": "preparation:sample",
+      "description": "positional sample mode NPercent N=50",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "3a117713b47229a410a317579ad5fa3748d00ca826fb0ab9c4356a7d13682891",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "5278b863cd71a4dda7b1246c46be5731d96df47f6f393223f33bf313bfbd7195"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "5278b863cd71a4dda7b1246c46be5731d96df47f6f393223f33bf313bfbd7195"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "sample-first-grouped",
+      "catalog_id": "preparation:sample",
+      "description": "first N per group",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "477a2f363bb6e98ee0ed639304861bbf53eb977149e822f48270087f4de74111",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "eca3cd480b3ff15ccc05d46c32c64a6301b2707635616541e7cb967251fc34b1"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: A total of 4 were output in 4 groups"
+        ],
+        "digests": {
+          "output": "eca3cd480b3ff15ccc05d46c32c64a6301b2707635616541e7cb967251fc34b1"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "record-id-default",
+      "catalog_id": "preparation:record-id",
+      "description": "Int32 ids starting at 10, first position",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "7c1d8f04beb64d3ea477e581f7c4043ecefa52ad32e82028049ca955a1d3b8c2",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "19746acd411249f19546febe29a3b852d60d3a8d17caff53cc7ee2f6ad94d1b8"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "19746acd411249f19546febe29a3b852d60d3a8d17caff53cc7ee2f6ad94d1b8"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "summarize-basic",
+      "catalog_id": "transform:summarize",
+      "description": "group by with sum/count/avg/min/max over nulls",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "2693f7456032e7c41a215869f45afd7acfb59b05da02722db15bd712bbaaecf5",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "54a46013e5cc1e6238f5112bd9bbf641fb62a0ba2b363dee4f0101f759db5527"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 6 records were summarized to 3 groups"
+        ],
+        "digests": {
+          "output": "54a46013e5cc1e6238f5112bd9bbf641fb62a0ba2b363dee4f0101f759db5527"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "summarize-text-and-order",
+      "catalog_id": "transform:summarize",
+      "description": "first/last/concat and output group order",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "aceccd5503878a3e25b2c8bda0e18cd72c8771d2d5e8fb8d7442b14f7d6c13b4",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "143d18265105f66242e4b9902fa93f2724f0cc2632800708f9a332036a366b63"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 6 records were summarized to 3 groups"
+        ],
+        "digests": {
+          "output": "143d18265105f66242e4b9902fa93f2724f0cc2632800708f9a332036a366b63"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "summarize-statistics",
+      "catalog_id": "transform:summarize",
+      "description": "median, sample std dev and variance",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "304e946c84400dcd7121eb2902b41f12702db54e590a48c25f4739784a2e68bc",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true,
+        "tolerance": 1e-09
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "19f3ab67e837aa362c054153e41eb6037b1474e08bd39e8b2e9ea420e0d94e4c"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 6 records were summarized to 3 groups"
+        ],
+        "digests": {
+          "output": "19f3ab67e837aa362c054153e41eb6037b1474e08bd39e8b2e9ea420e0d94e4c"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "summarize-no-groupby",
+      "catalog_id": "transform:summarize",
+      "description": "whole-table aggregate",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "7b22c41cb4c99b046194b5b38d0e4b0e3848901dcedeb0bb9395d858ab2fb285",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "0fe83b23902c29a73d48e170ac6e21fe1367dcdca5501024cb4ac32af5f0b8bb"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 6 records were summarized to 1 groups"
+        ],
+        "digests": {
+          "output": "0fe83b23902c29a73d48e170ac6e21fe1367dcdca5501024cb4ac32af5f0b8bb"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "join-many-to-many-nulls",
+      "catalog_id": "join:join",
+      "description": "duplicate keys multiply; null keys never match; L/J/R outputs",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "e66c09fa3d6bd78b654ca9feff6631741edf2a845a17d12e731702942eb1fb89",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "left_unjoined": "720bcf6e45ad54ff9194f55bca08ffab811bd072df0439f760def931c43a8166",
+          "joined": "5d5b8cf81b1f997a2bc417d4c78f15d17ae7eeae7ba17b91e95a8474be7d6417",
+          "right_unjoined": "e4d72dcf950321927a14f3e2b6462364f54b07180234950c00f9ffbeecdd6464"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 5 records were joined with 2 un-joined left records and 1 un-joined right records"
+        ],
+        "digests": {
+          "joined": "5d5b8cf81b1f997a2bc417d4c78f15d17ae7eeae7ba17b91e95a8474be7d6417",
+          "left_unjoined": "720bcf6e45ad54ff9194f55bca08ffab811bd072df0439f760def931c43a8166",
+          "right_unjoined": "e4d72dcf950321927a14f3e2b6462364f54b07180234950c00f9ffbeecdd6464"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "join-by-position",
+      "catalog_id": "join:join",
+      "description": "join by record position with unequal lengths",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "cac542609570adb318c4b091358f0f29ff732bbe8fab02f74d839fae50b9f49e",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "left_unjoined": "3818c53deeb563e2eec7a630b696a27f0c4d8e4cbb96f4dde3bebebdd952adfd",
+          "joined": "73539224ed5100650fcbbbd99ae767dd09f29875bce302dd2bb82081855fab0a",
+          "right_unjoined": "27e244c80d16ceca98a3128805191ad74c62c1f6103cfc3b3f6ada4853abe423"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 4 records were joined with 1 un-joined left records and 0 un-joined right records"
+        ],
+        "digests": {
+          "joined": "73539224ed5100650fcbbbd99ae767dd09f29875bce302dd2bb82081855fab0a",
+          "left_unjoined": "3818c53deeb563e2eec7a630b696a27f0c4d8e4cbb96f4dde3bebebdd952adfd",
+          "right_unjoined": "27e244c80d16ceca98a3128805191ad74c62c1f6103cfc3b3f6ada4853abe423"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "join-string-case",
+      "catalog_id": "join:join",
+      "description": "string keys differing only by case",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "052655d64b521eaa5c166f8d7817c11581716bc41298cb7945852b2dc321a92a",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "left_unjoined": "e8ab3cd0f92fb2d970d20cec4a8a3ce56fea80719a4a02d211f42588f0fe788d",
+          "joined": "a4c6bd63daac9a1815171fe736c2b18f1e65a3169e57c83758fc89d26c7ca0f0",
+          "right_unjoined": "8cad6693ea52c0c3c1cfa83c8aa1cb99ceb0d0a60fa6f05d04f2271ce53b0fdc"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 1 records were joined with 2 un-joined left records and 1 un-joined right records"
+        ],
+        "digests": {
+          "joined": "a4c6bd63daac9a1815171fe736c2b18f1e65a3169e57c83758fc89d26c7ca0f0",
+          "left_unjoined": "e8ab3cd0f92fb2d970d20cec4a8a3ce56fea80719a4a02d211f42588f0fe788d",
+          "right_unjoined": "8cad6693ea52c0c3c1cfa83c8aa1cb99ceb0d0a60fa6f05d04f2271ce53b0fdc"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "union-by-name-missing",
+      "catalog_id": "join:union",
+      "description": "by-name stacking with a field missing from one input",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "beb3161b7cc20857ab65be232969d84b27a6d9c8ee2883e870caf6442e69a072",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "e3d4945e04ce285b834b9a1873bd07e42c90f48656ef47bbac6c1b82c8724725"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "e3d4945e04ce285b834b9a1873bd07e42c90f48656ef47bbac6c1b82c8724725"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "append-cartesian",
+      "catalog_id": "join:append-fields",
+      "description": "cartesian append with colliding names",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "f2e71107375dd8ea3c6e48bb428ac6e540869c78432b584ca9d0b2cfd818dc97",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "8f0cba10429742951f567609e063b44e110cb3c23ef9ee49d1f8053207c5c4a9"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 2 target records generated 4 output records"
+        ],
+        "digests": {
+          "output": "8f0cba10429742951f567609e063b44e110cb3c23ef9ee49d1f8053207c5c4a9"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "running-total-grouped",
+      "catalog_id": "transform:running-total",
+      "description": "grouped running total over nulls",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "12fb3a3ac2a0b6960caa11ddf11d2f89afd1e6b306fa715064fb75b8934f4b6d",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "c1eccdf94f8e7961feb05d4d58fdd2a109d56da21e4f2c3c333ecf5e7f28c2eb"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "c1eccdf94f8e7961feb05d4d58fdd2a109d56da21e4f2c3c333ecf5e7f28c2eb"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "transpose-basic",
+      "catalog_id": "transform:transpose",
+      "description": "key + two data fields to Name/Value",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "cc1fad3b949cb018b756f18eaad7a4ce92e18651d1321aa391d7527e496c2cb4",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "a39eb28d42e78dc585a75ee01645c27b208d97fd98a035dbf424dab1f4659002"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "a39eb28d42e78dc585a75ee01645c27b208d97fd98a035dbf424dab1f4659002"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "crosstab-sum",
+      "catalog_id": "transform:cross-tab",
+      "description": "pivot product into columns summing qty",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "533d1ebd0ee1b38a54058a06d8880cc954829e239b3583fc31da15b39a9fbce0",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "4b4d4fd3efc12cade56ca87ab3518a1c5baf94eed60025c377ee7a8f2bcbc4d0"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "4b4d4fd3efc12cade56ca87ab3518a1c5baf94eed60025c377ee7a8f2bcbc4d0"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "text-to-columns-3",
+      "catalog_id": "parse:text-to-columns",
+      "description": "split on comma into 3 columns, extras kept in last",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "bf96f8a58264187df54e41bf77e0b85dd471623bdc53dfd03caea078e012dde3",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "08a5bf5186d79b46382667a9127b51cf2bca6ce3f7bed37016f19f8b96161058"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "08a5bf5186d79b46382667a9127b51cf2bca6ce3f7bed37016f19f8b96161058"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "regex-replace",
+      "catalog_id": "parse:regex",
+      "description": "replace digits with #, groups via $n",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "5ce217fa633d47398cd846995db94999a73a06d34ba9259fea05092dde1f7f1f",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "c0bb0ecdff5fe8f2ad283ac1e8100af73a97c58f58674e9bcabf1ad29d24e5c4"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "c0bb0ecdff5fe8f2ad283ac1e8100af73a97c58f58674e9bcabf1ad29d24e5c4"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "regex-parse-groups",
+      "catalog_id": "parse:regex",
+      "description": "parse two capture groups into new fields",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "fa264c4d276345b7bb189c1c7831b40fbd54a47e41c0223b8aac63644ea8c300",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "f8878220c3bac04cf6e732a69018a72e8f0b2056504965fe6ec694d64de0d376"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 2 records were successfully parsed and 3 were not."
+        ],
+        "digests": {
+          "output": "f8878220c3bac04cf6e732a69018a72e8f0b2056504965fe6ec694d64de0d376"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "regex-match",
+      "catalog_id": "parse:regex",
+      "description": "full-match test field",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "3ec396c624ace1278a0debf7b7aee5fc916133f0eebf17dc86e10e7cc9aeeecd",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "bcc577da31610573b6a9d1b2c30e86e69e30fa295d11299f6ed6e906858ea0ef"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 3 matched and 2 were not."
+        ],
+        "digests": {
+          "output": "bcc577da31610573b6a9d1b2c30e86e69e30fa295d11299f6ed6e906858ea0ef"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "multi-row-fill-down",
+      "catalog_id": "preparation:multi-row-formula",
+      "description": "fill nulls from the previous row (update field)",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "5b2df3f0a36d9b4ead560f2abbc61caa2b9691c45041efd46f4ac72cf952f2d6",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "4f7cccd321186363dba4249557555b28a003b828d4fb65679c65ed773ee072ff"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "4f7cccd321186363dba4249557555b28a003b828d4fb65679c65ed773ee072ff"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-null-string-functions",
+      "catalog_id": "preparation:formula",
+      "description": "are string-function results on null null or empty?",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "252b93034a524a971687785d22fd7612a4d6c98e02866a3142cbca87fca864c8",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "68021c30dbaed61e08596abb94b3f7afe5b55adf9db98a3235b1dc3a91899347"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "68021c30dbaed61e08596abb94b3f7afe5b55adf9db98a3235b1dc3a91899347"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-string-ordering",
+      "catalog_id": "preparation:formula",
+      "description": "string < and = case sensitivity",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "f24217f3631a5bf3680d7a0553e7fa4d97628410a64363263565706e991d267c",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "898ca4ec36746765c8255a6ff7bb67a0519aa01bb888766a44962bd4af2000dc"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "898ca4ec36746765c8255a6ff7bb67a0519aa01bb888766a44962bd4af2000dc"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-null-arithmetic-bool",
+      "catalog_id": "preparation:formula",
+      "description": "null in arithmetic/boolean contexts",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "e6b9633ad21b376aaacffa8940e65846737c8a6b64ed2fe945aa660460fe48af",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "81809dd5d5429a9453ba6b9c6058494d5ab56b9e60aba1ba240c596e3cf9c475"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "81809dd5d5429a9453ba6b9c6058494d5ab56b9e60aba1ba240c596e3cf9c475"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-select-int-rounding",
+      "catalog_id": "preparation:select",
+      "description": "double -> Int32 rounding at halves incl. negatives",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "6d013b43b79df6709a3898f806695d4df25a6ee62aa2d1c18e1d901cf5d6a2fa",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "5a68125926599f942bb3ae4da8efe0d838030ba33774489b1c096289651c733d"
+        }
+      },
+      "reference": {
+        "exit_code": 1,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "1018704db32bb3983e1e5635279978a1e86e487da46f1324bf42e4666e7dfb90"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-join-unjoined-order",
+      "catalog_id": "join:join",
+      "description": "order of unjoined outputs and of joined rows by key",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "e93d9850c0f8a09671dd53ddae9ce46f9b256cadc4077969f0d5733477314cae",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "left_unjoined": "d37142a7d58c438dbbb9028fc2982009a32f5b369e16cea157ea11165759e371",
+          "joined": "9175a546969af6365449cf9327ad7e8471951ef89c31ef54437fb68adbce141e",
+          "right_unjoined": "0d4da28a33cb9975ceaca7d7d950d02eb389d0b4f714224c281655fc6258fb79"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 4 records were joined with 2 un-joined left records and 2 un-joined right records"
+        ],
+        "digests": {
+          "joined": "9175a546969af6365449cf9327ad7e8471951ef89c31ef54437fb68adbce141e",
+          "left_unjoined": "d37142a7d58c438dbbb9028fc2982009a32f5b369e16cea157ea11165759e371",
+          "right_unjoined": "0d4da28a33cb9975ceaca7d7d950d02eb389d0b4f714224c281655fc6258fb79"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-unique-order",
+      "catalog_id": "preparation:unique",
+      "description": "order of unique/duplicate outputs (numeric key)",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "6ff193ac1a1fd7cebca4b78c19ebc5d935a1c4c653c3c47e6407a84dd53958f1",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "unique": "681a4dafea917940d3a58935861e7ef9e44075d35329f2fbe7e1e738d89d7f8e",
+          "duplicates": "fe8caf9ce9393c07ea307dae5d2ec920fafe25b0b78a0c4091f7b8ba01e8da51"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 4 unique records and 2 duplicates were found"
+        ],
+        "digests": {
+          "duplicates": "fe8caf9ce9393c07ea307dae5d2ec920fafe25b0b78a0c4091f7b8ba01e8da51",
+          "unique": "681a4dafea917940d3a58935861e7ef9e44075d35329f2fbe7e1e738d89d7f8e"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-contains-flag-and-codepoints",
+      "catalog_id": "preparation:formula",
+      "description": "third Contains argument; character codes inside the engine",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "d309978547424b9f822e93951a366ca83ccbcb306cbdf69f1a1fd266c57ee1a3",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "a25955a4d4d3c7b11283e4324dba525f02f987e809ff6f3caff36efbc521a0b6"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "a25955a4d4d3c7b11283e4324dba525f02f987e809ff6f3caff36efbc521a0b6"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "autofield-types",
+      "catalog_id": "preparation:auto-field",
+      "description": "smallest type for numeric/date/text columns",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "1fbdb26ba05997643aebc5ed1d715f6e298dffd86ef2ed578e94c93010268379",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "5acf0d8f41985b923cfcefdcae025e62cb1fb9ccb604008220d32c520bcfbee0"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: The FieldType of \"i\" changed to: Byte",
+          "ToolId 900: The FieldType of \"big\" changed to: Int32",
+          "ToolId 900: The FieldType of \"d\" changed to: Double",
+          "ToolId 900: The FieldType of \"dt\" changed to: Date",
+          "ToolId 900: The FieldType of \"s\" changed to: String(3)"
+        ],
+        "digests": {
+          "output": "5acf0d8f41985b923cfcefdcae025e62cb1fb9ccb604008220d32c520bcfbee0"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "multi-field-formula-upper",
+      "catalog_id": "preparation:multi-field-formula",
+      "description": "expression over a text field incl. null",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "db5c468feb2d2d3265af2d46b8526cf1b024d0d31606a37fd49f9adcce66aee8",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "85fa8ced373eaf972f393c005ae83f666c9aae6e10cdb0ba2fc9d565678510e2"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "85fa8ced373eaf972f393c005ae83f666c9aae6e10cdb0ba2fc9d565678510e2"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "tile-equal-records",
+      "catalog_id": "preparation:tile",
+      "description": "equal-record tiles: 6 records into 4 tiles",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "b34b16e20174baaf0cfde87bee47a87dfb3497b8d570af48b3952923ec49caf2",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "dbadb27af69dce1e02578cbc86b82ee95782654ef7a3ea30199ac70aa6d41875"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 4 tiles were generated."
+        ],
+        "digests": {
+          "output": "dbadb27af69dce1e02578cbc86b82ee95782654ef7a3ea30199ac70aa6d41875"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "find-replace-any",
+      "catalog_id": "join:find-replace",
+      "description": "replace any-part matches, case-insensitive",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "041955f63de919af764e2018572aafdf22408e017432436cdb86f4ec81099620",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "380b8c6b57a0a52856c8daee20639bc6ec2893296158ac09de78f81d8613cdf8"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 2 records were found and 2 records were not found."
+        ],
+        "digests": {
+          "output": "48124df014264d373cca6394ed8f11e12f81a407b62418e26ff765c0b781888d"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "make-group-components",
+      "catalog_id": "join:make-group",
+      "description": "connected components of key pairs",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "b1ee8df9c89ba15f8b3e770c3ec219d9c1d02551d82cb1ac86a920cbdf30e93b",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "1558431cd65f5b5c194490ca70d0cf3ef827f10959955b03ab29e7c0b862ccfa"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "ToolId 900: 3 groups created from 4 input records"
+        ],
+        "digests": {
+          "output": "1558431cd65f5b5c194490ca70d0cf3ef827f10959955b03ab29e7c0b862ccfa"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "datetime-month-name",
+      "catalog_id": "parse:datetime",
+      "description": "parse \"Month dd, yyyy\" text incl. invalid text",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "f317fbf632c5c8f1b4a72d384cf42485c4bf11b9ff3d575c568a02b99a4e252c",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "c09db311215f771424c509f2c25b37846959d33ec2f1abc074373a064133107b"
+        }
+      },
+      "reference": {
+        "exit_code": 1,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "c09db311215f771424c509f2c25b37846959d33ec2f1abc074373a064133107b"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "xml-parse-children",
+      "catalog_id": "parse:xml-parse",
+      "description": "child values of repeated elements",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "67be00f27966eada795fd5d971be03ed1e5d47a59dae087c89aae243b5f6145f",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "dee355ff250a50f582745a309428ef466a7132a919d7e34e31884318472e4a8e"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "dee355ff250a50f582745a309428ef466a7132a919d7e34e31884318472e4a8e"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "make-columns-horizontal",
+      "catalog_id": "transform:make-columns",
+      "description": "five records into two columns",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "e83aa1070e430095b021808a41980f1b149a0373091983d52808440271c2845c",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "f08ed68ebaae7d63bd84d9fbed1362a082f4747c7306fae4a74b6fdfe3e0f475"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "f08ed68ebaae7d63bd84d9fbed1362a082f4747c7306fae4a74b6fdfe3e0f475"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "field-info-basic",
+      "catalog_id": "developer:field-info",
+      "description": "schema description records",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "5928b02113187f3b4d8ecf4f55a380333cdfb1017ffc77f0985a1a9b65531ae9",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true,
+        "ignore_fields": [
+          "Source"
+        ],
+        "ignore_reason": "Source reflects harness-specific upstream tools"
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "00da14d4dd59ab014c1311584c8745c49da311a584205444035be950c88ff79b"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "dbc60db009cc6cef94021eee729b7c8c689dc4e0ef3be5f00bce2ed78a2fe54e"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "json-parse-single",
+      "catalog_id": "developer:json-parse",
+      "description": "flatten nested JSON to name/value",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "0b5b740d00243c53ee95f4268003440aac1c96c03dc525330b0215e8d3b4bd0b",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "d356c75b5981a78be6d20961770812fd0e790ea82c8bbe066a3456827d169b40"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "d356c75b5981a78be6d20961770812fd0e790ea82c8bbe066a3456827d169b40"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "dynamic-rename-first-row",
+      "catalog_id": "developer:dynamic-rename",
+      "description": "take field names from the first row",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "91d944f0e48634587d138dc510e778af6086ab9d0beb3fe32e483ab28cd3cada",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "095740c334931dfe921466ead26cc4000c9e8183e64d6be9481873eaae74ec0c"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "095740c334931dfe921466ead26cc4000c9e8183e64d6be9481873eaae74ec0c"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "dynamic-select-types",
+      "catalog_id": "developer:dynamic-select",
+      "description": "keep double fields",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "efb17b113fb49010a9519a7a28d7e09f1b3e7848be2661cd95076e0d07e23d8c",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "927af77d162c02c1973b00dd169acb5283e1f3216fa0db99b71273144e9fd60f"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "927af77d162c02c1973b00dd169acb5283e1f3216fa0db99b71273144e9fd60f"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "count-records-macro",
+      "catalog_id": "transform:count-records",
+      "description": "count via the bundled macro",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "0086dfb807a2972a395dad30a3e842ea4b3eb781fd9b381091f19535ef3576e5",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "5716c4e5b0bdc405c3e3aed5257a1230807b880c463af63fc40dcfc44be21b1a"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "5716c4e5b0bdc405c3e3aed5257a1230807b880c463af63fc40dcfc44be21b1a"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "weighted-average-macro",
+      "catalog_id": "transform:weighted-average",
+      "description": "weighted average without groups",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "3747c28b99d9094ee941dd5aaedaefcdb00f4294a7f9284ba713c77b7a2951d9",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true,
+        "tolerance": 1e-12
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "2ca635730d198652b49bd97934e5341a09d94fe57e42ebd0533cc225ce863320"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "2ca635730d198652b49bd97934e5341a09d94fe57e42ebd0533cc225ce863320"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "select-records-macro",
+      "catalog_id": "preparation:select-records",
+      "description": "record ranges",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "662c211153a1571c2473fc7e4bae932d8e318038e74b22dfa3f31048f9392d8d",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "2b2dc36371772caccc756336d7acb2d7a587512486694425e06636a7c03fba39"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "2b2dc36371772caccc756336d7acb2d7a587512486694425e06636a7c03fba39"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "imputation-mean-macro",
+      "catalog_id": "preparation:imputation",
+      "description": "replace null with the mean",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "be047c99ca28688be82126d1f9382c6cd475e2f39379ae512605f47b2a98e54b",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "0f45ac1b9c5279255ef335fc363d1858e5acdca715d0803cf596c7b8f84a43e1"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "0f45ac1b9c5279255ef335fc363d1858e5acdca715d0803cf596c7b8f84a43e1"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-datetime-format-0",
+      "catalog_id": "parse:datetime",
+      "description": "probe format 'yyyy-MM-dd'",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "bf176f1aa957993b6775d61d00ad93fa7373c377c3aa6e244286968f4f2a5555",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "d840b8c29dc41c0d491765b4a1bd8f384538ff0364d786fc893827ebe67fc8fa"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "d840b8c29dc41c0d491765b4a1bd8f384538ff0364d786fc893827ebe67fc8fa"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-datetime-format-1",
+      "catalog_id": "parse:datetime",
+      "description": "probe format 'dd/MM/yyyy'",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "7863c76373bd459123d174bd1b83ca178485f7783ac787637074fc6c912d4d99",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "2714641da02b00ac7e8712551b12dc3b6689e1e8d7aa5fb4558fbd8990d277aa"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "2714641da02b00ac7e8712551b12dc3b6689e1e8d7aa5fb4558fbd8990d277aa"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-datetime-format-2",
+      "catalog_id": "parse:datetime",
+      "description": "probe format 'MMMM dd, yyyy'",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "84b6671fead6b7b11c45b81b365131bdb8c307158e74aa98151e74cc922d4e0b",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "f9c592281ea285e678fe45c6fba52cb0f61850151c7eb5738d627ed17f032275"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "f9c592281ea285e678fe45c6fba52cb0f61850151c7eb5738d627ed17f032275"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-datetime-format-3",
+      "catalog_id": "parse:datetime",
+      "description": "probe format 'MMM d, yyyy'",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "b99ca23638633078bd3840b8ae610c30e39e60345d1f9e43d0ebc6476ac67d04",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "06f8aa2a3697adfb2d09b1c6da34c0fb09567f59666004d85aa9e62bd490a202"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "06f8aa2a3697adfb2d09b1c6da34c0fb09567f59666004d85aa9e62bd490a202"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-datetime-format-4",
+      "catalog_id": "parse:datetime",
+      "description": "probe format 'Month dd, yyyy'",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "6ba1cfdf577309e5a03516998cbb296a0a92e0e026ca210e5bcf88902872bee5",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "f9c592281ea285e678fe45c6fba52cb0f61850151c7eb5738d627ed17f032275"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "f9c592281ea285e678fe45c6fba52cb0f61850151c7eb5738d627ed17f032275"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-datetime-format-5",
+      "catalog_id": "parse:datetime",
+      "description": "probe format 'Month d, yyyy'",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "09e86e2aab0fd383aed10a6797b05d8fc0cc98fc590ff4297378492ce52a3d97",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "8275c6e1bad6139bd207a1d7552801e35ee25d8d286ddf1fc7a70d2e87c1069d"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "8275c6e1bad6139bd207a1d7552801e35ee25d8d286ddf1fc7a70d2e87c1069d"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-json-false-null",
+      "catalog_id": "developer:json-parse",
+      "description": "false and null leaves",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "5b41cbd97caf43e51ce56669dca5be6f3f9c0e3f53dc4347527d6b9157d9cc46",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "d8d62606444661f193279d8a3cc36caebf0dab381fc709467b70ac1b7d963803"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "d8d62606444661f193279d8a3cc36caebf0dab381fc709467b70ac1b7d963803"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "datetime-to-text",
+      "catalog_id": "parse:datetime",
+      "description": "date to text with a custom pattern",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "2ea47e2637a7c15cf9a0ecee83f9a6cfab85009bf028bb329a075b71eaac1a10",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "1ab6e31685b0566a93a204bb84063a1b01c8db0e9e08af983abebac4f98e9dd3"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "1ab6e31685b0566a93a204bb84063a1b01c8db0e9e08af983abebac4f98e9dd3"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-sort-locale-1033",
+      "catalog_id": "preparation:sort",
+      "description": "collation with locale 1033 (English)",
+      "status": "failed",
+      "differences": [
+        "[output] row 1 field 's': ours='10' ref='4'",
+        "[output] row 2 field 's': ours='22' ref='9'",
+        "[output] row 3 field 's': ours='4' ref='10'",
+        "[output] row 4 field 's': ours='9' ref='22'",
+        "[output] row 5 field 's': ours='A' ref='_x'",
+        "[output] row 6 field 's': ours='B1' ref='a'",
+        "[output] row 7 field 's': ours='E' ref='a b'",
+        "[output] row 8 field 's': ours='Z' ref='A'",
+        "[output] row 9 field 's': ours='_x' ref='ab'",
+        "[output] row 10 field 's': ours='a' ref='a-b'",
+        "[output] row 11 field 's': ours='a b' ref='b1'",
+        "[output] row 12 field 's': ours='a-b' ref='b2'"
+      ],
+      "config_digest": "c78e3582dc94b862017523216aae225dccd9561d259cd4fe741435d2165914e2",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "ff70d05213d3f1d2d09357ed229b31d2c67b7015a7424c77258c93b54cd065bd"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "ff9785db365651411f7d09e92374e578bdaef548636db4cf1c788ca69c480014"
+        },
+        "observed": {
+          "output": [
+            [
+              "s"
+            ],
+            [
+              "4"
+            ],
+            [
+              "9"
+            ],
+            [
+              "10"
+            ],
+            [
+              "22"
+            ],
+            [
+              "_x"
+            ],
+            [
+              "a"
+            ],
+            [
+              "a b"
+            ],
+            [
+              "A"
+            ],
+            [
+              "ab"
+            ],
+            [
+              "a-b"
+            ],
+            [
+              "b1"
+            ],
+            [
+              "b2"
+            ],
+            [
+              "b10"
+            ],
+            [
+              "B1"
+            ],
+            [
+              "e"
+            ],
+            [
+              "E"
+            ],
+            [
+              "é"
+            ],
+            [
+              "é1"
+            ],
+            [
+              "Z"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "probe-crosstab-space-headers",
+      "catalog_id": "transform:cross-tab",
+      "description": "header values with spaces and punctuation, one method",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "ee533b890b4dd253d8a71de25c7077bc514a3d0135918e1e196ca8afae598a7b",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "763424039abbe6e90616d3a4e8ea68dbb47393f90ab6639d38d87e992b3eeb4a"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "763424039abbe6e90616d3a4e8ea68dbb47393f90ab6639d38d87e992b3eeb4a"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "crosstab-two-methods",
+      "catalog_id": "transform:cross-tab",
+      "description": "sum and average in one cross tab",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "671180ea5171c2843be9e71fb0dee8d725b6c041e81ee66d13618df4d6069c08",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "7075a74d2bc29f593bc468115001a057cde92dfb1cf95282bcf638729e0c11d6"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "7075a74d2bc29f593bc468115001a057cde92dfb1cf95282bcf638729e0c11d6"
+        },
+        "observed": null
+      }
+    }
+  ]
+}

@@ -254,6 +254,10 @@ class _Parser:
                 return Literal(t.pos, None)
             if t.value == 'IF':
                 return self.conditional()
+        if t.kind == 'IDENT' and not (self.peek(1).kind == 'OP' and self.peek(1).value == '('):
+            # a bare identifier is a field reference (accepted by the reference, e.g. Generate Rows conditions)
+            self.advance()
+            return FieldRef(t.pos, t.value)
         if t.kind == 'IDENT':
             self.advance()
             self.expect('OP', '(', what=f"'(' after function name {t.value}")

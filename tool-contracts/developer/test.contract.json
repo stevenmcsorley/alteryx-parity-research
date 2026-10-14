@@ -6,40 +6,76 @@
   "xml_tool_name": "AlteryxBasePluginsGui.Test.Test",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/test-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "inputs",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "many",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "DontReportSubsequent",
-      "Tests",
-      "Tests/Test"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "tests"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Add New Test",
-      "Edit Existing Test",
-      "Delete Test",
-      "Errors in the Workflow"
-    ]
+    "properties": {
+      "tests": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "connection",
+            "type"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "connection": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "type": {
+              "enum": [
+                "record_count_equals",
+                "record_count_zero",
+                "expression_true_all"
+              ]
+            },
+            "value": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            }
+          }
+        }
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.test",
+    "version": "1.0.0",
+    "module": "flowengine.tools.developer",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -73,9 +109,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.DeveloperWave2.test_message_test_and_expect_equals"
+    ]
   },
   "sources": [
     {
@@ -96,6 +134,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

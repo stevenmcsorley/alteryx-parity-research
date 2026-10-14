@@ -13,7 +13,7 @@
 - Specific reference: **NOT YET VERIFIED** — run public catalogue sync
 - Implementation: **implemented**
 - Machine-readable contract: `count-records.contract.json`
-- Conformance verification: **not-tested**
+- Conformance verification: **partial**
 
 ## Research to complete (do not infer)
 

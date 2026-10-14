@@ -170,8 +170,17 @@
       "case_id": "multi-row-fill-down",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#multi-row-fill-down",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#multi-row-fill-down",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 5b2df3f0a36d9b4ead560f2abbc61caa2b9691c45041efd46f4ac72cf952f2d6"
+      ]
+    },
+    {
+      "case_id": "multi-row-fill-down",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#multi-row-fill-down",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 5b2df3f0a36d9b4ead560f2abbc61caa2b9691c45041efd46f4ac72cf952f2d6"
       ]
     }

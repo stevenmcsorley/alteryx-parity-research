@@ -17,6 +17,7 @@ def _text(v):
 
 
 class TextToColumns(Tool):
+    streaming = 'row-local'
     manifest = ToolManifest(
         tool_id='core.text_to_columns', version='1.0.0', display_name='Text To Columns',
         catalog_ids=('parse:text-to-columns',),
@@ -106,6 +107,7 @@ class TextToColumns(Tool):
 
 
 class RegEx(Tool):
+    streaming = 'row-local'
     manifest = ToolManifest(
         tool_id='core.regex', version='1.0.0', display_name='RegEx',
         catalog_ids=('parse:regex',),

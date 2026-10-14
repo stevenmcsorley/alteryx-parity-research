@@ -6,59 +6,76 @@
   "xml_tool_name": "AlteryxBasePluginsGui.DateTime.DateTime",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/parse/datetime-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
-  "verification_status": "not-tested",
+  "status": "implemented",
+  "implementation_status": "implemented",
+  "verification_status": "partial",
   "inputs": [
     {
-      "name": "Action",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
-    },
-    {
-      "name": "Input",
-      "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Input"
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": "Output"
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Format",
-      "InputFieldName",
-      "IsFrom",
-      "Language",
-      "OutputFieldName"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "direction",
+      "field",
+      "format",
+      "output_field"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Custom Format",
-      "Specify Your DateTime Language",
-      "English",
-      "简体中文 (Simplified Chinese)",
-      "Français (French)",
-      "Deutsch (German)",
-      "Italiano (Italian)",
-      "日本語 (Japanese)",
-      "Português (Portuguese)",
-      "Español (Spanish)"
-    ]
+    "properties": {
+      "direction": {
+        "enum": [
+          "to_date",
+          "to_text"
+        ]
+      },
+      "field": {
+        "type": "string"
+      },
+      "format": {
+        "type": "string",
+        "minLength": 1
+      },
+      "output_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "output_type": {
+        "enum": [
+          "auto",
+          "date",
+          "datetime",
+          "time"
+        ],
+        "default": "auto"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.datetime",
+    "version": "1.0.0",
+    "module": "flowengine.tools.join_parse_extra",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -103,9 +120,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.JoinParseTransformWave2.test_datetime_parse_and_format"
+    ]
   },
   "sources": [
     {
@@ -124,8 +143,151 @@
       "accessed_utc": "2026-10-13T09:34:26+00:00"
     }
   ],
-  "cases": [],
-  "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
-  ]
+  "cases": [
+    {
+      "case_id": "datetime-month-name",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#datetime-month-name",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 f317fbf632c5c8f1b4a72d384cf42485c4bf11b9ff3d575c568a02b99a4e252c"
+      ]
+    },
+    {
+      "case_id": "probe-datetime-format-0",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#probe-datetime-format-0",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 bf176f1aa957993b6775d61d00ad93fa7373c377c3aa6e244286968f4f2a5555"
+      ]
+    },
+    {
+      "case_id": "probe-datetime-format-1",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#probe-datetime-format-1",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 7863c76373bd459123d174bd1b83ca178485f7783ac787637074fc6c912d4d99"
+      ]
+    },
+    {
+      "case_id": "probe-datetime-format-2",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#probe-datetime-format-2",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 84b6671fead6b7b11c45b81b365131bdb8c307158e74aa98151e74cc922d4e0b"
+      ]
+    },
+    {
+      "case_id": "probe-datetime-format-3",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#probe-datetime-format-3",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 b99ca23638633078bd3840b8ae610c30e39e60345d1f9e43d0ebc6476ac67d04"
+      ]
+    },
+    {
+      "case_id": "probe-datetime-format-4",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#probe-datetime-format-4",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 6ba1cfdf577309e5a03516998cbb296a0a92e0e026ca210e5bcf88902872bee5"
+      ]
+    },
+    {
+      "case_id": "probe-datetime-format-5",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#probe-datetime-format-5",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 09e86e2aab0fd383aed10a6797b05d8fc0cc98fc590ff4297378492ce52a3d97"
+      ]
+    },
+    {
+      "case_id": "datetime-to-text",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#datetime-to-text",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 2ea47e2637a7c15cf9a0ecee83f9a6cfab85009bf028bb329a075b71eaac1a10"
+      ]
+    },
+    {
+      "case_id": "datetime-month-name",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#datetime-month-name",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 f317fbf632c5c8f1b4a72d384cf42485c4bf11b9ff3d575c568a02b99a4e252c"
+      ]
+    },
+    {
+      "case_id": "probe-datetime-format-0",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-datetime-format-0",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 bf176f1aa957993b6775d61d00ad93fa7373c377c3aa6e244286968f4f2a5555"
+      ]
+    },
+    {
+      "case_id": "probe-datetime-format-1",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-datetime-format-1",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 7863c76373bd459123d174bd1b83ca178485f7783ac787637074fc6c912d4d99"
+      ]
+    },
+    {
+      "case_id": "probe-datetime-format-2",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-datetime-format-2",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 84b6671fead6b7b11c45b81b365131bdb8c307158e74aa98151e74cc922d4e0b"
+      ]
+    },
+    {
+      "case_id": "probe-datetime-format-3",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-datetime-format-3",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 b99ca23638633078bd3840b8ae610c30e39e60345d1f9e43d0ebc6476ac67d04"
+      ]
+    },
+    {
+      "case_id": "probe-datetime-format-4",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-datetime-format-4",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 6ba1cfdf577309e5a03516998cbb296a0a92e0e026ca210e5bcf88902872bee5"
+      ]
+    },
+    {
+      "case_id": "probe-datetime-format-5",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-datetime-format-5",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 09e86e2aab0fd383aed10a6797b05d8fc0cc98fc590ff4297378492ce52a3d97"
+      ]
+    },
+    {
+      "case_id": "datetime-to-text",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#datetime-to-text",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 2ea47e2637a7c15cf9a0ecee83f9a6cfab85009bf028bb329a075b71eaac1a10"
+      ]
+    }
+  ],
+  "unresolved": []
 }

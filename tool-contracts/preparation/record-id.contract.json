@@ -120,9 +120,12 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
+    "count": 4,
+    "passing": 4,
     "tests": [
+      "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
+      "test_fe_scale.StreamingTests.test_streamed_equals_batch",
+      "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",
       "test_fe_tools.PreparationTests.test_record_id_variants"
     ]
   },
@@ -148,8 +151,17 @@
       "case_id": "record-id-default",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#record-id-default",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#record-id-default",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 7c1d8f04beb64d3ea477e581f7c4043ecefa52ad32e82028049ca955a1d3b8c2"
+      ]
+    },
+    {
+      "case_id": "record-id-default",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#record-id-default",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 7c1d8f04beb64d3ea477e581f7c4043ecefa52ad32e82028049ca955a1d3b8c2"
       ]
     }

@@ -1,0 +1,13 @@
+attrs==25.4.0
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+numpy==2.4.6
+psycopg==3.2.3
+psycopg-binary==3.2.3
+pyarrow==16.1.0
+pymssql==2.4.4
+referencing==0.37.0
+rpds-py==0.30.0
+typing-extensions==4.15.0
+tzdata==2025.2
+yxdb==1.1.1

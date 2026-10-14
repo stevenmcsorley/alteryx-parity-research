@@ -174,8 +174,8 @@
       "case_id": "regex-replace",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#regex-replace",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#regex-replace",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 5ce217fa633d47398cd846995db94999a73a06d34ba9259fea05092dde1f7f1f"
       ]
     },
@@ -183,8 +183,8 @@
       "case_id": "regex-parse-groups",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#regex-parse-groups",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#regex-parse-groups",
+        "reference build 2026.2.0.8 (e1)",
         "config sha256 fa264c4d276345b7bb189c1c7831b40fbd54a47e41c0223b8aac63644ea8c300"
       ]
     },
@@ -192,8 +192,35 @@
       "case_id": "regex-match",
       "status": "passed",
       "evidence": [
-        "conformance/results/2026.2.0.8/results.json#regex-match",
-        "reference build 2026.2.0.8",
+        "conformance/results/2026.2.0.8/e1/results.json#regex-match",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 3ec396c624ace1278a0debf7b7aee5fc916133f0eebf17dc86e10e7cc9aeeecd"
+      ]
+    },
+    {
+      "case_id": "regex-replace",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#regex-replace",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 5ce217fa633d47398cd846995db94999a73a06d34ba9259fea05092dde1f7f1f"
+      ]
+    },
+    {
+      "case_id": "regex-parse-groups",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#regex-parse-groups",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 fa264c4d276345b7bb189c1c7831b40fbd54a47e41c0223b8aac63644ea8c300"
+      ]
+    },
+    {
+      "case_id": "regex-match",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#regex-match",
+        "reference build 2026.2.0.8 (e2)",
         "config sha256 3ec396c624ace1278a0debf7b7aee5fc916133f0eebf17dc86e10e7cc9aeeecd"
       ]
     }
