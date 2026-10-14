@@ -70,8 +70,55 @@ class WorkflowMacro(Tool):
         description='Execute a validated child workflow with table-valued macro inputs and named outputs.')
 
     def infer(self, ctx, config, inputs):
-        # Child schema depends on the macro boundary binding and is checked by its own plan at run time.
-        return None
+        doc, child_base = self._definition(ctx, config)
+        child_nodes = doc.get('nodes', [])
+        # Keep nested planning bounded. The nested macro still executes normally; its output
+        # schema becomes known to its own caller at runtime.
+        if any(node.get('tool') in ('flowengine.macro', 'flowengine.batch_macro',
+                                    'flowengine.iterative_macro') for node in child_nodes):
+            return None
+        input_names = [(node.get('config') or {}).get('name') for node in child_nodes
+                       if node.get('tool') == 'flowengine.macro_input']
+        if len(set(input_names)) != len(input_names):
+            raise ConfigError('Macro definition has duplicate Macro Input names', node_id=ctx.node_id)
+        configured = dict(config['input_bindings'])
+        if len(input_names) == len(configured) == 1 and input_names[0] not in configured and 'Input' in configured:
+            configured[input_names[0]] = configured.pop('Input')
+        if set(configured) != set(input_names):
+            raise ConfigError('Macro input bindings must map every child input exactly once', node_id=ctx.node_id)
+        schemas = {}
+        for macro_input, binding in configured.items():
+            anchor, index = _parse_macro_input_binding(binding, inputs, ctx.node_id)
+            if anchor not in inputs:
+                raise ConfigError(f"Macro input {macro_input!r} refers to unconnected parent anchor {anchor!r}",
+                                  node_id=ctx.node_id)
+            candidates = inputs[anchor] if isinstance(inputs[anchor], list) else [inputs[anchor]]
+            if index is None:
+                if len(candidates) != 1:
+                    raise ConfigError(f"Parent anchor {anchor!r} has {len(candidates)} connections; "
+                                      'select one with an indexed binding such as input[0]', node_id=ctx.node_id)
+                schema = candidates[0]
+            elif index >= len(candidates):
+                raise ConfigError(f"Parent anchor {anchor!r} has no connection at index {index}",
+                                  node_id=ctx.node_id)
+            else:
+                schema = candidates[index]
+            schemas[macro_input] = schema
+        from ..executor import plan_workflow
+        child_plan, problems = plan_workflow(doc, base_dir=child_base, profile=ctx.profile,
+                                             macro_input_schemas=schemas)
+        if problems:
+            return None
+        outputs = [node for node in child_nodes if node.get('tool') == 'flowengine.macro_output']
+        desired = config.get('output_name')
+        matches = [node for node in outputs if (node.get('config') or {}).get('name', 'Output') == (desired or 'Output')]
+        if not desired and len(outputs) == 1:
+            matches = outputs
+        if len(matches) != 1:
+            raise ConfigError(f"Macro output selection is ambiguous or missing (requested {desired!r})",
+                              node_id=ctx.node_id)
+        schema = child_plan.schemas.get((matches[0]['id'], 'output'))
+        return {'output': schema} if schema is not None else None
 
     def _definition(self, ctx, config):
         if 'workflow' in config:

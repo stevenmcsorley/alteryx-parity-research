@@ -70,6 +70,10 @@ def iterative_macro_workflow(rows_in, *, max_iterations=5):
 class StandardMacroTests(unittest.TestCase):
     def test_macro_input_filter_formula_output_matches_direct_workflow(self):
         macro_doc, direct_doc = standard_macro_workflow()
+        from flowengine.executor import plan_workflow
+        plan, problems = plan_workflow(macro_doc, base_dir=ROOT)
+        self.assertEqual(problems, [])
+        self.assertEqual(plan.schemas[('macro', 'output')].names, ['customer', 'amount', 'doubled'])
         result = run_workflow(macro_doc, base_dir=ROOT)
         direct = run_workflow(direct_doc, base_dir=ROOT)
         self.assertTrue(result.ok, result.error)
@@ -130,14 +134,15 @@ class StandardMacroTests(unittest.TestCase):
         self.assertEqual(rows(result.output('macro', 'output')), [[1, 'L1', 1, 'R1']])
 
         macro['config']['input_bindings'] = {'Left': 'input', 'Right': 'input'}
-        ambiguous = run_workflow(outer, base_dir=ROOT)
-        self.assertFalse(ambiguous.ok)
-        self.assertIn('select one with an indexed binding', ambiguous.error['message'])
+        from flowengine.errors import WorkflowValidationError
+        with self.assertRaises(WorkflowValidationError) as caught:
+            run_workflow(outer, base_dir=ROOT)
+        self.assertIn('select one with an indexed binding', caught.exception.message)
 
         macro['config']['input_bindings'] = {'Left': 'unknown[0]', 'Right': 'input[1]'}
-        unknown_anchor = run_workflow(outer, base_dir=ROOT)
-        self.assertFalse(unknown_anchor.ok)
-        self.assertIn("unconnected parent anchor 'unknown'", unknown_anchor.error['message'])
+        with self.assertRaises(WorkflowValidationError) as caught:
+            run_workflow(outer, base_dir=ROOT)
+        self.assertIn("unconnected parent anchor 'unknown'", caught.exception.message)
 
     def test_imported_yxmc_macro_input_output_runs_from_relative_path(self):
         from flowengine.interop.yxmd import import_file
@@ -187,11 +192,11 @@ class StandardMacroTests(unittest.TestCase):
                             {'id': 'macro', 'tool': 'flowengine.macro', 'config': {
                                 'definition_path': 'Configured.yxmc', 'output_name': 'Results'}}],
                            [edge('source', 'output', 'macro', 'input')])
-            result = run_workflow(doc, base_dir=Path(temp))
-            self.assertFalse(result.ok)
-            self.assertEqual(result.error['node_id'], 'macro')
-            self.assertIn('unmapped settings', result.error['message'])
-            self.assertIn('UseFileInput', result.error['message'])
+            from flowengine.errors import WorkflowValidationError
+            with self.assertRaises(WorkflowValidationError) as caught:
+                run_workflow(doc, base_dir=Path(temp))
+            self.assertIn('unmapped settings', caught.exception.message)
+            self.assertIn('UseFileInput', caught.exception.message)
 
     def test_imported_macro_with_unmapped_anchor_is_rejected(self):
         from flowengine.interop.yxmd import import_file
@@ -214,10 +219,10 @@ class StandardMacroTests(unittest.TestCase):
                             {'id': 'macro', 'tool': 'flowengine.macro', 'config': {
                                 'definition_path': 'BadAnchor.yxmc', 'output_name': 'Results'}}],
                            [edge('source', 'output', 'macro', 'input')])
-            result = run_workflow(doc, base_dir=Path(temp))
-            self.assertFalse(result.ok)
-            self.assertEqual(result.error['node_id'], 'macro')
-            self.assertIn('unmapped imported anchors', result.error['message'])
+            from flowengine.errors import WorkflowValidationError
+            with self.assertRaises(WorkflowValidationError) as caught:
+                run_workflow(doc, base_dir=Path(temp))
+            self.assertIn('unmapped imported anchors', caught.exception.message)
 
 
 class BatchMacroTests(unittest.TestCase):
