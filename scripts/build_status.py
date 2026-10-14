@@ -49,6 +49,7 @@ APPLICATION_ADAPTERS = {
         'module': 'flowengine.interop.yxmd',
         'test_ids': [
             'test_fe_interop.ImportTests.test_imported_alteryx_update_value_action_binds_filter_and_executes',
+            'test_fe_interop.ImportTests.test_designer_action_acceptance_fixture_executes_on_a_private_copy',
             'test_fe_interop.ImportTests.test_imported_unsupported_action_is_diagnostic_and_password_default_is_not_retained',
         ],
         'supported': ['UpdateValue / Simple / Filter Expression / single connected question / NoCondition True'],

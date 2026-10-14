@@ -13,6 +13,7 @@ from flowengine.interface_app import bind_application
 from helpers import ROOT, rows
 
 FIXTURE = ROOT / 'tests' / 'fixtures' / 'yxmd' / 'regional_sales.yxmd'
+ACTION_FIXTURE = ROOT / 'tests' / 'fixtures' / 'action' / 'filter_update_app.xml'
 
 
 class ImportTests(unittest.TestCase):
@@ -120,6 +121,43 @@ class ImportTests(unittest.TestCase):
         rerun = run_workflow(rebound, base_dir=ROOT)
         self.assertTrue(rerun.ok, rerun.error)
         self.assertEqual(rows(rerun.output('t2', 'true')), [['East']])
+
+    def test_designer_action_acceptance_fixture_executes_on_a_private_copy(self):
+        source = ACTION_FIXTURE.read_text(encoding='utf-8')
+        imported, report = import_document(source, name='Action acceptance')
+        original = json.dumps(imported, sort_keys=True)
+        self.assertEqual(report['edge_warnings'], [])
+        self.assertEqual(len(imported['metadata']['application']['actions']), 1)
+        self.assertEqual(imported['metadata']['application']['actions'][0]['config_path'], ['expression'])
+
+        west = bind_application(imported, {'alteryx-question-1': '[region] = "West"'})
+        west_result = run_workflow(west, base_dir=ROOT)
+        self.assertTrue(west_result.ok, west_result.error)
+        self.assertEqual(rows(west_result.output('t4', 'true')), [['West']])
+        self.assertEqual(rows(west_result.output('t4', 'false')), [['East'], ['North']])
+
+        north = bind_application(imported, {'alteryx-question-1': '[region] = "North"'})
+        north_result = run_workflow(north, base_dir=ROOT)
+        self.assertTrue(north_result.ok, north_result.error)
+        self.assertEqual(rows(north_result.output('t4', 'true')), [['North']])
+        self.assertEqual(rows(north_result.output('t4', 'false')), [['East'], ['West']])
+
+        self.assertEqual(json.dumps(imported, sort_keys=True), original)
+        self.assertEqual(imported['nodes'][1]['config']['expression'], '[region] = "East"')
+        exported, problems = export_document(imported)
+        self.assertEqual(problems, [])
+        round_trip, round_trip_report = import_document(exported)
+        self.assertEqual(round_trip_report['edge_warnings'], [])
+        action = round_trip['metadata']['application']['actions'][0]
+        self.assertEqual(action['config_path'], ['expression'])
+        self.assertEqual(action['alteryx']['type'], 'UpdateValue')
+        self.assertEqual(action['alteryx']['mode'], 'Simple')
+        self.assertEqual(action['alteryx']['destination'].split('/', 1)[1], 'Expression')
+        rebound = bind_application(round_trip, {round_trip['metadata']['application']['questions'][0]['id']:
+                                                '[region] = "West"'})
+        after_round_trip = run_workflow(rebound, base_dir=ROOT)
+        self.assertTrue(after_round_trip.ok, after_round_trip.error)
+        self.assertEqual(rows(after_round_trip.output(action['node_id'], 'true')), [['West']])
 
     def test_imported_unsupported_action_is_diagnostic_and_password_default_is_not_retained(self):
         xml = '''<AlteryxDocument><Nodes>

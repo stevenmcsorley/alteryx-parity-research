@@ -138,8 +138,8 @@
     ]
   },
   "independent_tests": {
-    "count": 91,
-    "passing": 91,
+    "count": 92,
+    "passing": 92,
     "tests": [
       "test_fe_executor.ExecutionTests.test_cancellation",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
@@ -153,6 +153,7 @@
       "test_fe_executor.ValidationTests.test_static_schema_errors_detected_before_running",
       "test_fe_executor.ValidationTests.test_static_schemas_propagate",
       "test_fe_executor.ValidationTests.test_tool_version_mismatch",
+      "test_fe_interop.ImportTests.test_designer_action_acceptance_fixture_executes_on_a_private_copy",
       "test_fe_interop.ImportTests.test_export_round_trip",
       "test_fe_interop.ImportTests.test_imported_alteryx_update_value_action_binds_filter_and_executes",
       "test_fe_interop.ImportTests.test_runs_once_the_unsupported_branch_is_removed",
