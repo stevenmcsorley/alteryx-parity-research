@@ -789,7 +789,17 @@ def _import_alteryx_application(root, interface_tool_ids, connections, nodes):
         dest_tool = match.group(1) if match else None
         if typ == 'UpdateValue' and mode == 'Simple' and len(connected) == 1 and len(targets) == 1 and dest_tool == targets[0]:
             target_node = node_by_id.get(dest_tool)
-            path = {'core.filter': {'Expression': ['expression']}}.get(target_node['tool'], {}).get(match.group(2)) if target_node else None
+            destination_path = match.group(2)
+            path = None
+            if target_node and target_node['tool'] == 'core.filter' and destination_path == 'Expression':
+                path = ['expression']
+            elif (target_node and target_node['tool'] == 'core.formula'
+                  and destination_path == 'FormulaFields/FormulaField/@expression'
+                  and len(target_node.get('config', {}).get('formulas', [])) == 1):
+                # The installed Designer sample uses this path for a Formula tool
+                # with one FormulaField. Multiple formula fields are ambiguous
+                # because the serialized destination does not identify a row.
+                path = ['formulas', '0', 'expression']
             if path:
                 parsed_actions.append({'question': f'alteryx-question-{connected[0]}', 'node_id': target_node['id'],
                                        'config_path': path, 'alteryx': {'type': typ, 'mode': mode,

@@ -49,12 +49,16 @@ APPLICATION_ADAPTERS = {
         'module': 'flowengine.interop.yxmd',
         'test_ids': [
             'test_fe_interop.ImportTests.test_imported_alteryx_update_value_action_binds_filter_and_executes',
+            'test_fe_interop.ImportTests.test_imported_update_value_action_targets_single_formula_expression',
+            'test_fe_interop.ImportTests.test_formula_action_with_ambiguous_multiple_formula_fields_is_unsupported',
             'test_fe_interop.ImportTests.test_designer_action_acceptance_fixture_executes_on_a_private_copy',
             'test_fe_interop.ImportTests.test_imported_unsupported_action_is_diagnostic_and_password_default_is_not_retained',
         ],
-        'supported': ['UpdateValue / Simple / Filter Expression / single connected question / NoCondition True'],
+        'supported': ['UpdateValue / Simple / Filter Expression / single connected question / NoCondition True',
+                      'UpdateValue / Simple / FormulaFields/FormulaField/@expression / one formula field'],
         'unsupported': ['UpdateValueFormula', 'Dynamic', 'UpdateInput', 'UpdateMap', 'UpdateSelect', 'UpdateRawXml',
-                        'condition-driven actions', 'multi-question expressions', 'non-Filter target paths'],
+                        'condition-driven actions', 'multi-question expressions',
+                        'ambiguous Formula targets with multiple FormulaField entries', 'all other unmapped target paths'],
         'evidence': 'data/action-reference-evidence.json',
     },
 }

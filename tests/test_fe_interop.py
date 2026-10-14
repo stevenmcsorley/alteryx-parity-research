@@ -122,6 +122,47 @@ class ImportTests(unittest.TestCase):
         self.assertTrue(rerun.ok, rerun.error)
         self.assertEqual(rows(rerun.output('t2', 'true')), [['East']])
 
+    def test_imported_update_value_action_targets_single_formula_expression(self):
+        # Structure and target path are present in installed Designer macro samples.
+        # This project-authored fixture verifies Flowbench execution, not Designer output parity.
+        xml = '''<AlteryxDocument yxmdVer="2026.2"><Nodes>
+          <Node ToolID="1"><GuiSettings Plugin="AlteryxGuiToolkit.Questions.TextBox.QuestionTextBox"/><Properties><Configuration/></Properties></Node>
+          <Node ToolID="2"><GuiSettings Plugin="AlteryxGuiToolkit.Action.Action"/><Properties><Configuration/></Properties></Node>
+          <Node ToolID="3"><GuiSettings Plugin="AlteryxBasePluginsGui.TextInput.TextInput"/><Properties><Configuration><NumRows value="2"/><Fields><Field name="x" type="Int32" size="4"/></Fields><Data><r><c>2</c></r><r><c>4</c></r></Data></Configuration></Properties></Node>
+          <Node ToolID="4"><GuiSettings Plugin="AlteryxBasePluginsGui.Formula.Formula"/><Properties><Configuration><FormulaFields><FormulaField field="y" type="Int32" size="4" expression="[x] * 2"/></FormulaFields></Configuration></Properties></Node>
+        </Nodes><Connections>
+          <Connection><Origin ToolID="1" Connection="Question"/><Destination ToolID="2" Connection="Question"/></Connection>
+          <Connection><Origin ToolID="2" Connection="Action"/><Destination ToolID="4" Connection="Action"/></Connection>
+          <Connection><Origin ToolID="3" Connection="Output"/><Destination ToolID="4" Connection="Input"/></Connection>
+        </Connections><Properties><RuntimeProperties><Actions><NoCondition><Type>NoCondition</Type><True><Action><Type>UpdateValue</Type><ToolId value="2"/><Mode>Simple</Mode><Replace value="True"/><Destination>4/FormulaFields/FormulaField/@expression</Destination></Action></True></NoCondition></Actions>
+          <Questions><Question><Type>TextBox</Type><Description>Formula</Description><Name>Formula</Name><ToolId value="1"/><Default>[x] * 2</Default></Question></Questions>
+        </RuntimeProperties></Properties></AlteryxDocument>'''
+        imported, report = import_document(xml)
+        self.assertEqual(report['edge_warnings'], [])
+        action = imported['metadata']['application']['actions'][0]
+        self.assertEqual(action['config_path'], ['formulas', '0', 'expression'])
+        before = json.dumps(imported, sort_keys=True)
+        bound = bind_application(imported, {'alteryx-question-1': '[x] + 5'})
+        result = run_workflow(bound, base_dir=ROOT)
+        self.assertTrue(result.ok, result.error)
+        self.assertEqual(rows(result.output('t4')), [[2, 7], [4, 9]])
+        self.assertEqual(json.dumps(imported, sort_keys=True), before)
+
+    def test_formula_action_with_ambiguous_multiple_formula_fields_is_unsupported(self):
+        xml = '''<AlteryxDocument><Nodes>
+          <Node ToolID="1"><GuiSettings Plugin="AlteryxGuiToolkit.Questions.TextBox.QuestionTextBox"/><Properties><Configuration/></Properties></Node>
+          <Node ToolID="2"><GuiSettings Plugin="AlteryxGuiToolkit.Action.Action"/><Properties><Configuration/></Properties></Node>
+          <Node ToolID="3"><GuiSettings Plugin="AlteryxBasePluginsGui.Formula.Formula"/><Properties><Configuration><FormulaFields>
+            <FormulaField field="a" type="Int32" size="4" expression="1"/><FormulaField field="b" type="Int32" size="4" expression="2"/>
+          </FormulaFields></Configuration></Properties></Node>
+        </Nodes><Connections><Connection><Origin ToolID="1" Connection="Question"/><Destination ToolID="2" Connection="Question"/></Connection>
+          <Connection><Origin ToolID="2" Connection="Action"/><Destination ToolID="3" Connection="Action"/></Connection></Connections>
+          <Properties><RuntimeProperties><Actions><NoCondition><Type>NoCondition</Type><True><Action><Type>UpdateValue</Type><ToolId value="2"/><Mode>Simple</Mode><Destination>3/FormulaFields/FormulaField/@expression</Destination></Action></True></NoCondition></Actions>
+            <Questions><Question><Type>TextBox</Type><ToolId value="1"/></Question></Questions></RuntimeProperties></Properties></AlteryxDocument>'''
+        imported, report = import_document(xml)
+        self.assertEqual(imported['metadata']['application']['actions'], [])
+        self.assertTrue(any('preserved as unsupported' in w for w in report['edge_warnings']))
+
     def test_designer_action_acceptance_fixture_executes_on_a_private_copy(self):
         source = ACTION_FIXTURE.read_text(encoding='utf-8')
         imported, report = import_document(source, name='Action acceptance')

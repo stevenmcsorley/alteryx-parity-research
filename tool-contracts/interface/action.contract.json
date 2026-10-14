@@ -35,7 +35,8 @@
     "status": "partially-specified",
     "source": "data/action-reference-evidence.json",
     "supported_variants": [
-      "UpdateValue / Simple / Filter Expression / single connected question / NoCondition True"
+      "UpdateValue / Simple / Filter Expression / single connected question / NoCondition True",
+      "UpdateValue / Simple / FormulaFields/FormulaField/@expression / one formula field"
     ],
     "unsupported_variants": [
       "UpdateValueFormula",
@@ -46,7 +47,8 @@
       "UpdateRawXml",
       "condition-driven actions",
       "multi-question expressions",
-      "non-Filter target paths"
+      "ambiguous Formula targets with multiple FormulaField entries",
+      "all other unmapped target paths"
     ],
     "preserved_runtime_xml": true
   },
@@ -62,7 +64,8 @@
     "tool_id": "interface:action",
     "module": "flowengine.interop.yxmd",
     "supported_variants": [
-      "UpdateValue / Simple / Filter Expression / single connected question / NoCondition True"
+      "UpdateValue / Simple / Filter Expression / single connected question / NoCondition True",
+      "UpdateValue / Simple / FormulaFields/FormulaField/@expression / one formula field"
     ],
     "unimplemented_variants": [
       "UpdateValueFormula",
@@ -73,7 +76,8 @@
       "UpdateRawXml",
       "condition-driven actions",
       "multi-question expressions",
-      "non-Filter target paths"
+      "ambiguous Formula targets with multiple FormulaField entries",
+      "all other unmapped target paths"
     ]
   },
   "reference_observation": {
@@ -104,10 +108,12 @@
     ]
   },
   "independent_tests": {
-    "count": 3,
-    "passing": 3,
+    "count": 5,
+    "passing": 5,
     "tests": [
       "test_fe_interop.ImportTests.test_imported_alteryx_update_value_action_binds_filter_and_executes",
+      "test_fe_interop.ImportTests.test_imported_update_value_action_targets_single_formula_expression",
+      "test_fe_interop.ImportTests.test_formula_action_with_ambiguous_multiple_formula_fields_is_unsupported",
       "test_fe_interop.ImportTests.test_designer_action_acceptance_fixture_executes_on_a_private_copy",
       "test_fe_interop.ImportTests.test_imported_unsupported_action_is_diagnostic_and_password_default_is_not_retained"
     ]

@@ -5,31 +5,30 @@ Updated: 2026-10-14
 ## Repository state
 
 - Branch: `milestone-3-macro-interface-parity`
-- Current continuation point: Arrange implementation is locally verified; commit/push is pending.
-- PR: #4, https://github.com/stevenmcsorley/alteryx-parity-research/pull/4
-- Do not merge automatically.
+- PR #4: https://github.com/stevenmcsorley/alteryx-parity-research/pull/4 (open; do not merge without owner approval)
+- Latest pushed checkpoint before current local changes: `780c580` (`Implement Arrange transform kernel`).
+- The next local commit contains a narrow imported Action extension; preserve it.
 
-## Delivered in this work unit
+## Delivered implementation IDs
 
-- `transform:arrange`: registered independent kernel `core.arrange`; configuration supports selected key fields and ordered output columns generated from literals, source field values, source names, source descriptions, or nulls. Rows expand deterministically by input record and configured row order. Type/null/metadata behavior and invalid configuration have independent tests.
-- Fixed coverage evidence test to use the live registry when determining unavailable tools, avoiding dependence on stale generated status.
-- Regenerated catalogue status, test matrix, roadmap and coverage from test attribution.
+- `preparation:data-cleanse-pro`: independent Data Cleanse Pro kernel (commit `1761365`), three attributed tests, not reference verified.
+- `transform:arrange`: independent Arrange kernel (commit `780c580`), three attributed tests, not reference verified; native desktop schema configuration is available, but original XML translation is unsupported.
+- `interface:action`: prior native Action editor and imported Filter UpdateValue path retained. Current local work adds imported `UpdateValue / Simple` targeting a Formula with exactly one `FormulaField`; multi-field ambiguity is rejected. Local structure evidence is documented, but no Designer GUI behavior claim is made.
 
 ## Verification
 
-- `python -m unittest discover -s tests`: 179 run, 0 failures, 1 skipped (R unavailable locally).
-- `python scripts/build_status.py --check`: pass; 323 entries, 63 registered kernels, 62 implemented, 2 in progress, 259 not started.
-- `python scripts/build_parity_roadmap.py --check`: pass.
-- `python scripts/validate_repository.py`: pass; 323 category/tool rows and 321 distinct names.
-- E1/E2 ledger remains 74/75 each; 32 partial tool entries, zero fully reference-verified. Existing Sort locale comparison remains failed.
-- Arrange has three independent attributed tests, no E1/E2 differential tests. Original Alteryx Arrange XML is not translated into the native kernel config.
+- Before current Action changes: Python suite 179 run, zero failed, one skipped (local R absent); status/roadmap generators and repository validation passed.
+- Current Action-specific interop suite: 12 passed, including formula update and ambiguous target rejection.
+- Full Python suite after current Action changes: 181 run, zero failed, one skipped.
+- Generated status after current work: 323 catalogue entries; 63 registered kernels; 62 implemented, 2 in progress, 259 not started; 32 partial reference entries; zero fully verified; E1/E2 are 74/75 each with the existing Sort locale failure.
+- CI for `780c580` is still running; do not report it as passing until complete.
 
-## Current known limitations
+## Exact Action behavior coverage and limits
 
-- Action compatibility remains bounded to the already documented native Flowbench app adapter and existing imported XML subset; no new Action parity claim is made here.
-- Arrange desktop configuration uses the generic schema inspector; matrix cells are configured through its JSON editor. Alteryx XML configuration translation and reference behavior remain unverified.
-- Full acceptance baseline has existing conformance/holdout failures and blocked/not-run platform suites recorded in its generated report; do not call those passing.
+- Imported Action: single connected question, unconditional UpdateValue/Simple targeting Filter Expression or a single FormulaField expression. The workflow is modified only on a private per-run copy.
+- No imported Designer app runner differential. Formula target path was structurally inspected in an installed sample; execution tests are project-authored Flowbench tests only.
+- Condition-driven, UpdateValueFormula, Dynamic, UpdateInput, UpdateMap, UpdateSelect, UpdateRawXml, container/detour, multiple-question and ambiguous multi-Formula actions remain unsupported and should warn/preserve XML.
 
 ## Exact next implementation action
 
-Inspect the Fuzzy Match contract, reference fixtures and current Join kernels. Establish evidence-backed configuration and matching semantics before implementing `join:fuzzy-match`; implement only supported matching modes, add typed/null/Unicode/duplicate/tie/error tests, and leave undocumented variants explicit. Then continue through Developer and Interface entries in the generated roadmap.
+Inspect `join:fuzzy-match` contract, installed sample configs and runtime data prerequisites. Separate public documented modes from observed XML structure. Because official docs identify reference-runtime matching resources (phonetic, frequency and nickname tables) and do not define full scoring output semantics, implement only a bounded mode whose behavior can be independently specified and tested, with explicit unsupported configs; do not call it Alteryx parity. Add desktop usability, null/Unicode/duplicate/tie/empty cases, then proceed to remaining Developer and Interface tools.

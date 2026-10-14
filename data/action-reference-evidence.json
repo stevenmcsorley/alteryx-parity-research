@@ -21,6 +21,16 @@
         "Observed destinations include Filter Expression and Simple Operands/Operand, Text Input Data/r[1]/c[1], Container Disabled/@value, DetourRight/@value, SortInfo/Field[1]/@order, FormulaFields/FormulaField/@expression and spatial radii.",
         "Action node Configuration is empty; action configuration and mapping rules are workflow-level RuntimeProperties."
       ]
+    },
+    {
+      "name": "en/05 Advanced/02 Build_a_Macro/Supporting_Macros/LocOpt_GravityCreateDemandSurface.yxmc",
+      "sha256": "806a9492c7f5c5c6c019566bb42a6457c16ce2df67221a61b6fb85afaa835496",
+      "observations": [
+        "Installed sample contains UpdateValue / Simple actions targeting FormulaFields/FormulaField/@expression on a Formula node.",
+        "The observed target node has one FormulaField; the action destination does not name a FormulaField index.",
+        "The sample also contains DetourRight/@value updates and an UpdateValueFormula action; those variants remain unsupported.",
+        "This is structural configuration evidence only; Designer analytic-app execution behavior was not observed."
+      ]
     }
   ],
   "black_box_execution": {

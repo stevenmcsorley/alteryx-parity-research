@@ -19,16 +19,16 @@
 
 - Action nodes use `AlteryxGuiToolkit.Action.Action`, have empty node Configuration, and expose incoming `Question` and `Condition` connections plus outgoing `Action` configuration links.
 - Rules and questions are serialized under `Properties/RuntimeProperties/Actions` and `Questions`.
-- Executable subset: one connected question → unconditional `UpdateValue` / `Simple` → mapped Filter `Expression`.
+- Executable subset: one connected question → unconditional `UpdateValue` / `Simple` → mapped Filter `Expression`, or a Formula `FormulaFields/FormulaField/@expression` target when the imported Formula has exactly one FormulaField. The installed sample contains the latter target path; Flowbench execution has independent project-authored tests but no Designer runner differential. Multi-field Formula targets are ambiguous and explicitly unsupported.
 - Interface nodes, connections and RuntimeProperties are retained during export, with ToolIDs remapped. Password question defaults are redacted.
 - Independent executable/import/export tests: see `action.contract.json` and `tests/test_fe_interop.py`.
 - Structural observations and the project-authored EngineCmd observation are recorded in `data/action-reference-evidence.json`.
 
 ## Sources and observations
 
-The installed Designer 2026.2.0.8 examples establish XML structure and observed action type/destination names. A project-authored synthetic `.yxwz` run through AlteryxEngineCmd E1 did not apply `RuntimeProperties/Actions`; this invocation is not the Designer analytic-app runner and is not a behavioural compatibility pass. The native Designer runner was not available for this session.
+The installed Designer 2026.2.0.8 examples establish XML structure and observed action type/destination names, including the Formula expression path. A project-authored synthetic `.yxwz` run through AlteryxEngineCmd E1 did not apply `RuntimeProperties/Actions`; this invocation is not the Designer analytic-app runner and is not a behavioural compatibility pass. The native Designer runner was not available for this session.
 
-Unsupported and explicitly warned: `UpdateValueFormula`, `Dynamic`, `UpdateInput`, `UpdateMap`, `UpdateSelect`, `UpdateRawXml`, condition-driven actions, multi-question expressions, and non-Filter targets. No Action E1/E2 differential case is claimed. Desktop Action palette/configuration and Designer app-runner acceptance remain open.
+Unsupported and explicitly warned: `UpdateValueFormula`, `Dynamic`, `UpdateInput`, `UpdateMap`, `UpdateSelect`, `UpdateRawXml`, condition-driven actions, multi-question expressions, multiple FormulaField targets, and all other unmapped targets. No Action E1/E2 differential case is claimed. Desktop Action palette/configuration and Designer app-runner acceptance remain open.
 
 ## Conformance evidence
 

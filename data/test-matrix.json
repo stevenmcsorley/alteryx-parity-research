@@ -187,7 +187,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 97,
+      "independent_tests": 98,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:text-input)"
@@ -331,7 +331,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 21,
+      "independent_tests": 22,
       "reference_cases": 12,
       "evidence_refs": [
         "tool-contracts (contract JSON for preparation:formula)"
@@ -2299,7 +2299,7 @@
       "oracle_status": "missing",
       "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 3,
+      "independent_tests": 5,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:action)"
