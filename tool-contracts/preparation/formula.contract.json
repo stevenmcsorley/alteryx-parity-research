@@ -144,8 +144,8 @@
     ]
   },
   "independent_tests": {
-    "count": 17,
-    "passing": 17,
+    "count": 19,
+    "passing": 19,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
@@ -161,7 +161,9 @@
       "test_fe_tools.PreparationTests.test_formula_conversion_policy",
       "test_fe_tools.PreparationTests.test_formula_sequential_and_types",
       "test_fe_tools_wave2.DeveloperWave2.test_detour_and_block_until_done",
-      "test_macros.BatchMacroTests.test_macro_child_failure_reports_call_node_and_stack",
+      "test_macros.IterativeMacroTests.test_macro_child_failure_reports_call_node_and_stack",
+      "test_macros.IterativeMacroTests.test_state_is_fed_back_until_all_rows_meet_termination",
+      "test_macros.IterativeMacroTests.test_zero_rows_terminate_and_iteration_limit_is_a_failure",
       "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
       "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level"
     ]

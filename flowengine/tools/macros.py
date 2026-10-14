@@ -6,7 +6,7 @@ import copy
 from decimal import Decimal
 from pathlib import Path
 
-from ..errors import ConfigError, DataError, EngineError
+from ..errors import CancelledError, ConfigError, DataError, EngineError, ExpressionError
 from ..executor import run_workflow
 from ..plugin import Anchor, RunContext, Tool, ToolManifest
 from ..table import Table
@@ -79,10 +79,14 @@ class WorkflowMacro(Tool):
         if path.suffix.lower() in ('.yxmc', '.yxmd', '.yxwz', '.yxzp'):
             from ..interop.yxmd import import_file
             doc, report = import_file(path)
-            unsupported = [n for n in report.get('nodes', []) if n.get('status') == 'unsupported']
-            if unsupported:
-                detail = ', '.join(f"{n.get('node')}: {n.get('reason')}" for n in unsupported[:5])
-                raise ConfigError(f'Macro contains unsupported imported tools: {detail}', node_id=ctx.node_id)
+            incomplete = [n for n in report.get('nodes', [])
+                          if n.get('status') in ('unsupported', 'partial')]
+            if incomplete:
+                detail = ', '.join(
+                    f"{n.get('node')}: {n.get('reason') or '; '.join(n.get('warnings', []))}"
+                    for n in incomplete[:5])
+                raise ConfigError(f'Macro contains imported tools with unmapped settings: {detail}',
+                                  node_id=ctx.node_id)
             return doc, path.parent
         try:
             return json.loads(path.read_text(encoding='utf-8')), path.parent
@@ -144,6 +148,9 @@ class WorkflowMacro(Tool):
                               f'call stack: {" -> ".join(ctx.macro_stack + (identity,))}',
                               node_id=ctx.node_id, code='macro-execution-failed') from None
         if not result.ok:
+            if result.status == 'cancelled':
+                raise CancelledError(f'Macro child cancelled at {result.error.get("node_id") or "-"}',
+                                     node_id=ctx.node_id)
             nested = result.error or {'code': result.status}
             raise EngineError(f"Macro child failed at {nested.get('node_id') or '-'}: {nested.get('message') or nested['code']}; "
                               f"call stack: {' -> '.join(ctx.macro_stack + (identity,))}",
@@ -270,6 +277,8 @@ class BatchMacro(Tool):
                                   f'{e.message}; call stack: {" -> ".join(run_stack)}', node_id=ctx.node_id,
                                   code='batch-macro-iteration-failed') from None
             if not result.ok:
+                if result.status == 'cancelled':
+                    raise CancelledError(f'Batch iteration {index + 1} cancelled', node_id=ctx.node_id)
                 failure = result.error or {'code': result.status, 'message': 'child execution failed'}
                 raise EngineError(f"Batch iteration {index + 1} failed at {failure.get('node_id') or '-'}: "
                                   f"{failure.get('message') or failure['code']}; call stack: "
@@ -291,6 +300,105 @@ class BatchMacro(Tool):
         ctx.emit('batch-completed', definition=identity, iterations=len(output_parts), rows=len(merged),
                  digest=merged.canonical_digest())
         return {'output': merged}
+
+
+class IterativeMacro(Tool):
+    """Feed each child output into the next invocation until all rows satisfy a predicate."""
+    manifest = ToolManifest(
+        tool_id='flowengine.iterative_macro', version='1.0.0', display_name='Iterative Macro', catalog_ids=(),
+        inputs=(Anchor('input', 'I'),), outputs=(Anchor('output', 'O'),),
+        config_schema={
+            'type': 'object', 'additionalProperties': False,
+            'properties': {
+                'workflow': {'type': 'object'},
+                'definition_path': {'type': 'string', 'minLength': 1},
+                'macro_id': {'type': 'string'},
+                'input_name': {'type': 'string', 'minLength': 1, 'default': 'Input'},
+                'output_name': {'type': 'string', 'default': 'Output'},
+                'terminate_expression': {'type': 'string', 'minLength': 1},
+                'max_iterations': {'type': 'integer', 'minimum': 1, 'default': 100},
+                'max_depth': {'type': 'integer', 'minimum': 1, 'maximum': 128, 'default': 32},
+            },
+            'required': ['terminate_expression'],
+            'oneOf': [{'required': ['workflow']}, {'required': ['definition_path']}],
+        },
+        description='Feed each child output back as its next input until every output row satisfies the '
+                    'termination expression. Empty outputs satisfy the all-rows condition.')
+
+    def infer(self, ctx, config, inputs):
+        return None
+
+    def run(self, ctx: RunContext, config, inputs):
+        ctx.check_cancelled()
+        doc, child_base = WorkflowMacro()._definition(ctx, config)
+        identity = config.get('macro_id') or _macro_identity(doc)
+        if identity in ctx.macro_stack:
+            raise ConfigError('Recursive iterative macro invocation detected: ' +
+                              ' -> '.join(ctx.macro_stack + (identity,)), node_id=ctx.node_id)
+        if len(ctx.macro_stack) >= config['max_depth']:
+            raise ConfigError(f"Macro nesting exceeds configured limit {config['max_depth']}", node_id=ctx.node_id)
+        input_name = config['input_name']
+        if not any(n.get('tool') == 'flowengine.macro_input' and n.get('config', {}).get('name') == input_name
+                   for n in doc.get('nodes', [])):
+            raise ConfigError(f"Child macro has no Macro Input named {input_name!r}", node_id=ctx.node_id)
+        outputs = [n for n in doc.get('nodes', []) if n.get('tool') == 'flowengine.macro_output'
+                   and n.get('config', {}).get('name', 'Output') == config['output_name']]
+        if len(outputs) != 1:
+            raise ConfigError(f"Expected one child Macro Output named {config['output_name']!r}; found {len(outputs)}",
+                              node_id=ctx.node_id)
+        output_node = outputs[0]['id']
+        stack = (*ctx.macro_stack, identity)
+        state = inputs['input']
+        expected_schema = None
+        from ..formula import EvalContext, compile_expression, truthy
+        for index in range(min(config['max_iterations'],
+                               int(ctx.limits.get('macro_max_iterations', config['max_iterations'])))):
+            ctx.check_cancelled()
+            try:
+                result = run_workflow(doc, base_dir=child_base, clock=ctx.clock,
+                                      cancel_token=ctx.cancel_token, limits=ctx.limits,
+                                      profile=ctx.profile.name if ctx.profile else None,
+                                      _macro_inputs={input_name: state},
+                                      _macro_input_schemas={input_name: state.schema}, _macro_stack=stack)
+            except EngineError as e:
+                raise EngineError(f'Iterative pass {index + 1} failed validation at {e.node_id or "-"}: {e.message}; '
+                                  f'call stack: {" -> ".join(stack)}', node_id=ctx.node_id,
+                                  code='iterative-macro-pass-failed') from None
+            if result.status == 'cancelled':
+                raise CancelledError(f'Iterative pass {index + 1} cancelled', node_id=ctx.node_id)
+            if not result.ok:
+                failure = result.error or {'code': result.status, 'message': 'child execution failed'}
+                raise EngineError(f'Iterative pass {index + 1} failed at {failure.get("node_id") or "-"}: '
+                                  f'{failure.get("message") or failure["code"]}; call stack: {" -> ".join(stack)}',
+                                  node_id=ctx.node_id, code='iterative-macro-pass-failed')
+            output = result.outputs.get(output_node, {}).get('output')
+            if output is None:
+                raise EngineError(f'Iterative pass {index + 1} did not produce the selected macro output',
+                                  node_id=ctx.node_id, code='macro-output-missing')
+            if expected_schema is None:
+                expected_schema = output.schema
+            elif output.schema != expected_schema:
+                raise DataError(f'Iterative pass {index + 1} output schema differs from pass 1',
+                                node_id=ctx.node_id)
+            try:
+                expression = compile_expression(config['terminate_expression'], output.schema)
+            except ExpressionError as e:
+                raise ExpressionError(e.message, node_id=ctx.node_id) from None
+            if expression.kind not in ('bool', 'number', 'null', 'any'):
+                raise ExpressionError(f'Iterative termination expression must be boolean, got {expression.kind}',
+                                      node_id=ctx.node_id)
+            eval_context = EvalContext(now=ctx.clock, warn=lambda message: ctx.warn(message))
+            converged = all(truthy(expression.evaluate(row, eval_context)) for row in output.rows())
+            ctx.emit('iterative-pass-completed', definition=identity, iteration=index + 1,
+                     rows=len(output), digest=output.canonical_digest(), converged=converged,
+                     child_run_id=result.run_id)
+            if converged:
+                ctx.emit('iterative-completed', definition=identity, iterations=index + 1,
+                         rows=len(output), digest=output.canonical_digest())
+                return {'output': output}
+            state = output
+        raise EngineError(f"Iterative macro did not converge within {config['max_iterations']} passes",
+                          node_id=ctx.node_id, code='iterative-macro-limit')
 
 
 def _plan_macro(doc, base_dir, ctx, macro_input_schemas):
@@ -341,4 +449,4 @@ def _macro_identity(doc):
     return workflow_digest(doc)
 
 
-TOOLS = [MacroInput, MacroOutput, WorkflowMacro, BatchMacro]
+TOOLS = [MacroInput, MacroOutput, WorkflowMacro, BatchMacro, IterativeMacro]

@@ -138,8 +138,8 @@
     ]
   },
   "independent_tests": {
-    "count": 82,
-    "passing": 82,
+    "count": 85,
+    "passing": 85,
     "tests": [
       "test_fe_executor.ExecutionTests.test_cancellation",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
@@ -218,8 +218,11 @@
       "test_macros.BatchMacroTests.test_batch_iteration_limit_and_bad_action_fail_explicitly",
       "test_macros.BatchMacroTests.test_control_records_reconfigure_and_run_in_input_order",
       "test_macros.BatchMacroTests.test_empty_control_table_returns_inferred_empty_schema",
-      "test_macros.BatchMacroTests.test_macro_child_failure_reports_call_node_and_stack",
-      "test_macros.BatchMacroTests.test_recursive_macro_definition_is_rejected",
+      "test_macros.IterativeMacroTests.test_macro_child_failure_reports_call_node_and_stack",
+      "test_macros.IterativeMacroTests.test_recursive_macro_definition_is_rejected",
+      "test_macros.IterativeMacroTests.test_state_is_fed_back_until_all_rows_meet_termination",
+      "test_macros.IterativeMacroTests.test_zero_rows_terminate_and_iteration_limit_is_a_failure",
+      "test_macros.StandardMacroTests.test_imported_macro_with_unmapped_input_settings_is_rejected",
       "test_macros.StandardMacroTests.test_imported_yxmc_macro_input_output_runs_from_relative_path",
       "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
       "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level"

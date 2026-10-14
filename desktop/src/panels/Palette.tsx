@@ -46,7 +46,7 @@ export function Palette() {
   const extensions = ['core.db_input', 'core.db_output'].filter((id) => tools[id] &&
     (!q.trim() || tools[id].display_name.toLowerCase().includes(q.trim().toLowerCase()) ||
       tools[id].description.toLowerCase().includes(q.trim().toLowerCase())));
-  const macroExtensions = ['flowengine.macro', 'flowengine.batch_macro'].filter((id) => tools[id] &&
+  const macroExtensions = ['flowengine.macro', 'flowengine.batch_macro', 'flowengine.iterative_macro'].filter((id) => tools[id] &&
     (!q.trim() || tools[id].display_name.toLowerCase().includes(q.trim().toLowerCase()) ||
       tools[id].description.toLowerCase().includes(q.trim().toLowerCase())));
 

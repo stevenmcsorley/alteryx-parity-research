@@ -221,6 +221,7 @@ test('database extensions are available and the connection manager opens', async
   await ready(page);
   await expect(page.getByTestId('palette-extension-flowengine.macro')).toContainText('Workflow Macro');
   await expect(page.getByTestId('palette-extension-flowengine.batch_macro')).toContainText('Batch Macro');
+  await expect(page.getByTestId('palette-extension-flowengine.iterative_macro')).toContainText('Iterative Macro');
   await page.getByTestId('palette-extension-flowengine.macro').dblclick();
   await expect(page.getByTestId('inspector')).toContainText('Workflow Macro');
   await page.getByRole('radio', { name: 'Basic: definition_path' }).click();
@@ -241,4 +242,7 @@ test('database extensions are available and the connection manager opens', async
   await page.getByTestId('palette-extension-flowengine.batch_macro').dblclick();
   await expect(page.getByTestId('inspector')).toContainText('Batch Macro');
   await expect(page.getByTestId('inspector').getByLabel('Max iterations')).toBeVisible();
+  await page.getByTestId('palette-extension-flowengine.iterative_macro').dblclick();
+  await expect(page.getByTestId('inspector')).toContainText('Iterative Macro');
+  await expect(page.getByTestId('inspector').getByLabel('Terminate expression')).toBeVisible();
 });

@@ -51,6 +51,22 @@ def batch_macro_workflow(control_rows, *, max_iterations=10):
     return doc
 
 
+def iterative_macro_workflow(rows_in, *, max_iterations=5):
+    source = text_input('source', [('counter', 'int32')], rows_in)
+    child = workflow([
+        {'id': 'input', 'tool': 'flowengine.macro_input', 'config': {'name': 'Input'}},
+        {'id': 'increment', 'tool': 'core.formula', 'config': {'formulas': [
+            {'field': 'counter', 'expression': '[counter] + 1'}]}},
+        {'id': 'output', 'tool': 'flowengine.macro_output', 'config': {'name': 'Output'}},
+    ], [edge('input', 'output', 'increment', 'input'), edge('increment', 'output', 'output', 'input')])
+    iterative = {'id': 'iterative', 'tool': 'flowengine.iterative_macro', 'config': {
+        'workflow': child, 'input_name': 'Input', 'output_name': 'Output',
+        'terminate_expression': '[counter] >= 3', 'max_iterations': max_iterations}}
+    return workflow([source, iterative, {'id': 'browse', 'tool': 'core.browse', 'config': {}}],
+                    [edge('source', 'output', 'iterative', 'input'),
+                     edge('iterative', 'output', 'browse', 'input')], name='Iterative macro acceptance')
+
+
 class StandardMacroTests(unittest.TestCase):
     def test_macro_input_filter_formula_output_matches_direct_workflow(self):
         macro_doc, direct_doc = standard_macro_workflow()
@@ -118,6 +134,34 @@ class StandardMacroTests(unittest.TestCase):
             self.assertTrue(result.ok, result.error)
             self.assertEqual(rows(result.output('macro', 'output')), [[3], [8]])
 
+    def test_imported_macro_with_unmapped_input_settings_is_rejected(self):
+        from flowengine.interop.yxmd import import_file
+        macro_xml = '''<?xml version="1.0"?>
+<AlteryxDocument yxmdVer="2026.2.0.8"><Nodes>
+ <Node ToolID="1"><GuiSettings Plugin="AlteryxBasePluginsGui.MacroInput.MacroInput"/>
+  <Properties><Configuration><Value name="Name">Customers</Value>
+   <Value name="UseFileInput">True</Value></Configuration></Properties></Node>
+ <Node ToolID="2"><GuiSettings Plugin="AlteryxBasePluginsGui.MacroOutput.MacroOutput"/>
+  <Properties><Configuration><Value name="Name">Results</Value></Configuration></Properties></Node>
+</Nodes><Connections>
+ <Connection name="Connection 1"><Origin ToolID="1" Connection="Output"/>
+  <Destination ToolID="2" Connection="Input"/></Connection>
+</Connections></AlteryxDocument>'''
+        with tempfile.TemporaryDirectory() as temp:
+            macro_path = Path(temp) / 'Configured.yxmc'
+            macro_path.write_text(macro_xml, encoding='utf-8')
+            _, report = import_file(macro_path)
+            self.assertEqual(report['counts'], {'partial': 1, 'mapped': 1})
+            doc = workflow([text_input('source', [('id', 'int32')], [[3]]),
+                            {'id': 'macro', 'tool': 'flowengine.macro', 'config': {
+                                'definition_path': 'Configured.yxmc', 'output_name': 'Results'}}],
+                           [edge('source', 'output', 'macro', 'input')])
+            result = run_workflow(doc, base_dir=Path(temp))
+            self.assertFalse(result.ok)
+            self.assertEqual(result.error['node_id'], 'macro')
+            self.assertIn('unmapped settings', result.error['message'])
+            self.assertIn('UseFileInput', result.error['message'])
+
 
 class BatchMacroTests(unittest.TestCase):
     def test_control_records_reconfigure_and_run_in_input_order(self):
@@ -156,6 +200,27 @@ class BatchMacroTests(unittest.TestCase):
         self.assertEqual(result.error['node_id'], 'batch')
         self.assertEqual(result.error['code'], 'batch-macro-iteration-failed')
         self.assertIn('iteration 1 failed validation', result.error['message'])
+
+
+class IterativeMacroTests(unittest.TestCase):
+    def test_state_is_fed_back_until_all_rows_meet_termination(self):
+        result = run_workflow(iterative_macro_workflow([[0], [2]]), base_dir=ROOT)
+        self.assertTrue(result.ok, result.error)
+        self.assertEqual(rows(result.output('iterative', 'output')), [[3], [5]])
+        passes = [event for event in result.events if event['type'] == 'iterative-pass-completed']
+        self.assertEqual([event['converged'] for event in passes], [False, False, True])
+        self.assertEqual([event['iteration'] for event in passes], [1, 2, 3])
+
+    def test_zero_rows_terminate_and_iteration_limit_is_a_failure(self):
+        empty = run_workflow(iterative_macro_workflow([]), base_dir=ROOT)
+        self.assertTrue(empty.ok, empty.error)
+        self.assertEqual(len(empty.output('iterative', 'output')), 0)
+        self.assertTrue(next(e for e in empty.events if e['type'] == 'iterative-pass-completed')['converged'])
+
+        limited = run_workflow(iterative_macro_workflow([[0]], max_iterations=2), base_dir=ROOT)
+        self.assertFalse(limited.ok)
+        self.assertEqual(limited.error['code'], 'iterative-macro-limit')
+        self.assertIn('did not converge', limited.error['message'])
 
     def test_macro_child_failure_reports_call_node_and_stack(self):
         doc, _ = standard_macro_workflow()

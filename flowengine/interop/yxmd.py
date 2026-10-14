@@ -475,6 +475,30 @@ def c_dynamic_select(cfg):
     raise Unsupported(f"Dynamic Select mode {_t(cfg, 'Mode')!r}")
 
 
+def c_macro_input(cfg):
+    values = {v.get('name'): (v.text or '') for v in cfg.findall('Value')}
+    converted = Converted('flowengine.macro_input', {'name': values.get('Name') or 'Input'},
+                          outputs={'Output': 'output'})
+    ignored = sorted(name for name, value in values.items() if name not in ('Name', 'Abbrev') and value.strip())
+    nested = [el.tag.rsplit('}', 1)[-1] for el in cfg.iter()
+              if el is not cfg and el.tag.rsplit('}', 1)[-1] != 'Value']
+    if ignored or nested:
+        converted.warnings.append('Macro Input options are not mapped: ' + ', '.join(sorted(set(ignored + nested))))
+    return converted
+
+
+def c_macro_output(cfg):
+    values = {v.get('name'): (v.text or '') for v in cfg.findall('Value')}
+    converted = Converted('flowengine.macro_output', {'name': values.get('Name') or 'Output'},
+                          inputs={'Input': 'input'}, outputs={'Output': 'output'})
+    ignored = sorted(name for name, value in values.items() if name not in ('Name', 'Abbrev') and value.strip())
+    nested = [el.tag.rsplit('}', 1)[-1] for el in cfg.iter()
+              if el is not cfg and el.tag.rsplit('}', 1)[-1] != 'Value']
+    if ignored or nested:
+        converted.warnings.append('Macro Output options are not mapped: ' + ', '.join(sorted(set(ignored + nested))))
+    return converted
+
+
 CONVERTERS = {
     'TextInput': c_text_input, 'DbFileInput': c_input_data, 'DbFileOutput': c_output_data, 'Filter': c_filter,
     'Formula': c_formula, 'AlteryxSelect': c_select, 'Sort': c_sort, 'Unique': c_unique, 'Sample': c_sample,
@@ -486,11 +510,8 @@ CONVERTERS = {
     'MakeGroup': c_make_group, 'DateTime': c_datetime, 'XMLParse': c_xml_parse, 'MakeColumns': c_make_columns,
     'FieldInfo': c_field_info, 'JSONParse': c_json_parse, 'DynamicRename': c_dynamic_rename,
     'DynamicSelect': c_dynamic_select,
-    'MacroInput': lambda cfg: Converted('flowengine.macro_input',
-        {'name': _vals(cfg).get('Name') or _t(cfg, 'Name', 'Input')}, outputs={'Output': 'output'}),
-    'MacroOutput': lambda cfg: Converted('flowengine.macro_output',
-        {'name': _vals(cfg).get('Name') or _t(cfg, 'Name', 'Output')},
-        inputs={'Input': 'input'}, outputs={'Output': 'output'}),
+    'MacroInput': c_macro_input,
+    'MacroOutput': c_macro_output,
 }
 
 

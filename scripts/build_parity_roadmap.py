@@ -116,11 +116,12 @@ def render() -> str:
         "",
         "## Priority sequence",
         "",
-        "1. Standard and batch macro runtime checkpoints: nested typed workflows, imported `.yxmc` boundaries, "
-        "ordered per-control-record runs, declared child-config Actions, strict output schema matching and zero-row "
-        "schema inference now execute. **Next item: map real imported Action/Control Parameter node and anchor "
-        "configuration into this runtime, then compare against authorized reference runs.** Then implement iterative "
-        "loop state, termination, limits and cancellation.",
+        "1. Macro runtime checkpoint: standard and nested typed workflows, batch execution over ordered control "
+        "records using explicitly declared child-config Actions, and iterative state feedback with termination, "
+        "limits and cancellation execute in the Flowbench extension runtime. Imported Alteryx Macro Input/Output "
+        "settings that are not mapped are rejected. **Next item: map native imported Action/Control Parameter "
+        "nodes, their configuration and anchors into batch execution, then validate against authorized reference "
+        "runs.** These runtime extensions do not increase Alteryx catalogue kernel counts.",
         "2. Interface tool semantics and analytic application execution in the existing desktop.",
         "3. Remaining core, Developer and Documentation tools, selected by dependencies and evidence in the table.",
         "4. Spatial, licensed-data, external-service and other blocked tools when their stated prerequisites are available.",
