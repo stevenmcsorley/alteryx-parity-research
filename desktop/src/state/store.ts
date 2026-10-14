@@ -3,7 +3,7 @@ import { applyEdgeChanges, applyNodeChanges, type Connection, type EdgeChange, t
 import type { CatalogEntry, EngineEvent, FieldDef, Problem, Profile, RunPayload, ToolManifest, HistoryEntry } from '../engine/types';
 import { defaultConfig, edgeId, nextNodeId, type CanvasEdge, type CanvasNode, type CanvasGraph } from '../model/workflow';
 
-type Snapshot = { nodes: CanvasNode[]; edges: CanvasEdge[]; name: string; description?: string };
+type Snapshot = { nodes: CanvasNode[]; edges: CanvasEdge[]; name: string; description?: string; metadata?: Record<string, any> };
 
 export type RunState = {
   runId: string | null;
@@ -24,6 +24,7 @@ export type EditorState = {
   edges: CanvasEdge[];
   name: string;
   description?: string;
+  metadata?: Record<string, any>;
   profile: string;
   filePath: string | null;
   baseDir: string;
@@ -88,7 +89,7 @@ export type EditorState = {
 const MAX_HISTORY = 200;
 
 function snap(s: EditorState): Snapshot {
-  return structuredClone({ nodes: s.nodes.map(stripRuntime), edges: s.edges.map(stripEdge), name: s.name, description: s.description });
+  return structuredClone({ nodes: s.nodes.map(stripRuntime), edges: s.edges.map(stripEdge), name: s.name, description: s.description, metadata: s.metadata });
 }
 function stripRuntime(n: CanvasNode): CanvasNode {
   const { selected: _s, dragging: _d, measured: _m, ...rest } = n as any;
@@ -103,6 +104,7 @@ export const useEditor = create<EditorState>((set, get) => ({
   nodes: [],
   edges: [],
   name: 'Untitled workflow',
+  metadata: undefined,
   profile: 'ayx-2026.2-e1',
   filePath: null,
   baseDir: '',
@@ -128,11 +130,11 @@ export const useEditor = create<EditorState>((set, get) => ({
   setEngineMeta: (m) => set(m as any),
 
   loadGraph: (g, filePath = null, baseDir) =>
-    set({ nodes: g.nodes, edges: g.edges, name: g.name, description: g.description, profile: g.profile ?? get().profile,
+    set({ nodes: g.nodes, edges: g.edges, name: g.name, description: g.description, metadata: g.metadata, profile: g.profile ?? get().profile,
       filePath, baseDir: baseDir ?? get().baseDir, dirty: false, past: [], future: [], run: emptyRun, problems: [],
       schemas: {}, selectedResult: null, loadVersion: get().loadVersion + 1, importReport: null }),
 
-  newWorkflow: () => set({ nodes: [], edges: [], name: 'Untitled workflow', description: undefined, filePath: null,
+  newWorkflow: () => set({ nodes: [], edges: [], name: 'Untitled workflow', description: undefined, metadata: undefined, filePath: null,
     dirty: false, past: [], future: [], run: emptyRun, problems: [], schemas: {}, selectedResult: null,
     loadVersion: get().loadVersion + 1, importReport: null }),
 
@@ -366,5 +368,5 @@ export const useEditor = create<EditorState>((set, get) => ({
 }));
 
 export function graphOf(s: EditorState): CanvasGraph {
-  return { nodes: s.nodes, edges: s.edges, name: s.name, description: s.description, profile: s.profile };
+  return { nodes: s.nodes, edges: s.edges, name: s.name, description: s.description, profile: s.profile, metadata: s.metadata };
 }

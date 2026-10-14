@@ -295,7 +295,7 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                  history=None, spill_dir: Path | None = None, batch_rows: int | None = None,
                  enable_pushdown: bool = True, result_sink=None,
                  _macro_inputs: dict | None = None, _macro_input_schemas: dict | None = None,
-                 _macro_stack: tuple[str, ...] = ()) -> RunResult:
+                 _macro_stack: tuple[str, ...] = (), history_workflow: dict | None = None) -> RunResult:
     """Validate then execute ``doc``. Raises WorkflowValidationError if invalid.
 
     ``retain``: 'all' keeps every output table; 'preview' keeps the first 1000 rows of each;
@@ -605,7 +605,7 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
     }
     result = RunResult(run_id, status, elog.events, retained, browse, error, manifest)
     if history is not None:
-        history.record(doc, result)
+        history.record(history_workflow if history_workflow is not None else doc, result)
     return result
 
 

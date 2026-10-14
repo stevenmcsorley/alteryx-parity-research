@@ -108,18 +108,29 @@ class EngineService:
                      'unavailable_reason': None if cmap.get(e['id']) else _unavailable_reason(e, status.get(e['id'], {}))}
                     for e in catalog.entries()]
         if method == 'workflow.validate':
+            from .interface_app import bind_application
             from .profiles import get_profile
-            plan, problems = plan_workflow(params['workflow'], reg, base_dir=self._base(params),
+            document = bind_application(params['workflow'], params.get('application_values'))
+            plan, problems = plan_workflow(document, reg, base_dir=self._base(params),
                                            profile=get_profile(params.get('profile')))
             schemas = {}
             if plan:
                 for (node, anchor), s in sorted(plan.schemas.items()):
                     schemas.setdefault(node, {})[anchor] = s.to_list()
             return {'valid': not problems, 'problems': problems, 'schemas': schemas}
+        if method == 'workflow.application':
+            from .interface_app import describe_application
+            return describe_application(params['workflow'])
         if method == 'workflow.run':
             n = int(params.get('preview_rows', 100))
             try:
-                r = run_workflow(params['workflow'], **self._run_kwargs(params))
+                from .interface_app import bind_application
+                original = params['workflow']
+                document = bind_application(original, params.get('application_values'))
+                kwargs = self._run_kwargs(params)
+                if (original.get('metadata') or {}).get('application'):
+                    kwargs['history_workflow'] = original
+                r = run_workflow(document, **kwargs)
             except WorkflowValidationError as e:
                 return {'status': 'invalid', 'problems': e.problems}
             return self._result_payload(r, n)
@@ -229,6 +240,13 @@ class EngineService:
 
     def _start(self, params):
         import uuid
+        from .interface_app import bind_application
+        params = dict(params)
+        original = params['workflow']
+        try:
+            params['workflow'] = bind_application(original, params.pop('application_values', None))
+        except EngineError as e:
+            return {'status': 'invalid', 'problems': [{'code': e.code, 'message': e.message, 'node_id': e.node_id}]}
         run_id = uuid.uuid4().hex
         token = CancelToken()
         n = int(params.get('preview_rows', 100))
@@ -237,6 +255,8 @@ class EngineService:
             self.runs[run_id] = entry
         # validate synchronously so problems are returned to the caller immediately
         kw = self._run_kwargs(params)
+        if (original.get('metadata') or {}).get('application'):
+            kw['history_workflow'] = original
         from .profiles import get_profile
         _, problems = plan_workflow(params['workflow'], default_registry(), base_dir=kw['base_dir'],
                                     profile=get_profile(params.get('profile')))

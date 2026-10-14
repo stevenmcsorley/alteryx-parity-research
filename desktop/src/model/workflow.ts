@@ -21,7 +21,7 @@ export type CanvasNodeData = ToolNodeData | CommentNodeData | ContainerNodeData;
 export type CanvasNode = Node<CanvasNodeData>;
 export type CanvasEdge = Edge;
 
-export type CanvasGraph = { nodes: CanvasNode[]; edges: CanvasEdge[]; name: string; description?: string; profile?: string };
+export type CanvasGraph = { nodes: CanvasNode[]; edges: CanvasEdge[]; name: string; description?: string; profile?: string; metadata?: Record<string, any> };
 
 export function edgeId(source: string, sourceHandle: string, target: string, targetHandle: string): string {
   return `${source}:${sourceHandle}->${target}:${targetHandle}`;
@@ -84,7 +84,7 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
   const ownDisabled = Object.fromEntries(
     g.nodes.filter((n) => n.data.kind === 'tool' && n.data.disabled).map((n) => [n.id, true]),
   );
-  doc.metadata = { ui: { containers, comments, ownDisabled } };
+  doc.metadata = { ...(g.metadata ?? {}), ui: { containers, comments, ownDisabled } };
   if (g.profile) doc.metadata.profile = g.profile;
   return doc;
 }
@@ -145,7 +145,8 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
     id: edgeId(e.from.node, e.from.anchor, e.to.node, e.to.anchor),
     source: e.from.node, sourceHandle: e.from.anchor, target: e.to.node, targetHandle: e.to.anchor,
   }));
-  return { nodes, edges, name: doc.name ?? 'Untitled', description: doc.description, profile: doc.metadata?.profile };
+  return { nodes, edges, name: doc.name ?? 'Untitled', description: doc.description, profile: doc.metadata?.profile,
+    metadata: doc.metadata ? structuredClone(doc.metadata) : undefined };
 }
 
 /** Place tool nodes that have no stored position in columns by dependency depth. */
