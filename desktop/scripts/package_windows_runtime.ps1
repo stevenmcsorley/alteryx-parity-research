@@ -25,12 +25,21 @@ Copy-Item -LiteralPath (Join-Path $SetupPythonStdlib 'ensurepip') -Destination (
 New-Item -ItemType Directory -Force -Path (Join-Path $Stage 'Lib\site-packages') | Out-Null
 $PythonPath = @('python312.zip', '.', 'Lib', 'Lib\site-packages', '..\engine', 'import site')
 [IO.File]::WriteAllLines((Join-Path $Stage 'python312._pth'), $PythonPath, [Text.Encoding]::ASCII)
+# Metaphone 0.6 is distributed as source only. Build a pinned pure-Python wheel
+# before the otherwise binary-only isolated Windows runtime installation.
+$Wheelhouse = Join-Path $env:RUNNER_TEMP 'flowbench-runtime-wheels'
+New-Item -ItemType Directory -Force -Path $Wheelhouse | Out-Null
+python -m pip wheel --disable-pip-version-check --no-deps --no-binary=Metaphone `
+  --wheel-dir $Wheelhouse 'Metaphone==0.6'
+if ($LASTEXITCODE -ne 0) { throw 'Failed to build the pinned Metaphone runtime wheel.' }
 python -m pip install --only-binary=:all: --no-compile --disable-pip-version-check `
+  --find-links $Wheelhouse `
   --requirement (Join-Path $PSScriptRoot '..\..\requirements-windows-runtime.txt') `
   --target (Join-Path $Stage 'Lib\site-packages')
+if ($LASTEXITCODE -ne 0) { throw 'Bundled Windows runtime dependency installation failed.' }
 Copy-Item -Path (Join-Path $Stage '*') -Destination $Runtime -Recurse -Force
 $BundledPython = Join-Path $Runtime 'python.exe'
-& $BundledPython -c "import ensurepip, jsonschema, numpy, pyarrow, psycopg, pymssql, venv, yxdb; print('bundled runtime imports passed')"
+& $BundledPython -c "import ensurepip, jsonschema, numpy, pyarrow, psycopg, pymssql, venv, yxdb; from metaphone import doublemetaphone; assert doublemetaphone('Smith')[0]; print('bundled runtime imports passed')"
 if ($LASTEXITCODE -ne 0) { throw 'Bundled Python dependency smoke test failed.' }
 $VenvSmoke = Join-Path $env:RUNNER_TEMP 'flowbench-venv-smoke'
 if (Test-Path $VenvSmoke) { Remove-Item -LiteralPath $VenvSmoke -Recurse -Force }
