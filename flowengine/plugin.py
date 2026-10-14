@@ -100,6 +100,9 @@ class RunContext:
     browse_sink: Callable[[str, Table], None] | None = None
     constants: dict = field(default_factory=dict)
     profile: Any = None  # flowengine.profiles.Profile
+    macro_inputs: dict = field(default_factory=dict)
+    macro_input_schemas: dict = field(default_factory=dict)
+    macro_stack: tuple[str, ...] = ()
 
     def warn(self, message: str, **data):
         self.emit('warning', message=message, **data)

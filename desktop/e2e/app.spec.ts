@@ -80,6 +80,39 @@ test('build, configure, connect and run a workflow from scratch', async ({ page 
   await expect(page.getByTestId('fields-table')).toContainText('int32');
 });
 
+test('run a typed analytic application and apply its configuration action', async ({ page }) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'flowbench-app-'));
+  const wf = path.join(dir, 'application.flow.json');
+  fs.writeFileSync(wf, JSON.stringify({
+    format: 'flowengine.workflow', formatVersion: 1, name: 'question-driven',
+    metadata: { application: {
+      questions: [{ id: 'calculation', label: 'Calculation', type: 'choice', options: ['[amount] + 1', '[amount] + 4'], default: '[amount] + 1' }],
+      actions: [{ question: 'calculation', node_id: 'calc', config_path: ['formulas', '0', 'expression'] }],
+    } },
+    nodes: [
+      { id: 'source', tool: 'core.text_input', config: { fields: [{ name: 'amount', type: 'int32' }], rows: [[3]] } },
+      { id: 'calc', tool: 'core.formula', config: { formulas: [{ field: 'result', expression: '[amount] + 1' }] } },
+      { id: 'browse', tool: 'core.browse', config: {} },
+    ],
+    edges: [
+      { from: { node: 'source', anchor: 'output' }, to: { node: 'calc', anchor: 'input' } },
+      { from: { node: 'calc', anchor: 'output' }, to: { node: 'browse', anchor: 'input' } },
+    ],
+  }));
+  await ready(page);
+  await openExample(page, wf);
+  await expect(page.getByTestId('valid')).toBeVisible({ timeout: 10_000 });
+  await page.getByTestId('run').click();
+  await page.getByRole('dialog', { name: 'Run analytic application' }).getByLabel('Calculation').selectOption('[amount] + 4');
+  await page.getByRole('dialog').getByRole('button', { name: 'Run' }).click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+  await page.getByLabel('Output to display').selectOption('browse::(browse)');
+  await expect(page.getByTestId('results-grid')).toContainText('7');
+  // The question action is run-scoped; opening/saving still preserves the original node config.
+  const saved = JSON.parse(fs.readFileSync(wf, 'utf-8'));
+  expect(saved.nodes[1].config.formulas[0].expression).toBe('[amount] + 1');
+});
+
 test('validation feedback names the node and the problem', async ({ page }) => {
   await ready(page);
   await addFromPalette(page, 'in-out:text-input');
@@ -219,6 +252,13 @@ test('code tools run only after the user allows them', async ({ page }) => {
 
 test('database extensions are available and the connection manager opens', async ({ page }) => {
   await ready(page);
+  await expect(page.getByTestId('palette-extension-flowengine.macro')).toContainText('Workflow Macro');
+  await expect(page.getByTestId('palette-extension-flowengine.batch_macro')).toContainText('Batch Macro');
+  await expect(page.getByTestId('palette-extension-flowengine.iterative_macro')).toContainText('Iterative Macro');
+  await page.getByTestId('palette-extension-flowengine.macro').dblclick();
+  await expect(page.getByTestId('inspector')).toContainText('Workflow Macro');
+  await page.getByRole('radio', { name: 'Basic: definition_path' }).click();
+  await expect(page.getByTestId('inspector').getByLabel('Definition path')).toBeVisible();
   await expect(page.getByTestId('palette-extension-core.db_input')).toContainText('Database Input');
   await page.getByRole('toolbar').getByRole('button', { name: 'Databases' }).click();
   const dialog = page.getByRole('dialog', { name: 'Database connections' });
@@ -232,4 +272,10 @@ test('database extensions are available and the connection manager opens', async
   await expect(page.getByTestId('inspector')).toContainText('Write-enabled connection');
   await expect(page.getByTestId('inspector')).toContainText('Append to existing table');
   await expect(page.getByTestId('inspector')).toContainText('confirmation on every workflow run');
+  await page.getByTestId('palette-extension-flowengine.batch_macro').dblclick();
+  await expect(page.getByTestId('inspector')).toContainText('Batch Macro');
+  await expect(page.getByTestId('inspector').getByLabel('Max iterations')).toBeVisible();
+  await page.getByTestId('palette-extension-flowengine.iterative_macro').dblclick();
+  await expect(page.getByTestId('inspector')).toContainText('Iterative Macro');
+  await expect(page.getByTestId('inspector').getByLabel('Terminate expression')).toBeVisible();
 });

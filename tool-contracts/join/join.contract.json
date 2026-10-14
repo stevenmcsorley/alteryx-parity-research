@@ -172,8 +172,8 @@
     ]
   },
   "independent_tests": {
-    "count": 7,
-    "passing": 7,
+    "count": 8,
+    "passing": 8,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
@@ -181,7 +181,8 @@
       "test_fe_scale.SpillAndParallelTests.test_spill_and_parallel_give_identical_results",
       "test_fe_tools.JoinTests.test_join_case_insensitive_and_type_check",
       "test_fe_tools.JoinTests.test_join_options",
-      "test_fe_tools.JoinTests.test_join_three_outputs_many_to_many_nulls"
+      "test_fe_tools.JoinTests.test_join_three_outputs_many_to_many_nulls",
+      "test_macros.StandardMacroTests.test_macro_binds_multiple_parent_connections_to_distinct_child_inputs"
     ]
   },
   "sources": [

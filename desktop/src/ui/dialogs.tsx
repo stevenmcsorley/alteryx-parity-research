@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { isTauri } from '../engine/transport';
 
 type Request = { title: string; initial: string; ext: string; mode: 'save' | 'open'; resolve: (v: string | null) => void };
+export type AppQuestion = { id: string; label?: string; type: 'text' | 'boolean' | 'number' | 'choice'; default?: unknown; required?: boolean; options?: unknown[]; description?: string; secret?: boolean };
+type AppRequest = { title: string; questions: AppQuestion[]; resolve: (v: Record<string, unknown> | null) => void };
 let host: ((r: Request) => void) | null = null;
+let appHost: ((r: AppRequest) => void) | null = null;
 
 /** Ask for a file path. Uses native dialogs in the desktop shell, an in-app dialog in the browser build. */
 export async function promptPath(title: string, initial: string, ext: string, mode: 'save' | 'open' = 'save'): Promise<string | null> {
@@ -18,15 +21,23 @@ export async function promptPath(title: string, initial: string, ext: string, mo
   });
 }
 
+export async function promptApplication(questions: AppQuestion[]): Promise<Record<string, unknown> | null> {
+  if (!questions.length) return {};
+  return new Promise((resolve) => appHost ? appHost({ title: 'Run analytic application', questions, resolve }) : resolve(null));
+}
+
 export function DialogHost() {
   const [req, setReq] = useState<Request | null>(null);
+  const [appReq, setAppReq] = useState<AppRequest | null>(null);
   const [value, setValue] = useState('');
   const input = useRef<HTMLInputElement>(null);
   useEffect(() => {
     host = (r) => { setReq(r); setValue(r.initial); };
-    return () => { host = null; };
+    appHost = (r) => setAppReq(r);
+    return () => { host = null; appHost = null; };
   }, []);
   useEffect(() => { if (req) input.current?.select(); }, [req]);
+  if (appReq) return <ApplicationDialog request={appReq} close={(v) => { appReq.resolve(v); setAppReq(null); }} />;
   if (!req) return null;
   const close = (v: string | null) => { req.resolve(v); setReq(null); };
   return (
@@ -43,4 +54,31 @@ export function DialogHost() {
       </div>
     </div>
   );
+}
+
+function ApplicationDialog({ request, close }: { request: AppRequest; close: (v: Record<string, unknown> | null) => void }) {
+  const [values, setValues] = useState<Record<string, unknown>>(() => Object.fromEntries(request.questions.map((q) => [q.id, q.default ?? (q.type === 'boolean' ? false : q.type === 'number' ? 0 : q.type === 'choice' ? q.options?.[0] ?? '' : '')])));
+  const [error, setError] = useState('');
+  const submit = () => {
+    const missing = request.questions.find((q) => q.required && (values[q.id] === '' || values[q.id] == null));
+    if (missing) { setError(`${missing.label || missing.id} is required.`); return; }
+    close(values);
+  };
+  return <div className="modal-backdrop" onMouseDown={() => close(null)}>
+    <div className="modal" role="dialog" aria-modal="true" aria-label={request.title} onMouseDown={(e) => e.stopPropagation()}>
+      <h3>{request.title}</h3>
+      {request.questions.map((q) => <label key={q.id} style={{ display: 'block', margin: '12px 0' }}>
+        <span>{q.label || q.id}{q.required ? ' *' : ''}</span>
+        {q.type === 'boolean' ? <input aria-label={q.label || q.id} type="checkbox" checked={Boolean(values[q.id])}
+          onChange={(e) => setValues({ ...values, [q.id]: e.target.checked })} />
+          : q.type === 'choice' ? <select aria-label={q.label || q.id} value={String(values[q.id] ?? '')}
+            onChange={(e) => setValues({ ...values, [q.id]: e.target.value })}>{(q.options ?? []).map((option) => <option key={String(option)} value={String(option)}>{String(option)}</option>)}</select>
+            : <input aria-label={q.label || q.id} type={q.secret ? 'password' : q.type === 'number' ? 'number' : 'text'} value={String(values[q.id] ?? '')}
+              onChange={(e) => setValues({ ...values, [q.id]: q.type === 'number' ? Number(e.target.value) : e.target.value })} />}
+        {q.description && <small style={{ display: 'block' }}>{q.description}</small>}
+      </label>)}
+      {error && <p role="alert">{error}</p>}
+      <div className="actions"><button onClick={() => close(null)}>Cancel</button><button className="primary" onClick={submit}>Run</button></div>
+    </div>
+  </div>;
 }

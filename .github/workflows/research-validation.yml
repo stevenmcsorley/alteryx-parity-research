@@ -64,6 +64,8 @@ jobs:
         run: python -m engine.independent_engine examples/customer_reconciliation.json
       - name: Status ledger and contracts are reproducible from evidence
         run: python scripts/build_status.py --check
+      - name: Full parity roadmap matches catalogue and evidence ledger
+        run: python scripts/build_parity_roadmap.py --check
       - name: Generated tracked reports are stable
         run: |
           python scripts/coverage_report.py
@@ -107,6 +109,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Guard the desktop acceptance credential helper environment
+        shell: pwsh
+        run: ./tests/integration/test_copy_reader_password.ps1
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12.10'

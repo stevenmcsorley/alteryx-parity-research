@@ -232,8 +232,8 @@
     ]
   },
   "independent_tests": {
-    "count": 12,
-    "passing": 12,
+    "count": 13,
+    "passing": 13,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
@@ -246,7 +246,8 @@
       "test_fe_tools.InOutTests.test_csv_typed_conversion_error_policy",
       "test_fe_tools.InOutTests.test_csv_untyped_reads_text_and_preserves_unicode",
       "test_fe_tools.InOutTests.test_json_input_types_and_nested",
-      "test_fe_tools.InOutTests.test_ragged_pad_and_no_header_and_limits"
+      "test_fe_tools.InOutTests.test_ragged_pad_and_no_header_and_limits",
+      "test_macros.StandardMacroTests.test_macro_resolves_child_resources_relative_to_definition"
     ]
   },
   "sources": [

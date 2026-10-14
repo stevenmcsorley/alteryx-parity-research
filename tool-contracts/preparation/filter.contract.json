@@ -163,8 +163,8 @@
     ]
   },
   "independent_tests": {
-    "count": 13,
-    "passing": 13,
+    "count": 19,
+    "passing": 19,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
@@ -178,7 +178,13 @@
       "test_fe_scale.StreamingTests.test_streamed_equals_batch",
       "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",
       "test_fe_tools.PreparationTests.test_filter_basic_and_custom_partition",
-      "test_fe_tools.PreparationTests.test_filter_rejects_non_boolean_and_bad_config"
+      "test_fe_tools.PreparationTests.test_filter_rejects_non_boolean_and_bad_config",
+      "test_macros.BatchMacroTests.test_batch_child_validation_failure_reports_iteration_and_call_node",
+      "test_macros.BatchMacroTests.test_batch_iteration_limit_and_bad_action_fail_explicitly",
+      "test_macros.BatchMacroTests.test_control_records_reconfigure_and_run_in_input_order",
+      "test_macros.BatchMacroTests.test_empty_control_table_returns_inferred_empty_schema",
+      "test_macros.IterativeMacroTests.test_macro_child_failure_reports_call_node_and_stack",
+      "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow"
     ]
   },
   "sources": [

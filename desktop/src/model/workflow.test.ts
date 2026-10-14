@@ -9,7 +9,7 @@ const doc: WorkflowDoc = {
     { id: 'b', tool: 'core.filter', config: { expression: '1' }, position: { x: 400, y: 120 }, label: 'Keep', disabled: true },
   ],
   edges: [{ from: { node: 'a', anchor: 'output' }, to: { node: 'b', anchor: 'input' } }],
-  metadata: { ui: { containers: [{ id: 'c1', caption: 'Box', disabled: false, position: { x: 50, y: 50 }, size: { width: 600, height: 300 }, children: ['a', 'b'] }],
+  metadata: { application: { questions: [{ id: 'q', type: 'text', default: 'x' }] }, ui: { containers: [{ id: 'c1', caption: 'Box', disabled: false, position: { x: 50, y: 50 }, size: { width: 600, height: 300 }, children: ['a', 'b'] }],
     comments: [{ id: 'n1', text: 'hello', position: { x: 10, y: 400 }, size: { width: 200, height: 80 } }], ownDisabled: { b: true } } },
 };
 
@@ -26,6 +26,7 @@ describe('workflow model', () => {
     expect(back.edges).toEqual(doc.edges);
     expect(back.metadata!.ui.containers[0].children).toEqual(['a', 'b']);
     expect(back.metadata!.ui.comments[0].text).toBe('hello');
+    expect(back.metadata!.application).toEqual(doc.metadata!.application);
   });
 
   it('disabling a container disables contained tools in the document only', () => {

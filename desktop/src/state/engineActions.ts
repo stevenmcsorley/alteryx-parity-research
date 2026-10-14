@@ -3,6 +3,7 @@ import { createTransport, EngineRpcError, type EngineTransport } from '../engine
 import type { CatalogEntry, HistoryEntry, Profile, RunPayload, ToolManifest, ValidateResult } from '../engine/types';
 import { fromDocument, toDocument } from '../model/workflow';
 import { graphOf, useEditor } from './store';
+import { promptApplication } from '../ui/dialogs';
 
 let transport: EngineTransport | null = null;
 let unsubscribe: (() => void) | null = null;
@@ -91,10 +92,15 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
     if (!allowDatabaseWrites) return;
   }
   try {
+    const document = toDocument(graphOf(s));
+    const app = await engine().request<{ questions: import('../ui/dialogs').AppQuestion[] }>('workflow.application', { workflow: document });
+    const applicationValues = app.questions.length ? await promptApplication(app.questions) : undefined;
+    if (app.questions.length && applicationValues === null) return;
     const res = await engine().request<{ run_id: string; status: string; problems?: any[] }>('run.start', {
-      workflow: toDocument(graphOf(s)), base_dir: s.baseDir, profile: s.profile, preview_rows: 500,
+      workflow: document, base_dir: s.baseDir, profile: s.profile, preview_rows: 500,
       workers: options.workers ?? 2, allow_processes: allow,
       allow_database_writes: allowDatabaseWrites,
+      ...(applicationValues ? { application_values: applicationValues } : {}),
       ...(options.batch_rows ? { batch_rows: options.batch_rows } : {}) });
     if (res.status === 'invalid') {
       useEditor.getState().runInvalid(res.problems ?? []);

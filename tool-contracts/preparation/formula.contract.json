@@ -144,8 +144,8 @@
     ]
   },
   "independent_tests": {
-    "count": 14,
-    "passing": 14,
+    "count": 21,
+    "passing": 21,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
@@ -156,11 +156,18 @@
       "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
       "test_fe_scale.StreamingTests.test_streamed_equals_batch",
       "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",
+      "test_fe_service.ServiceTests.test_application_values_are_not_persisted_in_run_history",
       "test_fe_service.ServiceTests.test_cancel_running_workflow",
+      "test_fe_service.ServiceTests.test_typed_application_answers_bind_actions_for_real_execution",
       "test_fe_service.ServiceTests.test_validate_returns_schemas_and_problems",
       "test_fe_tools.PreparationTests.test_formula_conversion_policy",
       "test_fe_tools.PreparationTests.test_formula_sequential_and_types",
-      "test_fe_tools_wave2.DeveloperWave2.test_detour_and_block_until_done"
+      "test_fe_tools_wave2.DeveloperWave2.test_detour_and_block_until_done",
+      "test_macros.IterativeMacroTests.test_macro_child_failure_reports_call_node_and_stack",
+      "test_macros.IterativeMacroTests.test_state_is_fed_back_until_all_rows_meet_termination",
+      "test_macros.IterativeMacroTests.test_zero_rows_terminate_and_iteration_limit_is_a_failure",
+      "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
+      "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level"
     ]
   },
   "sources": [

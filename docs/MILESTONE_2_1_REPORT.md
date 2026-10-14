@@ -1,7 +1,7 @@
 # Milestone 2.1 — database integration and desktop packaging
 
-Status as of 14 October 2026: **in progress**. This is a report of implemented and verified work, not a claim that
-the milestone acceptance workflow or installer is complete.
+Status as of 14 October 2026: **in progress; owner-reported desktop run received, remaining manual evidence pending**.
+Automated evidence and owner-reported evidence are stated separately below.
 
 ## Recovered local state
 
@@ -67,6 +67,15 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
   acceptance demonstration.
 - Rust tests: **3 passed** in the Windows CI job (this workstation does not have `cargo`).
 
+## Owner-reported manual evidence
+
+The repository owner reports that the installed Windows Flowbench application connected to the PostgreSQL and
+SQL Server fixture databases and successfully ran the configured analysis workflow. This is an owner-reported
+manual result, not a Codex-observed UI session. No screenshots, exported-file validation, fixture mutation/rerun
+result, or redacted run manifest were supplied with the report. Those substeps remain unverified. The workflow
+connection/run report is recorded as received; the evidence bundle is still requested for review before the
+manual acceptance gate can be closed.
+
 ## Remaining milestone work
 
 - **Pushdown:** local-vs-pushed Filter/Select/Summarize parity and same-database Join parity are verified for the
@@ -88,9 +97,10 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
   I also installed that artifact locally and observed the installed executable start its bundled Python
   sidecar; its credential-free app-data log records `engine.info` and all 323 catalog entries. R is not bundled;
   user machines need a separately installed R 4.6.x runtime (CI pins 4.6.0).
-- **Acceptance demo:** the full PostgreSQL Customers + SQL Server Orders → Join → Filter → Formula → Summarize
-  → Results Grid → CSV/Parquet workflow, a database record mutation/rerun, and export validation have not been
-  demonstrated by operating the actual Tauri desktop UI. The installer runs a separate deterministic local
+- **Acceptance demo:** the owner reports connecting the installed UI to both databases and running the configured
+  analysis workflow (see owner-reported evidence above). Codex did not independently operate the UI. Screenshots,
+  validation of the PostgreSQL Customers + SQL Server Orders → Join → Filter → Formula → Summarize → Results Grid
+  → CSV/Parquet exports, and a database record mutation/rerun were not supplied. The installer runs a separate deterministic local
   workflow smoke RPC, which does not prove this two-database UI flow. The computer-control service in this
   session returned no native app/window surfaces and its documented native launch API was unavailable, so
   browser-only or engine-only testing is not represented as acceptance evidence. **Milestone 2.1 remains
@@ -102,14 +112,15 @@ catalogue remains 323 entries and the coverage ledger remains evidence-derived.
   secret-exclusion behavior were locally checked. Automated CI and integration evidence remain separately
   identified above.
 
-No compatibility or coverage claims were changed by this work. E1/E2 profiles and the known Sort collation
-difference remain as recorded in `docs/COVERAGE.md`.
+The E1/E2 profiles and known Sort collation difference remain recorded in `docs/COVERAGE.md`. Current catalogue
+implementation totals include the separately tracked Milestone 3 macro-boundary work.
 
 ## Latest delivery
 
 - Installer fix: `88ad0cc819b4963cdbddf043919b5e874fd1af30`.
 - PR #2 remains open and based on open PR #1: https://github.com/stevenmcsorley/alteryx-parity-research/pull/2.
-- Latest CI: [run 38460982270](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38460982270);
-  all five jobs passed (engine, database integration, desktop, Windows desktop shell, and R runtime).
-- No Milestone 3 work has started. Resume the existing 323-entry evidence ledger after the remaining actual-desktop
-  acceptance gate passes.
+- Latest base-branch CI at commit `83ed201`: [run 38527685675](https://github.com/stevenmcsorley/alteryx-parity-research/actions/runs/38527685675);
+  all five jobs passed (engine, database integration, desktop, Windows desktop shell, and R runtime). The installer
+  clean-runner evidence remains the earlier linked run `38460982270`.
+- Milestone 3 work is tracked on the separate `milestone-3-macro-interface-parity` branch. The catalogue and
+  evidence ledger are preserved; see the generated `docs/ALTERYX_PARITY_ROADMAP.md`.

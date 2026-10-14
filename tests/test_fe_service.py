@@ -56,6 +56,62 @@ class ServiceTests(unittest.TestCase):
         self.assertFalse(r['valid'])
         self.assertEqual(r['problems'][0]['node_id'], 'f')
 
+    def test_typed_application_answers_bind_actions_for_real_execution(self):
+        wf = workflow([text_input('t', [('a', 'int32')], [[3]]),
+                       {'id': 'f', 'tool': 'core.formula', 'config': {'formulas': [
+                           {'field': 'b', 'expression': '[a] + 1'}]}}],
+                      [edge('t', 'output', 'f', 'input')])
+        wf['metadata'] = {'application': {
+            'questions': [{'id': 'increment', 'label': 'Increment', 'type': 'choice',
+                           'options': ['[a] + 1', '[a] + 4'], 'default': '[a] + 1'}],
+            'actions': [{'question': 'increment', 'node_id': 'f', 'config_path': ['formulas', '0', 'expression']}],
+        }}
+        service = EngineService()
+        form = service.handle('workflow.application', {'workflow': wf})
+        self.assertEqual(form['questions'][0]['options'], ['[a] + 1', '[a] + 4'])
+        result = service.handle('workflow.run', {'workflow': wf, 'base_dir': str(ROOT),
+                                                'application_values': {'increment': '[a] + 4'}})
+        self.assertEqual(result['status'], 'succeeded')
+        self.assertEqual(result['previews']['f']['output']['rows'], [['3', '7']])
+        # Actions run on a private per-run document and do not rewrite the saved workflow.
+        self.assertEqual(wf['nodes'][1]['config']['formulas'][0]['expression'], '[a] + 1')
+
+    def test_application_rejects_bad_answers_and_unsafe_action_targets(self):
+        wf = workflow([text_input('t', [('a', 'int32')], [[3]])], [])
+        wf['metadata'] = {'application': {
+            'questions': [{'id': 'enabled', 'label': 'Enabled', 'type': 'boolean', 'default': False}],
+            'actions': [{'question': 'enabled', 'node_id': 'missing', 'config_path': ['x']}],
+        }}
+        invalid = call('run.start', {'workflow': wf, 'base_dir': str(ROOT), 'application_values': {'enabled': True}})
+        self.assertEqual(invalid['result']['status'], 'invalid')
+        self.assertEqual(invalid['result']['problems'][0]['code'], 'application-invalid')
+        wf['metadata']['application']['actions'] = []
+        invalid = call('workflow.validate', {'workflow': wf, 'base_dir': str(ROOT),
+                                             'application_values': {'enabled': 'yes'}})
+        self.assertEqual(invalid['error']['data']['code'], 'application-input-invalid')
+
+    def test_application_values_are_not_persisted_in_run_history(self):
+        with tempfile.TemporaryDirectory() as d:
+            service = EngineService(history_path=Path(d) / 'history.sqlite')
+            wf = workflow([text_input('t', [('a', 'int32')], [[3]]),
+                           {'id': 'f', 'tool': 'core.formula', 'config': {'formulas': [
+                               {'field': 'b', 'expression': '[a] + 1'}]}}],
+                          [edge('t', 'output', 'f', 'input')])
+            wf['metadata'] = {'application': {
+                'questions': [{'id': 'calculation', 'label': 'Calculation', 'type': 'text', 'secret': True,
+                               'required': True}],
+                'actions': [{'question': 'calculation', 'node_id': 'f', 'config_path': ['formulas', '0', 'expression']}],
+            }}
+            form = service.handle('workflow.application', {'workflow': wf})
+            self.assertTrue(form['questions'][0]['secret'])
+            self.assertNotIn('default', form['questions'][0])
+            service.handle('workflow.run', {'workflow': wf, 'base_dir': str(ROOT),
+                                             'application_values': {'calculation': '[a] + 4'}})
+            run_id = service.handle('history.list', {'limit': 1})[0]['run_id']
+            stored = service.handle('history.get', {'run_id': run_id})['workflow']
+            self.assertEqual(stored['nodes'][1]['config']['formulas'][0]['expression'], '[a] + 1')
+            self.assertNotIn('[a] + 4', json.dumps(stored))
+
     def test_run_previews_and_errors(self):
         wf = workflow([text_input('t', [('a', 'int32')], [[i] for i in range(5)]),
                        {'id': 'b', 'tool': 'core.browse', 'config': {}}], [edge('t', 'output', 'b', 'input')])
