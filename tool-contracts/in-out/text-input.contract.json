@@ -138,8 +138,8 @@
     ]
   },
   "independent_tests": {
-    "count": 87,
-    "passing": 87,
+    "count": 88,
+    "passing": 88,
     "tests": [
       "test_fe_executor.ExecutionTests.test_cancellation",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
@@ -227,6 +227,7 @@
       "test_macros.StandardMacroTests.test_imported_yxmc_macro_input_output_runs_from_relative_path",
       "test_macros.StandardMacroTests.test_macro_binds_multiple_parent_connections_to_distinct_child_inputs",
       "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
+      "test_macros.StandardMacroTests.test_macro_resolves_child_resources_relative_to_definition",
       "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level"
     ]
   },

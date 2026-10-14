@@ -1,4 +1,5 @@
 """Executable standard workflow macro tests: real child DAGs and typed table boundaries."""
+import json
 import unittest
 import tempfile
 from pathlib import Path
@@ -174,6 +175,28 @@ class StandardMacroTests(unittest.TestCase):
             result = run_workflow(doc, base_dir=Path(temp))
             self.assertTrue(result.ok, result.error)
             self.assertEqual(rows(result.output('macro', 'output')), [[3], [8]])
+
+    def test_macro_resolves_child_resources_relative_to_definition(self):
+        child = workflow([
+            {'id': 'input', 'tool': 'flowengine.macro_input', 'config': {'name': 'Customers'}},
+            {'id': 'file', 'tool': 'core.input_data', 'config': {'path': '../fixtures/lookup.csv', 'format': 'csv'}},
+            {'id': 'output', 'tool': 'flowengine.macro_output', 'config': {'name': 'Results'}},
+        ], [edge('file', 'output', 'output', 'input')], name='Relative resource macro')
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / 'fixtures').mkdir()
+            (root / 'fixtures' / 'lookup.csv').write_text('id,label\n1,North\n2,東京\n', encoding='utf-8')
+            (root / 'macros').mkdir()
+            (root / 'macros' / 'lookup.json').write_text(json.dumps(child), encoding='utf-8')
+            parent = workflow([
+                text_input('source', [('id', 'int32')], [[7]]),
+                {'id': 'macro', 'tool': 'flowengine.macro', 'config': {
+                    'definition_path': 'macros/lookup.json', 'input_bindings': {'Customers': 'input'},
+                    'output_name': 'Results'}},
+            ], [edge('source', 'output', 'macro', 'input')])
+            result = run_workflow(parent, base_dir=root)
+            self.assertTrue(result.ok, result.error)
+            self.assertEqual(rows(result.output('macro', 'output')), [['1', 'North'], ['2', '東京']])
 
     def test_imported_macro_with_unmapped_input_settings_is_rejected(self):
         from flowengine.interop.yxmd import import_file
