@@ -13,6 +13,7 @@
 | Entries with known anchors (manifest, reference-observed or public-doc) | 183 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
 | Independent kernels implemented and passing tests | 60 |
+| Independently implemented application adapters (in progress) | 1 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
 | Reference cases passed / run — E1 (primary profile) | 74 / 75 |
@@ -22,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 165 run, 0 failed |
+| Unit/integration tests in last ledger build | 167 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -35,11 +36,11 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:directory` | `core.directory` | 1 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 13 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 8 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 90 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 91 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleansing` | `core.data_cleansing` | 3 | 0/0 | not-tested |
-| `preparation:filter` | `core.filter` | 19 | 5/5 | partial |
+| `preparation:filter` | `core.filter` | 20 | 5/5 | partial |
 | `preparation:formula` | `core.formula` | 21 | 12/12 | partial |
 | `preparation:generate-rows` | `core.generate_rows` | 3 | 0/0 | not-tested |
 | `preparation:imputation` | `core.imputation` | 1 | 1/1 | partial |
@@ -94,7 +95,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 
 ## By category
 
-| Category | Entries | Kernels | Ref-partial | Anchors known | Blocked by external prerequisites |
+| Category | Entries | Registered kernels | Ref-partial | Anchors known | Blocked by external prerequisites |
 |---|---:|---:|---:|---:|---:|
 | AB Testing | 4 | 0 | 0 | 1 | 0 |
 | AI Tools | 6 | 0 | 0 | 6 | 6 |
@@ -106,7 +107,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Connectors | 44 | 0 | 0 | 1 | 44 |
 | Data Investigation | 14 | 0 | 0 | 7 | 0 |
 | Demographic Analysis | 4 | 0 | 0 | 0 | 4 |
-| Developer | 30 | 15 | 4 | 28 | 0 |
+| Developer | 30 | 16 | 4 | 28 | 0 |
 | Documentation | 3 | 0 | 0 | 1 | 0 |
 | In-Database | 16 | 0 | 0 | 0 | 0 |
 | In/Out | 8 | 6 | 0 | 7 | 0 |
@@ -130,5 +131,5 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 
 - "Implemented" means an original kernel runs real data and passes this repository's tests. It does not mean every configuration option of the reference tool is supported; unsupported options are absent from the kernel's config schema and are rejected at validation.
 - "Partial" verification means every recorded differential case passed against the stated reference build, engine and settings. Coverage of the tool's option space is listed per case in the contract JSON.
-- Entries without a kernel fail validation with `tool-unavailable`; nothing is stubbed.
+- Catalogue entries without a registered kernel or a specifically recorded executable adapter fail validation; the Action adapter supports only the variants explicitly listed in its contract.
 - See docs/TOOL_STATUS_RULES.md, docs/CONFORMANCE.md and docs/AUTHORISATION.md.

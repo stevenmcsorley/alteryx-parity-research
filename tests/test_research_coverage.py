@@ -45,7 +45,7 @@ class ResearchCoverageTests(unittest.TestCase):
             if r['implementation_status'] == 'implemented':
                 self.assertTrue(l['kernel'] and l['independent_tests'] > 0, r['id'])
             elif r['implementation_status'] == 'in-progress':  # kernel exists but has no passing test evidence
-                self.assertTrue(l['kernel'], r['id'])
+                self.assertTrue(l['kernel'] or (l.get('adapter') and l['independent_tests'] > 0), r['id'])
             else:
                 self.assertIsNone(l['kernel'], r['id'])
             if r['verification_status'] == 'partial':

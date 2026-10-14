@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Action.Action",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/action-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "in-progress",
+  "implementation_status": "in-progress",
   "verification_status": "not-tested",
   "inputs": [
     {
@@ -32,11 +32,23 @@
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "status": "partially-specified",
+    "source": "data/action-reference-evidence.json",
+    "supported_variants": [
+      "UpdateValue / Simple / Filter Expression / single connected question / NoCondition True"
+    ],
+    "unsupported_variants": [
+      "UpdateValueFormula",
+      "Dynamic",
+      "UpdateInput",
+      "UpdateMap",
+      "UpdateSelect",
+      "UpdateRawXml",
+      "condition-driven actions",
+      "multi-question expressions",
+      "non-Filter target paths"
+    ],
+    "preserved_runtime_xml": true
   },
   "deterministic": null,
   "external_dependencies": [
@@ -45,7 +57,25 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "Alteryx workflow import/application adapter",
+    "tool_id": "interface:action",
+    "module": "flowengine.interop.yxmd",
+    "supported_variants": [
+      "UpdateValue / Simple / Filter Expression / single connected question / NoCondition True"
+    ],
+    "unimplemented_variants": [
+      "UpdateValueFormula",
+      "Dynamic",
+      "UpdateInput",
+      "UpdateMap",
+      "UpdateSelect",
+      "UpdateRawXml",
+      "condition-driven actions",
+      "multi-question expressions",
+      "non-Filter target paths"
+    ]
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -74,9 +104,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_fe_interop.ImportTests.test_imported_alteryx_update_value_action_binds_filter_and_executes",
+      "test_fe_interop.ImportTests.test_imported_unsupported_action_is_diagnostic_and_password_default_is_not_retained"
+    ]
   },
   "sources": [
     {
@@ -93,10 +126,15 @@
       "url": "data/reference-observations.json",
       "evidence_type": "authorised-reference-structural-scan",
       "accessed_utc": "2026-10-13T09:34:26+00:00"
+    },
+    {
+      "url": "data/action-reference-evidence.json",
+      "evidence_type": "authorised-reference-observation-and-project-authored-execution",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
     }
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No independent row-processing kernel; this entry is implemented as a workflow application adapter."
   ]
 }

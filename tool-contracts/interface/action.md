@@ -1,36 +1,34 @@
 # Action
 
-> **Research record; NOT a working tool implementation or verified specification.**
+> **Research record; NOT a verified specification.** An independent workflow application adapter exists for the limited supported variant below; this is not full Action parity.
 
 ## Identity
 
 - Catalogue ID: `interface:action`
 - Category: Interface
-- Published XML identifier: `AlteryxGuiToolkit.Action.Action` (manual transcription; verify against installed reference)
+- Published XML identifier: `AlteryxGuiToolkit.Action.Action` (observed in installed 2026.2.0.8 workflows)
 - Published user role: Full
-- Reference build: Designer 2026.1.4.126 (installed-build comparison outstanding)
+- Reference build: Designer 2026.2.0.8 (structural workflow observations only)
 - Official catalogue: https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html
-- Specific reference: **NOT YET VERIFIED** — run public catalogue sync
-- Implementation: **not-started**
+- Specific reference: [Action Tool](https://help.alteryx.com/current/en/designer/tools/interface-tools/action-tool.html)
+- Implementation: **in-progress**
 - Machine-readable contract: `action.contract.json`
 - Conformance verification: **not-tested**
 
-## Research to complete (do not infer)
+## Confirmed structure and executable subset
 
-- [ ] Pin per-tool public documentation and availability/version history
-- [ ] Define inputs, output anchors, schema and metadata rules
-- [ ] Define configuration fields, defaults, UI validation and errors
-- [ ] Define row order, null semantics, locale/timezone and deterministic behaviour
-- [ ] Identify add-ons, licences, external APIs, services and data-package prerequisites
-- [ ] Define concrete independent fixtures, edge cases and expected outputs
-- [ ] Implement real independently written kernel or adapter
-- [ ] Demonstrate end-to-end workflow execution and unit/integration tests
-- [ ] Where authorised, capture reference evidence and run differential tests
-- [ ] Record limitations, performance, security and version compatibility
+- Action nodes use `AlteryxGuiToolkit.Action.Action`, have empty node Configuration, and expose incoming `Question` and `Condition` connections plus outgoing `Action` configuration links.
+- Rules and questions are serialized under `Properties/RuntimeProperties/Actions` and `Questions`.
+- Executable subset: one connected question → unconditional `UpdateValue` / `Simple` → mapped Filter `Expression`.
+- Interface nodes, connections and RuntimeProperties are retained during export, with ToolIDs remapped. Password question defaults are redacted.
+- Independent executable/import/export tests: see `action.contract.json` and `tests/test_fe_interop.py`.
+- Structural observations and the project-authored EngineCmd observation are recorded in `data/action-reference-evidence.json`.
 
 ## Sources and observations
 
-No application behaviour or compatibility has been verified. Add specific links, observed facts, dates, permission scope and evidence references here. Keep assumptions explicitly labelled.
+The installed Designer 2026.2.0.8 examples establish XML structure and observed action type/destination names. A project-authored synthetic `.yxwz` run through AlteryxEngineCmd E1 did not apply `RuntimeProperties/Actions`; this invocation is not the Designer analytic-app runner and is not a behavioural compatibility pass. The native Designer runner was not available for this session.
+
+Unsupported and explicitly warned: `UpdateValueFormula`, `Dynamic`, `UpdateInput`, `UpdateMap`, `UpdateSelect`, `UpdateRawXml`, condition-driven actions, multi-question expressions, and non-Filter targets. No Action E1/E2 differential case is claimed. Desktop Action palette/configuration and Designer app-runner acceptance remain open.
 
 ## Conformance evidence
 

@@ -35,8 +35,19 @@ Example:
 }
 ```
 
-This native workflow-format runtime is an initial Interface milestone. It does
-not claim that imported Alteryx Check Box, Drop Down, Action, Condition, or
-other Interface tool XML is fully mapped or reference-verified. Their actual
-2026.2 serialization, dependent-control behaviour, and Action update semantics
-remain in the catalogue roadmap pending authorised reference evidence.
+The native workflow-format runtime remains separate from imported Alteryx app
+XML. The importer recognizes Alteryx question/action connections and extracts
+one executable Action form: a single connected question drives an unconditional
+`UpdateValue` in `Simple` mode targeting a mapped Filter `Expression`. The
+question answer is applied to a private workflow copy before normal validation
+and execution. Other Action modes, targets, conditions and multi-question
+expressions produce import warnings and are not executed.
+
+Imported Interface nodes, their wiring and `RuntimeProperties` are preserved on
+export with ToolIDs remapped. Password-question defaults are redacted from the
+imported metadata and export. Reference XML structure and the authorized
+black-box CLI observation are recorded in `data/action-reference-evidence.json`.
+The CLI did not apply RuntimeProperties actions, so this is not a Designer app
+runner differential result. Native Designer app-runner comparison and desktop
+palette/configuration for an Action node remain incomplete. See the generated
+catalogue contract and roadmap for the exact supported/unsupported variants.

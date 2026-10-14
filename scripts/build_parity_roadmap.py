@@ -59,14 +59,19 @@ def render() -> str:
         contract_file = _contract_path(cid, tool["category"], tool["name"])
         contract = json.loads(contract_file.read_text(encoding="utf-8")) if contract_file.exists() else {}
         schema = contract.get("configuration_schema", {})
-        tool_impl = registry.get(row["kernel"]) if row.get("kernel") else None
+        implementation_record = contract.get("implementation") or {}
+        adapter_impl = implementation_record if implementation_record.get("engine") == "Alteryx workflow import/application adapter" else None
+        tool_impl = None
+        if row.get("kernel") and not adapter_impl:
+            tool_impl = registry.get(row["kernel"])
         if tool_impl:
             config_schema = tool_impl.manifest.config_schema
             properties = config_schema.get("properties", {})
             options = ", ".join(f"{key}={json.dumps(value.get('enum'), ensure_ascii=False)}"
                                  if "enum" in value else key for key, value in properties.items())
         else:
-            options = ", ".join(schema.get("reference_config_elements", [])) if isinstance(schema, dict) else ""
+            option_values = schema.get("supported_variants", schema.get("reference_config_elements", [])) if isinstance(schema, dict) else []
+            options = ", ".join(option_values)
         anchors = []
         if tool_impl:
             anchors.extend(f"input:{a.name}" for a in tool_impl.manifest.inputs)
@@ -75,8 +80,10 @@ def render() -> str:
             for direction in ("inputs", "outputs"):
                 anchors.extend(f"{direction[:-1]}:{a['name']}" for a in contract.get(direction, []))
         supported = []
-        if row.get("kernel"):
+        if tool_impl:
             supported.append(f"kernel `{row['kernel']}`; options `{options or 'not enumerated in contract'}`")
+        elif adapter_impl:
+            supported.append(f"adapter `{adapter_impl.get('module')}`; supported variants `{options or 'not enumerated in contract'}`")
         else:
             supported.append("no kernel")
         supported.append("anchors " + (", ".join(anchors) if anchors else "not known"))
@@ -101,7 +108,8 @@ def render() -> str:
         if row.get("implementation_status") == "not-started":
             action = "specify behaviour from contract and authorised evidence; implement and add deterministic tests"
         elif row.get("implementation_status") == "in-progress":
-            action = "resolve failing/missing kernel tests, then add reference differential cases"
+            action = ("expand supported Action variants and add Designer app-runner differential evidence"
+                      if adapter_impl else "resolve failing/missing kernel tests, then add reference differential cases")
         elif row.get("verification_status") == "failed":
             action = "investigate the recorded reference difference; preserve it until evidence supports a fix"
         elif row.get("verification_status") == "partial":
