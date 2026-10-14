@@ -162,6 +162,32 @@ class StandardMacroTests(unittest.TestCase):
             self.assertIn('unmapped settings', result.error['message'])
             self.assertIn('UseFileInput', result.error['message'])
 
+    def test_imported_macro_with_unmapped_anchor_is_rejected(self):
+        from flowengine.interop.yxmd import import_file
+        macro_xml = '''<?xml version="1.0"?>
+<AlteryxDocument yxmdVer="2026.2.0.8"><Nodes>
+ <Node ToolID="1"><GuiSettings Plugin="AlteryxBasePluginsGui.MacroInput.MacroInput"/>
+  <Properties><Configuration><Value name="Name">Customers</Value></Configuration></Properties></Node>
+ <Node ToolID="2"><GuiSettings Plugin="AlteryxBasePluginsGui.MacroOutput.MacroOutput"/>
+  <Properties><Configuration><Value name="Name">Results</Value></Configuration></Properties></Node>
+</Nodes><Connections>
+ <Connection name="Connection 1"><Origin ToolID="1" Connection="Output"/>
+  <Destination ToolID="2" Connection="UnmappedAnchor"/></Connection>
+</Connections></AlteryxDocument>'''
+        with tempfile.TemporaryDirectory() as temp:
+            macro_path = Path(temp) / 'BadAnchor.yxmc'
+            macro_path.write_text(macro_xml, encoding='utf-8')
+            _, report = import_file(macro_path)
+            self.assertTrue(report['edge_warnings'])
+            doc = workflow([text_input('source', [('id', 'int32')], [[3]]),
+                            {'id': 'macro', 'tool': 'flowengine.macro', 'config': {
+                                'definition_path': 'BadAnchor.yxmc', 'output_name': 'Results'}}],
+                           [edge('source', 'output', 'macro', 'input')])
+            result = run_workflow(doc, base_dir=Path(temp))
+            self.assertFalse(result.ok)
+            self.assertEqual(result.error['node_id'], 'macro')
+            self.assertIn('unmapped imported anchors', result.error['message'])
+
 
 class BatchMacroTests(unittest.TestCase):
     def test_control_records_reconfigure_and_run_in_input_order(self):

@@ -87,6 +87,10 @@ class WorkflowMacro(Tool):
                     for n in incomplete[:5])
                 raise ConfigError(f'Macro contains imported tools with unmapped settings: {detail}',
                                   node_id=ctx.node_id)
+            edge_warnings = report.get('edge_warnings', [])
+            if edge_warnings:
+                detail = '; '.join(edge_warnings[:5])
+                raise ConfigError(f'Macro contains unmapped imported anchors: {detail}', node_id=ctx.node_id)
             return doc, path.parent
         try:
             return json.loads(path.read_text(encoding='utf-8')), path.parent
