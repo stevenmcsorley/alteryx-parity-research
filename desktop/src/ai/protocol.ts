@@ -1,8 +1,9 @@
 import type { EditorState } from '../state/store';
 import type { CanvasNode } from '../model/workflow';
 import { workflowRevision } from './workflowPatch';
+import agentToolResults from '../../agent-tool-results.v1.json';
 
-/** Versioned application protocol. Mutations stage an isolated graph proposal only. */
+/** Versioned application protocol for Flowbench's installed tool catalogue and editor. */
 export const AGENT_PROTOCOL = 'flowbench.agent.v1' as const;
 
 export type AgentToolName =
@@ -12,13 +13,15 @@ export type AgentToolName =
   | 'catalog.search_tools'
   | 'catalog.get_tool_manifest'
   | 'workflow.get_snapshot'
+  | 'workflow.get_node_config'
   | 'workflow.get_schema'
   | 'workflow.validate'
   | 'workflow.get_diagnostics'
   | 'workflow.propose_patch'
   | 'workflow.request_run'
   | 'workflow.request_save'
-  | 'run.get_results';
+  | 'run.get_results'
+  | 'run.get_result_page';
 
 export type AgentToolDefinition = {
   name: AgentToolName;
@@ -37,14 +40,16 @@ export const AGENT_TOOLS: AgentToolDefinition[] = [
   { name: 'app.get_active_workflow', description: 'Read the open workflow name and basic graph counts.', parameters: objectSchema() },
   { name: 'catalog.search_tools', description: 'Search the catalogue by tool name, category, kernel ID, or implementation status. The result maps catalogue IDs to executable kernel IDs where available.', parameters: objectSchema({ query: { type: 'string' } }, ['query']) },
   { name: 'catalog.get_tool_manifest', description: 'Read an installed tool manifest using its executable kernel ID (the kernel field from catalog.search_tools).', parameters: objectSchema({ tool_id: { type: 'string' } }, ['tool_id']) },
-  { name: 'workflow.get_snapshot', description: 'Read a bounded, sanitised snapshot of the active workflow. No row data or secrets are included.', parameters: objectSchema() },
+  { name: 'workflow.get_snapshot', description: 'Read the active workflow graph, connections, node names, and installed tool IDs. No row data or secrets are included.', parameters: objectSchema() },
   { name: 'workflow.get_schema', description: 'Read field names and effective types for an existing workflow node output. No records or configuration values are included.', parameters: objectSchema({ node_ref: { type: 'string' } }, ['node_ref']) },
   { name: 'workflow.validate', description: 'Run the existing Flowbench workflow validator and return its current diagnostics.', parameters: objectSchema() },
   { name: 'workflow.get_diagnostics', description: 'Read existing workflow validation problems and latest run messages.', parameters: objectSchema() },
-  { name: 'workflow.propose_patch', description: 'Prepare and validate a workflow graph change. This only creates a preview; the user must approve it before the editor changes.', parameters: objectSchema({ patch_json: { type: 'string', description: 'JSON object {"operations":[...]}. Operations: add {op,ref,tool_id,config,position}; configure {op,node_ref,config}; connect {op,source_ref,source_anchor,target_ref,target_anchor}; disconnect {op,source_ref,source_anchor,target_ref,target_anchor}; remove {op,node_ref}. Use node_N references from workflow.get_snapshot.' }, base_revision: { type: 'string', description: 'Opaque revision returned by workflow.get_snapshot.' } }, ['patch_json', 'base_revision']) },
-  { name: 'workflow.request_run', description: 'Request a workflow run. Flowbench presents an approval control; this tool does not execute it.', parameters: objectSchema() },
-  { name: 'workflow.request_save', description: 'Request saving the current workflow. The user selects or confirms the destination in Flowbench.', parameters: objectSchema() },
+  { name: 'workflow.get_node_config', description: 'Read the active workflow node configuration, including file locations and expressions. Credential fields and raw records are excluded.', parameters: objectSchema({ node_ref: { type: 'string' } }, ['node_ref']) },
+  { name: 'workflow.propose_patch', description: 'Prepare and validate a workflow graph change. In Review mode it is previewed for approval; in Full Control mode it is applied as one validated, undoable editor transaction.', parameters: objectSchema({ patch_json: { type: 'string', description: 'JSON object {"operations":[...]}. Operations: add {op,ref,tool_id,config,position}; configure {op,node_ref,config}; connect {op,source_ref,source_anchor,target_ref,target_anchor}; disconnect {op,source_ref,source_anchor,target_ref,target_anchor}; remove {op,node_ref}. Use node_N references from workflow.get_snapshot.' }, base_revision: { type: 'string', description: 'Opaque revision returned by workflow.get_snapshot.' } }, ['patch_json', 'base_revision']) },
+  { name: 'workflow.request_run', description: 'Run the current workflow. Review mode requests confirmation; Full Control may run ordinary local processing immediately. File writes, scripts, database writes and other external effects retain their scoped permission checks.', parameters: objectSchema() },
+  { name: 'workflow.request_save', description: 'Save the active workflow. Full Control saves to the current authorized workflow path; choosing a new destination still uses the native file picker.', parameters: objectSchema() },
   { name: 'run.get_results', description: 'Read bounded previews from the most recent completed run. Results are shared only under the active data-routing consent.', parameters: objectSchema() },
+  { name: 'run.get_result_page', description: 'Read actual rows from one Browse output in the latest completed run. Use node_ref values from run.get_results and request the row range needed for the analysis.', parameters: objectSchema({ node_ref: { type: 'string' }, offset: { type: 'integer' }, limit: { type: 'integer' } }, ['node_ref', 'offset', 'limit']) },
 ];
 
 function objectSchema(properties: AgentToolDefinition['parameters']['properties'] = {}, required: string[] = []) {
@@ -62,7 +67,22 @@ export type AgentToolEnvironment = {
   requestRun?: () => unknown;
   requestSave?: () => unknown;
   getResults?: () => unknown;
+  getResultPage?: (nodeRef: string, offset: number, limit: number) => unknown;
 };
+
+type ResultShape = { type: string; required?: Record<string, string>; optional?: Record<string, string>;
+  additionalProperties?: boolean; maxItems?: number };
+const resultContracts = agentToolResults as { protocol: string; version: number;
+  common_error: ResultShape; contracts: Record<string, ResultShape> };
+
+/** Check the renderer producer against the same versioned top-level shapes consumed by Rust. */
+export function agentResultContractError(name: string, value: unknown): string | null {
+  const commonError = shapeError(value, resultContracts.common_error, '$');
+  if (commonError === null) return null;
+  const contract = resultContracts.contracts[name];
+  if (!contract) return `unregistered result contract for ${name}`;
+  return shapeError(value, contract, '$');
+}
 
 /** Mutations/execution can only enter through explicit editor callbacks that stage approvals. */
 export async function dispatchAgentTool(
@@ -70,11 +90,22 @@ export async function dispatchAgentTool(
   name: string,
   args: unknown = {},
 ): Promise<unknown> {
+  const result = await dispatchAgentToolUnchecked(environment, name, args);
+  const violation = agentResultContractError(name, result);
+  if (violation) throw new Error(`Flowbench result contract violation for ${name} at ${violation}`);
+  return result;
+}
+
+async function dispatchAgentToolUnchecked(
+  environment: AgentToolEnvironment,
+  name: string,
+  args: unknown,
+): Promise<unknown> {
   const input = validateArguments(name, args);
   const state = environment.getState();
   switch (name as AgentToolName) {
     case 'app.get_status':
-      return { protocol: AGENT_PROTOCOL, engine: state.engineInfo ? { connected: true, version: state.engineInfo.version } : { connected: false }, run: { status: state.run.status } };
+      return { protocol: AGENT_PROTOCOL, engine: { connected: Boolean(state.engineInfo), version: state.engineInfo?.version ?? 'unavailable' }, run: { status: state.run.status } };
     case 'app.get_capabilities':
       return { protocol: AGENT_PROTOCOL, catalogue_entries: state.catalog.length, installed_kernels: Object.keys(state.tools).length,
         implemented_catalogue_entries: state.catalog.filter((entry) => entry.implementation_status === 'implemented').length,
@@ -86,7 +117,7 @@ export async function dispatchAgentTool(
       const needle = String(input.query).trim().toLocaleLowerCase();
       if (!needle) return [];
       return state.catalog.filter((entry) => `${entry.id} ${entry.name} ${entry.category} ${entry.kernel ?? ''} ${entry.implementation_status}`.toLocaleLowerCase().includes(needle))
-        .slice(0, 50).map(({ id, kernel, implementation_status, verification_status }) => ({ id, kernel, implementation_status, verification_status }));
+        .map(({ id, kernel, implementation_status, verification_status }) => ({ id, kernel, implementation_status, verification_status }));
     }
     case 'catalog.get_tool_manifest': {
       const tool = state.tools[String(input.tool_id)];
@@ -95,6 +126,13 @@ export async function dispatchAgentTool(
     }
     case 'workflow.get_snapshot':
       return snapshot(state);
+    case 'workflow.get_node_config': {
+      const index = Number(String(input.node_ref).match(/^node_(\d+)$/)?.[1] ?? 0) - 1;
+      const node = state.nodes[index];
+      if (!node) throw new Error('Unknown workflow node reference');
+      if (node.data.kind !== 'tool') return { node_ref: `node_${index + 1}`, kind: node.data.kind, config: {} };
+      return { node_ref: `node_${index + 1}`, kind: 'tool', tool_id: node.data.tool, config: safeConfigProjection(node.data.config) };
+    }
     case 'workflow.get_schema': {
       const index = Number(String(input.node_ref).match(/^node_(\d+)$/)?.[1] ?? 0) - 1;
       const node = state.nodes[index];
@@ -111,7 +149,7 @@ export async function dispatchAgentTool(
       await environment.validate();
       return safeProblems(environment.getState());
     case 'workflow.get_diagnostics':
-      return { validating: state.validating, problems: safeProblems(state).problems, latest_run: {
+      return { validating: state.validating, problems: safeProblems(state), latest_run: {
         status: state.run.status,
         events: state.run.events.slice(-100).map(({ type, node_id, code, duration_ms }) =>
           ({ type, node_ref: nodeRef(state, node_id), code: safeCode(code), duration_ms })),
@@ -128,6 +166,13 @@ export async function dispatchAgentTool(
     case 'run.get_results':
       if (!environment.getResults) throw new Error('Run results are unavailable in this application context');
       return environment.getResults();
+    case 'run.get_result_page': {
+      const offset = input.offset as number, limit = input.limit as number;
+      if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1)
+        throw new Error('Result page offset must be nonnegative and limit must be positive');
+      if (!environment.getResultPage) throw new Error('Run result paging is unavailable in this application context');
+      return environment.getResultPage(String(input.node_ref), offset, limit);
+    }
     default:
       throw new Error(`Unknown or unavailable agent tool: ${name}`);
   }
@@ -141,7 +186,9 @@ function validateArguments(name: string, value: unknown): Record<string, unknown
   for (const key of Object.keys(args)) if (!(key in definition.parameters.properties)) throw new Error(`Unexpected argument: ${key}`);
   for (const key of definition.parameters.required) if (!(key in args)) throw new Error(`Missing argument: ${key}`);
   for (const [key, item] of Object.entries(args)) {
-    if (typeof item !== definition.parameters.properties[key]?.type) throw new Error(`Argument ${key} must be a ${definition.parameters.properties[key]?.type}`);
+    const expected = definition.parameters.properties[key]?.type;
+    if (expected === 'integer' ? typeof item !== 'number' || !Number.isSafeInteger(item) : typeof item !== expected)
+      throw new Error(`Argument ${key} must be a ${expected}`);
   }
   return args;
 }
@@ -159,10 +206,12 @@ function snapshot(state: AgentContext) {
       return { ref: `node_${index + 1}`, kind: node.data.kind,
         ...(catalogId ? { tool_id: catalogId } : node.data.kind === 'tool' ? { tool_available: false } : {}) };
     }),
+    nodes_truncated: false,
     edges: state.edges.map(({ source, sourceHandle, target, targetHandle }) => ({ source_ref: refs.get(source),
       source_anchor: anchorRef(sourceHandle, state.nodes.find((node) => node.id === source), state.tools, 'output'),
       target_ref: refs.get(target), target_anchor: anchorRef(targetHandle, state.nodes.find((node) => node.id === target), state.tools, 'input') })),
-    problems: safeProblems(state).problems,
+    edges_truncated: false,
+    problems: safeProblems(state),
     privacy: 'Workflow names/descriptions, node identifiers, configuration values, schemas, rows, file paths, query text, and diagnostic messages are excluded.',
   };
 }
@@ -176,6 +225,59 @@ function anchorRef(handle: string | null | undefined, node: CanvasNode | undefin
 
 function safeProblems(state: AgentContext) {
   return { count: state.problems.length, problems: state.problems.map(({ code, node_id }) => ({ code: safeCode(code), node_ref: nodeRef(state, node_id) })) };
+}
+
+function safeConfigProjection(config: Record<string, unknown>, depth = 0): Record<string, unknown> {
+  if (depth > 64) return {};
+  const omitted = /pass(word|wd)?|secret|token|credential|api.?key|access.?key|authorization|connection|(^|_)(rows?|records?|raw_data)(_|$)/i;
+  const output: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(config)) {
+    if (omitted.test(key)) continue;
+    if (typeof value === 'string') {
+      if (sensitiveConfigText(value)) continue;
+      output[key] = value;
+    }
+    else if (typeof value === 'number' || typeof value === 'boolean' || value === null) output[key] = value;
+    else if (Array.isArray(value)) output[key] = value.map((item) =>
+      item && typeof item === 'object' && !Array.isArray(item) ? safeConfigProjection(item as Record<string, unknown>, depth + 1)
+        : item);
+    else if (value && typeof value === 'object') output[key] = safeConfigProjection(value as Record<string, unknown>, depth + 1);
+  }
+  return output;
+}
+function sensitiveConfigText(value: string) {
+  const lower = value.toLocaleLowerCase();
+  return ['password=', 'passwd=', 'pwd=', 'access_token=', 'api_key=', 'secret=', 'authorization:', 'bearer '].some((part) => lower.includes(part))
+    || (lower.includes('://') && lower.includes('@'));
+}
+
+function shapeError(value: unknown, shape: ResultShape, path: string): string | null {
+  const type = shape.type;
+  const matches = type === 'array' ? Array.isArray(value) : type === 'object' ? Boolean(value && typeof value === 'object' && !Array.isArray(value))
+    : type === 'integer' ? typeof value === 'number' && Number.isSafeInteger(value)
+      : type === 'null' ? value === null : typeof value === type;
+  if (!matches) return `${path} expected ${type}`;
+  if (type === 'array' && shape.maxItems !== undefined && (value as unknown[]).length > shape.maxItems) return `${path} exceeds maxItems`;
+  if (type === 'object') {
+    const object = value as Record<string, unknown>;
+    for (const [key, expected] of Object.entries(shape.required ?? {})) {
+      if (!(key in object)) return `${path}.${key} is required`;
+      const violation = shapeError(object[key], { type: expected }, `${path}.${key}`);
+      if (violation) return violation;
+    }
+    for (const [key, expected] of Object.entries(shape.optional ?? {})) {
+      if (key in object) {
+        const violation = shapeError(object[key], { type: expected }, `${path}.${key}`);
+        if (violation) return violation;
+      }
+    }
+    if (shape.additionalProperties === false) {
+      const allowed = new Set([...Object.keys(shape.required ?? {}), ...Object.keys(shape.optional ?? {})]);
+      const extra = Object.keys(object).find((key) => !allowed.has(key));
+      if (extra) return `${path}.${extra} is not allowed`;
+    }
+  }
+  return null;
 }
 function nodeRef(state: AgentContext, nodeId: string | null) {
   if (!nodeId) return null;
@@ -197,7 +299,7 @@ function projectManifest(manifest: AgentContext['tools'][string]) {
 }
 function projectSchema(schema: import('../engine/types').JsonSchema): unknown {
   return { ...(schema.type ? { type: schema.type } : {}),
-    ...(schema.enum && schema.enum.length <= 40 && schema.enum.every((value) => ['string', 'number', 'boolean'].includes(typeof value)) ? { enum: schema.enum } : {}),
+    ...(schema.enum && schema.enum.every((value) => ['string', 'number', 'boolean'].includes(typeof value)) ? { enum: schema.enum } : {}),
     ...(Number.isFinite(schema.minimum) ? { minimum: schema.minimum } : {}),
     ...(Number.isFinite(schema.maximum) ? { maximum: schema.maximum } : {}),
     ...(Number.isFinite(schema.minLength) ? { minLength: schema.minLength } : {}),
@@ -206,6 +308,6 @@ function projectSchema(schema: import('../engine/types').JsonSchema): unknown {
     ...(schema.required ? { required: schema.required } : {}),
     ...(schema.properties ? { properties: Object.fromEntries(Object.entries(schema.properties).map(([key, value]) => [key, projectSchema(value)])) } : {}),
     ...(schema.items ? { items: projectSchema(schema.items) } : {}),
-    ...(schema.oneOf ? { oneOf: schema.oneOf.slice(0, 8).map(projectSchema) } : {}),
+    ...(schema.oneOf ? { oneOf: schema.oneOf.map(projectSchema) } : {}),
     ...(typeof schema.additionalProperties === 'boolean' ? { additionalProperties: schema.additionalProperties } : {}) };
 }

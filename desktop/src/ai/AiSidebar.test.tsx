@@ -13,7 +13,7 @@ vi.mock('@tauri-apps/api/event', () => ({ listen: vi.fn(async (_name: string, ha
 }) }));
 
 beforeEach(() => {
-  tauriMock.handler = null; tauriMock.listenerCalls = 0; resetListenerForTests(); useAiConversation.getState().reset();
+  tauriMock.handler = null; tauriMock.listenerCalls = 0; resetListenerForTests(); useAiConversation.getState().reset(); useAiConversation.getState().setFullControl(null);
   tauriMock.invoke.mockReset().mockImplementation(async (command: string) => {
     if (command === 'ai_status') return { connected: false, plan_usage_authorized: false };
     if (command === 'ai_sign_in') return undefined;
@@ -38,8 +38,8 @@ async function ready() {
   render(<AiSidebar close={() => undefined} />);
   await screen.findByRole('option', { name: 'Available model' });
   fireEvent.click(screen.getByText('•••'));
-  fireEvent.click(screen.getByRole('checkbox', { name: /Allow prompt and bounded tool results/ }));
-  await waitFor(() => expect((screen.getByRole('checkbox', { name: /Allow prompt and bounded tool results/ }) as HTMLInputElement).checked).toBe(true));
+  fireEvent.click(screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }));
+  await waitFor(() => expect((screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }) as HTMLInputElement).checked).toBe(true));
 }
 
 describe('Flowbench AI conversation', () => {
@@ -82,6 +82,46 @@ describe('Flowbench AI conversation', () => {
     expect(useEditor.getState().nodes).toHaveLength(0);
   });
 
+  it('applies a validated graph transaction in Full Control without a review card and keeps it undoable', async () => {
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const manifest = (tool_id: string, inputs: string[], outputs: string[]) => ({ tool_id, version: '1', display_name: tool_id,
+      catalog_ids: [], inputs: inputs.map((name) => ({ name, label: name, required: name === 'input', multiple: false, description: '' })),
+      outputs: outputs.map((name) => ({ name, label: name, required: false, multiple: false, description: '' })),
+      config_schema: { type: 'object' }, side_effects: 'none', deterministic: true, dependencies: [], description: '' });
+    useEditor.getState().setEngineMeta({ engineInfo: { version: 'test', python: '3.12', protocol: 2 } as any,
+      tools: { 'core.input_data': manifest('core.input_data', [], ['output']) as any } });
+    setTransport({ request: async () => ({ valid: true, problems: [], schemas: {} }), subscribe: () => () => {} } as any);
+    const patch = JSON.stringify({ operations: [
+      { op: 'add', ref: 'input', tool_id: 'core.input_data', config: { type_inference: 'flowbench' }, position: { x: 0, y: 0 } },
+    ] });
+    await ready();
+    fireEvent.click(screen.getByText('•••'));
+    fireEvent.click(screen.getByRole('checkbox', { name: /Full Control for this workspace/ }));
+    expect(confirm).toHaveBeenCalledOnce();
+    expect((screen.getByRole('checkbox', { name: /Full Control for this workspace/ }) as HTMLInputElement).checked).toBe(true);
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_status') return { connected: true, plan_usage_authorized: true };
+      if (command === 'ai_models') return [{ slug: 'model-a', display_name: 'Available model' }];
+      if (command === 'ai_begin') return { turn_id: 'full_turn', assistant_message_id: 'full_msg' };
+      if (command === 'ai_respond') {
+        if (!tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_submit_tool_result')) return { turn_id: args?.turnId, message_id: 'full_msg', cycle_id: args?.cycleId, text: '', calls: [
+          { name: 'workflow.propose_patch', call_id: 'full_patch', arguments: JSON.stringify({ patch_json: patch, base_revision: workflowRevision(useEditor.getState()) }) },
+        ] };
+        return { turn_id: args?.turnId, message_id: 'full_msg', cycle_id: args?.cycleId, text: 'Added the input node.', calls: [] };
+      }
+      return undefined;
+    });
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'Create an input node.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    await screen.findByText('Added the input node.');
+    await waitFor(() => expect(useEditor.getState().nodes).toHaveLength(1));
+    expect(screen.queryByRole('region', { name: 'Workflow change preview' })).toBeNull();
+    expect(await screen.findByText('Added the input node.')).toBeTruthy();
+    useEditor.getState().undo();
+    expect(useEditor.getState().nodes).toHaveLength(0);
+    confirm.mockRestore();
+  });
+
   it('keeps connection and privacy settings out of the conversation body', async () => {
     render(<AiSidebar close={() => undefined} />);
     expect(await screen.findByText('What would you like to analyse?')).toBeTruthy();
@@ -110,8 +150,8 @@ describe('Flowbench AI conversation', () => {
     render(<AiSidebar close={() => undefined} />);
     await screen.findByRole('option', { name: 'Available model' });
     fireEvent.click(screen.getByText('•••'));
-    fireEvent.click(screen.getByRole('checkbox', { name: /Allow prompt and bounded tool results/ }));
-    await waitFor(() => expect((screen.getByRole('checkbox', { name: /Allow prompt and bounded tool results/ }) as HTMLInputElement).checked).toBe(true));
+    fireEvent.click(screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }));
+    await waitFor(() => expect((screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }) as HTMLInputElement).checked).toBe(true));
     const composer = screen.getByLabelText('Message Flowbench AI');
     for (let n = 1; n <= 10; n++) {
       fireEvent.change(composer, { target: { value: 'hello' } });
