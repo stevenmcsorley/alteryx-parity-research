@@ -171,9 +171,10 @@
     ]
   },
   "independent_tests": {
-    "count": 7,
-    "passing": 7,
+    "count": 8,
+    "passing": 8,
     "tests": [
+      "test_data_correctness.DataCorrectnessTests.test_full_typed_csv_pipeline_roundtrip",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.ExecutionTests.test_failure_reports_node_and_skips_downstream",

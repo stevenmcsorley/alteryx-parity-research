@@ -4,7 +4,7 @@ import unittest
 from decimal import Decimal
 
 from flowengine.errors import ExpressionError, SchemaError
-from flowengine.formula import EvalContext, compile_expression, parse
+from flowengine.formula import EvalContext, compare_values, compile_expression, parse
 from flowengine.table import Table
 from flowengine.types import CastFailure, Field, FieldType as T, Schema, cast_value, format_value, unify_fields
 
@@ -17,6 +17,11 @@ def ev(expr, fields=(), row=(), now=dt.datetime(2026, 1, 15, 9, 30)):
 
 
 class TypeTests(unittest.TestCase):
+    def test_decimal_float_comparison_uses_reference_double_promotion(self):
+        # Observed in the pinned 2026.2 E1 and E2 probe: FixedDecimal 0.10
+        # compares equal to the Double literal 0.1 after promotion.
+        self.assertTrue(compare_values('=', Decimal('0.10'), 0.1))
+
     def test_integer_ranges(self):
         self.assertEqual(cast_value('127', Field('x', T.INT16))[0], 127)
         self.assertEqual(cast_value(' -5 ', Field('x', T.INT32))[0], -5)
@@ -40,6 +45,15 @@ class TypeTests(unittest.TestCase):
         self.assertEqual(cast_value('1.015', f)[0], Decimal('1.02'))
         with self.assertRaises(CastFailure):
             cast_value('123456.7', f)
+
+    def test_fixed_decimal_nonfinite_and_extreme_cast_failures_are_explicit(self):
+        for value in (Decimal('NaN'), Decimal('Infinity'), Decimal('-Infinity')):
+            with self.assertRaises(CastFailure):
+                cast_value(value, Field('amount', T.FIXED_DECIMAL, 10, 2))
+        with self.assertRaises(CastFailure):
+            cast_value(10 ** 10000, Field('n', T.DOUBLE))
+        with self.assertRaises(CastFailure):
+            cast_value(Decimal('1e1000'), Field('n', T.FIXED_DECIMAL, 10, 2))
 
     def test_string_truncation_is_warning(self):
         v, w = cast_value('abcdef', Field('s', T.V_STRING, 3))
@@ -88,6 +102,19 @@ class TypeTests(unittest.TestCase):
         self.assertEqual(unify_fields(Field('a', T.INT32), Field('a', T.FLOAT)).type, T.DOUBLE)
         self.assertEqual(unify_fields(Field('a', T.V_STRING, 10), Field('a', T.V_WSTRING, 5)).size, 10)
         self.assertEqual(unify_fields(Field('a', T.DATE), Field('a', T.INT32)).type, T.V_WSTRING)
+
+    def test_unify_exact_decimal_and_integer_without_binary_float(self):
+        merged = unify_fields(Field('amount', T.FIXED_DECIMAL, 25, 2), Field('amount', T.INT64))
+        self.assertEqual((merged.type, merged.size, merged.scale), (T.FIXED_DECIMAL, 25, 2))
+        same_type = unify_fields(Field('amount', T.FIXED_DECIMAL, 10, 2),
+                                  Field('amount', T.FIXED_DECIMAL, 10, 8))
+        self.assertEqual((same_type.size, same_type.scale), (16, 8))
+        with self.assertRaisesRegex(SchemaError, 'binary floating point'):
+            unify_fields(Field('amount', T.FIXED_DECIMAL, 12, 2), Field('amount', T.DOUBLE))
+        with self.assertRaisesRegex(SchemaError, 'precision 50'):
+            unify_fields(Field('amount', T.FIXED_DECIMAL, 50, 40), Field('amount', T.INT64))
+        with self.assertRaisesRegex(SchemaError, r'above 2\*\*53'):
+            unify_fields(Field('id', T.INT64), Field('id', T.DOUBLE))
 
     def test_digest_is_order_sensitive(self):
         s = [Field('a', T.INT32)]

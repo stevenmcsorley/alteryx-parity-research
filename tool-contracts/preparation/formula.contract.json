@@ -298,6 +298,15 @@
       ]
     },
     {
+      "case_id": "probe-fixed-decimal-double-comparison",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e1/results.json#probe-fixed-decimal-double-comparison",
+        "reference build 2026.2.0.8 (e1)",
+        "config sha256 3eaa7f3e866422435d0e53dbd10fbc893f30ba886eda83d2aaeecdf356aa3704"
+      ]
+    },
+    {
       "case_id": "formula-arithmetic",
       "status": "passed",
       "evidence": [
@@ -403,6 +412,15 @@
         "conformance/results/2026.2.0.8/e2/results.json#probe-contains-flag-and-codepoints",
         "reference build 2026.2.0.8 (e2)",
         "config sha256 d309978547424b9f822e93951a366ca83ccbcb306cbdf69f1a1fd266c57ee1a3"
+      ]
+    },
+    {
+      "case_id": "probe-fixed-decimal-double-comparison",
+      "status": "passed",
+      "evidence": [
+        "conformance/results/2026.2.0.8/e2/results.json#probe-fixed-decimal-double-comparison",
+        "reference build 2026.2.0.8 (e2)",
+        "config sha256 3eaa7f3e866422435d0e53dbd10fbc893f30ba886eda83d2aaeecdf356aa3704"
       ]
     }
   ],

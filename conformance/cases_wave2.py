@@ -2,7 +2,7 @@
 observed element/question names (data/reference-observations.json and bundled macro structure)."""
 from xml.sax.saxutils import escape, quoteattr
 
-from cases import F, PEOPLE, TEXT, ref
+from cases import F, PEOPLE, TEXT, formula_case, ref
 
 CASES_WAVE2 = []
 
@@ -21,6 +21,16 @@ def macro_ref(macro, values: dict, inputs=None):
 
 W2 = {'fields': [F('g', 'v_string', size=5), F('x', 'double'), F('w', 'double')],
       'rows': [['a', 1.0, 1.0], ['a', 3.0, 3.0], ['b', None, 2.0], ['b', 10.0, 0.0], ['a', 3.0, 1.0], ['c', 7.0, 2.0]]}
+
+# Determine the reference engine's mixed FixedDecimal/Double comparison rule;
+# this is intentionally differential because Python coercion is not a parity oracle.
+formula_case('probe-fixed-decimal-double-comparison',
+     'FixedDecimal compared with a Double literal at binary precision boundaries',
+     {'input': {'fields': [F('amount', 'fixed_decimal', size=25, scale=2)],
+                'rows': [['9007199254740993.00'], ['9007199254740993.01'],
+                         ['9007199254740992.00'], ['0.10']]}},
+     [('above', '[amount] > 9007199254740992.0', 'Bool', 1),
+      ('tenth_equal', '[amount] = 0.1', 'Bool', 1)])
 
 case('autofield-types', 'preparation:auto-field', 'smallest type for numeric/date/text columns',
      {'input': {'fields': [F('i', 'v_string', size=10), F('big', 'v_string', size=10), F('d', 'v_string', size=10),

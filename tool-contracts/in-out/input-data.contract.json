@@ -232,9 +232,11 @@
     ]
   },
   "independent_tests": {
-    "count": 13,
-    "passing": 13,
+    "count": 15,
+    "passing": 15,
     "tests": [
+      "test_data_correctness.DataCorrectnessTests.test_csv_string_filter_and_declared_numeric_schema",
+      "test_data_correctness.DataCorrectnessTests.test_full_typed_csv_pipeline_roundtrip",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_scale.ArrowTests.test_parquet_and_ipc_io_through_tools",

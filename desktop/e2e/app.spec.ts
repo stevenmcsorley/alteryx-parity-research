@@ -80,6 +80,53 @@ test('build, configure, connect and run a workflow from scratch', async ({ page 
   await expect(page.getByTestId('fields-table')).toContainText('int32');
 });
 
+test('CSV text typing is visible in Filter and changes only after an explicit numeric declaration', async ({ page }) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'flowbench-type-audit-'));
+  const csv = path.join(dir, 'quantities.csv');
+  const quantities = ['0', '1', '10', '09', '00123', '-2', '2', '3', '5', '6', '11', '12', '20', '50', '100'];
+  fs.writeFileSync(csv, `Quantity,Sales\n${quantities.map((q) => `${q},1.25`).join('\n')}\n`);
+  await ready(page);
+  await addFromPalette(page, 'in-out:input-data');
+  await page.getByLabel('Path').fill(csv);
+  await addFromPalette(page, 'preparation:filter');
+  await connect(page, 'out-input_data_1-output', 'in-filter_1-input');
+  await expect(page.getByTestId('valid')).toBeVisible({ timeout: 10_000 });
+  await page.getByRole('radio', { name: /Basic:/ }).click();
+  await page.getByLabel('Field', { exact: true }).fill('Quantity');
+  await page.getByLabel('Operator').selectOption('>');
+  await page.getByLabel('Value').fill('10');
+  await addFromPalette(page, 'in-out:browse');
+  await connect(page, 'out-filter_1-true', 'in-browse_1-input');
+  await page.getByTestId('run').click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+  await page.getByTestId('node-filter_1').click();
+  await expect(page.getByTestId('inspector')).toContainText('Quantity is v_wstring; this comparison is lexicographic');
+  await expect(page.getByTestId('rows-filter_1-true')).toHaveText('9');
+  await expect(page.getByTestId('rows-filter_1-false')).toHaveText('6');
+  await page.getByLabel('Output to display').selectOption('browse_1::(browse)');
+  await expect(page.getByTestId('results-grid')).toContainText('2');
+
+  await page.getByTestId('node-input_data_1').click();
+  await page.getByRole('button', { name: '+ Add field' }).click();
+  await page.locator('#cfg-input_data_1-fields-0-name').fill('Quantity');
+  await page.locator('#cfg-input_data_1-fields-0-type').selectOption('int32');
+  await page.getByRole('button', { name: '+ Add field' }).click();
+  await page.locator('#cfg-input_data_1-fields-1-name').fill('Sales');
+  await page.locator('#cfg-input_data_1-fields-1-type').selectOption('fixed_decimal');
+  await page.locator('#cfg-input_data_1-fields-1-size').fill('8');
+  await page.locator('#cfg-input_data_1-fields-1-scale').fill('2');
+  await page.getByTestId('node-filter_1').click();
+  await expect(page.getByTestId('inspector')).not.toContainText('Quantity is v_wstring');
+  await page.getByTestId('run').click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+  await expect(page.getByTestId('rows-filter_1-true')).toHaveText('6');
+  await expect(page.getByTestId('rows-filter_1-false')).toHaveText('9');
+  await page.getByLabel('Output to display').selectOption('browse_1::(browse)');
+  await expect(page.getByTestId('results-grid').locator('tbody tr')).toHaveCount(6);
+  await expect(page.getByTestId('results-grid').locator('tbody tr td:nth-child(2)'))
+    .toHaveText(['123', '11', '12', '20', '50', '100']);
+});
+
 test('configure Fuzzy Match through field selectors and execute indexed matching', async ({ page }) => {
   await ready(page);
   await addFromPalette(page, 'in-out:text-input');

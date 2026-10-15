@@ -3,7 +3,7 @@
   "reference_build": "2026.2.0.8",
   "engine_mode": "e2",
   "authorisation": "docs/AUTHORISATION.md",
-  "executed_utc": "2026-10-13T14:04:58+00:00",
+  "executed_utc": "2026-10-15T02:16:00+00:00",
   "limits": [
     "Only samples that validate cleanly after import are run",
     "Differences are recorded by location only; vendor data values are never stored",
