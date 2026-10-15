@@ -42,6 +42,31 @@ const ALLOWED_TOOLS: &[&str] = &[
     "workflow.get_diagnostics",
 ];
 
+const API_TOOL_NAMES: &[(&str, &str)] = &[
+    ("app.get_status", "app_get_status"),
+    ("app.get_capabilities", "app_get_capabilities"),
+    ("app.get_active_workflow", "app_get_active_workflow"),
+    ("catalog.search_tools", "catalog_search_tools"),
+    ("catalog.get_tool_manifest", "catalog_get_tool_manifest"),
+    ("workflow.get_snapshot", "workflow_get_snapshot"),
+    ("workflow.validate", "workflow_validate"),
+    ("workflow.get_diagnostics", "workflow_get_diagnostics"),
+];
+
+fn internal_tool_name(api_name: &str) -> Option<&'static str> {
+    API_TOOL_NAMES
+        .iter()
+        .find(|(_, wire)| *wire == api_name)
+        .map(|(internal, _)| *internal)
+}
+
+fn api_tool_name(internal_name: &str) -> Option<&'static str> {
+    API_TOOL_NAMES
+        .iter()
+        .find(|(internal, _)| *internal == internal_name)
+        .map(|(_, wire)| *wire)
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 struct Credentials {
     client_id: String,
@@ -509,14 +534,14 @@ fn native_tool_definitions() -> Value {
         json!({"type":"object","properties":properties,"required":required,"additionalProperties":false})
     }
     json!([
-      {"type":"function","name":"app.get_status","description":"Read Flowbench engine and run status.","parameters":object(json!({}),&[]),"strict":true},
-      {"type":"function","name":"app.get_capabilities","description":"Read implemented catalogue capabilities and evidence states.","parameters":object(json!({}),&[]),"strict":true},
-      {"type":"function","name":"app.get_active_workflow","description":"Read the active workflow graph counts.","parameters":object(json!({}),&[]),"strict":true},
-      {"type":"function","name":"catalog.search_tools","description":"Search catalogue entries by ID or implementation status.","parameters":object(json!({"query":{"type":"string"}}),&["query"]),"strict":true},
-      {"type":"function","name":"catalog.get_tool_manifest","description":"Read a sanitized installed tool manifest by ID.","parameters":object(json!({"tool_id":{"type":"string"}}),&["tool_id"]),"strict":true},
-      {"type":"function","name":"workflow.get_snapshot","description":"Read a sanitized active graph snapshot, without workflow settings or data rows.","parameters":object(json!({}),&[]),"strict":true},
-      {"type":"function","name":"workflow.validate","description":"Validate the open workflow and return sanitized issue codes.","parameters":object(json!({}),&[]),"strict":true},
-      {"type":"function","name":"workflow.get_diagnostics","description":"Read sanitized validation codes and run status events.","parameters":object(json!({}),&[]),"strict":true}
+      {"type":"function","name":"app_get_status","description":"Read Flowbench engine and run status.","parameters":object(json!({}),&[]),"strict":true},
+      {"type":"function","name":"app_get_capabilities","description":"Read implemented catalogue capabilities and evidence states.","parameters":object(json!({}),&[]),"strict":true},
+      {"type":"function","name":"app_get_active_workflow","description":"Read the active workflow graph counts.","parameters":object(json!({}),&[]),"strict":true},
+      {"type":"function","name":"catalog_search_tools","description":"Search catalogue entries by ID or implementation status.","parameters":object(json!({"query":{"type":"string"}}),&["query"]),"strict":true},
+      {"type":"function","name":"catalog_get_tool_manifest","description":"Read a sanitized installed tool manifest by ID.","parameters":object(json!({"tool_id":{"type":"string"}}),&["tool_id"]),"strict":true},
+      {"type":"function","name":"workflow_get_snapshot","description":"Read a sanitized active graph snapshot, without workflow settings or data rows.","parameters":object(json!({}),&[]),"strict":true},
+      {"type":"function","name":"workflow_validate","description":"Validate the open workflow and return sanitized issue codes.","parameters":object(json!({}),&[]),"strict":true},
+      {"type":"function","name":"workflow_get_diagnostics","description":"Read sanitized validation codes and run status events.","parameters":object(json!({}),&[]),"strict":true}
     ])
 }
 fn valid_tool_arguments(name: &str, args: &Value) -> bool {
@@ -953,10 +978,14 @@ fn response_output_text(output: &Value) -> Result<String, String> {
     Ok(messages.join("\n"))
 }
 fn oauth_http_error(error: reqwest::Error) -> String {
-    if error.status().is_some_and(|s| s.as_u16() == 401) {
-        "ChatGPT authentication expired or was revoked; sign in again".into()
-    } else {
-        "ChatGPT authentication request failed".into()
+    match error.status().map(|s| s.as_u16()) {
+        Some(400) => "ChatGPT rejected the request (HTTP 400, invalid model, input or tool definition)".into(),
+        Some(401) => "ChatGPT authentication expired or was revoked (HTTP 401); sign in again".into(),
+        Some(403) => "ChatGPT denied inference permission (HTTP 403); check plan eligibility and authorization".into(),
+        Some(404) => "ChatGPT model or endpoint not found (HTTP 404); refresh available models".into(),
+        Some(429) => "ChatGPT usage limit reached (HTTP 429); check your plan limits".into(),
+        Some(status) => format!("ChatGPT service request failed (HTTP {status})"),
+        None => "ChatGPT service request failed (network or protocol error)".into(),
     }
 }
 
@@ -1317,10 +1346,12 @@ pub async fn ai_respond(
                 .get("call_id")
                 .and_then(Value::as_str)
                 .ok_or("Function call has no call ID")?;
-            let name = item
+            let wire_name = item
                 .get("name")
                 .and_then(Value::as_str)
                 .ok_or("Function call has no name")?;
+            let name = internal_tool_name(wire_name)
+                .ok_or("ChatGPT requested an unregistered function name")?;
             let raw_args = item
                 .get("arguments")
                 .and_then(Value::as_str)
@@ -1404,9 +1435,19 @@ mod tests {
         assert!(!ALLOWED_TOOLS.contains(&"shell.execute"));
         let defs = native_tool_definitions().as_array().cloned().unwrap();
         assert_eq!(defs.len(), ALLOWED_TOOLS.len());
-        assert!(defs
-            .iter()
-            .all(|d| ALLOWED_TOOLS.contains(&d["name"].as_str().unwrap()) && d["strict"] == true));
+        assert_eq!(ALLOWED_TOOLS.len(), API_TOOL_NAMES.len());
+        assert!(defs.iter().all(|d| {
+            let wire = d["name"].as_str().unwrap();
+            let internal = internal_tool_name(wire).unwrap();
+            ALLOWED_TOOLS.contains(&internal)
+                && api_tool_name(internal) == Some(wire)
+                && wire.bytes().all(|c| c.is_ascii_alphanumeric() || c == b'_' || c == b'-')
+                && d["strict"] == true
+        }));
+        assert_eq!(internal_tool_name("workflow_get_snapshot"), Some("workflow.get_snapshot"));
+        assert_eq!(api_tool_name("workflow.get_snapshot"), Some("workflow_get_snapshot"));
+        assert!(internal_tool_name("workflow.get_snapshot").is_none());
+        assert!(internal_tool_name("shell_execute").is_none());
         assert!(!valid_tool_arguments(
             "shell.execute",
             &json!({"command":"whoami"})
@@ -1463,6 +1504,10 @@ mod tests {
         assert_eq!(body["store"], false);
         assert_eq!(body["stream"], true);
         assert_eq!(body["tools"].as_array().unwrap().len(), ALLOWED_TOOLS.len());
+        assert!(body["tools"].as_array().unwrap().iter().all(|tool| {
+            let wire = tool["name"].as_str().unwrap();
+            !wire.contains('.') && internal_tool_name(wire).is_some()
+        }));
     }
     #[test]
     fn streaming_failures_distinguish_usage_limit_and_incomplete_response() {
