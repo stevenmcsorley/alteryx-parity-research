@@ -67,6 +67,37 @@ describe('workflow model', () => {
     expect(roundtripped.metadata?.application?.actions[0].when).toEqual({ question: 'enabled', operator: 'equals', value: true });
   });
 
+  it('round-trips Condition nodes and translates both branches into executable action predicates', () => {
+    const graph: CanvasGraph = {
+      name: 'condition routes', nodes: [
+        { id: 'q', type: 'applicationAction', position: { x: 0, y: 0 }, data: { kind: 'application-action',
+          question: { id: 'enabled', prompt: 'Enabled?', type: 'boolean', default: false }, config_path: ['expression'] } },
+        { id: 'condition', type: 'applicationCondition', position: { x: 220, y: 0 }, data: { kind: 'application-condition',
+          when: { question: 'enabled', operator: 'equals', value: true } } },
+        { id: 'yes', type: 'applicationAction', position: { x: 440, y: 0 }, data: { kind: 'application-action',
+          question: { id: 'yes-expression', prompt: 'Yes expression', type: 'text', default: '1' }, config_path: ['expression'] } },
+        { id: 'no', type: 'applicationAction', position: { x: 440, y: 140 }, data: { kind: 'application-action',
+          question: { id: 'no-expression', prompt: 'No expression', type: 'text', default: '0' }, config_path: ['expression'] } },
+        { id: 'filter-yes', type: 'tool', position: { x: 700, y: 0 }, data: { kind: 'tool', tool: 'core.filter', config: { expression: '1' } } },
+        { id: 'filter-no', type: 'tool', position: { x: 700, y: 140 }, data: { kind: 'tool', tool: 'core.filter', config: { expression: '1' } } },
+      ], edges: [
+        { id: 'condition:True Condition->yes:Condition', source: 'condition', sourceHandle: 'True Condition', target: 'yes', targetHandle: 'Condition', data: { kind: 'application-condition' } },
+        { id: 'condition:False Condition->no:Condition', source: 'condition', sourceHandle: 'False Condition', target: 'no', targetHandle: 'Condition', data: { kind: 'application-condition' } },
+        { id: 'yes:Action->filter-yes:__action__', source: 'yes', sourceHandle: 'Action', target: 'filter-yes', targetHandle: '__action__', data: { kind: 'application-action' } },
+        { id: 'no:Action->filter-no:__action__', source: 'no', sourceHandle: 'Action', target: 'filter-no', targetHandle: '__action__', data: { kind: 'application-action' } },
+      ],
+    };
+    const saved = toDocument(graph);
+    expect(saved.metadata?.application?.actions.map((a: any) => a.when)).toEqual([
+      { question: 'enabled', operator: 'equals', value: true },
+      { question: 'enabled', operator: 'not_equals', value: true },
+    ]);
+    const loaded = fromDocument(saved);
+    expect(loaded.nodes.some((n) => n.data.kind === 'application-condition')).toBe(true);
+    expect(loaded.edges.filter((e) => e.data?.kind === 'application-condition')).toHaveLength(2);
+    expect(toDocument(loaded).metadata?.application?.actions.map((a: any) => a.when)).toEqual(saved.metadata?.application?.actions.map((a: any) => a.when));
+  });
+
   it('auto-lays out documents without positions by dependency depth', () => {
     const g = fromDocument({ ...doc, metadata: undefined, nodes: doc.nodes.map(({ position: _p, ...n }) => n) });
     const a = g.nodes.find((n) => n.id === 'a')!, b = g.nodes.find((n) => n.id === 'b')!;

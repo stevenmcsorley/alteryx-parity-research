@@ -43,4 +43,29 @@ describe('AI workflow patch staging', () => {
     const state = useEditor.getState();
     await expect(prepareWorkflowProposal(state, '{"operations":[]}', 'rev_stale')).rejects.toThrow('workflow changed');
   });
+
+  it('lets the agent propose a question, Condition routes, and an Action target as one validated edit', async () => {
+    useEditor.getState().loadGraph(emptyGraph as any);
+    useEditor.getState().setEngineMeta({ tools: {
+      'core.filter': { ...manifest('core.filter', ['input'], ['true', 'false']),
+        config_schema: { type: 'object', properties: { expression: { type: 'string' } } } } as any,
+    } });
+    let checked: any;
+    setTransport({ request: async (_method: string, params: any) => { checked = params.workflow; return { valid: true, problems: [], schemas: {} }; }, subscribe: () => () => {} } as any);
+    const state = useEditor.getState(), baseRevision = workflowRevision(state);
+    const patch = JSON.stringify({ operations: [
+      { op: 'add', ref: 'filter', tool_id: 'core.filter', config: { expression: 'True' }, position: { x: 400, y: 100 } },
+      { op: 'add_question', ref: 'expression', question: { id: 'sales_expression', prompt: 'Sales predicate', type: 'text', default: '[Sales] > 100' }, config_path: ['expression'], position: { x: 0, y: 100 } },
+      { op: 'connect_action', source_ref: 'expression', target_ref: 'filter' },
+      { op: 'add_question', ref: 'enabled', question: { id: 'enabled', prompt: 'Apply filter?', type: 'boolean', default: true }, config_path: ['expression'], position: { x: 0, y: 280 } },
+      { op: 'add_condition', ref: 'condition', when: { question: 'enabled', operator: 'truthy' }, position: { x: 220, y: 280 } },
+      { op: 'connect_condition', source_ref: 'condition', source_anchor: 'True Condition', target_ref: 'expression' },
+    ] });
+    const proposal = await prepareWorkflowProposal(state, patch, baseRevision);
+    expect(proposal.validation.valid).toBe(true);
+    expect(proposal.changes).toHaveLength(6);
+    expect(checked.metadata.application.actions[0].when).toEqual({ question: 'enabled', operator: 'truthy' });
+    expect(proposal.candidate.nodes.filter((n) => n.data.kind.startsWith('application-'))).toHaveLength(3);
+    expect(useEditor.getState().nodes).toHaveLength(0);
+  });
 });

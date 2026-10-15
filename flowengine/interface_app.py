@@ -7,6 +7,7 @@ reference-backed mappings.
 from __future__ import annotations
 
 import copy
+import datetime as dt
 import math
 
 from .errors import EngineError
@@ -22,6 +23,7 @@ def _spec(doc):
     if not isinstance(questions, list) or not isinstance(actions, list):
         raise EngineError('Application questions and actions must be arrays', code='application-invalid')
     ids = set()
+    question_types = {}
     for q in questions:
         if not isinstance(q, dict) or q.get('type') not in ('text', 'boolean', 'number', 'choice', 'date', 'file', 'folder', 'multi-choice'):
             raise EngineError('Each application question needs a supported type', code='application-invalid')
@@ -29,6 +31,7 @@ def _spec(doc):
         if not isinstance(qid, str) or not qid or qid in ids:
             raise EngineError('Application question ids must be unique non-empty strings', code='application-invalid')
         ids.add(qid)
+        question_types[qid] = q['type']
         if q.get('secret') and 'default' in q:
             raise EngineError(f'Secret application question {qid!r} must not store a default value', code='application-invalid')
         if q.get('secret') and q['type'] != 'text':
@@ -40,29 +43,57 @@ def _spec(doc):
             raise EngineError('Application action references an unknown question or node', code='application-invalid')
         when = a.get('when')
         if when is not None:
-            allowed = ('equals', 'not_equals', 'truthy', 'falsy', 'contains', 'not_contains')
-            if (not isinstance(when, dict) or set(when) - {'question', 'operator', 'value'}
-                    or when.get('question') not in ids or when.get('operator') not in allowed
-                    or (when['operator'] in ('equals', 'not_equals', 'contains', 'not_contains')) != ('value' in when)):
+            if not _valid_predicate(when, ids, question_types):
                 raise EngineError('Application action has an invalid conditional predicate', code='application-invalid')
         path = a.get('config_path')
         if not isinstance(path, list) or not path or any(not isinstance(k, str) or k in ('__proto__', 'prototype', 'constructor') for k in path):
             raise EngineError('Application action config_path must be a safe list of property names', code='application-invalid')
-    occupied = set()
-    for a in actions:
-        target = (a['node_id'], tuple(a['config_path']))
-        if target in occupied:
-            raise EngineError('Conflicting application actions target the same configuration value',
-                              code='application-invalid', node_id=a['node_id'])
-        occupied.add(target)
     return {'questions': questions, 'actions': actions}
+
+
+def _valid_predicate(predicate, question_ids, question_types, depth=0):
+    if depth > 16 or not isinstance(predicate, dict):
+        return False
+    op = predicate.get('operator')
+    if op in ('all', 'any'):
+        children = predicate.get('conditions')
+        return (set(predicate) == {'operator', 'conditions'} and isinstance(children, list)
+                and bool(children) and len(children) <= 128
+                and all(_valid_predicate(child, question_ids, question_types, depth + 1) for child in children))
+    if op == 'not':
+        return (set(predicate) == {'operator', 'condition'}
+                and _valid_predicate(predicate.get('condition'), question_ids, question_types, depth + 1))
+    value_ops = ('equals', 'not_equals', 'contains', 'not_contains', 'greater_than', 'greater_than_or_equal',
+                 'less_than', 'less_than_or_equal')
+    allowed = (*value_ops, 'truthy', 'falsy')
+    qid = predicate.get('question')
+    if (set(predicate) - {'question', 'operator', 'value'} or qid not in question_ids or op not in allowed
+            or ((op in value_ops) != ('value' in predicate))):
+        return False
+    if op in ('greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal'):
+        if question_types.get(qid) == 'number':
+            return isinstance(predicate['value'], (int, float)) and not isinstance(predicate['value'], bool) and math.isfinite(predicate['value'])
+        if question_types.get(qid) == 'date' and isinstance(predicate['value'], str):
+            try:
+                dt.date.fromisoformat(predicate['value'])
+                return True
+            except ValueError:
+                return False
+        return False
+    return True
 
 
 def _condition_matches(predicate, answers):
     if not predicate:
         return True
-    actual = answers[predicate['question']]
     operation = predicate['operator']
+    if operation == 'all':
+        return all(_condition_matches(child, answers) for child in predicate['conditions'])
+    if operation == 'any':
+        return any(_condition_matches(child, answers) for child in predicate['conditions'])
+    if operation == 'not':
+        return not _condition_matches(predicate['condition'], answers)
+    actual = answers[predicate['question']]
     if operation == 'truthy':
         return bool(actual)
     if operation == 'falsy':
@@ -71,6 +102,19 @@ def _condition_matches(predicate, answers):
     if operation in ('equals', 'not_equals'):
         equal = actual == expected and type(actual) is type(expected)
         return equal if operation == 'equals' else not equal
+    if operation in ('greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal'):
+        if actual is None:
+            return False
+        if isinstance(actual, str):
+            try:
+                actual = dt.date.fromisoformat(actual)
+                expected = dt.date.fromisoformat(expected)
+            except (TypeError, ValueError):
+                return False
+        if type(actual) is not type(expected) or isinstance(actual, bool):
+            return False
+        return {'greater_than': actual > expected, 'greater_than_or_equal': actual >= expected,
+                'less_than': actual < expected, 'less_than_or_equal': actual <= expected}[operation]
     # A multi-select question can control an action by membership; for a
     # scalar question this is deliberately false rather than substring matching.
     has_value = isinstance(actual, list) and expected in actual
@@ -114,7 +158,13 @@ def bind_application(doc, supplied):
             values[qid] = value
         elif q['type'] == 'number' and isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value):
             values[qid] = value
-        elif q['type'] in ('text', 'date', 'file', 'folder') and isinstance(value, str):
+        elif q['type'] == 'date' and isinstance(value, str):
+            try:
+                dt.date.fromisoformat(value)
+            except ValueError as exc:
+                raise EngineError(f'Application input {qid!r} must be an ISO date (YYYY-MM-DD)', code='application-input-invalid') from exc
+            values[qid] = value
+        elif q['type'] in ('text', 'file', 'folder') and isinstance(value, str):
             values[qid] = value
         elif q['type'] in ('choice', 'multi-choice') and value in q['options']:
             values[qid] = value
@@ -129,12 +179,17 @@ def bind_application(doc, supplied):
                 raise EngineError(f'Application input {qid!r} is above its maximum', code='application-input-invalid')
     result = copy.deepcopy(doc)
     nodes = {n['id']: n for n in result['nodes']}
-    for action in spec['actions']:
+    active_actions = [a for a in spec['actions'] if _condition_matches(a.get('when'), values)]
+    occupied = set()
+    for action in active_actions:
         node = nodes.get(action['node_id'])
         if node is None:
             raise EngineError(f"Application action target {action['node_id']!r} does not exist", code='application-invalid')
-        if not _condition_matches(action.get('when'), values):
-            continue
+        target_key = (action['node_id'], tuple(action['config_path']))
+        if target_key in occupied:
+            raise EngineError('Conflicting active application actions target the same configuration value',
+                              code='application-invalid', node_id=action['node_id'])
+        occupied.add(target_key)
         target = node.get('config')
         for key in action['config_path'][:-1]:
             if isinstance(target, dict) and key in target:

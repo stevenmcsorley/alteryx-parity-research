@@ -273,6 +273,71 @@ class ImportTests(unittest.TestCase):
         with self.assertRaises(Exception):
             bind_application(doc, {})
 
+    def test_condition_branches_apply_only_active_updates_and_allow_exclusive_target_updates(self):
+        doc = {'nodes': [{'id': 'filter', 'config': {'expression': '1'}}], 'metadata': {'application': {
+            'questions': [{'id': 'enabled', 'type': 'boolean'},
+                          {'id': 'yes', 'type': 'text', 'default': '[amount] > 100'},
+                          {'id': 'no', 'type': 'text', 'default': '[amount] > 0'}],
+            'actions': [
+                {'question': 'yes', 'node_id': 'filter', 'config_path': ['expression'],
+                 'when': {'question': 'enabled', 'operator': 'truthy'}},
+                {'question': 'no', 'node_id': 'filter', 'config_path': ['expression'],
+                 'when': {'question': 'enabled', 'operator': 'falsy'}},
+            ]}}}
+        self.assertEqual(bind_application(doc, {'enabled': True})['nodes'][0]['config']['expression'], '[amount] > 100')
+        self.assertEqual(bind_application(doc, {'enabled': False})['nodes'][0]['config']['expression'], '[amount] > 0')
+        doc['metadata']['application']['actions'][1]['when'] = {'question': 'enabled', 'operator': 'truthy'}
+        with self.assertRaisesRegex(Exception, 'Conflicting active'):
+            bind_application(doc, {'enabled': True})
+
+    def test_condition_branches_execute_different_filter_configurations(self):
+        doc, report = import_document(ACTION_FIXTURE.read_text(encoding='utf-8'))
+        self.assertEqual(report['edge_warnings'], [])
+        app = doc['metadata']['application']
+        app['questions'].extend([
+            {'id': 'use-east', 'type': 'boolean'},
+            {'id': 'east-expression', 'type': 'text', 'default': '[region] = "East"'},
+            {'id': 'west-expression', 'type': 'text', 'default': '[region] = "West"'},
+        ])
+        node_id, config_path = app['actions'][0]['node_id'], app['actions'][0]['config_path']
+        app['actions'] = [
+            {'question': 'east-expression', 'node_id': node_id, 'config_path': config_path,
+             'when': {'question': 'use-east', 'operator': 'truthy'}},
+            {'question': 'west-expression', 'node_id': node_id, 'config_path': config_path,
+             'when': {'question': 'use-east', 'operator': 'falsy'}},
+        ]
+        east = run_workflow(bind_application(doc, {'use-east': True}), base_dir=ROOT)
+        west = run_workflow(bind_application(doc, {'use-east': False}), base_dir=ROOT)
+        self.assertTrue(east.ok, east.error)
+        self.assertTrue(west.ok, west.error)
+        self.assertEqual(rows(east.output(node_id, 'true')), [['East']])
+        self.assertEqual(rows(west.output(node_id, 'true')), [['West']])
+        self.assertEqual(doc['nodes'][1]['config']['expression'], '[region] = "East"')
+
+    def test_nested_application_condition_predicates(self):
+        doc = {'nodes': [{'id': 'n', 'config': {'value': 'old'}}], 'metadata': {'application': {
+            'questions': [{'id': 'enabled', 'type': 'boolean'}, {'id': 'name', 'type': 'text'}],
+            'actions': [{'question': 'name', 'node_id': 'n', 'config_path': ['value'], 'when': {
+                'operator': 'all', 'conditions': [
+                    {'question': 'enabled', 'operator': 'truthy'},
+                    {'operator': 'not', 'condition': {'question': 'name', 'operator': 'equals', 'value': ''}},
+                ]}}]}}}
+        self.assertEqual(bind_application(doc, {'enabled': True, 'name': 'ok'})['nodes'][0]['config']['value'], 'ok')
+        self.assertEqual(bind_application(doc, {'enabled': False, 'name': 'ok'})['nodes'][0]['config']['value'], 'old')
+
+    def test_condition_comparisons_are_typed_for_numeric_and_date_answers(self):
+        doc = {'nodes': [{'id': 'n', 'config': {'value': 0}}], 'metadata': {'application': {
+            'questions': [{'id': 'amount', 'type': 'number'}, {'id': 'day', 'type': 'date'}],
+            'actions': [{'question': 'amount', 'node_id': 'n', 'config_path': ['value'],
+                         'when': {'question': 'amount', 'operator': 'greater_than', 'value': 100}}]}}}
+        self.assertEqual(bind_application(doc, {'amount': 101, 'day': '2026-10-15'})['nodes'][0]['config']['value'], 101)
+        self.assertEqual(bind_application(doc, {'amount': 100, 'day': '2026-10-15'})['nodes'][0]['config']['value'], 0)
+        doc['metadata']['application']['actions'][0]['when'] = {
+            'question': 'day', 'operator': 'greater_than_or_equal', 'value': '2026-01-01'}
+        self.assertEqual(bind_application(doc, {'amount': 1, 'day': '2026-10-15'})['nodes'][0]['config']['value'], 1)
+        with self.assertRaisesRegex(Exception, 'ISO date'):
+            bind_application(doc, {'amount': 1, 'day': '15/10/2026'})
+
     def test_simple_action_updates_an_existing_text_input_cell(self):
         xml = '''<AlteryxDocument><Nodes>
           <Node ToolID="1"><GuiSettings Plugin="AlteryxGuiToolkit.Questions.TextBox.QuestionTextBox"/><Properties><Configuration/></Properties></Node>

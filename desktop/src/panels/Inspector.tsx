@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useEditor } from '../state/store';
 import type { FieldDef } from '../engine/types';
-import type { ApplicationActionNodeData, CanvasNode, ToolNodeData } from '../model/workflow';
+import type { ApplicationActionNodeData, ApplicationConditionNodeData, CanvasNode, ToolNodeData } from '../model/workflow';
 import { SchemaForm, type FieldContext } from './SchemaForm';
 import { categoryColor, glyph } from '../ui/categories';
 import { engine, describe } from '../state/engineActions';
@@ -14,9 +14,48 @@ export function Inspector({ embedded = false }: { embedded?: boolean } = {}) {
     <aside className={embedded ? 'inspector-content' : 'app-right'} aria-label="Configuration" data-testid="inspector">
       {!node ? <WorkflowProperties /> : node.data.kind === 'tool' ? <ToolInspector node={node} /> :
         node.data.kind === 'application-action' ? <ApplicationActionInspector node={node} /> :
+        node.data.kind === 'application-condition' ? <ApplicationConditionInspector node={node} /> :
         node.data.kind === 'container' ? <ContainerInspector node={node} /> : <CommentInspector node={node} />}
     </aside>
   );
+}
+
+function ApplicationConditionInspector({ node }: { node: CanvasNode }) {
+  const d = node.data as ApplicationConditionNodeData;
+  const update = useEditor((s) => s.updateNodeData);
+  const checkpoint = useEditor((s) => s.checkpoint);
+  const questions = useEditor((s) => s.nodes.filter((n) => n.data.kind === 'application-action')
+    .map((n) => (n.data as ApplicationActionNodeData).question));
+  const question = questions.find((q) => q.id === d.when.question);
+  const updateWhen = (when: ApplicationConditionNodeData['when']) => update(node.id, { when }, false);
+  const operators: NonNullable<ApplicationConditionNodeData['when']>['operator'][] = ['truthy', 'falsy', 'equals', 'not_equals'];
+  if (question?.type === 'multi-choice') operators.push('contains', 'not_contains');
+  if (question?.type === 'number' || question?.type === 'date') operators.push('greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal');
+  const needsValue = ['equals', 'not_equals', 'contains', 'not_contains', 'greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal'].includes(d.when.operator);
+  return <>
+    <div className="section"><h3>Interface</h3><h2>Condition</h2>
+      <p className="help">Routes connected Actions according to an analytic-app answer. The predicate is evaluated for each run on that run’s private workflow copy.</p>
+    </div>
+    <div className="section kv">
+      <label>Question</label><select aria-label="Condition question" value={d.when.question} onFocus={checkpoint}
+        onChange={(e) => updateWhen({ ...d.when, question: e.target.value })}>
+        <option value="">Select a question</option>{questions.map((q) => <option key={q.id} value={q.id}>{q.prompt || q.id}</option>)}
+      </select>
+      <label>Operator</label><select aria-label="Condition operator" value={d.when.operator} onFocus={checkpoint}
+        onChange={(e) => { const operator = e.target.value as ApplicationConditionNodeData['when']['operator'];
+          updateWhen({ question: d.when.question, operator, ...(['equals', 'not_equals', 'contains', 'not_contains', 'greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal'].includes(operator)
+            ? { value: question?.type === 'number' ? 0 : '' } : {}) }); }}>
+        {operators.map((op) => <option key={op} value={op}>{op.replaceAll('_', ' ')}</option>)}
+      </select>
+      {needsValue && <><label>Compare to</label>
+        {question?.type === 'boolean' ? <select aria-label="Condition value" value={String(d.when.value ?? false)} onFocus={checkpoint}
+          onChange={(e) => updateWhen({ ...d.when, value: e.target.value === 'true' })}>
+          <option value="true">True</option><option value="false">False</option></select>
+          : <input aria-label="Condition value" type={question?.type === 'number' ? 'number' : question?.type === 'date' ? 'date' : 'text'} value={String(d.when.value ?? '')}
+            onFocus={checkpoint} onChange={(e) => updateWhen({ ...d.when, value: question?.type === 'number' ? Number(e.target.value) : e.target.value })} />}
+      </>}
+    </div>
+  </>;
 }
 
 function ApplicationActionInspector({ node }: { node: CanvasNode }) {
@@ -38,6 +77,9 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
   const knownQuestions = [...new Map(nodes.filter((n) => n.data.kind === 'application-action')
     .map((n) => { const q = (n.data as ApplicationActionNodeData).question; return [q.id, q] as const; })).values()];
   const conditionedQuestion = knownQuestions.find((q) => q.id === d.when?.question);
+  const actionOperators: NonNullable<ApplicationActionNodeData['when']>['operator'][] = ['truthy', 'falsy', 'equals', 'not_equals'];
+  if (conditionedQuestion?.type === 'multi-choice') actionOperators.push('contains', 'not_contains');
+  if (conditionedQuestion?.type === 'number' || conditionedQuestion?.type === 'date') actionOperators.push('greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal');
   const changeCondition = (when: ApplicationActionNodeData['when']) => {
     update(node.id, { when }, false);
   };
@@ -76,22 +118,18 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
           onChange={(e) => {
             const operator = e.target.value as NonNullable<ApplicationActionNodeData['when']>['operator'];
             changeCondition({ question: d.when!.question, operator,
-              ...(['equals', 'not_equals', 'contains', 'not_contains'].includes(operator)
+              ...(['equals', 'not_equals', 'contains', 'not_contains', 'greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal'].includes(operator)
                 ? { value: conditionedQuestion?.type === 'number' ? 0 : '' } : {}) });
           }}>
-          <option value="truthy">Answer is true / nonempty</option>
-          <option value="falsy">Answer is false / empty</option>
-          <option value="equals">Answer equals</option>
-          <option value="not_equals">Answer does not equal</option>
-          {conditionedQuestion?.type === 'multi-choice' && <><option value="contains">Selection includes</option><option value="not_contains">Selection excludes</option></>}
+          {actionOperators.map((operator) => <option key={operator} value={operator}>{operator.replaceAll('_', ' ')}</option>)}
         </select>
-        {['equals', 'not_equals', 'contains', 'not_contains'].includes(d.when.operator) &&
+        {['equals', 'not_equals', 'contains', 'not_contains', 'greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal'].includes(d.when.operator) &&
           <><label>Compare to</label>
             {conditionedQuestion?.type === 'boolean'
               ? <select aria-label="Action condition value" value={String(d.when.value ?? false)} onFocus={checkpoint}
                   onChange={(e) => changeCondition({ ...d.when!, value: e.target.value === 'true' })}>
                   <option value="true">True</option><option value="false">False</option></select>
-              : <input aria-label="Action condition value" type={conditionedQuestion?.type === 'number' ? 'number' : 'text'}
+              : <input aria-label="Action condition value" type={conditionedQuestion?.type === 'number' ? 'number' : conditionedQuestion?.type === 'date' ? 'date' : 'text'}
                   value={String(d.when.value ?? '')} onFocus={checkpoint}
                   onChange={(e) => changeCondition({ ...d.when!, value: conditionedQuestion?.type === 'number' ? Number(e.target.value) : e.target.value })} />}
           </>}

@@ -41,6 +41,27 @@ describe('flowbench.agent.v1 application tools', () => {
     expect(JSON.stringify(result)).toContain('C:/private/data.csv');
   });
 
+  it('exposes safe Interface question and Condition configuration with stable control-anchor aliases', async () => {
+    const question = { id: 'enabled', prompt: 'Run the optional filter?', type: 'boolean', default: true };
+    const action = { id: 'question_1', type: 'applicationAction', position: { x: 0, y: 0 }, data: {
+      kind: 'application-action', question, config_path: ['expression'] } } as CanvasNode;
+    const condition = { id: 'condition_1', type: 'applicationCondition', position: { x: 100, y: 0 }, data: {
+      kind: 'application-condition', when: { question: 'enabled', operator: 'truthy' } } } as CanvasNode;
+    const state = { ...context(), nodes: [action, condition], edges: [{ id: 'e', source: 'condition_1', sourceHandle: 'True Condition',
+      target: 'question_1', targetHandle: 'Condition' }] } as AgentContext;
+    const env = { ...({ getState: () => state, validate: async () => undefined }) };
+    expect(await dispatchAgentTool(env, 'workflow.get_node_config', { node_ref: 'node_1' })).toMatchObject({
+      kind: 'application-action', config: { question: { id: 'enabled', type: 'boolean', default: true }, config_path: ['expression'] },
+    });
+    expect(await dispatchAgentTool(env, 'workflow.get_node_config', { node_ref: 'node_2' })).toMatchObject({
+      kind: 'application-condition', config: { condition: { question: 'enabled', operator: 'truthy' } },
+    });
+    expect(await dispatchAgentTool(env, 'workflow.get_snapshot')).toMatchObject({
+      nodes: [{ tool_id: 'interface:action' }, { tool_id: 'interface:condition' }],
+      edges: [{ source_anchor: 'output_1', target_anchor: 'input_1' }],
+    });
+  });
+
   it('strictly rejects unknown tools and unregistered write operations', async () => {
     await expect(dispatchAgentTool(env, 'workflow.delete_node', { node_id: 'input_1' })).rejects.toThrow('Unknown or unavailable');
     await expect(dispatchAgentTool(env, 'workflow.get_snapshot', { include_rows: true })).rejects.toThrow('Unexpected argument');

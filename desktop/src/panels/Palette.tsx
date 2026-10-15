@@ -7,6 +7,8 @@ import { TOOL_MIME } from '../canvas/Canvas';
 
 export function statusOf(c: CatalogEntry): { cls: string; label: string; text: string } {
   // Labels follow the evidence ledger (implementation_status), never mere kernel presence.
+  if (c.id === 'interface:condition')
+    return { cls: 'tested', label: 'Flowbench native', text: 'Native analytic-app Condition routing; unsupported imported Alteryx Condition XML remains preserved with diagnostics.' };
   if (c.kernel && c.implementation_status !== 'implemented')
     return { cls: 'blocked', label: 'In progress', text: 'A kernel exists but has not yet passed the evidence rules (tests); results may change.' };
   if (c.kernel && c.verification_status === 'partial')
@@ -28,6 +30,7 @@ export function Palette() {
   const [active, setActive] = useState<string | null>(null);
   const addTool = useEditor((s) => s.addTool);
   const addApplicationAction = useEditor((s) => s.addApplicationAction);
+  const addApplicationCondition = useEditor((s) => s.addApplicationCondition);
   const flow = useReactFlow();
 
   const categories = useMemo(() => [...new Set(catalog.map((c) => c.category))].sort(), [catalog]);
@@ -48,8 +51,10 @@ export function Palette() {
   const addInterfaceQuestion = (catalogId: string, position?: { x: number; y: number }) => {
     const selected = useEditor.getState().nodes.find((n) => n.selected);
     const p = position ?? (selected ? { x: selected.position.x, y: selected.position.y + 190 } : { x: 120, y: 120 });
+    if (catalogId === 'interface:condition') { addApplicationCondition(p); return; }
     addApplicationAction(p, interfaceQuestions[catalogId] ?? 'text', catalog.find((c) => c.id === catalogId)?.name ?? 'Enter a value');
   };
+  const canAddInterface = (id: string) => id in interfaceQuestions || id === 'interface:condition';
   const extensions = ['core.db_input', 'core.db_output'].filter((id) => tools[id] &&
     (!q.trim() || tools[id].display_name.toLowerCase().includes(q.trim().toLowerCase()) ||
       tools[id].description.toLowerCase().includes(q.trim().toLowerCase())));
@@ -104,16 +109,17 @@ export function Palette() {
                   return (
                     <div key={c.id} className={`tool-item ${c.kernel ? '' : 'unavailable'} ${active === c.id ? 'active' : ''}`}
                       data-testid={`palette-${c.id}`} role="button" tabIndex={0}
-                      draggable={!!c.kernel || c.id in interfaceQuestions}
+                      draggable={!!c.kernel || canAddInterface(c.id)}
                       onDragStart={(e) => {
-                        if (!c.kernel && !(c.id in interfaceQuestions)) return;
-                        e.dataTransfer.setData(TOOL_MIME, c.kernel ?? `flowengine.application_action:${c.id}`);
+                        if (!c.kernel && !canAddInterface(c.id)) return;
+                        const special = c.id === 'interface:condition' ? 'flowengine.application_condition' : `flowengine.application_action:${c.id}`;
+                        e.dataTransfer.setData(TOOL_MIME, c.kernel ?? special);
                         e.dataTransfer.effectAllowed = 'copy';
                       }}
                       onClick={() => setActive(c.id)}
-                      onDoubleClick={() => c.id in interfaceQuestions ? addInterfaceQuestion(c.id) : c.kernel && addAtCentre(c.kernel)}
+                      onDoubleClick={() => canAddInterface(c.id) ? addInterfaceQuestion(c.id) : c.kernel && addAtCentre(c.kernel)}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && (c.kernel || c.id in interfaceQuestions)) c.id in interfaceQuestions ? addInterfaceQuestion(c.id) : addAtCentre(c.kernel!);
+                        if (e.key === 'Enter' && (c.kernel || canAddInterface(c.id))) canAddInterface(c.id) ? addInterfaceQuestion(c.id) : addAtCentre(c.kernel!);
                         if (e.key === ' ') setActive(c.id);
                       }}
                       title={st.text}>

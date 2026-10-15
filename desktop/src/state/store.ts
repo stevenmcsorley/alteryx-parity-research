@@ -63,6 +63,7 @@ export type EditorState = {
   connect(c: Connection): string | null;
   addTool(toolId: string, position: { x: number; y: number }): string;
   addApplicationAction(position: { x: number; y: number }, questionType?: string, prompt?: string): string;
+  addApplicationCondition(position: { x: number; y: number }): string;
   addComment(position: { x: number; y: number }): string;
   updateNodeData(id: string, patch: Record<string, unknown>, record?: boolean): void;
   deleteSelected(): void;
@@ -180,6 +181,19 @@ export const useEditor = create<EditorState>((set, get) => ({
     if (c.source === c.target) return 'A tool cannot connect to itself';
     const target = s.nodes.find((n) => n.id === c.target);
     const source = s.nodes.find((n) => n.id === c.source);
+    if (source?.data.kind === 'application-condition') {
+      if (target?.data.kind !== 'application-action' || !['True Condition', 'False Condition'].includes(c.sourceHandle ?? '') || c.targetHandle !== 'Condition')
+        return 'Condition outputs must connect to an Action Condition input';
+      const id = edgeId(c.source, c.sourceHandle!, c.target, 'Condition');
+      if (s.edges.some((e) => e.id === id)) return 'Already connected';
+      if (s.edges.some((e) => e.target === c.target && e.data?.kind === 'application-condition'))
+        return 'An Action can have only one Condition route';
+      get().checkpoint();
+      set({ edges: [...s.edges, { id, source: c.source, sourceHandle: c.sourceHandle!, target: c.target,
+        targetHandle: 'Condition', data: { kind: 'application-condition' },
+        style: { stroke: '#dd8a36', strokeDasharray: '4 4' }, label: c.sourceHandle === 'True Condition' ? 'True' : 'False' }] });
+      return null;
+    }
     if (source?.data.kind === 'application-action') {
       if (target?.data.kind !== 'tool' || c.sourceHandle !== 'Action' || c.targetHandle !== '__action__')
         return 'Action connections must run from the Action anchor to a tool Action target';
@@ -193,7 +207,8 @@ export const useEditor = create<EditorState>((set, get) => ({
         style: { stroke: '#805ad5', strokeDasharray: '5 4' }, label: 'Action' }] });
       return null;
     }
-    if (target?.data.kind === 'application-action' || target?.data.kind !== 'tool' || source?.data.kind !== 'tool')
+    if (target?.data.kind === 'application-action' || target?.data.kind === 'application-condition' ||
+        source?.data.kind !== 'tool' || target?.data.kind !== 'tool')
       return 'Only data tools connect through row-data anchors';
     const manifest = s.tools[target.data.tool];
     const anchor = manifest?.inputs.find((a) => a.name === c.targetHandle);
@@ -243,6 +258,17 @@ export const useEditor = create<EditorState>((set, get) => ({
         ...(['drop-down', 'radio-button'].includes(questionType) ? { options: ['Option 1', 'Option 2'] } : questionType === 'list-box' ? { type: 'multi-choice' as const, options: ['Option 1', 'Option 2'] } : {}),
         ...(questionType === 'numeric-up-down' ? { minimum: 0, maximum: 100, default: 0 } : questionType === 'check-box' ? { default: false } : {}) },
         config_path: ['expression'] } }] });
+    return id;
+  },
+
+  addApplicationCondition: (position) => {
+    const s = get();
+    const id = nextNodeId('condition', s.nodes.map((n) => n.id));
+    const firstQuestion = s.nodes.find((n) => n.data.kind === 'application-action')?.data;
+    const questionId = firstQuestion?.kind === 'application-action' ? firstQuestion.question.id : '';
+    get().checkpoint();
+    set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'applicationCondition', position,
+      selected: true, data: { kind: 'application-condition', when: { question: questionId, operator: 'truthy' } } }] });
     return id;
   },
 

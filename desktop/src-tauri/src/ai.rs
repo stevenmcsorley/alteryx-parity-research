@@ -548,7 +548,7 @@ fn native_tool_definitions() -> Value {
       {"type":"function","name":"workflow_get_node_config","description":"Read the active workflow node configuration, including paths and expressions. Credential fields and raw row records are excluded.","parameters":object(json!({"node_ref":{"type":"string","description":"Existing node reference such as node_1 from workflow_get_snapshot."}}),&["node_ref"]),"strict":true},
       {"type":"function","name":"workflow_validate","description":"Validate the open workflow and return sanitized issue codes.","parameters":object(json!({}),&[]),"strict":true},
       {"type":"function","name":"workflow_get_diagnostics","description":"Read sanitized validation codes and run status events.","parameters":object(json!({}),&[]),"strict":true},
-      {"type":"function","name":"workflow_propose_patch","description":"Prepare and validate a graph edit. Review mode shows an approval preview; Full Control applies it as an atomic undoable transaction. Use installed tools and anchors. Never include secrets.","parameters":object(json!({"patch_json":{"type":"string","description":"JSON object with one operations array, e.g. {\\\"operations\\\":[{\\\"op\\\":\\\"add\\\",\\\"ref\\\":\\\"sales_in\\\",\\\"tool_id\\\":\\\"core.input_data\\\",\\\"config\\\":{\\\"path\\\":\\\"sales.csv\\\"},\\\"position\\\":{\\\"x\\\":0,\\\"y\\\":0}}]}. Supported ops: add requires op/ref/tool_id/config/position; configure requires op/node_ref/config (partial config patch); connect/disconnect require op/source_ref/source_anchor/target_ref/target_anchor; remove requires op/node_ref. Existing refs are node_N from workflow_get_snapshot. Config must match the manifest schema."},"base_revision":{"type":"string","description":"base_revision exactly as returned by workflow_get_snapshot; stale revisions are rejected."}}),&["patch_json","base_revision"]),"strict":true},
+      {"type":"function","name":"workflow_propose_patch","description":"Prepare and validate a graph edit. Review mode shows an approval preview; Full Control applies it as an atomic undoable transaction. Use installed tools and anchors. Never include secrets.","parameters":object(json!({"patch_json":{"type":"string","description":"JSON object with one operations array. Operations: add {op,ref,tool_id,config,position}; configure {op,node_ref,config}; add_question {op,ref,question,config_path,position}; add_condition {op,ref,when,position}; configure_question {op,node_ref,question,config_path}; configure_condition {op,node_ref,when}; connect {op,source_ref,source_anchor,target_ref,target_anchor}; connect_action {op,source_ref,target_ref}; connect_condition {op,source_ref,source_anchor,target_ref}; disconnect {op,source_ref,source_anchor,target_ref,target_anchor}; remove {op,node_ref}. Application questions are typed and Condition routes require a question id, operator and value when applicable. Existing refs are node_N from workflow_get_snapshot. Tool configs must match installed manifests."},"base_revision":{"type":"string","description":"base_revision exactly as returned by workflow_get_snapshot; stale revisions are rejected."}}),&["patch_json","base_revision"]),"strict":true},
       {"type":"function","name":"workflow_request_run","description":"Run the workflow. Full Control runs ordinary processing directly; external effects retain their scoped permission checks.","parameters":object(json!({}),&[]),"strict":true},
       {"type":"function","name":"workflow_request_save","description":"Save to the current workflow path in Full Control; a new destination uses the native picker.","parameters":object(json!({}),&[]),"strict":true},
       {"type":"function","name":"run_get_results","description":"List Browse outputs with truncation markers; use run_get_result_page to inspect selected rows under active data-routing consent.","parameters":object(json!({}),&[]),"strict":true}
@@ -602,7 +602,13 @@ fn valid_patch_json(text: &str) -> bool {
             let expected: &[&str] = match kind {
                 "add" => &["op", "ref", "tool_id", "config", "position"],
                 "configure" => &["op", "node_ref", "config"],
+                "add_question" => &["op", "ref", "question", "config_path", "position"],
+                "add_condition" => &["op", "ref", "when", "position"],
+                "configure_question" => &["op", "node_ref", "question", "config_path"],
+                "configure_condition" => &["op", "node_ref", "when"],
                 "connect" | "disconnect" => &["op", "source_ref", "source_anchor", "target_ref", "target_anchor"],
+                "connect_action" => &["op", "source_ref", "target_ref"],
+                "connect_condition" => &["op", "source_ref", "source_anchor", "target_ref"],
                 "remove" => &["op", "node_ref"],
                 _ => return false,
             };
@@ -2385,7 +2391,7 @@ mod tests {
         assert!(valid_tool_arguments("workflow.validate", &json!({})));
         assert!(valid_tool_arguments("workflow.propose_patch", &json!({
             "base_revision":"rev_12345678",
-            "patch_json":"{\"operations\":[{\"op\":\"remove\",\"node_ref\":\"node_1\"}]}"
+            "patch_json":"{\"operations\":[{\"op\":\"remove\",\"node_ref\":\"node_1\"},{\"op\":\"add_question\",\"ref\":\"minimum\",\"question\":{\"id\":\"min_sales\",\"prompt\":\"Minimum sales\",\"type\":\"number\"},\"config_path\":[\"expression\"],\"position\":{\"x\":0,\"y\":0}},{\"op\":\"add_condition\",\"ref\":\"gate\",\"when\":{\"question\":\"min_sales\",\"operator\":\"truthy\"},\"position\":{\"x\":0,\"y\":0}},{\"op\":\"connect_condition\",\"source_ref\":\"gate\",\"source_anchor\":\"True Condition\",\"target_ref\":\"minimum\"}]}"
         })));
         assert!(!valid_tool_arguments("workflow.propose_patch", &json!({
             "base_revision":"rev_12345678",

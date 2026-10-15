@@ -18,6 +18,7 @@ export function Canvas() {
   const connect = useEditor((s) => s.connect);
   const addTool = useEditor((s) => s.addTool);
   const addApplicationAction = useEditor((s) => s.addApplicationAction);
+  const addApplicationCondition = useEditor((s) => s.addApplicationCondition);
   const nodeRows = useEditor((s) => s.run.nodeRows);
   const runStatus = useEditor((s) => s.run.status);
   const tools = useEditor((s) => s.tools);
@@ -36,7 +37,7 @@ export function Canvas() {
     return {
       ...e,
       animated: runStatus === 'running' && rows === undefined,
-      label: rows !== undefined ? rows.toLocaleString() : undefined,
+      label: e.data?.kind === 'application-condition' ? e.label : rows !== undefined ? rows.toLocaleString() : undefined,
       labelShowBg: true,
       labelBgPadding: [5, 1] as [number, number],
       labelBgBorderRadius: 8,
@@ -64,6 +65,11 @@ export function Canvas() {
     const toolId = e.dataTransfer.getData(TOOL_MIME);
     if (!toolId) return;
     e.preventDefault();
+    if (toolId === 'flowengine.application_condition') {
+      const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      addApplicationCondition({ x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
+      return;
+    }
     if (toolId === 'flowengine.application_action' || toolId.startsWith('flowengine.application_action:')) {
       const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
       const catalogId = toolId.slice('flowengine.application_action:'.length);
@@ -76,7 +82,7 @@ export function Canvas() {
     }
     const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
     addTool(toolId, { x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
-  }, [flow, tools, addTool, addApplicationAction]);
+  }, [flow, tools, addTool, addApplicationAction, addApplicationCondition]);
 
   const minimapColor = useCallback((n: any) => {
     if (n.type !== 'tool') return 'transparent';

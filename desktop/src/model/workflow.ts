@@ -21,17 +21,29 @@ export type ApplicationActionNodeData = {
   kind: 'application-action';
   question: { id: string; prompt: string; label?: string; description?: string; type: 'text' | 'number' | 'boolean' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder'; required?: boolean; default?: unknown; options?: unknown[]; secret?: boolean; minimum?: number; maximum?: number };
   config_path: string[];
-  when?: { question: string; operator: 'equals' | 'not_equals' | 'truthy' | 'falsy' | 'contains' | 'not_contains'; value?: unknown };
+  when?: { question: string; operator: 'equals' | 'not_equals' | 'truthy' | 'falsy' | 'contains' | 'not_contains' | 'greater_than' | 'greater_than_or_equal' | 'less_than' | 'less_than_or_equal'; value?: unknown };
   source_action_index?: number;
 };
-export type CanvasNodeData = ToolNodeData | CommentNodeData | ContainerNodeData | ApplicationActionNodeData;
+export type ApplicationPredicate = NonNullable<ApplicationActionNodeData['when']>;
+export type ApplicationConditionNodeData = { kind: 'application-condition'; when: ApplicationPredicate };
+export type CanvasNodeData = ToolNodeData | CommentNodeData | ContainerNodeData | ApplicationActionNodeData | ApplicationConditionNodeData;
 export type CanvasNode = Node<CanvasNodeData>;
-export type CanvasEdge = Edge<{ kind?: 'application-action' }>;
+export type CanvasEdge = Edge<{ kind?: 'application-action' | 'application-condition' }>;
 
 export type CanvasGraph = { nodes: CanvasNode[]; edges: CanvasEdge[]; name: string; description?: string; profile?: string; metadata?: Record<string, any> };
 
 export function edgeId(source: string, sourceHandle: string, target: string, targetHandle: string): string {
   return `${source}:${sourceHandle}->${target}:${targetHandle}`;
+}
+
+function branchPredicate(when: ApplicationPredicate, invert: boolean): ApplicationPredicate {
+  if (!invert) return structuredClone(when);
+  const inverse: Record<ApplicationPredicate['operator'], ApplicationPredicate['operator']> = {
+    equals: 'not_equals', not_equals: 'equals', truthy: 'falsy', falsy: 'truthy',
+    contains: 'not_contains', not_contains: 'contains', greater_than: 'less_than_or_equal',
+    greater_than_or_equal: 'less_than', less_than: 'greater_than_or_equal', less_than_or_equal: 'greater_than',
+  };
+  return { ...structuredClone(when), operator: inverse[when.operator] };
 }
 
 function absolutePosition(node: CanvasNode, byId: Map<string, CanvasNode>): { x: number; y: number } {
@@ -61,6 +73,7 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
   const containers: any[] = [];
   const comments: any[] = [];
   const applicationActions: any[] = [];
+  const applicationConditions: any[] = [];
   for (const n of g.nodes) {
     const pos = absolutePosition(n, byId);
     if (n.data.kind === 'tool') {
@@ -79,15 +92,20 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
       });
     } else if (n.data.kind === 'application-action') {
       const link = g.edges.find((e) => e.source === n.id && e.sourceHandle === 'Action' && e.data?.kind === 'application-action');
+      const conditionLink = g.edges.find((e) => e.target === n.id && e.data?.kind === 'application-condition');
       applicationActions.push({ id: n.id, question: structuredClone(n.data.question), config_path: [...n.data.config_path],
-        target_node: link?.target ?? null, position: pos, source_action_index: n.data.source_action_index });
+        target_node: link?.target ?? null, position: pos, source_action_index: n.data.source_action_index,
+        when: n.data.when ? structuredClone(n.data.when) : undefined,
+        condition_node: conditionLink?.source ?? null, condition_branch: conditionLink?.sourceHandle ?? null });
+    } else if (n.data.kind === 'application-condition') {
+      applicationConditions.push({ id: n.id, when: structuredClone(n.data.when), position: pos });
     } else {
       comments.push({ id: n.id, text: n.data.text, position: pos, parent: n.parentId ?? null,
         size: { width: Number(n.style?.width ?? n.width ?? 200), height: Number(n.style?.height ?? n.height ?? 80) } });
     }
   }
   // tools explicitly disabled by their own flag keep it even if the container is re-enabled
-  const edges = g.edges.filter((e) => e.data?.kind !== 'application-action').map((e) => ({
+  const edges = g.edges.filter((e) => !['application-action', 'application-condition'].includes(e.data?.kind ?? '')).map((e) => ({
     from: { node: e.source, anchor: e.sourceHandle ?? 'output' },
     to: { node: e.target, anchor: e.targetHandle ?? 'input' },
   }));
@@ -98,28 +116,43 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
   );
   const metadata = structuredClone(g.metadata ?? {});
   const actionNodes = g.nodes.filter((n) => n.data.kind === 'application-action');
-  if (actionNodes.length) {
+  if (actionNodes.length || (metadata.ui?.applicationActions?.length ?? 0) > 0 || (metadata.application?.actions?.length ?? 0) > 0) {
     const old = metadata.application ?? { questions: [], actions: [] };
-    const questions = [...(old.questions ?? [])];
-    const replaced = new Set(actionNodes.map((n) => (n.data as ApplicationActionNodeData).source_action_index)
+    const baselineActions: any[] = metadata.ui?.applicationActions ?? [];
+    const currentQuestionIds = new Set(actionNodes.map((n) => (n.data as ApplicationActionNodeData).question.id));
+    const removedQuestionIds = new Set(baselineActions.map((a) => a.question?.id).filter((id: unknown): id is string => typeof id === 'string' && !currentQuestionIds.has(id)));
+    const questions = (old.questions ?? []).filter((q: any) => !removedQuestionIds.has(q.id));
+    const replaced = new Set([...baselineActions.map((a) => a.source_action_index), ...actionNodes.map((n) => (n.data as ApplicationActionNodeData).source_action_index)]
       .filter((x): x is number => Number.isInteger(x)));
-    const actions: any[] = (old.actions ?? []).filter((_: any, i: number) => !replaced.has(i));
+    const actions: any[] = (old.actions ?? []).filter((action: any, i: number) => !replaced.has(i) &&
+      !baselineActions.some((base) => base.target_node === action.node_id && base.question?.id === action.question &&
+        JSON.stringify(base.config_path) === JSON.stringify(action.config_path)));
     for (const n of actionNodes) {
       const d = n.data as ApplicationActionNodeData;
-      const linked = g.edges.find((e) => e.source === n.id && e.sourceHandle === 'Action' && e.data?.kind === 'application-action');
-      if (!linked) continue;
-      const target = byId.get(linked.target);
-      if (target?.data.kind !== 'tool') continue;
       const { prompt, label: _label, ...questionFields } = d.question;
       const q = { ...questionFields, label: prompt };
       const qi = questions.findIndex((x: any) => x.id === q.id);
       if (qi >= 0) questions[qi] = q; else questions.push(q);
-      actions.push({ question: q.id, node_id: target.id, config_path: d.config_path,
-        ...(d.when ? { when: structuredClone(d.when) } : {}) });
+      const linked = g.edges.find((e) => e.source === n.id && e.sourceHandle === 'Action' && e.data?.kind === 'application-action');
+      if (!linked) continue;
+      const target = byId.get(linked.target);
+      if (target?.data.kind !== 'tool') continue;
+      const conditionLink = g.edges.find((e) => e.target === n.id && e.data?.kind === 'application-condition');
+      const conditionNode = conditionLink && g.nodes.find((x) => x.id === conditionLink.source && x.data.kind === 'application-condition');
+      const conditionPredicate = conditionNode?.data.kind === 'application-condition'
+        ? branchPredicate(conditionNode.data.when, conditionLink?.sourceHandle === 'False Condition') : undefined;
+      const when = conditionPredicate ?? d.when;
+      const action = { question: q.id, node_id: target.id, config_path: d.config_path,
+        ...(when ? { when: structuredClone(when) } : {}) };
+      const duplicate = actions.findIndex((oldAction: any) => oldAction.question === action.question &&
+        oldAction.node_id === action.node_id && JSON.stringify(oldAction.config_path) === JSON.stringify(action.config_path) &&
+        JSON.stringify(oldAction.when ?? null) === JSON.stringify(action.when ?? null));
+      if (duplicate >= 0) actions.splice(duplicate, 1);
+      actions.push(action);
     }
     metadata.application = { ...old, questions, actions };
   }
-  doc.metadata = { ...metadata, ui: { containers, comments, ownDisabled, applicationActions } };
+  doc.metadata = { ...metadata, ui: { containers, comments, ownDisabled, applicationActions, applicationConditions } };
   if (g.profile) doc.metadata.profile = g.profile;
   return doc;
 }
@@ -129,6 +162,7 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
   const containers: any[] = ui.containers ?? [];
   const comments: any[] = ui.comments ?? [];
   const applicationActions: any[] = ui.applicationActions ?? [];
+  const applicationConditions: any[] = ui.applicationConditions ?? [];
   const ownDisabled: Record<string, boolean> = ui.ownDisabled ?? {};
   const parentOf = new Map<string, string>();
   for (const c of containers) for (const child of c.children ?? []) parentOf.set(child, c.id);
@@ -137,6 +171,7 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
   for (const n of doc.nodes) absById.set(n.id, n.position ?? { x: 0, y: 0 });
   for (const c of comments) absById.set(c.id, c.position);
   for (const a of applicationActions) absById.set(a.id, a.position ?? { x: 0, y: 0 });
+  for (const c of applicationConditions) absById.set(c.id, c.position ?? { x: 0, y: 0 });
   const rel = (id: string) => {
     const p = absById.get(id) ?? { x: 0, y: 0 };
     const parent = parentOf.get(id);
@@ -180,6 +215,10 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
       data: { kind: 'application-action', question: { ...a.question, prompt: a.question.prompt ?? a.question.label ?? a.question.id },
         config_path: a.config_path, when: a.when ? structuredClone(a.when) : undefined, source_action_index: a.source_action_index },
     })),
+    ...applicationConditions.map((c: any): CanvasNode => ({
+      id: c.id, type: 'applicationCondition', position: rel(c.id),
+      data: { kind: 'application-condition', when: structuredClone(c.when) },
+    })),
   ];
   for (const n of nodes) if (!n.parentId) delete n.parentId;
   autoLayout(nodes, doc);
@@ -193,6 +232,11 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
       id: `${a.id}:Action->${target}:__action__`, source: a.id, sourceHandle: 'Action',
       target, targetHandle: '__action__', data: { kind: 'application-action' },
       style: { stroke: '#805ad5', strokeDasharray: '5 4' }, label: 'Action',
+    });
+    if (a.condition_node && ['True Condition', 'False Condition'].includes(a.condition_branch)) edges.push({
+      id: `${a.condition_node}:${a.condition_branch}->${a.id}:Condition`, source: a.condition_node,
+      sourceHandle: a.condition_branch, target: a.id, targetHandle: 'Condition', data: { kind: 'application-condition' },
+      style: { stroke: '#dd8a36', strokeDasharray: '4 4' }, label: a.condition_branch === 'True Condition' ? 'True' : 'False',
     });
   }
   if (!applicationActions.length) {
@@ -209,11 +253,12 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
         target: action.node_id, targetHandle: '__action__', data: { kind: 'application-action' },
         style: { stroke: '#805ad5', strokeDasharray: '5 4' }, label: 'Action' });
       applicationActions.push({ id, question: structuredClone(question), config_path: [...action.config_path],
-        target_node: action.node_id, position, source_action_index: i });
+        target_node: action.node_id, position, source_action_index: i, when: action.when ? structuredClone(action.when) : undefined });
     }
   }
-  return { nodes, edges, name: doc.name ?? 'Untitled', description: doc.description, profile: doc.metadata?.profile,
-    metadata: doc.metadata ? structuredClone(doc.metadata) : undefined };
+  const metadata = doc.metadata ? structuredClone(doc.metadata) : {};
+  metadata.ui = { ...(metadata.ui ?? {}), applicationActions, applicationConditions };
+  return { nodes, edges, name: doc.name ?? 'Untitled', description: doc.description, profile: doc.metadata?.profile, metadata };
 }
 
 /** Place tool nodes that have no stored position in columns by dependency depth. */

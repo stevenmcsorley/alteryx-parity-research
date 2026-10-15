@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Handle, NodeResizer, Position, type NodeProps } from '@xyflow/react';
 import { useEditor } from '../state/store';
-import type { ApplicationActionNodeData, CanvasNode, CommentNodeData, ContainerNodeData, ToolNodeData } from '../model/workflow';
+import type { ApplicationActionNodeData, ApplicationConditionNodeData, CanvasNode, CommentNodeData, ContainerNodeData, ToolNodeData } from '../model/workflow';
 import { categoryColor, glyph } from '../ui/categories';
 
 const PORT_H = 20;
@@ -73,14 +73,35 @@ export const ApplicationActionNode = memo(function ApplicationActionNode({ id, d
       <div className="names"><div className="tname">Flowbench Action</div><div className="nid">{id}</div></div>
     </div>
     <div className="ports" style={{ minHeight: 44 }}>
-      <div className="port in" title="Question is supplied by the analytic application form">
-        Question <span className="count">{d.question.type}</span>
+      <div>
+        <div className="port in" title="Question is supplied by the analytic application form">Question <span className="count">{d.question.type}</span></div>
+        <div className="port in" title="Optional Condition routing input">Condition<Handle type="target" position={Position.Left} id="Condition" className="multiple" style={{ top: '50%' }} data-testid={`in-${id}-Condition`} /></div>
       </div>
       <div className="port out">Action
         <Handle type="source" position={Position.Right} id="Action" style={{ top: '50%' }} data-testid={`out-${id}-Action`} />
       </div>
     </div>
     <div className="annot">{connected ? `Updates ${d.config_path.join('.')}` : 'Connect Action to a tool target'}</div>
+  </div>;
+});
+
+export const ApplicationConditionNode = memo(function ApplicationConditionNode({ id, data, selected }: NodeProps<CanvasNode>) {
+  const d = data as ApplicationConditionNodeData;
+  const connected = useEditor((s) => s.edges.filter((e) => e.source === id && e.data?.kind === 'application-condition'));
+  return <div className={`tool-node application-condition-node ${selected ? 'selected' : ''}`} data-testid={`node-${id}`}>
+    <div className="head" style={{ background: 'color-mix(in srgb, #dd8a36 13%, transparent)' }}>
+      <div className="glyph" style={{ background: '#dd8a36' }} aria-hidden>?</div>
+      <div className="names"><div className="tname">Condition</div><div className="nid">{id}</div></div>
+    </div>
+    <div className="ports" style={{ minHeight: 48 }}>
+      <div className="port in" title="Evaluated against an analytic application answer">Question</div>
+      <div>
+        {(['True Condition', 'False Condition'] as const).map((anchor) => <div className="port out" key={anchor}>{anchor}
+          <Handle type="source" position={Position.Right} id={anchor} style={{ top: '50%' }} data-testid={`out-${id}-${anchor}`} />
+        </div>)}
+      </div>
+    </div>
+    <div className="annot">{d.when.question || 'Select a question'} · {d.when.operator} · {connected.length} routes</div>
   </div>;
 });
 
@@ -106,4 +127,4 @@ export const ContainerNode = memo(function ContainerNode({ id, data, selected }:
   );
 });
 
-export const nodeTypes = { tool: ToolNode, applicationAction: ApplicationActionNode, comment: CommentNode, container: ContainerNode };
+export const nodeTypes = { tool: ToolNode, applicationAction: ApplicationActionNode, applicationCondition: ApplicationConditionNode, comment: CommentNode, container: ContainerNode };
