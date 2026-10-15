@@ -266,6 +266,13 @@ label { color: var(--text-2); font-size: 12px; }
 .container-node.disabled { border-style: dashed; opacity: 0.6; }
 .container-node .cap { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 8px; font-weight: 600; font-size: 12px; color: var(--text-2); border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--panel) 70%, transparent); border-radius: 10px 10px 0 0; }
 .container-collapse { border: 0; background: transparent; color: var(--text-2); cursor: pointer; font-size: 16px; line-height: 18px; padding: 0 4px; }
+.application-tree { display: grid; gap: 3px; margin-top: 4px; padding: 6px; border: 1px solid var(--border); border-radius: 6px; max-height: 240px; overflow: auto; }
+.application-tree-branch { padding-left: 8px; }
+.application-tree-branch summary { cursor: pointer; padding: 3px; }
+.application-tree-group { display: grid; gap: 3px; padding-left: 12px; }
+.application-tree-leaf { border: 1px solid transparent; border-radius: 4px; background: transparent; color: var(--text); cursor: pointer; padding: 4px 7px; text-align: left; }
+.application-tree-leaf:hover { background: var(--accent-soft); }
+.application-tree-leaf[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
 .edge-label { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 0 5px; font-family: var(--mono); font-size: 10.5px; color: var(--accent); }
 
 /* inspector */

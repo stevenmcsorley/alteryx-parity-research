@@ -250,6 +250,22 @@ class ImportTests(unittest.TestCase):
         bound = bind_application(doc, {'n': 4, 'colors': ['red', 'blue']})
         self.assertEqual(bound['nodes'][0]['config']['value'], 4)
 
+    def test_native_tree_question_binds_a_defined_leaf_path_only(self):
+        from flowengine.errors import EngineError
+        doc = {'nodes': [{'id': 'filter', 'config': {'expression': 'original'}}], 'metadata': {'application': {
+            'questions': [{'id': 'category', 'type': 'tree', 'options': ['Sales > Online', 'Sales > Retail', 'Returns'],
+                           'default': 'Sales > Online'}],
+            'actions': [{'question': 'category', 'node_id': 'filter', 'config_path': ['expression']}],
+        }}}
+        bound = bind_application(doc, {'category': 'Sales > Retail'})
+        self.assertEqual(bound['nodes'][0]['config']['expression'], 'Sales > Retail')
+        with self.assertRaises(EngineError) as caught:
+            bind_application(doc, {'category': 'Sales > Wholesale'})
+        self.assertEqual(caught.exception.code, 'application-input-invalid')
+        doc['metadata']['application']['questions'][0]['options'] = ['Sales', 'Sales > Online']
+        with self.assertRaisesRegex(EngineError, 'duplicate paths or a selectable parent'):
+            bind_application(doc, {})
+
     def test_native_error_message_stops_only_on_matching_application_condition(self):
         from flowengine.errors import EngineError
         doc = {'nodes': [], 'metadata': {'application': {

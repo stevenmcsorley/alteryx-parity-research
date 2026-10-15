@@ -189,4 +189,27 @@ describe('AI workflow patch staging', () => {
     expect(checked.metadata.application.questions).toContainEqual({ id: 'threshold', label: 'Minimum sales', type: 'control-parameter', control_field: 'minimum_sales' });
     expect(checked.metadata.application.actions).toContainEqual({ question: 'threshold', node_id: expect.any(String), config_path: ['value'] });
   });
+
+  it('lets the agent configure a native Tree question as a typed Action value', async () => {
+    useEditor.getState().loadGraph(emptyGraph as any);
+    useEditor.getState().setEngineMeta({ tools: {
+      'core.filter': { ...manifest('core.filter', ['input'], ['true', 'false']),
+        config_schema: { type: 'object', properties: { expression: { type: 'string' } } } } as any,
+    } });
+    let checked: any;
+    setTransport({ request: async (_method: string, params: any) => { checked = params.workflow; return { valid: true, problems: [], schemas: {} }; }, subscribe: () => () => {} } as any);
+    const state = useEditor.getState(), baseRevision = workflowRevision(state);
+    const proposal = await prepareWorkflowProposal(state, JSON.stringify({ operations: [
+      { op: 'add', ref: 'filter', tool_id: 'core.filter', config: { expression: 'True' }, position: { x: 300, y: 0 } },
+      { op: 'add_question', ref: 'tree', question: { id: 'category', prompt: 'Choose category', type: 'tree', options: ['Sales > Online', 'Sales > Retail', 'Returns'], default: 'Sales > Online' }, config_path: ['expression'], position: { x: 0, y: 0 } },
+      { op: 'connect_action', source_ref: 'tree', target_ref: 'filter' },
+    ] }), baseRevision);
+    expect(proposal.validation.valid).toBe(true);
+    expect(checked.metadata.application.questions).toContainEqual(expect.objectContaining({ id: 'category', type: 'tree', options: ['Sales > Online', 'Sales > Retail', 'Returns'] }));
+    expect(checked.metadata.application.actions).toContainEqual({ question: 'category', node_id: expect.any(String), config_path: ['expression'] });
+
+    await expect(prepareWorkflowProposal(state, JSON.stringify({ operations: [
+      { op: 'add_question', ref: 'bad_tree', question: { id: 'bad_tree', prompt: 'Bad tree', type: 'tree', options: ['Sales', 'Sales > Online'] }, config_path: ['value'], position: { x: 0, y: 0 } },
+    ] }), baseRevision)).rejects.toThrow('unique leaves');
+  });
 });

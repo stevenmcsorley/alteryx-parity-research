@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { isTauri } from '../engine/transport';
 
 type Request = { title: string; initial: string; ext: string; mode: 'save' | 'open'; resolve: (v: string | null) => void };
-export type AppQuestion = { id: string; label?: string; type: 'text' | 'boolean' | 'number' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder'; default?: unknown; required?: boolean; options?: unknown[]; description?: string; secret?: boolean; minimum?: number; maximum?: number };
+export type AppQuestion = { id: string; label?: string; type: 'text' | 'boolean' | 'number' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder' | 'tree'; default?: unknown; required?: boolean; options?: unknown[]; description?: string; secret?: boolean; minimum?: number; maximum?: number };
 type AppRequest = { title: string; questions: AppQuestion[]; resolve: (v: Record<string, unknown> | null) => void };
 let host: ((r: Request) => void) | null = null;
 let appHost: ((r: AppRequest) => void) | null = null;
@@ -80,7 +80,13 @@ function ApplicationDialog({ request, close }: { request: AppRequest; close: (v:
   return <div className="modal-backdrop" onMouseDown={() => close(null)}>
     <div className="modal" role="dialog" aria-modal="true" aria-label={request.title} onMouseDown={(e) => e.stopPropagation()}>
       <h3>{request.title}</h3>
-      {request.questions.map((q) => <label key={q.id} style={{ display: 'block', margin: '12px 0' }}>
+      {request.questions.map((q) => q.type === 'tree' ? <div key={q.id} style={{ display: 'block', margin: '12px 0' }}>
+        <span id={`tree-label-${q.id}`}>{q.label || q.id}{q.required ? ' *' : ''}</span>
+        <div role="tree" aria-labelledby={`tree-label-${q.id}`} className="application-tree">{buildTree(q.options ?? []).map((entry) => <TreeChoice key={entry.label} item={entry} selected={String(values[q.id] ?? '')}
+          onSelect={(value) => setValues((old) => ({ ...old, [q.id]: value }))} />)}</div>
+        <small aria-live="polite">{String(values[q.id] ?? '')}</small>
+        {q.description && <small style={{ display: 'block' }}>{q.description}</small>}
+      </div> : <label key={q.id} style={{ display: 'block', margin: '12px 0' }}>
         <span>{q.label || q.id}{q.required ? ' *' : ''}</span>
         {q.type === 'boolean' ? <input aria-label={q.label || q.id} type="checkbox" checked={Boolean(values[q.id])}
           onChange={(e) => setValues({ ...values, [q.id]: e.target.checked })} />
@@ -94,4 +100,33 @@ function ApplicationDialog({ request, close }: { request: AppRequest; close: (v:
       <div className="actions"><button onClick={() => close(null)}>Cancel</button><button className="primary" onClick={submit}>Run</button></div>
     </div>
   </div>;
+}
+
+type TreeChoiceItem = { label: string; value: string | null; children: TreeChoiceItem[] };
+function buildTree(paths: unknown[]): TreeChoiceItem[] {
+  const roots: TreeChoiceItem[] = [];
+  for (const value of paths) {
+    if (typeof value !== 'string') continue;
+    const parts = value.split('>').map((part) => part.trim());
+    let list = roots;
+    let path = '';
+    parts.forEach((label, index) => {
+      path = path ? `${path} > ${label}` : label;
+      let item = list.find((candidate) => candidate.label === label);
+      if (!item) { item = { label, value: null, children: [] }; list.push(item); }
+      if (index === parts.length - 1) item.value = path;
+      list = item.children;
+    });
+  }
+  return roots;
+}
+
+function TreeChoice({ item, selected, onSelect }: { item: TreeChoiceItem; selected: string; onSelect: (value: string) => void }) {
+  if (item.children.length) return <details className="application-tree-branch">
+    <summary role="treeitem" aria-expanded={undefined}>{item.label}</summary><div role="group" className="application-tree-group">
+      {item.children.map((child) => <TreeChoice key={`${item.label}/${child.label}`} item={child} selected={selected} onSelect={onSelect} />)}
+    </div>
+  </details>;
+  return <button type="button" role="treeitem" aria-pressed={selected === item.value} className="application-tree-leaf"
+    onClick={() => item.value && onSelect(item.value)}>{item.label}</button>;
 }

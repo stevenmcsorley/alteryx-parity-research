@@ -66,6 +66,15 @@ APPLICATION_ADAPTERS = {
         'unsupported': ['Authentic Alteryx Control Parameter XML/action connection mapping is not verified'],
         'evidence': 'docs/INTERFACE_APPLICATIONS.md',
     },
+    'interface:tree': {
+        'module': 'flowengine.interface_app + desktop/src/ui/dialogs.tsx',
+        'engine': 'Flowbench native analytic-app Tree question adapter',
+        'test_ids': ['test_fe_interop.ImportTests.test_native_tree_question_binds_a_defined_leaf_path_only'],
+        'supported': ['Single selected configured leaf path with hierarchical " > " labels; answer is bound as the normalized full path string and validated against the declared tree choices'],
+        'unsupported': ['Authentic Alteryx Tree XML mapping, Allocate Geography/Variables, filesystem tree browsing, and external custom data-source variants are not implemented'],
+        'evidence': 'docs/INTERFACE_TREE.md',
+        'evidence_type': 'project-authored-runtime-and-ui-evidence',
+    },
     'interface:error-message': {
         'module': 'flowengine.interface_app',
         'test_ids': [

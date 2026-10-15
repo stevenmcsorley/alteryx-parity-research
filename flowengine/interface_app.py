@@ -25,7 +25,7 @@ def _spec(doc):
     ids = set()
     question_types = {}
     for q in questions:
-        if not isinstance(q, dict) or q.get('type') not in ('text', 'boolean', 'number', 'choice', 'date', 'file', 'folder', 'multi-choice', 'control-parameter'):
+        if not isinstance(q, dict) or q.get('type') not in ('text', 'boolean', 'number', 'choice', 'date', 'file', 'folder', 'multi-choice', 'control-parameter', 'tree'):
             raise EngineError('Each application question needs a supported type', code='application-invalid')
         qid = q.get('id')
         if not isinstance(qid, str) or not qid or qid in ids:
@@ -40,6 +40,30 @@ def _spec(doc):
             raise EngineError(f'Secret application question {qid!r} must be text', code='application-invalid')
         if q['type'] in ('choice', 'multi-choice') and (not isinstance(q.get('options'), list) or not q['options']):
             raise EngineError(f'Choice question {qid!r} requires options', code='application-invalid')
+        if q['type'] == 'tree':
+            options = q.get('options')
+            if not isinstance(options, list) or not options or len(options) > 1000 or any(not isinstance(path, str) for path in options):
+                raise EngineError(f'Tree question {qid!r} requires 1 to 1000 path options', code='application-invalid')
+            normalized = []
+            for path in options:
+                parts = [part.strip() for part in path.split('>')]
+                if not path or len(parts) > 16 or any(not part for part in parts):
+                    raise EngineError(f'Tree question {qid!r} has an invalid path; use non-empty labels separated by >', code='application-invalid')
+                canonical = ' > '.join(parts)
+                if path != canonical:
+                    raise EngineError(f'Tree question {qid!r} paths must use spaces around > separators', code='application-invalid')
+                normalized.append(canonical)
+            path_set = set(normalized)
+            has_selectable_parent = False
+            for path in normalized:
+                parts = [part.strip() for part in path.split('>')]
+                if any(' > '.join(parts[:depth]) in path_set for depth in range(1, len(parts))):
+                    has_selectable_parent = True
+                    break
+            if len(path_set) != len(normalized) or has_selectable_parent:
+                raise EngineError(f'Tree question {qid!r} has duplicate paths or a selectable parent path', code='application-invalid')
+            if 'default' in q and q['default'] not in normalized:
+                raise EngineError(f'Tree question {qid!r} default must be one of its paths', code='application-invalid')
     for a in actions:
         if not isinstance(a, dict) or a.get('question') not in ids or not isinstance(a.get('node_id'), str):
             raise EngineError('Application action references an unknown question or node', code='application-invalid')
@@ -163,7 +187,7 @@ def bind_application(doc, supplied):
     values = {}
     for qid, q in by_id.items():
         value = supplied.get(qid, q.get('default'))
-        if value is None and q.get('required', False):
+        if (value is None or (q['type'] == 'tree' and value == '')) and q.get('required', False):
             raise EngineError(f'Application input {qid!r} is required', code='application-input-invalid')
         if value is None:
             values[qid] = None
@@ -185,6 +209,8 @@ def bind_application(doc, supplied):
             values[qid] = value
         elif q['type'] == 'multi-choice' and isinstance(value, list) and all(v in q['options'] for v in value) and len(set(value)) == len(value):
             values[qid] = value
+        elif q['type'] == 'tree' and isinstance(value, str) and value in q['options']:
+            values[qid] = ' > '.join(part.strip() for part in value.split('>'))
         else:
             raise EngineError(f'Application input {qid!r} has an invalid value or type', code='application-input-invalid')
         if q['type'] == 'number' and values[qid] is not None:

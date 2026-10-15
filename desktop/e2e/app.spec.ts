@@ -80,6 +80,29 @@ test('Control Parameter exposes a batch control field in the editor', async ({ p
   await expect(page.locator('.application-action-node')).toContainText('threshold');
 });
 
+test('native Tree question selects a configured leaf and runs through the analytic-app prompt', async ({ page }) => {
+  await ready(page);
+  const tree = page.getByTestId('palette-interface:tree');
+  await expect(tree).toContainText('Flowbench native');
+  await tree.dblclick();
+  await page.getByLabel('Tree answer options').fill('Sales > Online\nSales > Retail\nReturns');
+  await addFromPalette(page, 'in-out:text-input');
+  const editor = page.getByTestId('text-input-editor');
+  await editor.getByRole('button', { name: '+ field' }).click();
+  await editor.getByLabel('Field 1 name').fill('category');
+  await editor.getByRole('button', { name: '+ row' }).click();
+  await editor.getByLabel('Row 1 field 1').fill('Online');
+  await page.getByTestId('run').click();
+  const app = page.getByRole('dialog', { name: 'Run analytic application' });
+  await expect(app.getByRole('tree', { name: 'Tree' })).toBeVisible();
+  await app.getByText('Sales', { exact: true }).click();
+  const selected = app.getByRole('treeitem', { name: 'Online' });
+  await selected.click();
+  await expect(selected).toHaveAttribute('aria-pressed', 'true');
+  await app.getByRole('button', { name: 'Run' }).click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+});
+
 test('catalogue Comment can be placed, edited and remains a canvas annotation', async ({ page }) => {
   await ready(page);
   const comment = page.getByTestId('palette-documentation:comment');
