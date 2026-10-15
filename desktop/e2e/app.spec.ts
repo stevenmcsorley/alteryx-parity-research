@@ -50,7 +50,7 @@ test('palette lists every catalogue entry with an honest status', async ({ page 
 });
 
 test('Inspector scrolls independently inside the right dock', async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 440 });
+  await page.setViewportSize({ width: 1280, height: 360 });
   await ready(page);
   const inspector = page.getByTestId('inspector');
   await expect(inspector).toBeVisible();
