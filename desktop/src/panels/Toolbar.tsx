@@ -5,18 +5,20 @@ import { promptPath } from '../ui/dialogs';
 import { notify } from '../ui/toast';
 import { DatabaseConnections } from './DatabaseConnections';
 
-export async function doSave(forceAs = false) {
+export async function doSave(forceAs = false): Promise<'saved' | 'cancelled' | 'failed'> {
   const s = useEditor.getState();
   let path = s.filePath;
   if (!path || forceAs) {
     path = await promptPath('Save workflow', path ?? `${s.baseDir}${s.baseDir.includes('\\') ? '\\' : '/'}${s.name.replace(/[^\w-]+/g, '_')}.flow.json`, 'flow.json');
-    if (!path) return;
+    if (!path) return 'cancelled';
   }
   try {
     await saveWorkflow(path);
     notify(`Saved ${useEditor.getState().filePath}`);
+    return 'saved';
   } catch (e) {
     notify(`Save failed: ${describe(e)}`);
+    return 'failed';
   }
 }
 

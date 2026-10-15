@@ -3,6 +3,8 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { useEditor } from '../state/store';
 import { AiSidebar } from './AiSidebar';
 import { resetListenerForTests, useAiConversation } from './conversation';
+import { workflowRevision } from './workflowPatch';
+import { setTransport } from '../state/engineActions';
 
 const tauriMock = vi.hoisted(() => ({ invoke: vi.fn(), handler: null as null | ((event: { payload: any }) => void), listenerCalls: 0 }));
 vi.mock('@tauri-apps/api/core', () => ({ invoke: tauriMock.invoke }));
@@ -41,6 +43,45 @@ async function ready() {
 }
 
 describe('Flowbench AI conversation', () => {
+  it('shows an isolated validated graph proposal and commits it as one undoable editor change after approval', async () => {
+    const manifest = (tool_id: string, inputs: string[], outputs: string[]) => ({ tool_id, version: '1', display_name: tool_id,
+      catalog_ids: [], inputs: inputs.map((name) => ({ name, label: name, required: name === 'input', multiple: false, description: '' })),
+      outputs: outputs.map((name) => ({ name, label: name, required: false, multiple: false, description: '' })),
+      config_schema: { type: 'object' }, side_effects: 'none', deterministic: true, dependencies: [], description: '' });
+    useEditor.getState().setEngineMeta({ tools: {
+      'core.input_data': manifest('core.input_data', [], ['output']) as any,
+      'core.filter': manifest('core.filter', ['input'], ['true', 'false']) as any,
+    } });
+    setTransport({ request: async (method: string) => { expect(method).toBe('workflow.validate'); return { valid: true, problems: [], schemas: {} }; }, subscribe: () => () => {} } as any);
+    const patch = JSON.stringify({ operations: [
+      { op: 'add', ref: 'sales_input', tool_id: 'core.input_data', config: { path: 'sales.csv' }, position: { x: 0, y: 0 } },
+      { op: 'add', ref: 'sales_filter', tool_id: 'core.filter', config: { expression: '[Sales] > 100' }, position: { x: 220, y: 0 } },
+      { op: 'connect', source_ref: 'sales_input', source_anchor: 'output', target_ref: 'sales_filter', target_anchor: 'input' },
+    ] });
+    await ready();
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_status') return { connected: true, plan_usage_authorized: true };
+      if (command === 'ai_models') return [{ slug: 'model-a', display_name: 'Available model' }];
+      if (command === 'ai_begin') return { turn_id: 'patch_turn', assistant_message_id: 'patch_msg' };
+      if (command === 'ai_respond') {
+        if (!tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_submit_tool_result')) return { turn_id: args?.turnId, message_id: 'patch_msg', cycle_id: args?.cycleId, text: '', calls: [
+          { name: 'workflow.propose_patch', call_id: 'patch_call', arguments: JSON.stringify({ patch_json: patch, base_revision: workflowRevision(useEditor.getState()) }) },
+        ] };
+        return { turn_id: args?.turnId, message_id: 'patch_msg', cycle_id: args?.cycleId, text: 'The approved workflow is on the canvas.', calls: [] };
+      }
+      return undefined;
+    });
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'Build this sales flow.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    expect(await screen.findByRole('region', { name: 'Workflow change preview' })).toBeTruthy();
+    expect(useEditor.getState().nodes).toHaveLength(0);
+    fireEvent.click(screen.getByRole('button', { name: 'Approve changes' }));
+    await waitFor(() => expect(useEditor.getState().nodes).toHaveLength(2));
+    expect(await screen.findByText('The approved workflow is on the canvas.')).toBeTruthy();
+    useEditor.getState().undo();
+    expect(useEditor.getState().nodes).toHaveLength(0);
+  });
+
   it('keeps connection and privacy settings out of the conversation body', async () => {
     render(<AiSidebar close={() => undefined} />);
     expect(await screen.findByText('What would you like to analyse?')).toBeTruthy();
@@ -138,8 +179,8 @@ describe('Flowbench AI conversation', () => {
       return undefined;
     });
     fireEvent.click(screen.getByText('•••'));
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Include Flowbench read-only tools in requests' }));
-    expect((screen.getByRole('checkbox', { name: 'Include Flowbench read-only tools in requests' }) as HTMLInputElement).checked).toBe(false);
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Include Flowbench application tools in requests' }));
+    expect((screen.getByRole('checkbox', { name: 'Include Flowbench application tools in requests' }) as HTMLInputElement).checked).toBe(false);
     fireEvent.click(screen.getByText('•••'));
     fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'hello' } });
     fireEvent.click(screen.getByRole('button', { name: 'Send' }));

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { WorkflowProposal } from './workflowPatch';
 
 export type ChatMessage = {
   id: string;
@@ -17,6 +18,9 @@ type ConversationState = {
   assistantMessageId: string | null;
   cycleId: string | null;
   roundPrefix: string;
+  proposal: WorkflowProposal | null;
+  runApprovalRequested: boolean;
+  saveApprovalRequested: boolean;
   setStatus(status: TurnState): void;
   begin(user: ChatMessage, assistant: ChatMessage): void;
   responseStart(turnId: string, cycleId: string): void;
@@ -25,10 +29,13 @@ type ConversationState = {
   activity(turnId: string, label: string): void;
   finish(turnId: string, status: 'completed' | 'failed' | 'cancelled', error?: string): void;
   reset(): void;
+  setProposal(proposal: WorkflowProposal | null): void;
+  requestRunApproval(): void;
+  requestSaveApproval(): void;
 };
 
 export const useAiConversation = create<ConversationState>((set) => ({
-  messages: [], status: 'idle', turnId: null, assistantMessageId: null, cycleId: null, roundPrefix: '',
+  messages: [], status: 'idle', turnId: null, assistantMessageId: null, cycleId: null, roundPrefix: '', proposal: null, runApprovalRequested: false, saveApprovalRequested: false,
   setStatus: (status) => set({ status }),
   begin: (user, assistant) => set((s) => ({ messages: [...s.messages, user, assistant], status: 'submitting', turnId: user.turnId, assistantMessageId: assistant.id, cycleId: null, roundPrefix: '' })),
   responseStart: (turnId, cycleId) => set((s) => s.turnId === turnId ? { status: 'streaming', cycleId, roundPrefix: s.messages.find((m) => m.id === s.assistantMessageId)?.text ?? '' } : s),
@@ -52,7 +59,10 @@ export const useAiConversation = create<ConversationState>((set) => ({
       : [m]);
     return { messages, status, turnId: null, assistantMessageId: null, cycleId: null, roundPrefix: '' };
   }),
-  reset: () => set({ messages: [], status: 'idle', turnId: null, assistantMessageId: null, cycleId: null, roundPrefix: '' }),
+  reset: () => set({ messages: [], status: 'idle', turnId: null, assistantMessageId: null, cycleId: null, roundPrefix: '', proposal: null, runApprovalRequested: false, saveApprovalRequested: false }),
+  setProposal: (proposal) => set({ proposal }),
+  requestRunApproval: () => set({ runApprovalRequested: true }),
+  requestSaveApproval: () => set({ saveApprovalRequested: true }),
 }));
 
 let listener: Promise<() => void> | undefined;

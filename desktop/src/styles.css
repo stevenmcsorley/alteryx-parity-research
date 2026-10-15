@@ -157,6 +157,12 @@ label { color: var(--text-2); font-size: 12px; }
 .ai-message-error button, .ai-inline-error button { flex-shrink: 0; padding: 2px 6px; color: var(--err); }
 .ai-local-result { color: var(--text-3); font-size: 10.5px; }
 .ai-local-result pre { max-height: 220px; overflow: auto; padding: 8px; background: var(--panel-2); white-space: pre-wrap; overflow-wrap: anywhere; }
+.ai-proposal-card { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--accent); border-radius: 9px; background: var(--panel); color: var(--text); font-size: 12px; }
+.ai-proposal-card strong { font-size: 12px; }
+.ai-proposal-card ul { margin: 0; padding-left: 19px; color: var(--text-2); }
+.ai-proposal-card p { margin: 0; color: var(--text-2); line-height: 1.45; }
+.ai-proposal-card > div { display: flex; gap: 7px; }
+.ai-proposal-card button { padding: 6px 10px; }
 .ai-composer-wrap { flex: 0 0 auto; padding: 8px 12px 9px; border-top: 1px solid var(--border); background: var(--panel); }
 .ai-contextline { display: flex; align-items: center; gap: 5px; min-width: 0; margin: 0 2px 7px; color: var(--text-3); font-size: 10px; }
 .ai-contextline span:nth-child(2) { max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

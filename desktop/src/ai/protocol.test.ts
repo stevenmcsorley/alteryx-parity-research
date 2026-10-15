@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { dispatchAgentTool, AGENT_PROTOCOL, type AgentContext } from './protocol';
 import type { CanvasNode } from '../model/workflow';
 
@@ -13,7 +13,7 @@ function context(): AgentContext {
     history: [], selectedResult: null };
 }
 
-describe('flowbench.agent.v1 read-only tools', () => {
+describe('flowbench.agent.v1 application tools', () => {
   const env = { getState: context, validate: async () => undefined };
 
   it('provides explicit protocol and evidence-based capability state', async () => {
@@ -79,5 +79,25 @@ describe('flowbench.agent.v1 read-only tools', () => {
     let calls = 0;
     await dispatchAgentTool({ ...env, validate: async () => { calls += 1; } }, 'workflow.validate');
     expect(calls).toBe(1);
+  });
+
+  it('routes a workflow patch only to the isolated proposal callback', async () => {
+    const proposePatch = vi.fn(async (_patch: string, _revision: string) => ({ status: 'preview_ready' }));
+    const patch = JSON.stringify({ operations: [{ op: 'remove', node_ref: 'node_1' }] });
+    await expect(dispatchAgentTool({ ...env, proposePatch }, 'workflow.propose_patch', { patch_json: patch, base_revision: 'rev_12345678' }))
+      .resolves.toEqual({ status: 'preview_ready' });
+    expect(proposePatch).toHaveBeenCalledWith(patch, 'rev_12345678');
+    await expect(dispatchAgentTool(env, 'workflow.propose_patch', { patch_json: patch, base_revision: 'rev_12345678' }))
+      .rejects.toThrow('unavailable in this application context');
+  });
+
+  it('exposes field names and types without sample values or sensitive fields', async () => {
+    const state = context();
+    state.schemas = { input_1: { output: [
+      { name: 'Sales', type: 'fixed_decimal', size: 12, scale: 2 },
+      { name: 'api_token', type: 'v_wstring' },
+    ] } };
+    const result = await dispatchAgentTool({ ...env, getState: () => state }, 'workflow.get_schema', { node_ref: 'node_1' });
+    expect(result).toEqual({ node_ref: 'node_1', anchors: [{ anchor: 'output', anchor_name: 'output', fields: [{ name: 'Sales', type: 'fixed_decimal', size: 12, scale: 2 }] }] });
   });
 });

@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { dispatchAgentTool, type AgentToolName } from './protocol';
 import { useEditor } from '../state/store';
-import { validateNow } from '../state/engineActions';
+import { cancelRun, validateNow } from '../state/engineActions';
 import { ensureAiStreamListener, useAiConversation, type ChatMessage } from './conversation';
+import { prepareWorkflowProposal, workflowRevision } from './workflowPatch';
+import { runWorkflow } from '../state/engineActions';
+import { doSave } from '../panels/Toolbar';
 
 type Entry = { label: string; tool: AgentToolName; args?: Record<string, unknown> };
 type Model = { slug: string; display_name: string };
@@ -13,6 +16,9 @@ const quickActions: Entry[] = [
   { label: 'Read diagnostics', tool: 'workflow.get_diagnostics' },
   { label: 'List implemented tools', tool: 'app.get_capabilities' },
 ];
+let resolveRunApproval: ((value: unknown) => void) | null = null;
+let resolvePatchApproval: ((value: unknown) => void) | null = null;
+let resolveSaveApproval: ((value: unknown) => void) | null = null;
 
 async function native<T>(command: string, args?: Record<string, unknown>): Promise<T> {
   const { invoke } = await import('@tauri-apps/api/core');
@@ -36,6 +42,9 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   const [error, setError] = useState('');
   const [responseDiagnostics, setResponseDiagnostics] = useState<unknown[]>([]);
   const messages = useAiConversation((s) => s.messages);
+  const proposal = useAiConversation((s) => s.proposal);
+  const runApprovalRequested = useAiConversation((s) => s.runApprovalRequested);
+  const saveApprovalRequested = useAiConversation((s) => s.saveApprovalRequested);
   const status = useAiConversation((s) => s.status);
   const chatScroll = useRef<HTMLDivElement>(null);
   const stickToBottom = useRef(true);
@@ -95,10 +104,96 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   async function inspect(entry: Entry) {
     setBusy(true); setError(''); setResult(null);
     try {
-      const value = await dispatchAgentTool({ getState: () => useEditor.getState(), validate: async () => { await validateNow(); } }, entry.tool, entry.args);
+      const value = await dispatchAgentTool(agentEnvironment(), entry.tool, entry.args);
       setResult(value);
     } catch (e) { setError(messageOf(e)); }
     finally { setBusy(false); }
+  }
+  function agentEnvironment() {
+    return {
+      getState: () => useEditor.getState(),
+      validate: async () => { await validateNow(); },
+      proposePatch: async (patchJson: string, baseRevision: string) => {
+        const prepared = await prepareWorkflowProposal(useEditor.getState(), patchJson, baseRevision);
+        if (resolvePatchApproval) throw new Error('A graph proposal is already awaiting approval');
+        useAiConversation.getState().setProposal(prepared);
+        return new Promise((resolve) => { resolvePatchApproval = resolve; });
+      },
+      requestRun: () => {
+        if (useEditor.getState().run.status === 'running') return Promise.resolve({ status: 'already_running' });
+        if (resolveRunApproval) throw new Error('A workflow run is already awaiting user approval');
+        useAiConversation.getState().requestRunApproval();
+        return new Promise((resolve) => { resolveRunApproval = resolve; });
+      },
+      requestSave: () => {
+        if (resolveSaveApproval) throw new Error('A workflow save is already awaiting approval');
+        useAiConversation.getState().requestSaveApproval();
+        return new Promise((resolve) => { resolveSaveApproval = resolve; });
+      },
+      getResults: () => safeRunResults(),
+    };
+  }
+  async function approvePatch() {
+    const pending = useAiConversation.getState().proposal;
+    if (!pending) return;
+    if (workflowRevision(useEditor.getState()) !== pending.baseRevision) {
+      setError('The workflow changed after this preview. Ask Flowbench AI to prepare a fresh proposal.');
+      useAiConversation.getState().setProposal(null);
+      resolvePatchApproval?.({ status: 'stale', operation_count: pending.changes.length, valid: false, problem_codes: [] }); resolvePatchApproval = null;
+      return;
+    }
+    if (!pending.validation.valid) { setError('This proposal has validation errors and cannot be applied.'); return; }
+    if (pending.consequences.length && !window.confirm(`Review these consequential changes before applying:\n\n${pending.consequences.join('\n')}\n\nApply the validated graph change?`)) return;
+    useEditor.getState().commitGraphTransaction(pending.candidate);
+    const committedRevision = workflowRevision(useEditor.getState());
+    useAiConversation.getState().setProposal(null);
+    const validation = await validateNow();
+    if (!validation?.valid) {
+      // Do not undo over any manual edit made while post-commit validation was in flight.
+      if (workflowRevision(useEditor.getState()) === committedRevision) useEditor.getState().undo();
+      else setError('Post-commit validation failed after the workflow was edited again. The newer editor state was preserved; review validation before running.');
+    }
+    resolvePatchApproval?.({ status: validation?.valid ? 'approved' : 'revalidation_failed', operation_count: pending.changes.length, valid: Boolean(validation?.valid),
+      problem_codes: validation?.problems.map((problem) => problem.code).slice(0, 20) ?? [] }); resolvePatchApproval = null;
+  }
+  function rejectPatch() {
+    const pending = useAiConversation.getState().proposal;
+    useAiConversation.getState().setProposal(null);
+    resolvePatchApproval?.({ status: 'rejected', operation_count: pending?.changes.length ?? 0, valid: false, problem_codes: [] }); resolvePatchApproval = null;
+  }
+  async function approveRun() {
+    useAiConversation.setState({ runApprovalRequested: false });
+    const initial = useEditor.getState().run;
+    await runWorkflow();
+    const started = Date.now();
+    while (Date.now() - started < 15 * 60_000) {
+      const run = useEditor.getState().run;
+      if (run.runId && run.runId !== initial.runId && run.status !== 'running') {
+        resolveRunApproval?.(safeRunResults()); resolveRunApproval = null; return;
+      }
+      if (!run.runId && run.status !== 'running' && run.status !== initial.status) {
+        resolveRunApproval?.(safeRunResults()); resolveRunApproval = null; return;
+      }
+      if (run.status !== 'running' && Date.now() - started > 1500 && run.runId === initial.runId && run.status === initial.status) {
+        resolveRunApproval?.({ status: 'not_started', outputs: [] }); resolveRunApproval = null; return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+    resolveRunApproval?.({ status: 'timed_out', outputs: [] }); resolveRunApproval = null;
+  }
+  function rejectRun() {
+    useAiConversation.setState({ runApprovalRequested: false });
+    resolveRunApproval?.({ status: 'rejected', outputs: [] }); resolveRunApproval = null;
+  }
+  async function approveSave() {
+    useAiConversation.setState({ saveApprovalRequested: false });
+    const outcome = await doSave();
+    resolveSaveApproval?.({ status: outcome, path_selected: outcome === 'saved' });
+    resolveSaveApproval = null;
+  }
+  function rejectSave() {
+    useAiConversation.setState({ saveApprovalRequested: false });
+    resolveSaveApproval?.({ status: 'rejected', path_selected: false }); resolveSaveApproval = null;
   }
   async function newConversation() {
     setError('');
@@ -126,7 +221,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         { id: `user_${turnId}`, turnId, role: 'user', text, state: 'completed' },
         { id: started.assistant_message_id, turnId, role: 'assistant', text: '', state: 'streaming' },
       );
-      for (let cycle = 0; cycle < 5; cycle++) {
+      for (let cycle = 0; cycle < 12; cycle++) {
         const cycleId = `cycle_${crypto.randomUUID().replaceAll('-', '')}`;
         useAiConversation.getState().responseStart(turnId, cycleId);
         const response: { turn_id: string; message_id: string; cycle_id: string; text: string; text_source?: string; empty_reason?: string; calls?: ValueItem[] } = await native('ai_respond', { model, turnId, cycleId, toolsEnabled });
@@ -140,15 +235,15 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           useAiConversation.getState().finish(turnId, 'completed');
           return;
         }
-        if (cycle === 4) throw new Error('The assistant reached the read-only tool-call limit for this turn.');
+        if (cycle === 11) throw new Error('The assistant reached Flowbench’s bounded tool-call limit for this turn.');
         for (const call of calls) {
           const toolName = call.name ?? '';
           useAiConversation.getState().activity(turnId, activityLabel(toolName));
           let toolResult: unknown;
           try {
-            toolResult = await dispatchAgentTool({ getState: () => useEditor.getState(), validate: async () => { await validateNow(); } }, toolName,
+            toolResult = await dispatchAgentTool(agentEnvironment(), toolName,
               JSON.parse(call.arguments ?? '{}'));
-          } catch { toolResult = { error: 'The requested read-only tool could not complete.' }; }
+          } catch { toolResult = { error: 'The requested Flowbench tool could not complete.' }; }
           await native('ai_submit_tool_result', { callId: call.call_id, result: toolResult });
         }
       }
@@ -165,6 +260,11 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   }
   async function cancel() {
     cancelled.current = true;
+    useAiConversation.getState().setProposal(null);
+    resolvePatchApproval?.({ status: 'cancelled', operation_count: 0, valid: false, problem_codes: [] }); resolvePatchApproval = null;
+    resolveSaveApproval?.({ status: 'cancelled', path_selected: false }); resolveSaveApproval = null;
+    resolveRunApproval?.({ status: 'cancelled', outputs: [] }); resolveRunApproval = null;
+    if (useEditor.getState().run.status === 'running') await cancelRun().catch(() => undefined);
     try { await native('ai_cancel'); } catch { /* request may already have ended */ }
   }
   async function retry(message: ChatMessage) {
@@ -196,7 +296,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
             <label className="ai-consent"><input type="checkbox" checked={routingConsent} disabled={!authorized || consentUpdating || streaming} onChange={(e) => void updateConsent(e.target.checked)} />
               Allow prompt and bounded tool results to be sent to ChatGPT</label>
             <label className="ai-consent"><input type="checkbox" checked={toolsEnabled} disabled={streaming} onChange={(e) => setToolsEnabled(e.target.checked)} />
-              Include Flowbench read-only tools in requests</label>
+              Include Flowbench application tools in requests</label>
             <small className="ai-menu-note">Turn this off for a simple no-tools comparison. Normal assistant use keeps tools enabled.</small>
             {authorized && <>
               <button onClick={() => void refreshModels()} disabled={busy || streaming}>Refresh models</button>
@@ -231,7 +331,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         {messages.length === 0 && <div className="ai-empty">
           <div className="ai-orb" aria-hidden="true">✦</div>
           <h2>What would you like to analyse?</h2>
-          <p>Flowbench AI can inspect this workflow and the installed tool catalogue.</p>
+          <p>Flowbench AI can build and validate workflows using installed tools. You approve graph changes and runs before they happen.</p>
           {!authorized && <div className="ai-connect-inline">
             <span>{sessionRecovery ? 'Reconnect your protected ChatGPT session to continue.' : connected ? 'ChatGPT plan usage is not authorised yet.' : 'Connect an eligible ChatGPT account to start a conversation.'}</span>
             <button className="primary" onClick={() => void signIn()} disabled={busy}>{busy ? 'Opening sign-in…' : 'Continue with ChatGPT'}</button>
@@ -243,6 +343,26 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           ].map((example) => <button key={example} disabled={!routingConsent || streaming} onClick={() => void send(example)}>{example}<span>→</span></button>)}</div>}
         </div>}
         {messages.map((message) => <Message key={message.id} message={message} onRetry={() => void retry(message)} />)}
+        {proposal && <section className="ai-proposal-card" aria-label="Workflow change preview">
+          <strong>Workflow change preview</strong>
+          <ul>{proposal.changes.map((change, i) => <li key={`${i}_${change}`}>{change}</li>)}</ul>
+          {!!proposal.consequences.length && <p><strong>Consequences:</strong> {proposal.consequences.join('; ')}</p>}
+          <p role={proposal.validation.valid ? 'status' : 'alert'}>{proposal.validation.valid
+            ? 'The engine validated this candidate graph. The saved workflow has not changed.'
+            : `Engine validation found ${proposal.validation.problems.length} issue(s): ${proposal.validation.problems.map((p) => p.message).join('; ')}`}</p>
+          <div><button disabled={!proposal.validation.valid} className="primary" onClick={approvePatch}>Approve changes</button>
+            <button onClick={rejectPatch}>Reject</button></div>
+        </section>}
+        {runApprovalRequested && <section className="ai-proposal-card" aria-label="Run approval">
+          <strong>Run this workflow?</strong><p>Flowbench will execute the current saved editor graph. Existing code and database-write confirmations still apply.</p>
+          <div><button className="primary" onClick={() => void approveRun()} disabled={useEditor.getState().run.status === 'running'}>Approve and run</button>
+            <button onClick={rejectRun}>Cancel</button></div>
+        </section>}
+        {saveApprovalRequested && <section className="ai-proposal-card" aria-label="Save approval">
+          <strong>Save this workflow?</strong><p>Flowbench will open its normal save destination prompt. The workflow is written only after you confirm the path.</p>
+          <div><button className="primary" onClick={() => void approveSave()}>Choose destination and save</button>
+            <button onClick={rejectSave}>Cancel</button></div>
+        </section>}
         {result !== null && <details className="ai-local-result"><summary>Local inspection result</summary><pre>{JSON.stringify(result, null, 2)}</pre></details>}
         {error && <div className="ai-inline-error" role="alert">{error}<button onClick={() => setError('')}>Dismiss</button></div>}
         {status === 'tool-running' && <div className="ai-live-activity" role="status">Working with Flowbench…</div>}
@@ -265,6 +385,18 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     </section>
     {busy && <span className="sr-only" role="status">Working…</span>}
   </aside>;
+}
+
+function safeRunResults() {
+  const run = useEditor.getState().run;
+  if (run.status !== 'succeeded' || !run.result) return { status: run.status, outputs: [] };
+  const outputs = Object.entries(run.result.browse ?? {}).slice(0, 2).map(([nodeId, preview]) => ({
+    node_ref: `node_${useEditor.getState().nodes.findIndex((node) => node.id === nodeId) + 1}`,
+    fields: preview.fields.slice(0, 10).map((field) => ({ name: field.name, type: field.type })),
+    total_rows: preview.total_rows,
+    rows: preview.rows.slice(0, 4).map((row) => row.slice(0, 10).map((value) => typeof value === 'string' && value.length > 128 ? `${value.slice(0, 128)}…` : value)),
+  }));
+  return { status: 'succeeded', outputs };
 }
 
 function Message({ message, onRetry }: { message: ChatMessage; onRetry: () => void }) {
@@ -293,6 +425,10 @@ function inlineMarkdown(line: string) {
     part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : part);
 }
 function activityLabel(tool: string) {
+  if (tool === 'workflow.propose_patch') return 'Preparing a validated workflow change…';
+  if (tool === 'workflow.request_run') return 'Waiting for run approval and execution…';
+  if (tool === 'run.get_results') return 'Reading actual workflow results…';
+  if (tool === 'workflow.get_schema') return 'Inspecting output fields and types…';
   if (tool === 'workflow.get_snapshot' || tool === 'app.get_active_workflow') return 'Inspecting workflow…';
   if (tool === 'catalog.search_tools' || tool === 'catalog.get_tool_manifest' || tool === 'app.get_capabilities') return 'Searching tool catalogue…';
   if (tool === 'workflow.validate' || tool === 'workflow.get_diagnostics') return 'Checking validation…';
