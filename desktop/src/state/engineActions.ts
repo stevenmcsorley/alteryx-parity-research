@@ -91,6 +91,13 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
       + 'Continue only if the selected connection is configured for writes and you trust the workflow. Allow database writes for this run?');
     if (!allowDatabaseWrites) return;
   }
+  const blobWriters = s.nodes.filter((n) => n.data.kind === 'tool' && n.data.tool === 'core.blob_output');
+  let allowFileWrites = false;
+  if (blobWriters.length) {
+    allowFileWrites = window.confirm(`This workflow writes binary files (${blobWriters.map((n) => n.id).join(', ')}). `
+      + 'Review the configured destination and file naming options. Allow these file writes for this run?');
+    if (!allowFileWrites) return;
+  }
   try {
     const document = toDocument(graphOf(s));
     const app = await engine().request<{ questions: import('../ui/dialogs').AppQuestion[] }>('workflow.application', { workflow: document });
@@ -100,6 +107,7 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
       workflow: document, base_dir: s.baseDir, profile: s.profile, preview_rows: 500,
       workers: options.workers ?? 2, allow_processes: allow,
       allow_database_writes: allowDatabaseWrites,
+      allow_file_writes: allowFileWrites,
       ...(applicationValues ? { application_values: applicationValues } : {}),
       ...(options.batch_rows ? { batch_rows: options.batch_rows } : {}) });
     if (res.status === 'invalid') {

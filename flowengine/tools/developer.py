@@ -12,6 +12,7 @@ import base64
 import csv
 import datetime as _dt
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -255,6 +256,203 @@ class DynamicSelect(Tool):
 
 
 # =========================================================================== Blob Convert / Base64
+
+class BlobInput(Tool):
+    """Read binary files as typed BLOB records, optionally in bounded chunks."""
+
+    manifest = ToolManifest(
+        tool_id='core.blob_input', version='1.0.0', display_name='Blob Input',
+        catalog_ids=('developer:blob-input',),
+        inputs=(Anchor('input', 'Input', required=False),), outputs=(Anchor('output', 'Output'),),
+        side_effects='reads-files', deterministic=True,
+        description='Read one binary file, or read a file path from each input row. Optional chunking emits bounded binary rows.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['mode'], 'properties': {
+            'mode': {'enum': ['file', 'pass_through'], 'default': 'file'},
+            'path': {'type': ['string', 'null'], 'default': None},
+            'filename_field': {'type': ['string', 'null'], 'default': None},
+            'blob_field': {'type': 'string', 'minLength': 1, 'default': 'Blob'},
+            'split_blobs': {'type': 'boolean', 'default': False},
+            'chunk_size_kb': {'type': 'integer', 'minimum': 1, 'maximum': 102400, 'default': 1024},
+            'max_blob_size_mb': {'type': 'integer', 'minimum': 1, 'maximum': 4096, 'default': 512},
+        }})
+
+    def check_config(self, cfg):
+        if cfg['mode'] == 'file' and not cfg.get('path'):
+            raise ConfigError('Blob Input file mode requires path')
+        if cfg['mode'] == 'pass_through' and not cfg.get('filename_field'):
+            raise ConfigError('Blob Input pass-through mode requires filename_field')
+
+    def infer(self, ctx, cfg, inputs):
+        from ..types import Schema
+        source = inputs.get('input') if cfg['mode'] == 'pass_through' else None
+        if cfg['mode'] == 'pass_through' and source is None:
+            return None
+        fields = list(source) if source is not None else []
+        names = {f.name for f in fields}
+        if cfg['blob_field'] in names:
+            return None
+        fields.append(Field(cfg['blob_field'], FieldType.BLOB))
+        if cfg['split_blobs']:
+            if 'BlobNumber' in {f.name for f in fields}:
+                return None
+            fields.append(Field('BlobNumber', FieldType.INT64))
+        return {'output': Schema(fields)}
+
+    def run(self, ctx, cfg, inputs):
+        upstream = inputs.get('input') if cfg['mode'] == 'pass_through' else None
+        if cfg['mode'] == 'pass_through' and upstream is None:
+            raise ConfigError('Blob Input pass-through mode requires an incoming file list')
+        if upstream is not None:
+            require_fields(upstream.schema, [cfg['filename_field']])
+            if cfg['blob_field'] in upstream.schema.names or (cfg['split_blobs'] and 'BlobNumber' in upstream.schema.names):
+                raise ConfigError('Blob Input output field collides with an incoming field')
+            fields = list(upstream.schema)
+        else:
+            fields = []
+        fields.append(Field(cfg['blob_field'], FieldType.BLOB))
+        if cfg['split_blobs']:
+            fields.append(Field('BlobNumber', FieldType.INT64))
+        max_bytes = cfg['max_blob_size_mb'] * 1024 * 1024
+        chunk_bytes = cfg['chunk_size_kb'] * 1024
+        rows = []
+        inputs_iter = upstream.rows() if upstream is not None else [()]
+        for input_row in inputs_iter:
+            ctx.check_cancelled()
+            raw_path = input_row[upstream.schema.index(cfg['filename_field'])] if upstream is not None else cfg['path']
+            if not isinstance(raw_path, str) or not raw_path.strip():
+                raise DataError('Blob Input received an empty or non-text file path')
+            path = ctx.resolve_path(raw_path)
+            try:
+                if not path.is_file():
+                    raise FileNotFoundError
+                if cfg['split_blobs']:
+                    with path.open('rb') as stream:
+                        index = 0
+                        while True:
+                            ctx.check_cancelled()
+                            blob = stream.read(chunk_bytes)
+                            if not blob:
+                                break
+                            index += 1
+                            prefix = tuple(input_row)
+                            rows.append(prefix + (blob, index))
+                            if len(rows) > 1_000_000:
+                                raise DataError('Blob Input exceeded the one-million-chunk execution safety limit')
+                        if index == 0:
+                            rows.append(tuple(input_row) + (b'', 1))
+                else:
+                    if path.stat().st_size > max_bytes:
+                        raise DataError(f'Blob Input file exceeds configured maximum ({cfg["max_blob_size_mb"]} MB)')
+                    rows.append(tuple(input_row) + (path.read_bytes(),))
+            except FileNotFoundError:
+                raise DataError('Blob Input cannot access a configured file') from None
+        ctx.info(f'read {len(rows)} blob record(s)')
+        return {'output': Table.from_rows(fields, rows)}
+
+
+class BlobOutput(Tool):
+    """Write each BLOB row to its own file using safe filename-only substitutions."""
+
+    manifest = ToolManifest(
+        tool_id='core.blob_output', version='1.0.0', display_name='Blob Output',
+        catalog_ids=('developer:blob-output',), inputs=(Anchor('input', 'Input'),), outputs=(),
+        side_effects='writes-files', deterministic=True,
+        description='Write each binary field value to its own file. Dynamic filename operations affect only the filename component.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['path', 'blob_field'], 'properties': {
+            'path': {'type': 'string', 'minLength': 1}, 'blob_field': {'type': 'string', 'minLength': 1},
+            'modify_method': {'enum': ['none', 'append', 'prepend', 'replace_name'], 'default': 'none'},
+            'filename_field': {'type': ['string', 'null'], 'default': None},
+            'if_exists': {'enum': ['error', 'overwrite'], 'default': 'error'},
+        }})
+
+    def check_config(self, cfg):
+        if cfg['modify_method'] != 'none' and not cfg.get('filename_field'):
+            raise ConfigError('Blob Output filename_field is required for dynamic filename modification')
+
+    def infer(self, ctx, cfg, inputs):
+        return {}
+
+    def run(self, ctx, cfg, inputs):
+        if not ctx.limits.get('allow_file_writes'):
+            raise EngineError('Blob Output writes files and is disabled for this run. Allow file writes explicitly.',
+                              code='permission-denied', node_id=ctx.node_id)
+        table: Table = inputs['input']
+        fields = [cfg['blob_field']] + ([cfg['filename_field']] if cfg['modify_method'] != 'none' else [])
+        require_fields(table.schema, fields)
+        base = ctx.resolve_path(cfg['path'])
+        written = []
+        for row_number, record in enumerate(table.rows(), 1):
+            ctx.check_cancelled()
+            blob = record[table.schema.index(cfg['blob_field'])]
+            if blob is None:
+                raise DataError(f'Blob Output row {row_number} has a null binary value')
+            if not isinstance(blob, (bytes, bytearray, memoryview)):
+                raise DataError(f'Blob Output field {cfg["blob_field"]!r} is not binary')
+            destination = base
+            if cfg['modify_method'] != 'none':
+                value = record[table.schema.index(cfg['filename_field'])]
+                if not isinstance(value, str) or not value.strip() or value in ('.', '..') or '/' in value or '\\' in value or ':' in value:
+                    raise DataError(f'Blob Output row {row_number} has an unsafe filename value')
+                stem, suffix = base.stem, base.suffix
+                if cfg['modify_method'] == 'append': stem += value
+                elif cfg['modify_method'] == 'prepend': stem = value + stem
+                else: stem = value
+                destination = base.with_name(stem + suffix)
+            if destination in written:
+                raise DataError(f'Blob Output rows resolve to the same destination at row {row_number}')
+            if destination.exists() and cfg['if_exists'] == 'error':
+                raise DataError(f'Blob Output destination already exists for row {row_number}')
+            written.append(destination)
+        staged = []
+        backups = []
+        installed = []
+        remove_backups = True
+        try:
+            for row_number, (record, destination) in enumerate(zip(table.rows(), written), 1):
+                ctx.check_cancelled()
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                data = record[table.schema.index(cfg['blob_field'])]
+                handle, temp_path = tempfile.mkstemp(prefix='.flowbench-blob-', dir=destination.parent)
+                try:
+                    with os.fdopen(handle, 'wb') as stream:
+                        stream.write(bytes(data))
+                        stream.flush()
+                        os.fsync(stream.fileno())
+                    staged.append((Path(temp_path), destination))
+                finally:
+                    if os.path.exists(temp_path) and all(Path(temp_path) != item[0] for item in staged):
+                        os.unlink(temp_path)
+            for temp_path, destination in staged:
+                ctx.check_cancelled()
+                if destination.exists():
+                    if cfg['if_exists'] == 'error':
+                        raise DataError(f'Blob Output destination appeared during write at row {len(installed) + 1}')
+                    handle, backup_name = tempfile.mkstemp(prefix='.flowbench-blob-backup-', dir=destination.parent)
+                    os.close(handle)
+                    os.unlink(backup_name)
+                    backup = Path(backup_name)
+                    os.replace(destination, backup)
+                    backups.append((backup, destination))
+                os.replace(temp_path, destination)
+                installed.append(destination)
+        except BaseException:
+            for path in installed:
+                try: path.unlink(missing_ok=True)
+                except OSError: pass
+            for backup, destination in backups:
+                try: os.replace(backup, destination)
+                except OSError: remove_backups = False
+            raise
+        finally:
+            for temp_path, _ in staged:
+                try: temp_path.unlink(missing_ok=True)
+                except OSError: pass
+            if remove_backups:
+                for backup, _ in backups:
+                    try: backup.unlink(missing_ok=True)
+                    except OSError: pass
+        ctx.info(f'wrote {len(installed)} blob file(s)')
+        return {}
 
 class BlobConvert(Tool):
     streaming = 'row-local'
@@ -759,5 +957,5 @@ class RunCommand(Tool):
         return {'output': Table.from_rows([Field(n, FieldType.V_WSTRING, TEXT) for n in names], rows[1:])}
 
 
-TOOLS = [FieldInfo, JSONParse, DynamicRename, DynamicSelect, BlobConvert, Base64Encoder, Message, TestTool,
+TOOLS = [FieldInfo, JSONParse, DynamicRename, DynamicSelect, BlobInput, BlobOutput, BlobConvert, Base64Encoder, Message, TestTool,
          BlockUntilDone, Detour, DetourEnd, ExpectEquals, Throttle, PythonTool, RTool, RunCommand]

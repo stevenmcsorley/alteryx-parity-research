@@ -6,49 +6,91 @@
   "xml_tool_name": "AlteryxBasePluginsGui.BlobInput.BlobInput",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/blob-input-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "BlobChunkSize",
-      "FileName",
-      "ModifyFilename_Field",
-      "ModifyFilename_StopOnError",
-      "ModifyMethod",
-      "SplitBlobs"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "mode"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Configure as Input Tool",
-      "Configure as Pass-through Tool",
-      "Input or Pass-through Tool Configuration"
-    ]
+    "properties": {
+      "mode": {
+        "enum": [
+          "file",
+          "pass_through"
+        ],
+        "default": "file"
+      },
+      "path": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "filename_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "blob_field": {
+        "type": "string",
+        "minLength": 1,
+        "default": "Blob"
+      },
+      "split_blobs": {
+        "type": "boolean",
+        "default": false
+      },
+      "chunk_size_kb": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 102400,
+        "default": 1024
+      },
+      "max_blob_size_mb": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4096,
+        "default": 512
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.blob_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.developer",
+    "side_effects": "reads-files"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -86,9 +128,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
+      "test_blob_tools.BlobToolsTests.test_blob_input_reads_binary_and_emits_bounded_chunks"
+    ]
   },
   "sources": [
     {
@@ -109,6 +154,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

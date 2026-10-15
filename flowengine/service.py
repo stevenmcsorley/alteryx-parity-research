@@ -81,7 +81,8 @@ class EngineService:
     def _run_kwargs(self, params):
         return dict(base_dir=self._base(params), clock=self._clock(params), profile=params.get('profile'),
                     limits={'allow_processes': bool(params.get('allow_processes')),
-                            'allow_database_writes': bool(params.get('allow_database_writes'))},
+                            'allow_database_writes': bool(params.get('allow_database_writes')),
+                            'allow_file_writes': bool(params.get('allow_file_writes'))},
                     workers=int(params.get('workers', 1)), batch_rows=params.get('batch_rows'),
                     memory_budget=params.get('memory_budget'), retain='preview', history=self.history)
 
