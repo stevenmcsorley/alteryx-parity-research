@@ -103,11 +103,14 @@
     ]
   },
   "independent_tests": {
-    "count": 2,
-    "passing": 2,
+    "count": 5,
+    "passing": 5,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
-      "test_blob_tools.BlobToolsTests.test_blob_output_requires_consent_and_writes_per_record_files"
+      "test_blob_tools.BlobToolsTests.test_blob_output_requires_consent_and_writes_per_record_files",
+      "test_workflow_effects.WorkflowEffectsTests.test_embedded_batch_and_iterative_macros_report_nested_blob_output",
+      "test_workflow_effects.WorkflowEffectsTests.test_file_backed_macro_effect_is_available_through_permission_rpc",
+      "test_workflow_effects.WorkflowEffectsTests.test_macro_cycles_terminate_without_hiding_writer"
     ]
   },
   "sources": [
