@@ -31,8 +31,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   const [model, setModel] = useState('');
   const [draft, setDraft] = useState('');
   const [routingConsent, setRoutingConsent] = useState(false);
+  const [toolsEnabled, setToolsEnabled] = useState(true);
   const [consentUpdating, setConsentUpdating] = useState(false);
   const [error, setError] = useState('');
+  const [responseDiagnostics, setResponseDiagnostics] = useState<unknown[]>([]);
   const messages = useAiConversation((s) => s.messages);
   const status = useAiConversation((s) => s.status);
   const chatScroll = useRef<HTMLDivElement>(null);
@@ -103,6 +105,13 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     try { await native('ai_new_conversation'); useAiConversation.getState().reset(); setResult(null); }
     catch (e) { setError(messageOf(e)); }
   }
+  async function loadResponseDiagnostics() {
+    try {
+      const entries = await native<unknown[]>('ai_get_response_diagnostics');
+      setResponseDiagnostics(entries);
+      if (!entries.length) setError('No native ChatGPT response diagnostics have been recorded in this session.');
+    } catch (e) { setError(messageOf(e)); }
+  }
   async function send(textOverride?: string) {
     const text = (textOverride ?? draft).trim();
     if (!text || !model || streaming || !authorized || !routingConsent) return;
@@ -120,13 +129,13 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       for (let cycle = 0; cycle < 5; cycle++) {
         const cycleId = `cycle_${crypto.randomUUID().replaceAll('-', '')}`;
         useAiConversation.getState().responseStart(turnId, cycleId);
-        const response: { turn_id: string; message_id: string; cycle_id: string; text: string; calls?: ValueItem[] } = await native('ai_respond', { model, turnId, cycleId });
+        const response: { turn_id: string; message_id: string; cycle_id: string; text: string; text_source?: string; empty_reason?: string; calls?: ValueItem[] } = await native('ai_respond', { model, turnId, cycleId, toolsEnabled });
         if (response.turn_id !== turnId || response.message_id !== started.assistant_message_id || response.cycle_id !== cycleId) throw new Error('The response belonged to a different conversation turn.');
         // Completed output is authoritative. This recovers text if event delivery was late or lost.
         useAiConversation.getState().authoritative(turnId, response.message_id, cycleId, response.text ?? '');
         const calls = response.calls ?? [];
         if (!calls.length) {
-          if (!response.text?.trim()) throw new Error('ChatGPT completed without a text answer. Please retry.');
+          if (!response.text?.trim()) throw new Error(emptyResponseMessage(response.empty_reason));
           await native('ai_finish_turn', { turnId });
           useAiConversation.getState().finish(turnId, 'completed');
           return;
@@ -186,10 +195,19 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
             <strong>ChatGPT · {connected && authorized ? account || 'Connected' : 'Not connected'}</strong>
             <label className="ai-consent"><input type="checkbox" checked={routingConsent} disabled={!authorized || consentUpdating || streaming} onChange={(e) => void updateConsent(e.target.checked)} />
               Allow prompt and bounded tool results to be sent to ChatGPT</label>
+            <label className="ai-consent"><input type="checkbox" checked={toolsEnabled} disabled={streaming} onChange={(e) => setToolsEnabled(e.target.checked)} />
+              Include Flowbench read-only tools in requests</label>
+            <small className="ai-menu-note">Turn this off for a simple no-tools comparison. Normal assistant use keeps tools enabled.</small>
             {authorized && <>
               <button onClick={() => void refreshModels()} disabled={busy || streaming}>Refresh models</button>
               <button onClick={() => void signIn()} disabled={busy || streaming}>Reauthorize</button>
             </>}
+            <button onClick={() => void loadResponseDiagnostics()} disabled={busy || streaming}>Show safe response diagnostics</button>
+            {responseDiagnostics.length > 0 && <details className="ai-response-diagnostics" open>
+              <summary>Last {responseDiagnostics.length} response summaries</summary>
+              <p>Metadata only: prompts, response text, reasoning, tool arguments/results and credentials are excluded.</p>
+              <pre>{JSON.stringify(responseDiagnostics, null, 2)}</pre>
+            </details>}
             <hr />
             <strong>Inspect Flowbench</strong>
             {quickActions.map((entry) => <button key={entry.tool} disabled={busy || streaming} onClick={() => void localCommand(entry)}>{entry.label}</button>)}
@@ -232,6 +250,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       <footer className="ai-composer-wrap">
         <div className="ai-contextline"><span className={`routing-dot ${connected && authorized ? 'connected' : ''}`} />
           <span title={name}>{name}</span><span>·</span><span>{nodes} nodes</span>
+          <span className="ai-tools-mode">{toolsEnabled ? 'Tools on' : 'No-tools probe'}</span>
           <span className={`ai-routing-label ${routingConsent ? '' : 'off'}`}>{routingConsent ? 'External AI routing allowed' : 'External AI routing off'}</span>
         </div>
         {authorized && <form className="ai-compose" onSubmit={(e) => { e.preventDefault(); void send(); }}>
@@ -280,3 +299,12 @@ function activityLabel(tool: string) {
   return 'Inspecting Flowbench…';
 }
 function messageOf(error: unknown) { return error instanceof Error ? error.message : String(error); }
+function emptyResponseMessage(reason?: string) {
+  switch (reason) {
+    case 'reasoning_only': return 'ChatGPT completed with reasoning output but no user-facing text. Open AI settings → Show safe response diagnostics and share the metadata summary.';
+    case 'missing_terminal_output': return 'ChatGPT reported completion without a usable output list. Open AI settings → Show safe response diagnostics.';
+    case 'message_without_user_facing_text': return 'ChatGPT completed a message without user-facing text. Open AI settings → Show safe response diagnostics.';
+    case 'streamed_text_unavailable': return 'ChatGPT emitted text events, but Flowbench could not recover their text. Open AI settings → Show safe response diagnostics.';
+    default: return 'ChatGPT completed without user-facing text. Open AI settings → Show safe response diagnostics before retrying.';
+  }
+}

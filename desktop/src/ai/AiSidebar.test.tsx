@@ -110,6 +110,43 @@ describe('Flowbench AI conversation', () => {
     expect(screen.queryByText('corruption')).toBeNull();
   });
 
+  it('shows a specific reasoning-only completion error and lets the user inspect safe diagnostics', async () => {
+    await ready();
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_status') return { connected: true, plan_usage_authorized: true };
+      if (command === 'ai_models') return [{ slug: 'model-a', display_name: 'Available model' }];
+      if (command === 'ai_begin') return { turn_id: 'turn_reasoning', assistant_message_id: 'msg_reasoning' };
+      if (command === 'ai_respond') return { turn_id: args?.turnId, message_id: 'msg_reasoning', cycle_id: args?.cycleId, text: '', empty_reason: 'reasoning_only', calls: [] };
+      if (command === 'ai_get_response_diagnostics') return [{ http_status: 200, terminal_status: 'completed', output: { reasoning_items: 1, message_items: 0 } }];
+      return undefined;
+    });
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'hello' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    expect(await screen.findByText(/completed with reasoning output but no user-facing text/)).toBeTruthy();
+    fireEvent.click(screen.getByText('•••'));
+    fireEvent.click(screen.getByRole('button', { name: 'Show safe response diagnostics' }));
+    expect(await screen.findByText(/\"terminal_status\": \"completed\"/)).toBeTruthy();
+  });
+
+  it('supports an explicit no-tools probe without changing the normal read-only tool mode', async () => {
+    await ready();
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_status') return { connected: true, plan_usage_authorized: true };
+      if (command === 'ai_models') return [{ slug: 'model-a', display_name: 'Available model' }];
+      if (command === 'ai_begin') return { turn_id: 'turn_probe', assistant_message_id: 'msg_probe' };
+      if (command === 'ai_respond') return { turn_id: args?.turnId, message_id: 'msg_probe', cycle_id: args?.cycleId, text: 'Probe answer', calls: [] };
+      return undefined;
+    });
+    fireEvent.click(screen.getByText('•••'));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Include Flowbench read-only tools in requests' }));
+    expect((screen.getByRole('checkbox', { name: 'Include Flowbench read-only tools in requests' }) as HTMLInputElement).checked).toBe(false);
+    fireEvent.click(screen.getByText('•••'));
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'hello' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    expect(await screen.findByText('Probe answer')).toBeTruthy();
+    expect(tauriMock.invoke.mock.calls.find(([command]) => command === 'ai_respond')?.[1]).toMatchObject({ toolsEnabled: false });
+  });
+
   it('keeps three unrelated prompts in one native conversation with separate stable turns', async () => {
     let response = 0;
     await ready();

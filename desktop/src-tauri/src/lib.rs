@@ -45,6 +45,7 @@ pub fn run() {
             ai::ai_finish_turn,
             ai::ai_abort_turn,
             ai::ai_new_conversation,
+            ai::ai_get_response_diagnostics,
             ai::ai_set_data_consent,
             ai::ai_respond,
             ai::ai_submit_tool_result
