@@ -7,7 +7,9 @@ import fnmatch
 import io
 import json
 import os
+import re
 import tempfile
+from decimal import Decimal, InvalidOperation
 from itertools import chain as _chain
 from pathlib import Path
 
@@ -21,6 +23,112 @@ UNBOUNDED_TEXT = 2**30 - 1  # declared size for untyped text fields: never trunc
 
 _FORMATS = ['auto', 'csv', 'tsv', 'delimited', 'json', 'jsonl', 'parquet', 'arrow', 'yxdb']
 _BINARY = ('parquet', 'arrow')
+_INTEGER_TEXT = re.compile(r'^[+-]?(?:0|[1-9][0-9]*)$')
+_DECIMAL_TEXT = re.compile(r'^[+-]?(?:(?:[0-9]+(?:\.[0-9]*)?)|(?:\.[0-9]+))(?:[eE][+-]?[0-9]+)?$')
+_IDENTIFIER_NAME = re.compile(r'(?:id|identifier|code|postal|postcode|zip|phone|sku|account|routing|isbn|ssn)(?:$|[^a-z0-9])', re.I)
+_QUANTITY_NAME = re.compile(r'(?:quantity|qty|sales|price|amount|revenue|cost|profit|margin|count|total|balance|rate|percent|percentage|weight|height|age|days|units|stock|volume|score)', re.I)
+
+
+def _inference_mode(cfg):
+    # Workflows saved before the explicit setting retain historical all-text
+    # behaviour. New desktop nodes write `flowbench` explicitly.
+    return cfg.get('type_inference', 'alteryx-compat')
+
+
+def _infer_delimited_fields(names, rows, cfg):
+    """Infer types from every row while keeping only compact per-column statistics.
+
+    Ambiguous and identifier-shaped values stay text. ISO dates are accepted;
+    locale-dependent date guesses are deliberately avoided.
+    """
+    stats = [{'kinds': set(), 'max_len': 0, 'precision': 0, 'scale': 0, 'integer_digits': 0}
+             for _ in names]
+    for row in rows:
+        for i, raw in enumerate(row):
+            if raw is None or raw == '':
+                continue
+            value = raw.strip()
+            s = stats[i]
+            s['max_len'] = max(s['max_len'], len(raw))
+            identifier_name = bool(_IDENTIFIER_NAME.search(names[i]))
+            quantitative_name = bool(_QUANTITY_NAME.search(names[i]))
+            if identifier_name or (not quantitative_name and re.match(r'^[+-]?0[0-9]+$', value)):
+                s['kinds'].add('text')
+            elif value.casefold() in ('true', 'false'):
+                s['kinds'].add('bool')
+            elif _INTEGER_TEXT.fullmatch(value) or (quantitative_name and re.fullmatch(r'[+-]?0[0-9]+', value)):
+                n = int(value)
+                if -(2**63) <= n < 2**63:
+                    s['kinds'].add('integer')
+                    s['integer_digits'] = max(s['integer_digits'], len(str(abs(n))))
+                else:
+                    s['kinds'].add('text')
+            elif _DECIMAL_TEXT.fullmatch(value):
+                try:
+                    d = Decimal(value)
+                    tup = d.as_tuple()
+                    scale = max(0, -tup.exponent)
+                    # A fixed decimal needs at least one whole-number digit,
+                    # even for values below 1; positive exponents expand it.
+                    whole_digits = max(1, len(tup.digits) + tup.exponent)
+                    precision = whole_digits + scale
+                    if precision <= 50:
+                        s['kinds'].add('decimal')
+                        s['precision'] = max(s['precision'], precision)
+                        s['scale'] = max(s['scale'], scale)
+                        s['integer_digits'] = max(s['integer_digits'], whole_digits)
+                    else:
+                        s['kinds'].add('text')
+                except InvalidOperation:
+                    s['kinds'].add('text')
+            elif re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
+                try:
+                    _dt.date.fromisoformat(value)
+                    s['kinds'].add('date')
+                except ValueError:
+                    s['kinds'].add('text')
+            elif re.fullmatch(r'\d{1,2}:\d{2}(?::\d{2}(?:\.\d{1,6})?)?', value):
+                try:
+                    _dt.time.fromisoformat(value)
+                    s['kinds'].add('time')
+                except ValueError:
+                    s['kinds'].add('text')
+            elif 'T' in value or ' ' in value:
+                # Timezone-aware values stay text until the runtime has a zoned type.
+                try:
+                    parsed = _dt.datetime.fromisoformat(value.replace('Z', '+00:00'))
+                    s['kinds'].add('datetime' if parsed.utcoffset() is None else 'text')
+                except ValueError:
+                    s['kinds'].add('text')
+            else:
+                s['kinds'].add('text')
+
+    fields = []
+    for name, s in zip(names, stats):
+        kinds = s['kinds']
+        if not kinds or kinds == {'text'} or 'text' in kinds or len(kinds) > 1 and kinds != {'integer', 'decimal'}:
+            fields.append(Field(name, FieldType.V_WSTRING, max(1, s['max_len'])))
+        elif kinds == {'bool'}:
+            fields.append(Field(name, FieldType.BOOL))
+        elif kinds == {'date'}:
+            fields.append(Field(name, FieldType.DATE))
+        elif kinds == {'datetime'}:
+            fields.append(Field(name, FieldType.DATETIME))
+        elif kinds == {'time'}:
+            fields.append(Field(name, FieldType.TIME))
+        elif kinds <= {'integer'}:
+            # Fixed-width integer is intentional: overflow remains text rather than truncation.
+            fields.append(Field(name, FieldType.INT64))
+        else:
+            scale = s['scale']
+            precision = max(1, s['integer_digits'] + scale)
+            # Mixed values can exceed 50 digits after unifying the column.
+            # Preserve their source text instead of narrowing decimal scale.
+            if precision > 50:
+                fields.append(Field(name, FieldType.V_WSTRING, max(1, s['max_len'])))
+            else:
+                fields.append(Field(name, FieldType.FIXED_DECIMAL, precision, scale))
+    return fields
 
 
 def _resolve_format(fmt: str, path: Path) -> str:
@@ -62,6 +170,8 @@ class InputData(Tool):
                 'encoding': {'type': 'string', 'default': 'utf-8-sig'},
                 'skip_rows': {'type': 'integer', 'minimum': 0, 'default': 0},
                 'max_records': {'type': ['integer', 'null'], 'minimum': 0, 'default': None},
+                'type_inference': {'enum': ['flowbench', 'alteryx-compat'], 'default': 'alteryx-compat',
+                                   'description': 'Infer conservative column types, or preserve Alteryx delimited-text compatibility (all text).'},
                 'fields': {'type': 'array', 'items': FIELD_SPEC,
                            'description': 'Optional declared schema; values are converted to these types.'},
                 'on_conversion_error': ON_ERROR,
@@ -147,6 +257,15 @@ class InputData(Tool):
     def can_stream(self, cfg):
         return True
 
+    def _delimited_schema(self, ctx, cfg, path, fmt, names=None):
+        gen = self._delimited_rows(ctx, cfg, path, fmt)
+        header = next(gen)
+        if names is not None and header != names:
+            raise SchemaError(f'{path.name}: header changed between schema and data reads')
+        if _inference_mode(cfg) == 'alteryx-compat':
+            return [Field(n, FieldType.V_WSTRING, UNBOUNDED_TEXT) for n in header]
+        return _infer_delimited_fields(header, gen, cfg)
+
     def iter_batches(self, ctx, cfg, batch_rows):
         """Yield typed batches of at most ``batch_rows`` records. Delimited text and Parquet are read
         incrementally; JSON/Arrow IPC are read whole and then batched."""
@@ -160,7 +279,7 @@ class InputData(Tool):
             if declared and [f.name for f in declared] != names:
                 raise SchemaError(f'{path.name}: declared fields {[f.name for f in declared]} do not match file '
                                   f'fields {names}')
-            fields = declared or [Field(n, FieldType.V_WSTRING, UNBOUNDED_TEXT) for n in names]
+            fields = declared or self._delimited_schema(ctx, cfg, path, fmt, names)
             if fname:
                 fields = fields + [Field(fname, FieldType.V_WSTRING, UNBOUNDED_TEXT)]
             schema = Schema(fields)
@@ -171,9 +290,12 @@ class InputData(Tool):
                     buf.append(row)
                 if buf and (len(buf) >= batch_rows or row is None):
                     cols = [[(None if (empty_null and r[i] == '') else r[i]) for r in buf] for i in range(len(names))]
-                    if declared:
+                    if declared or _inference_mode(cfg) != 'alteryx-compat':
+                        if not declared:
+                            cols = [[None if value == '' and not f.type.is_string else value
+                                     for value in col] for col, f in zip(cols, fields)]
                         cols = [cast_column(c, f, ctx, cfg['on_conversion_error'], row_offset=offset)
-                                for c, f in zip(cols, declared)]
+                                for c, f in zip(cols, fields)]
                     if fname:
                         cols.append([str(path)] * len(buf))
                     yield Table(schema, cols)
@@ -267,10 +389,20 @@ class InputData(Tool):
                     col[:] = [v if v is None or isinstance(v, str) else format_value(v) for v in col]
                 natural.append(Field(n, t, UNBOUNDED_TEXT if t is FieldType.V_WSTRING else None))
         else:
-            names, rows = self._read_delimited(ctx, cfg, path, fmt, header_only)
+            # Type inference profiles every row so a late malformed value cannot be
+            # silently interpreted using the first few records only.
+            names, rows = self._read_delimited(ctx, cfg, path, fmt,
+                                               header_only and _inference_mode(cfg) == 'alteryx-compat')
             empty_null = cfg['empty_as_null']
             cols = [[(None if (empty_null and r[i] == '') else r[i]) for r in rows] for i in range(len(names))]
-            natural = [Field(n, FieldType.V_WSTRING, UNBOUNDED_TEXT) for n in names]
+            if _inference_mode(cfg) == 'alteryx-compat':
+                natural = [Field(n, FieldType.V_WSTRING, UNBOUNDED_TEXT) for n in names]
+            else:
+                # `rows` is complete unless this is a compatibility header-only query.
+                natural = _infer_delimited_fields(names, rows, cfg)
+                for i, f in enumerate(natural):
+                    if not f.type.is_string:
+                        cols[i] = [None if v == '' else v for v in cols[i]]
         if cfg.get('fields'):
             declared = [field_from_spec(s) for s in cfg['fields']]
             if [f.name for f in declared] != names:
@@ -280,6 +412,8 @@ class InputData(Tool):
             fields = declared
         else:
             fields = natural
+            if fmt in ('csv', 'tsv', 'delimited') and _inference_mode(cfg) != 'alteryx-compat':
+                cols = [cast_column(c, f, ctx, cfg['on_conversion_error']) for c, f in zip(cols, fields)]
         if cfg['add_file_name_field']:
             fields = fields + [Field(cfg['add_file_name_field'], FieldType.V_WSTRING, UNBOUNDED_TEXT)]
             cols = cols + [[str(path)] * (len(cols[0]) if cols else 0)]

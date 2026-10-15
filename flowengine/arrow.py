@@ -35,7 +35,10 @@ def _arrow_type(f: Field):
         FieldType.INT32: pa.int32(), FieldType.INT64: pa.int64(), FieldType.FLOAT: pa.float32(),
         FieldType.DOUBLE: pa.float64(), FieldType.DATE: pa.date32(), FieldType.TIME: pa.time64('us'),
         FieldType.DATETIME: pa.timestamp('us'), FieldType.BLOB: pa.binary(),
-    }.get(t) or (pa.decimal128(min(f.size, 38), f.scale) if t is FieldType.FIXED_DECIMAL else pa.string())
+    }.get(t) or (
+        (pa.decimal128(f.size, f.scale) if f.size <= 38 else pa.decimal256(f.size, f.scale))
+        if t is FieldType.FIXED_DECIMAL else pa.string()
+    )
 
 
 def to_arrow(table: Table):

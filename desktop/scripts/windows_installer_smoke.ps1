@@ -31,7 +31,55 @@ try { & $Python -m flowengine --help | Out-Null } finally { Pop-Location }
 if ($LASTEXITCODE -ne 0) { throw 'Bundled engine failed to start without PATH Python.' }
 & $Python -c 'import jsonschema, numpy, pyarrow, psycopg, pymssql, yxdb'
 if ($LASTEXITCODE -ne 0) { throw 'Installed runtime failed native dependency imports.' }
-$workflowPath = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..\examples\sales\monthly_sales.flow.json'))
+# Exercise CSV -> Filter -> Browse with default Flowbench inference through the
+# installed app's engine sidecar; identifiers remain text while quantities are numeric.
+$AcceptanceRoot = Join-Path $env:RUNNER_TEMP 'Flowbench-data-correctness-filter'
+New-Item -ItemType Directory -Path $AcceptanceRoot -Force | Out-Null
+$InputCsv = Join-Path $AcceptanceRoot 'quantities.csv'
+$TrueCsv = Join-Path $AcceptanceRoot 'filter-true.csv'
+$FalseCsv = Join-Path $AcceptanceRoot 'filter-false.csv'
+$workflowPath = Join-Path $AcceptanceRoot 'filter-workflow.flow.json'
+$csvText = @'
+CustomerID,Quantity,Sales,Postcode
+00001,0,1.25,02139
+00002,1,1.25,02139
+00003,10,1.25,02139
+00004,9,1.25,02139
+00123,123,1.25,02139
+00006,-2,1.25,02139
+00007,2,1.25,02139
+00008,3,1.25,02139
+00009,5,1.25,02139
+00010,6,1.25,02139
+00011,11,1.25,02139
+00012,12,1.25,02139
+00013,20,1.25,02139
+00014,50,1.25,02139
+00015,100,1.25,02139
+'@
+$csvText = $csvText.TrimStart("`r", "`n") + "`n"
+[IO.File]::WriteAllText($InputCsv, $csvText, [Text.UTF8Encoding]::new($false))
+$workflow = @{
+  format = 'flowengine.workflow'
+  formatVersion = 1
+  name = 'Installed desktop CSV Filter type acceptance'
+  nodes = @(
+    @{ id = 'input'; tool = 'core.input_data'; config = @{ path = $InputCsv; type_inference = 'flowbench' } },
+    @{ id = 'filter'; tool = 'core.filter'; config = @{ field = 'Quantity'; operator = '>'; value = '10' } },
+    @{ id = 'browse_true'; tool = 'core.browse'; config = @{} },
+    @{ id = 'browse_false'; tool = 'core.browse'; config = @{} },
+    @{ id = 'write_true'; tool = 'core.output_data'; config = @{ path = $TrueCsv; format = 'csv'; if_exists = 'overwrite' } },
+    @{ id = 'write_false'; tool = 'core.output_data'; config = @{ path = $FalseCsv; format = 'csv'; if_exists = 'overwrite' } }
+  )
+  edges = @(
+    @{ from = @{ node = 'input'; anchor = 'output' }; to = @{ node = 'filter'; anchor = 'input' } },
+    @{ from = @{ node = 'filter'; anchor = 'true' }; to = @{ node = 'browse_true'; anchor = 'input' } },
+    @{ from = @{ node = 'filter'; anchor = 'true' }; to = @{ node = 'write_true'; anchor = 'input' } },
+    @{ from = @{ node = 'filter'; anchor = 'false' }; to = @{ node = 'browse_false'; anchor = 'input' } },
+    @{ from = @{ node = 'filter'; anchor = 'false' }; to = @{ node = 'write_false'; anchor = 'input' } }
+  )
+}
+$workflow | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $workflowPath -Encoding utf8
 $env:FLOWBENCH_STARTUP_SMOKE_WORKFLOW = $workflowPath
 $process = Start-Process -FilePath $App -WorkingDirectory $InstallDir -PassThru
 try {
@@ -48,6 +96,19 @@ try {
     $appState = Get-Process -Id $process.Id -ErrorAction SilentlyContinue | Select-Object Id,HasExited,Path
     throw "Installed app engine RPC/workflow health failed. App: $($appState | ConvertTo-Json -Compress); startup log: $($startupLog.FullName); contents: $logText"
   }
+  if (-not (Test-Path -LiteralPath $TrueCsv) -or -not (Test-Path -LiteralPath $FalseCsv)) {
+    throw 'Installed desktop CSV Filter workflow did not produce both anchor exports.'
+  }
+  $trueRows = @(Import-Csv -LiteralPath $TrueCsv)
+  $falseRows = @(Import-Csv -LiteralPath $FalseCsv)
+  if ($trueRows.Count -ne 6 -or $falseRows.Count -ne 9) {
+    throw "Installed desktop Filter expected 6 true and 9 false numeric rows; got $($trueRows.Count) and $($falseRows.Count)."
+  }
+  if ($trueRows.Quantity -notcontains '11' -or $trueRows.Quantity -notcontains '100' -or
+      $trueRows.Quantity -contains '2' -or $falseRows.Quantity -notcontains '2' -or
+      $trueRows[0].CustomerID -notmatch '^0' -or $trueRows[0].Postcode -ne '02139') {
+    throw 'Installed desktop Filter output values do not match numeric comparison or identifier preservation.'
+  }
   $enginePid = [int]([regex]::Match($logText, 'engine\.info succeeded; catalog\.list entries=323; pid=(\d+)').Groups[1].Value)
   if (-not (Get-Process -Id $enginePid -ErrorAction SilentlyContinue)) { throw "Engine health RPC passed but sidecar PID $enginePid is no longer running." }
 } finally {
@@ -62,4 +123,4 @@ $Uninstaller = Join-Path $InstallDir 'uninstall.exe'
 if (-not (Test-Path $Uninstaller)) { throw 'NSIS uninstaller is missing.' }
 $uninstall = Start-Process -FilePath $Uninstaller -ArgumentList '/S' -Wait -PassThru
 if ($uninstall.ExitCode -ne 0 -or (Test-Path -LiteralPath $App)) { throw 'Silent uninstall did not remove the installed application.' }
-Write-Host 'Clean-runner install, managed runtime launch, same-version reinstall, and uninstall passed.'
+Write-Host 'Clean-runner install, managed runtime launch, CSV auto-typing -> numeric Filter -> Browse, same-version reinstall, and uninstall passed.'

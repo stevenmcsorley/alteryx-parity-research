@@ -72,6 +72,7 @@ export type EditorState = {
   duplicateSelected(): void;
   groupSelected(): string | null;
   ungroup(containerId: string): void;
+  commitGraphTransaction(graph: CanvasGraph): void;
   setName(name: string): void;
   setProfile(p: string): void;
   setFilePath(p: string | null, baseDir?: string): void;
@@ -220,8 +221,13 @@ export const useEditor = create<EditorState>((set, get) => ({
     const m = s.tools[toolId];
     const id = nextNodeId(toolId, s.nodes.map((n) => n.id));
     get().checkpoint();
+    const config = m ? defaultConfig(m.config_schema) : {};
+    // New Flowbench Input Data nodes opt into the modern inference policy.
+    // Legacy native workflows and imported Alteryx workflows keep their saved
+    // all-text behavior unless the user changes this setting explicitly.
+    if (toolId === 'core.input_data') config.type_inference = 'flowbench';
     set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'tool', position, selected: true,
-      data: { kind: 'tool', tool: toolId, config: m ? defaultConfig(m.config_schema) : {} } }] });
+      data: { kind: 'tool', tool: toolId, config } }] });
     return id;
   },
 
@@ -336,6 +342,14 @@ export const useEditor = create<EditorState>((set, get) => ({
       const { parentId: _p, ...rest } = n;
       return { ...rest, position: { x: n.position.x + c.position.x, y: n.position.y + c.position.y } } as CanvasNode;
     }) });
+  },
+
+  commitGraphTransaction: (graph) => {
+    // The approved AI patch becomes one ordinary editor transaction and one undo step.
+    get().checkpoint();
+    set({ nodes: structuredClone(graph.nodes), edges: structuredClone(graph.edges), name: graph.name,
+      description: graph.description, metadata: structuredClone(graph.metadata), dirty: true,
+      problems: [], schemas: {}, run: emptyRun, selectedResult: null });
   },
 
   setName: (name) => { get().checkpoint(); set({ name }); },

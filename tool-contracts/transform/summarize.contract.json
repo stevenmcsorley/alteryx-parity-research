@@ -160,9 +160,10 @@
     ]
   },
   "independent_tests": {
-    "count": 9,
-    "passing": 9,
+    "count": 10,
+    "passing": 10,
     "tests": [
+      "test_data_correctness.DataCorrectnessTests.test_full_typed_csv_pipeline_roundtrip",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.PropertyTests.test_invariants",

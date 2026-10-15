@@ -6,12 +6,12 @@ import { SchemaForm, type FieldContext } from './SchemaForm';
 import { categoryColor, glyph } from '../ui/categories';
 import { engine, describe } from '../state/engineActions';
 
-export function Inspector() {
+export function Inspector({ embedded = false }: { embedded?: boolean } = {}) {
   const selected = useEditor((s) => s.nodes.filter((n) => n.selected));
-  if (selected.length > 1) return <MultiSelection count={selected.length} />;
+  if (selected.length > 1) return <MultiSelection count={selected.length} embedded={embedded} />;
   const node = selected[0];
   return (
-    <aside className="app-right" aria-label="Configuration" data-testid="inspector">
+    <aside className={embedded ? 'inspector-content' : 'app-right'} aria-label="Configuration" data-testid="inspector">
       {!node ? <WorkflowProperties /> : node.data.kind === 'tool' ? <ToolInspector node={node} /> :
         node.data.kind === 'application-action' ? <ApplicationActionInspector node={node} /> :
         node.data.kind === 'container' ? <ContainerInspector node={node} /> : <CommentInspector node={node} />}
@@ -66,12 +66,12 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
   </>;
 }
 
-function MultiSelection({ count }: { count: number }) {
+function MultiSelection({ count, embedded = false }: { count: number; embedded?: boolean }) {
   const group = useEditor((s) => s.groupSelected);
   const del = useEditor((s) => s.deleteSelected);
   const dup = useEditor((s) => s.duplicateSelected);
   return (
-    <aside className="app-right" aria-label="Configuration" data-testid="inspector">
+    <aside className={embedded ? 'inspector-content' : 'app-right'} aria-label="Configuration" data-testid="inspector">
       <div className="section"><h2>{count} items selected</h2></div>
       <div className="section" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         <button onClick={() => group()}>Group in container (Ctrl+G)</button>
@@ -200,6 +200,16 @@ function ToolInspector({ node }: { node: CanvasNode }) {
             ? <DatabaseOutputForm value={d.config} onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />
           : <SchemaForm schema={manifest.config_schema} value={d.config} fields={fields} idPrefix={`cfg-${node.id}`}
             onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />}
+        {manifest.tool_id === 'core.input_data' && ['csv', 'tsv', 'delimited', 'auto'].includes(String(d.config.format ?? 'auto')) &&
+          <p className="help" role="note">Flowbench mode infers types across the complete file and keeps identifier fields (such as IDs and postcodes) as text. Use Fields to override a type, or choose Alteryx compatibility to read delimited values as text.</p>}
+        {manifest.tool_id === 'core.filter' && (() => {
+          const fieldName = typeof d.config.field === 'string' ? d.config.field : '';
+          const selectedField = fields.all.find((f) => f.name === fieldName);
+          return selectedField && ['string', 'wstring', 'v_string', 'v_wstring'].includes(selectedField.type)
+            && ['<', '<=', '>', '>='].includes(String(d.config.operator))
+            ? <p className="help" role="note">{fieldName} is {selectedField.type}; this comparison is lexicographic text ordering (so "2" is greater than "10"). Preserve identifiers as text, or convert this field with Select before numeric comparison.</p>
+            : null;
+        })()}
         <p className="help" style={{ color: 'var(--text-3)', fontSize: 11 }}>{manifest.description}</p>
       </div>
       <div className="section">
@@ -317,7 +327,7 @@ function SchemaPreview({ title, groups, emptyText }: { title: string; groups: Re
           {entries.length > 1 && <div style={{ fontWeight: 600, fontSize: 12 }}>{anchor}</div>}
           <table className="schema-table">
             <thead><tr><th>Field</th><th>Type</th><th>Size</th></tr></thead>
-            <tbody>{fs.map((f) => <tr key={f.name}><td>{f.name}</td><td>{f.type}</td><td>{f.size ?? ''}{f.scale !== undefined ? `.${f.scale}` : ''}</td></tr>)}</tbody>
+            <tbody>{fs.map((f) => <tr key={f.name}><td>{f.name}</td><td>{f.type}</td><td>{f.size == null ? '' : f.size >= 1073741823 ? 'Unbounded' : f.size}{f.scale !== undefined ? `.${f.scale}` : ''}</td></tr>)}</tbody>
           </table>
         </div>
       ))}

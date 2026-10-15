@@ -80,6 +80,13 @@ CATEGORY_DEPENDENCIES = {
     'Laboratory': ['experimental-in-reference'], 'SDK Examples': ['sdk-runtime'],
 }
 BLOCKING = ('licensed-reference-dataset', 'external-service-account', 'vendor-cloud-service', 'llm-service')
+# This integration is executed only in the dedicated R-enabled CI job. Excluding
+# it from the generic tool-touch map keeps the generated ledger reproducible on
+# runners with and without a local R install; its conditional Text Input read
+# must not change Text Input's test count either.
+ENVIRONMENT_GATED_LEDGER_TESTS = {
+    'test_fe_tools_wave2.UserCodeTools.test_r_tool',
+}
 
 
 def slug(s):
@@ -102,7 +109,7 @@ def run_tests_with_tool_map():
 
     def recording_get(self, tool_id):
         tool = original_get(self, tool_id)
-        if current['test']:
+        if current['test'] and current['test'] not in ENVIRONMENT_GATED_LEDGER_TESTS:
             used[current['test']].add(tool.manifest.tool_id)
         return tool
     plugin.Registry.get = recording_get
@@ -110,7 +117,8 @@ def run_tests_with_tool_map():
     class Recorder(unittest.TextTestResult):
         def startTest(self, test):
             current['test'] = test.id()
-            seen.add(test.id())
+            if test.id() not in ENVIRONMENT_GATED_LEDGER_TESTS:
+                seen.add(test.id())
             super().startTest(test)
 
     suite = unittest.defaultTestLoader.discover(str(ROOT / 'tests'), top_level_dir=str(ROOT / 'tests'))

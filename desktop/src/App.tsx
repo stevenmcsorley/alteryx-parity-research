@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { Canvas } from './canvas/Canvas';
 import { Palette } from './panels/Palette';
@@ -9,6 +9,20 @@ import { Toasts } from './ui/toast';
 import { DialogHost } from './ui/dialogs';
 import { useEditor } from './state/store';
 import { cancelRun, initEngine, runWorkflow, scheduleValidate } from './state/engineActions';
+import { AiSidebar } from './ai/AiSidebar';
+
+function RightDock({ aiOpen, selectAi, selectInspector, onResize, onResizeKey }: { aiOpen: boolean; selectAi: () => void; selectInspector: () => void; onResize: (event: ReactPointerEvent) => void; onResizeKey: (event: ReactKeyboardEvent) => void }) {
+  return <section className="app-right right-dock" aria-label="Inspector and AI workspace">
+    <div className="dock-resizer" role="separator" aria-orientation="vertical" aria-label="Resize right workspace" tabIndex={0} onPointerDown={onResize} onKeyDown={onResizeKey} />
+    <div className="right-tabs" role="tablist" aria-label="Right workspace panels">
+      <button role="tab" aria-selected={!aiOpen} onClick={selectInspector}>Inspector</button>
+      <button role="tab" aria-selected={aiOpen} onClick={selectAi}>Flowbench AI</button>
+    </div>
+    <div className="right-panel" role="tabpanel" aria-label={aiOpen ? 'Flowbench AI' : 'Inspector'}>
+      {aiOpen ? <AiSidebar embedded close={selectInspector} /> : <Inspector embedded />}
+    </div>
+  </section>;
+}
 
 function isTyping(e: KeyboardEvent) {
   const t = e.target as HTMLElement | null;
@@ -71,19 +85,34 @@ function EngineOffline() {
 }
 
 export default function App() {
+  const [aiOpen, setAiOpen] = useState(false);
+  const [dockWidth, setDockWidth] = useState(400);
+  const resizing = useRef(false);
+  const startResize = (event: ReactPointerEvent) => {
+    event.preventDefault();
+    resizing.current = true;
+    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+    const onMove = (move: PointerEvent) => { if (resizing.current) setDockWidth(Math.max(310, Math.min(600, window.innerWidth - move.clientX))); };
+    const onUp = () => { resizing.current = false; window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  };
   useShortcuts();
   useAutoValidate();
   useEffect(() => { void initEngine(); }, []);
   return (
     <ReactFlowProvider>
-      <div className="app">
-        <Toolbar />
+      <div className="app" style={{ '--right-dock-width': `${dockWidth}px` } as CSSProperties}>
+        <Toolbar onToggleAi={() => setAiOpen((open) => !open)} aiOpen={aiOpen} />
         <Palette />
         <div style={{ gridArea: 'canvas', position: 'relative', minHeight: 0, display: 'flex' }}>
           <Canvas />
           <EngineOffline />
         </div>
-        <Inspector />
+        <RightDock aiOpen={aiOpen} selectAi={() => setAiOpen(true)} selectInspector={() => setAiOpen(false)} onResize={startResize} onResizeKey={(event) => {
+          if (event.key === 'ArrowLeft') setDockWidth((width) => Math.min(600, width + 16));
+          if (event.key === 'ArrowRight') setDockWidth((width) => Math.max(310, width - 16));
+        }} />
         <ResultsPanel />
       </div>
       <Toasts />

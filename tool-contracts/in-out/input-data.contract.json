@@ -77,6 +77,14 @@
         "minimum": 0,
         "default": null
       },
+      "type_inference": {
+        "enum": [
+          "flowbench",
+          "alteryx-compat"
+        ],
+        "default": "alteryx-compat",
+        "description": "Infer conservative column types, or preserve Alteryx delimited-text compatibility (all text)."
+      },
       "fields": {
         "type": "array",
         "items": {
@@ -232,9 +240,13 @@
     ]
   },
   "independent_tests": {
-    "count": 13,
-    "passing": 13,
+    "count": 17,
+    "passing": 17,
     "tests": [
+      "test_data_correctness.DataCorrectnessTests.test_csv_default_inference_types_quantities_and_keeps_codes_as_text",
+      "test_data_correctness.DataCorrectnessTests.test_csv_inference_preserves_subunit_and_exponent_decimals",
+      "test_data_correctness.DataCorrectnessTests.test_csv_string_filter_and_declared_numeric_schema",
+      "test_data_correctness.DataCorrectnessTests.test_full_typed_csv_pipeline_roundtrip",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_scale.ArrowTests.test_parquet_and_ipc_io_through_tools",

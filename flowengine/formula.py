@@ -390,6 +390,9 @@ def _coerce_cmp(a, b):
         b = parse_date(b.strip()[:10])
     elif isinstance(b, _dt.date) and isinstance(a, str):
         a = parse_date(a.strip()[:10])
+    # The 2026.2 E1/E2 formula probe confirms Alteryx promotes mixed
+    # FixedDecimal/Double comparisons to Double (including binary rounding).
+    # Keep this explicit compatibility conversion in the shared expression path.
     if isinstance(a, float) and isinstance(b, Decimal):
         b = float(b)
     elif isinstance(b, float) and isinstance(a, Decimal):
@@ -424,6 +427,13 @@ def _compare(op, a, b):
     if op == '>':
         return a > b
     return a >= b
+
+
+def compare_values(op, a, b):
+    """Apply the expression language's comparison and null semantics to typed values."""
+    if op not in ('=', '!=', '<', '<=', '>', '>='):
+        raise ExpressionError(f'Unsupported comparison operator {op!r}')
+    return _compare(op, a, b)
 
 
 def truthy(v) -> bool:

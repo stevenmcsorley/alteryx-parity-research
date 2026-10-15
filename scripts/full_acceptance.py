@@ -20,6 +20,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from flowengine.runtimes import find_rscript
+
 VALID = {'PASS', 'FAIL', 'SKIP', 'BLOCKED', 'NOT RUN'}
 
 
@@ -133,7 +136,9 @@ def run_suites(include_installer: bool = False, include_performance: bool = Fals
                      _state('desktop-playwright', 'BLOCKED', 'Node.js/npm is unavailable')])
     runs.extend(_database_suite())
 
-    rscript = shutil.which('Rscript')
+    # Use the same discovery logic as the engine. A managed per-user CRAN
+    # install is valid even when Rscript.exe is intentionally absent from PATH.
+    rscript = find_rscript()
     if rscript:
         runs.append(_cmd('r-tool-runtime', [sys.executable, '-m', 'unittest', 'discover', '-s', 'tests',
                         '-p', 'test_fe_tools_wave2.py', '-k', 'test_r_tool', '-v'], timeout=900))

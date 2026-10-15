@@ -4,10 +4,10 @@ from __future__ import annotations
 import functools
 import re
 import unicodedata
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from ..errors import ConfigError, DataError, ExpressionError, SchemaError
-from ..formula import EvalContext, compile_expression, field_type_for_kind, truthy
+from ..formula import EvalContext, compare_values, compile_expression, field_type_for_kind, truthy
 from ..plugin import Anchor, Tool, ToolManifest
 from ..table import Table
 from ..types import CastFailure, Field, FieldType, Schema, cast_value
@@ -78,6 +78,40 @@ class Filter(Tool):
 
     def run(self, ctx, cfg, inputs):
         t: Table = inputs['input']
+        if 'field' in cfg and cfg['operator'] in ('=', '!=', '<', '<=', '>', '>='):
+            field = t.schema.field(cfg['field'])
+            raw = cfg.get('value')
+            if raw is None:
+                raise ConfigError(f'Operator {cfg["operator"]!r} requires a value')
+            if field.type.is_numeric:
+                try:
+                    literal = Decimal(str(raw).strip())
+                    if not literal.is_finite():
+                        raise InvalidOperation
+                except (InvalidOperation, ValueError):
+                    raise ConfigError(f'Comparison value {raw!r} is not a finite number for {field.name!r}') from None
+            elif field.type.is_string:
+                literal = str(raw)
+            elif field.type is FieldType.BOOL:
+                try:
+                    literal, _ = cast_value(raw, Field(field.name, FieldType.BOOL))
+                except CastFailure:
+                    raise ConfigError(f'Comparison value {raw!r} is not a boolean for {field.name!r}') from None
+            elif field.type.is_temporal:
+                try:
+                    literal, _ = cast_value(raw, Field(field.name, field.type, field.size, field.scale))
+                except CastFailure:
+                    raise ConfigError(
+                        f'Comparison value {raw!r} is not a valid {field.type.value} for {field.name!r}'
+                    ) from None
+            else:
+                literal = raw
+            idx, op = t.schema.index(field.name), cfg['operator']
+            yes, no = [], []
+            for i, row in enumerate(t.rows()):
+                matched = compare_values(op, row[idx], literal)
+                (yes if truthy(matched) else no).append(i)
+            return {'true': t.take(yes), 'false': t.take(no)}
         expr = _compile(ctx, cfg['expression'], t.schema)
         if expr.kind not in ('bool', 'number', 'null', 'any'):
             raise ExpressionError(f'Filter expression must be boolean, got {expr.kind}', node_id=ctx.node_id)
@@ -260,6 +294,9 @@ class Sort(Tool):
     def run(self, ctx, cfg, inputs):
         t: Table = inputs['input']
         require_fields(t.schema, [k['field'] for k in cfg['keys']])
+        for key in cfg['keys']:
+            if any(isinstance(v, float) and v != v for v in t.column(key['field'])):
+                raise DataError(f'Sort field {key["field"]!r} contains NaN, which has no deterministic ordering')
         rows = list(t.rows())
         if cfg['collation'] == 'locale':
             key = locale_sort_key(t.schema, cfg['keys'])

@@ -163,9 +163,14 @@
     ]
   },
   "independent_tests": {
-    "count": 21,
-    "passing": 21,
+    "count": 26,
+    "passing": 26,
     "tests": [
+      "test_data_correctness.DataCorrectnessTests.test_basic_filter_temporal_literals_are_typed",
+      "test_data_correctness.DataCorrectnessTests.test_csv_default_inference_types_quantities_and_keeps_codes_as_text",
+      "test_data_correctness.DataCorrectnessTests.test_csv_string_filter_and_declared_numeric_schema",
+      "test_data_correctness.DataCorrectnessTests.test_filter_numeric_literal_int64_precision",
+      "test_data_correctness.DataCorrectnessTests.test_full_typed_csv_pipeline_roundtrip",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.PropertyTests.test_invariants",

@@ -138,9 +138,14 @@
     ]
   },
   "independent_tests": {
-    "count": 114,
-    "passing": 114,
+    "count": 119,
+    "passing": 119,
     "tests": [
+      "test_data_correctness.DataCorrectnessTests.test_basic_filter_temporal_literals_are_typed",
+      "test_data_correctness.DataCorrectnessTests.test_filter_numeric_literal_int64_precision",
+      "test_data_correctness.DataCorrectnessTests.test_sort_nan_and_join_key_types",
+      "test_data_correctness.DataCorrectnessTests.test_union_decimal_integer_exact",
+      "test_data_correctness.DataCorrectnessTests.test_union_rejects_lossy_numeric_promotions",
       "test_fe_executor.ExecutionTests.test_cancellation",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
       "test_fe_executor.ExecutionTests.test_failure_reports_node_and_skips_downstream",
