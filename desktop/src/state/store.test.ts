@@ -34,6 +34,17 @@ describe('editor store', () => {
     expect(useEditor.getState().dirty).toBe(true);
   });
 
+  it('preserves Date and List Box application question types in workflow metadata', () => {
+    const date = useEditor.getState().addApplicationAction({ x: 0, y: 0 }, 'date', 'Start date');
+    const list = useEditor.getState().addApplicationAction({ x: 0, y: 160 }, 'list-box', 'Regions');
+    const graph = useEditor.getState();
+    expect((graph.nodes.find((n) => n.id === date)!.data as any).question.type).toBe('date');
+    expect((graph.nodes.find((n) => n.id === list)!.data as any).question).toMatchObject({ type: 'multi-choice', options: ['Option 1', 'Option 2'] });
+    const saved = toDocument({ ...graph, description: undefined } as any);
+    expect(saved.metadata?.application?.questions.map((q: any) => q.type)).toEqual(['date', 'multi-choice']);
+    expect(new Set(saved.metadata?.application?.questions.map((q: any) => q.id)).size).toBe(2);
+  });
+
   it('enforces anchor cardinality, self-loops and cycles', () => {
     const st = useEditor.getState();
     const t1 = st.addTool('core.text_input', { x: 0, y: 0 });

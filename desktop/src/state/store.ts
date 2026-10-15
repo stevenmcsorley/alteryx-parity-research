@@ -250,7 +250,10 @@ export const useEditor = create<EditorState>((set, get) => ({
   addApplicationAction: (position, questionType = 'text', prompt = 'Enter a value') => {
     const s = get();
     const id = nextNodeId('application_action', s.nodes.map((n) => n.id));
-    const used = new Set<string>((s.metadata?.application?.questions ?? []).map((q: any) => String(q.id)));
+    const used = new Set<string>([
+      ...(s.metadata?.application?.questions ?? []).map((q: any) => String(q.id)),
+      ...s.nodes.filter((n) => n.data.kind === 'application-action').map((n) => (n.data as any).question.id as string),
+    ]);
     const questionId = nextNodeId('question', used);
     get().checkpoint();
     set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'applicationAction', position,
