@@ -3,7 +3,7 @@ import type { CanvasNode } from '../model/workflow';
 import { workflowRevision } from './workflowPatch';
 import agentToolResults from '../../agent-tool-results.v1.json';
 
-/** Versioned application protocol. Mutations stage an isolated graph proposal only. */
+/** Versioned application protocol for Flowbench and optional native computer tools. */
 export const AGENT_PROTOCOL = 'flowbench.agent.v1' as const;
 
 export type AgentToolName =
@@ -21,7 +21,8 @@ export type AgentToolName =
   | 'workflow.request_run'
   | 'workflow.request_save'
   | 'run.get_results'
-  | 'run.get_result_page';
+  | 'run.get_result_page'
+  | 'computer.run_command';
 
 export type AgentToolDefinition = {
   name: AgentToolName;
@@ -44,12 +45,13 @@ export const AGENT_TOOLS: AgentToolDefinition[] = [
   { name: 'workflow.get_schema', description: 'Read field names and effective types for an existing workflow node output. No records or configuration values are included.', parameters: objectSchema({ node_ref: { type: 'string' } }, ['node_ref']) },
   { name: 'workflow.validate', description: 'Run the existing Flowbench workflow validator and return its current diagnostics.', parameters: objectSchema() },
   { name: 'workflow.get_diagnostics', description: 'Read existing workflow validation problems and latest run messages.', parameters: objectSchema() },
-  { name: 'workflow.get_node_config', description: 'Read a sanitised configuration for a node in the active workflow. Credential fields, local paths, SQL text, scripts and raw data values are excluded.', parameters: objectSchema({ node_ref: { type: 'string' } }, ['node_ref']) },
+  { name: 'workflow.get_node_config', description: 'Read the active workflow node configuration, including file locations and expressions. Credential fields and raw records are excluded.', parameters: objectSchema({ node_ref: { type: 'string' } }, ['node_ref']) },
   { name: 'workflow.propose_patch', description: 'Prepare and validate a workflow graph change. In Review mode it is previewed for approval; in Full Control mode it is applied as one validated, undoable editor transaction.', parameters: objectSchema({ patch_json: { type: 'string', description: 'JSON object {"operations":[...]}. Operations: add {op,ref,tool_id,config,position}; configure {op,node_ref,config}; connect {op,source_ref,source_anchor,target_ref,target_anchor}; disconnect {op,source_ref,source_anchor,target_ref,target_anchor}; remove {op,node_ref}. Use node_N references from workflow.get_snapshot.' }, base_revision: { type: 'string', description: 'Opaque revision returned by workflow.get_snapshot.' } }, ['patch_json', 'base_revision']) },
   { name: 'workflow.request_run', description: 'Run the current workflow. Review mode requests confirmation; Full Control may run ordinary local processing immediately. File writes, scripts, database writes and other external effects retain their scoped permission checks.', parameters: objectSchema() },
   { name: 'workflow.request_save', description: 'Save the active workflow. Full Control saves to the current authorized workflow path; choosing a new destination still uses the native file picker.', parameters: objectSchema() },
   { name: 'run.get_results', description: 'Read bounded previews from the most recent completed run. Results are shared only under the active data-routing consent.', parameters: objectSchema() },
-  { name: 'run.get_result_page', description: 'Read a selected page of actual rows from one Browse output retained by the latest completed run. Use node_ref values from run.get_results; pages are limited to 25 rows to keep provider payloads bounded.', parameters: objectSchema({ node_ref: { type: 'string' }, offset: { type: 'integer', maximum: 500 }, limit: { type: 'integer', maximum: 25 } }, ['node_ref', 'offset', 'limit']) },
+  { name: 'run.get_result_page', description: 'Read actual rows from one Browse output in the latest completed run. Use node_ref values from run.get_results and request the row range needed for the analysis.', parameters: objectSchema({ node_ref: { type: 'string' }, offset: { type: 'integer' }, limit: { type: 'integer' } }, ['node_ref', 'offset', 'limit']) },
+  { name: 'computer.run_command', description: 'Run commands using the current Windows user environment when Full Computer Control is enabled. Discover and use installed software, files, processes, networks, databases, browsers, Docker, WSL and other available resources. Return actual command output.', parameters: objectSchema({ command: { type: 'string' }, working_directory: { type: 'string' } }, ['command', 'working_directory']) },
 ];
 
 function objectSchema(properties: AgentToolDefinition['parameters']['properties'] = {}, required: string[] = []) {
@@ -68,6 +70,7 @@ export type AgentToolEnvironment = {
   requestSave?: () => unknown;
   getResults?: () => unknown;
   getResultPage?: (nodeRef: string, offset: number, limit: number) => unknown;
+  executeComputerCommand?: (callId: string) => Promise<unknown>;
 };
 
 type ResultShape = { type: string; required?: Record<string, string>; optional?: Record<string, string>;
@@ -89,8 +92,9 @@ export async function dispatchAgentTool(
   environment: AgentToolEnvironment,
   name: string,
   args: unknown = {},
+  callId?: string,
 ): Promise<unknown> {
-  const result = await dispatchAgentToolUnchecked(environment, name, args);
+  const result = await dispatchAgentToolUnchecked(environment, name, args, callId);
   const violation = agentResultContractError(name, result);
   if (violation) throw new Error(`Flowbench result contract violation for ${name} at ${violation}`);
   return result;
@@ -100,6 +104,7 @@ async function dispatchAgentToolUnchecked(
   environment: AgentToolEnvironment,
   name: string,
   args: unknown,
+  callId?: string,
 ): Promise<unknown> {
   const input = validateArguments(name, args);
   const state = environment.getState();
@@ -117,7 +122,7 @@ async function dispatchAgentToolUnchecked(
       const needle = String(input.query).trim().toLocaleLowerCase();
       if (!needle) return [];
       return state.catalog.filter((entry) => `${entry.id} ${entry.name} ${entry.category} ${entry.kernel ?? ''} ${entry.implementation_status}`.toLocaleLowerCase().includes(needle))
-        .slice(0, 50).map(({ id, kernel, implementation_status, verification_status }) => ({ id, kernel, implementation_status, verification_status }));
+        .map(({ id, kernel, implementation_status, verification_status }) => ({ id, kernel, implementation_status, verification_status }));
     }
     case 'catalog.get_tool_manifest': {
       const tool = state.tools[String(input.tool_id)];
@@ -168,11 +173,14 @@ async function dispatchAgentToolUnchecked(
       return environment.getResults();
     case 'run.get_result_page': {
       const offset = input.offset as number, limit = input.limit as number;
-      if (!Number.isSafeInteger(offset) || offset < 0 || offset > 500 || !Number.isSafeInteger(limit) || limit < 1 || limit > 25)
-        throw new Error('Result page requires offset 0–500 and limit 1–25');
+      if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1)
+        throw new Error('Result page offset must be nonnegative and limit must be positive');
       if (!environment.getResultPage) throw new Error('Run result paging is unavailable in this application context');
       return environment.getResultPage(String(input.node_ref), offset, limit);
     }
+    case 'computer.run_command':
+      if (!environment.executeComputerCommand || !callId) throw new Error('Enable Full Computer Control and invoke this through an active ChatGPT tool call');
+      return environment.executeComputerCommand(callId);
     default:
       throw new Error(`Unknown or unavailable agent tool: ${name}`);
   }
@@ -228,19 +236,19 @@ function safeProblems(state: AgentContext) {
 }
 
 function safeConfigProjection(config: Record<string, unknown>, depth = 0): Record<string, unknown> {
-  if (depth > 12) return {};
-  const omitted = /pass(word|wd)?|secret|token|credential|api.?key|access.?key|authorization|connection|file(path|name)?|directory|folder|(^|_)(path|file|filename|directory|folder)(_|$)|(^|_)(rows?|records?|data|query|sql|script|raw)(_|$)/i;
+  if (depth > 64) return {};
+  const omitted = /pass(word|wd)?|secret|token|credential|api.?key|access.?key|authorization|connection|(^|_)(rows?|records?|raw_data)(_|$)/i;
   const output: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(config).slice(0, 128)) {
+  for (const [key, value] of Object.entries(config)) {
     if (omitted.test(key)) continue;
     if (typeof value === 'string') {
       if (sensitiveConfigText(value)) continue;
-      output[key] = value.length > 512 ? `${value.slice(0, 512)}…` : value;
+      output[key] = value;
     }
     else if (typeof value === 'number' || typeof value === 'boolean' || value === null) output[key] = value;
-    else if (Array.isArray(value)) output[key] = value.slice(0, 128).map((item) =>
+    else if (Array.isArray(value)) output[key] = value.map((item) =>
       item && typeof item === 'object' && !Array.isArray(item) ? safeConfigProjection(item as Record<string, unknown>, depth + 1)
-        : typeof item === 'string' ? (item.length > 512 ? `${item.slice(0, 512)}…` : item) : item);
+        : item);
     else if (value && typeof value === 'object') output[key] = safeConfigProjection(value as Record<string, unknown>, depth + 1);
   }
   return output;
@@ -299,7 +307,7 @@ function projectManifest(manifest: AgentContext['tools'][string]) {
 }
 function projectSchema(schema: import('../engine/types').JsonSchema): unknown {
   return { ...(schema.type ? { type: schema.type } : {}),
-    ...(schema.enum && schema.enum.length <= 40 && schema.enum.every((value) => ['string', 'number', 'boolean'].includes(typeof value)) ? { enum: schema.enum } : {}),
+    ...(schema.enum && schema.enum.every((value) => ['string', 'number', 'boolean'].includes(typeof value)) ? { enum: schema.enum } : {}),
     ...(Number.isFinite(schema.minimum) ? { minimum: schema.minimum } : {}),
     ...(Number.isFinite(schema.maximum) ? { maximum: schema.maximum } : {}),
     ...(Number.isFinite(schema.minLength) ? { minLength: schema.minLength } : {}),
@@ -308,6 +316,6 @@ function projectSchema(schema: import('../engine/types').JsonSchema): unknown {
     ...(schema.required ? { required: schema.required } : {}),
     ...(schema.properties ? { properties: Object.fromEntries(Object.entries(schema.properties).map(([key, value]) => [key, projectSchema(value)])) } : {}),
     ...(schema.items ? { items: projectSchema(schema.items) } : {}),
-    ...(schema.oneOf ? { oneOf: schema.oneOf.slice(0, 8).map(projectSchema) } : {}),
+    ...(schema.oneOf ? { oneOf: schema.oneOf.map(projectSchema) } : {}),
     ...(typeof schema.additionalProperties === 'boolean' ? { additionalProperties: schema.additionalProperties } : {}) };
 }

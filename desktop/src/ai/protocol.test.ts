@@ -33,12 +33,12 @@ describe('flowbench.agent.v1 application tools', () => {
     expect(output).not.toContain('test-profile');
   });
 
-  it('exposes actionable node configuration while excluding credentials and local source data', async () => {
+  it('exposes actionable node configuration while excluding credentials and raw row data', async () => {
     const result: any = await dispatchAgentTool(env, 'workflow.get_node_config', { node_ref: 'node_1' });
-    expect(result).toMatchObject({ node_ref: 'node_1', kind: 'tool', tool_id: 'core.text_input', config: {} });
+    expect(result).toMatchObject({ node_ref: 'node_1', kind: 'tool', tool_id: 'core.text_input', config: { file_path: 'C:/private/data.csv' } });
     expect(JSON.stringify(result)).not.toContain('private-secret');
     expect(JSON.stringify(result)).not.toContain('Sensitive customer value');
-    expect(JSON.stringify(result)).not.toContain('C:/private/data.csv');
+    expect(JSON.stringify(result)).toContain('C:/private/data.csv');
   });
 
   it('strictly rejects unknown tools and unregistered write operations', async () => {
@@ -107,12 +107,13 @@ describe('flowbench.agent.v1 application tools', () => {
       .toEqual({ status: 'already_running', outputs: [] });
   });
 
-  it('routes bounded result-page requests to retained engine Browse output', async () => {
+  it('routes result-page requests without an artificial page ceiling', async () => {
     const page = { node_ref: 'node_1', offset: 20, total_rows: 1000, available_rows: 500, fields: [], fields_truncated: false, rows: [] };
-    const getResultPage = vi.fn(() => page);
+    const getResultPage = vi.fn((_nodeRef: string, offset: number) => ({ ...page, offset }));
     await expect(dispatchAgentTool({ ...env, getResultPage }, 'run.get_result_page', { node_ref: 'node_1', offset: 20, limit: 25 })).resolves.toEqual(page);
     expect(getResultPage).toHaveBeenCalledWith('node_1', 20, 25);
-    await expect(dispatchAgentTool({ ...env, getResultPage }, 'run.get_result_page', { node_ref: 'node_1', offset: 501, limit: 25 })).rejects.toThrow('offset 0–500');
+    await expect(dispatchAgentTool({ ...env, getResultPage }, 'run.get_result_page', { node_ref: 'node_1', offset: 501, limit: 25 })).resolves.toEqual({ ...page, offset: 501 });
+    expect(getResultPage).toHaveBeenLastCalledWith('node_1', 501, 25);
   });
 
   it('routes a workflow patch only to the isolated proposal callback', async () => {

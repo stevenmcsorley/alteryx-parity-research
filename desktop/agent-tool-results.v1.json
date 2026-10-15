@@ -11,7 +11,7 @@
     "app.get_status": { "type": "object", "required": { "protocol": "string", "engine": "object", "run": "object" }, "optional": {}, "additionalProperties": false },
     "app.get_capabilities": { "type": "object", "required": { "protocol": "string", "catalogue_entries": "integer", "installed_kernels": "integer", "implemented_catalogue_entries": "integer", "tools": "array" }, "optional": { "tools_truncated": "boolean" }, "additionalProperties": false },
     "app.get_active_workflow": { "type": "object", "required": { "node_count": "integer", "edge_count": "integer" }, "optional": {}, "additionalProperties": false },
-    "catalog.search_tools": { "type": "array", "maxItems": 50 },
+    "catalog.search_tools": { "type": "array" },
     "catalog.get_tool_manifest": { "type": "object", "required": { "tool_id": "string", "version": "string", "catalog_ids": "array", "inputs": "array", "outputs": "array", "config_schema": "object" }, "optional": {}, "additionalProperties": false },
     "workflow.get_snapshot": { "type": "object", "required": { "protocol": "string", "base_revision": "string", "nodes": "array", "edges": "array", "problems": "object", "privacy": "string" }, "optional": { "nodes_truncated": "boolean", "edges_truncated": "boolean" }, "additionalProperties": false },
     "workflow.get_schema": { "type": "object", "required": { "node_ref": "string", "anchors": "array" }, "optional": {}, "additionalProperties": false },
@@ -22,6 +22,7 @@
     "workflow.request_run": { "type": "object", "required": { "status": "string" }, "optional": { "outputs": "array" }, "additionalProperties": false },
     "workflow.request_save": { "type": "object", "required": { "status": "string", "path_selected": "boolean" }, "optional": {}, "additionalProperties": false },
     "run.get_results": { "type": "object", "required": { "status": "string", "outputs": "array" }, "optional": { "outputs_truncated": "boolean" }, "additionalProperties": false },
-    "run.get_result_page": { "type": "object", "required": { "node_ref": "string", "offset": "integer", "total_rows": "integer", "available_rows": "integer", "fields": "array", "fields_truncated": "boolean", "rows": "array" }, "optional": {}, "additionalProperties": false }
+    "run.get_result_page": { "type": "object", "required": { "node_ref": "string", "offset": "integer", "total_rows": "integer", "available_rows": "integer", "fields": "array", "fields_truncated": "boolean", "rows": "array" }, "optional": {}, "additionalProperties": false },
+    "computer.run_command": { "type": "object", "required": { "exit_code": "integer", "stdout": "string", "stderr": "string", "working_directory": "string" }, "optional": {}, "additionalProperties": false }
   }
 }

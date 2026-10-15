@@ -31,7 +31,7 @@ export async function prepareWorkflowProposal(state: EditorState, patchJson: str
   try { parsed = JSON.parse(patchJson); } catch { throw new Error('The proposed patch is not valid JSON'); }
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || Object.keys(parsed).some((k) => k !== 'operations')) throw new Error('Patch must contain only an operations array');
   const operations = (parsed as { operations?: unknown }).operations;
-  if (!Array.isArray(operations) || operations.length < 1 || operations.length > 256) throw new Error('Patch requires between 1 and 256 operations');
+  if (!Array.isArray(operations) || operations.length < 1) throw new Error('Patch requires at least one operation');
 
   const graph = structuredClone(graphOf(state));
   const refs = new Map(graph.nodes.map((node, i) => [`node_${i + 1}`, node.id]));
