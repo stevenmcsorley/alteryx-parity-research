@@ -54,7 +54,7 @@ The desktop palette also offers a **Flowbench Action** editor node. Its form
 question is configured in the inspector, and its `Action` output connects to a
 tool's separate `Action` target. That edge is saved under editor metadata and is
 never sent to the row-processing DAG. Native question controls include text,
-number, boolean, choice, ISO date and hierarchical leaf-path answers; actions
+multiline text, number, boolean, choice, ISO date and hierarchical leaf-path answers; actions
 select an existing target configuration value and run through the same
 private-copy, type-check and validation path described above. This is native
 Flowbench functionality, not a claim that every Alteryx

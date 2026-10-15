@@ -25,7 +25,7 @@ def _spec(doc):
     ids = set()
     question_types = {}
     for q in questions:
-        if not isinstance(q, dict) or q.get('type') not in ('text', 'boolean', 'number', 'choice', 'date', 'file', 'folder', 'multi-choice', 'control-parameter', 'tree'):
+        if not isinstance(q, dict) or q.get('type') not in ('text', 'text-area', 'boolean', 'number', 'choice', 'date', 'file', 'folder', 'multi-choice', 'control-parameter', 'tree'):
             raise EngineError('Each application question needs a supported type', code='application-invalid')
         qid = q.get('id')
         if not isinstance(qid, str) or not qid or qid in ids:
@@ -187,11 +187,11 @@ def bind_application(doc, supplied):
     values = {}
     for qid, q in by_id.items():
         value = supplied.get(qid, q.get('default'))
-        if (value is None or (q['type'] == 'tree' and value == '')) and q.get('required', False):
+        if (value is None or (q['type'] in ('text', 'text-area', 'file', 'folder', 'tree') and value == '')) and q.get('required', False):
             raise EngineError(f'Application input {qid!r} is required', code='application-input-invalid')
         if value is None:
             values[qid] = None
-        elif q['type'] == 'text' and isinstance(value, str):
+        elif q['type'] in ('text', 'text-area') and isinstance(value, str):
             values[qid] = value
         elif q['type'] == 'boolean' and isinstance(value, bool):
             values[qid] = value

@@ -212,4 +212,17 @@ describe('AI workflow patch staging', () => {
       { op: 'add_question', ref: 'bad_tree', question: { id: 'bad_tree', prompt: 'Bad tree', type: 'tree', options: ['Sales', 'Sales > Online'] }, config_path: ['value'], position: { x: 0, y: 0 } },
     ] }), baseRevision)).rejects.toThrow('unique leaves');
   });
+
+  it('accepts a multiline Text Box question configuration', async () => {
+    useEditor.getState().loadGraph(emptyGraph as any);
+    useEditor.getState().setEngineMeta({ tools: {} });
+    let checked: any;
+    setTransport({ request: async (_method: string, params: any) => { checked = params.workflow; return { valid: true, problems: [], schemas: {} }; }, subscribe: () => () => {} } as any);
+    const state = useEditor.getState(), baseRevision = workflowRevision(state);
+    const proposal = await prepareWorkflowProposal(state, JSON.stringify({ operations: [
+      { op: 'add_question', ref: 'notes', question: { id: 'notes', prompt: 'Describe the exception', type: 'text-area', required: true }, config_path: ['value'], position: { x: 0, y: 0 } },
+    ] }), baseRevision);
+    expect(proposal.validation.valid).toBe(true);
+    expect(checked.metadata.application.questions).toContainEqual(expect.objectContaining({ id: 'notes', type: 'text-area', required: true }));
+  });
 });

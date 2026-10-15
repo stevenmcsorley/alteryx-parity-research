@@ -21,6 +21,8 @@ export function statusOf(c: CatalogEntry): { cls: string; label: string; text: s
     return { cls: 'native', label: 'Flowbench native', text: 'Groups selected canvas nodes, with caption, disable and collapse controls. Alteryx Tool Container XML import parity is not verified.' };
   if (c.id === 'interface:tree')
     return { cls: 'native', label: 'Flowbench native', text: 'Single-select hierarchical analytic-app question using configured paths. Alteryx Tree source allocation and XML variants are not implemented.' };
+    if (c.id === 'interface:text-box')
+      return { cls: 'native', label: 'Flowbench native', text: 'Multiline text answer in the native analytic-app form; Alteryx Text Box XML configuration parity is not verified.' };
   if (c.id === 'interface:control-parameter')
     return { cls: 'native', label: 'Flowbench native', text: 'Batch Macro control-row field mapping to a child tool configuration action; imported Alteryx parity is not verified.' };
   if (NATIVE_QUESTION_IDS.includes(c.id))

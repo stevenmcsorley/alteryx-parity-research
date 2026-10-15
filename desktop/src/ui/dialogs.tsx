@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { isTauri } from '../engine/transport';
 
 type Request = { title: string; initial: string; ext: string; mode: 'save' | 'open'; resolve: (v: string | null) => void };
-export type AppQuestion = { id: string; label?: string; type: 'text' | 'boolean' | 'number' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder' | 'tree'; default?: unknown; required?: boolean; options?: unknown[]; description?: string; secret?: boolean; minimum?: number; maximum?: number };
+export type AppQuestion = { id: string; label?: string; type: 'text' | 'text-area' | 'boolean' | 'number' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder' | 'tree'; default?: unknown; required?: boolean; options?: unknown[]; description?: string; secret?: boolean; minimum?: number; maximum?: number };
 type AppRequest = { title: string; questions: AppQuestion[]; resolve: (v: Record<string, unknown> | null) => void };
 let host: ((r: Request) => void) | null = null;
 let appHost: ((r: AppRequest) => void) | null = null;
@@ -92,8 +92,9 @@ function ApplicationDialog({ request, close }: { request: AppRequest; close: (v:
           onChange={(e) => setValues({ ...values, [q.id]: e.target.checked })} />
           : q.type === 'choice' || q.type === 'multi-choice' ? <select aria-label={q.label || q.id} multiple={q.type === 'multi-choice'} value={q.type === 'multi-choice' ? (values[q.id] as string[] ?? []) : String(values[q.id] ?? '')}
             onChange={(e) => setValues({ ...values, [q.id]: q.type === 'multi-choice' ? [...e.target.selectedOptions].map((o) => o.value) : e.target.value })}>{(q.options ?? []).map((option) => <option key={String(option)} value={String(option)}>{String(option)}</option>)}</select>
-            : <span style={{ display: 'flex', gap: 6 }}>{(q.type === 'file' || q.type === 'folder') && <button type="button" onClick={() => void choosePath(q)}>Browse…</button>}<input aria-label={q.label || q.id} type={q.secret ? 'password' : q.type === 'number' ? 'number' : q.type === 'date' ? 'date' : 'text'} min={q.type === 'number' ? q.minimum : undefined} max={q.type === 'number' ? q.maximum : undefined} value={String(values[q.id] ?? '')}
-              onChange={(e) => setValues({ ...values, [q.id]: q.type === 'number' ? (e.target.value === '' ? null : Number(e.target.value)) : e.target.value })} /></span>}
+            : q.type === 'text-area' ? <textarea aria-label={q.label || q.id} rows={5} value={String(values[q.id] ?? '')} onChange={(e) => setValues({ ...values, [q.id]: e.target.value })} />
+              : <span style={{ display: 'flex', gap: 6 }}>{(q.type === 'file' || q.type === 'folder') && <button type="button" onClick={() => void choosePath(q)}>Browse…</button>}<input aria-label={q.label || q.id} type={q.secret ? 'password' : q.type === 'number' ? 'number' : q.type === 'date' ? 'date' : 'text'} min={q.type === 'number' ? q.minimum : undefined} max={q.type === 'number' ? q.maximum : undefined} value={String(values[q.id] ?? '')}
+                onChange={(e) => setValues({ ...values, [q.id]: q.type === 'number' ? (e.target.value === '' ? null : Number(e.target.value)) : e.target.value })} /></span>}
         {q.description && <small style={{ display: 'block' }}>{q.description}</small>}
       </label>)}
       {error && <p role="alert">{error}</p>}

@@ -84,6 +84,15 @@ APPLICATION_ADAPTERS = {
         'evidence': 'docs/INTERFACE_APPLICATIONS.md',
         'evidence_type': 'project-authored-runtime-and-ui-evidence',
     },
+    'interface:text-box': {
+        'module': 'flowengine.interface_app + desktop/src/ui/dialogs.tsx',
+        'engine': 'Flowbench native multiline Text Box question adapter',
+        'test_ids': ['test_fe_interop.ImportTests.test_native_text_area_preserves_multiline_answer_through_action_binding'],
+        'supported': ['Native multiline string answer preserved exactly, including newline and Unicode characters, through validated application actions'],
+        'unsupported': ['Authentic Alteryx Text Box XML configuration and vendor-specific limits/formatting are not verified'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+        'evidence_type': 'project-authored-runtime-and-ui-evidence',
+    },
     'interface:error-message': {
         'module': 'flowengine.interface_app',
         'test_ids': [

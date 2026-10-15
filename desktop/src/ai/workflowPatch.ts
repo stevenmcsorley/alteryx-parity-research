@@ -282,7 +282,7 @@ function validateQuestion(value: unknown): ApplicationActionNodeData['question']
   const allowed = ['id', 'prompt', 'description', 'type', 'control_field', 'required', 'default', 'options', 'secret', 'minimum', 'maximum'];
   if (Object.keys(q).some((k) => !allowed.includes(k))) throw new Error('Application question contains unsupported fields');
   const id = requireString(q.id, 'question.id', 80), prompt = requireString(q.prompt, 'question.prompt', 300);
-  const types = ['text', 'number', 'boolean', 'choice', 'multi-choice', 'date', 'file', 'folder', 'control-parameter', 'tree'];
+  const types = ['text', 'text-area', 'number', 'boolean', 'choice', 'multi-choice', 'date', 'file', 'folder', 'control-parameter', 'tree'];
   if (typeof q.type !== 'string' || !types.includes(q.type)) throw new Error('Unsupported application question type');
   if (q.type === 'control-parameter' && (typeof q.control_field !== 'string' || !q.control_field.trim())) throw new Error('Control parameters require a control_field mapping');
   if (q.secret && q.default !== undefined) throw new Error('Secret questions cannot contain a default value');

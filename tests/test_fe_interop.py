@@ -279,6 +279,16 @@ class ImportTests(unittest.TestCase):
         with self.assertRaisesRegex(EngineError, 'ISO date'):
             bind_application(doc, {'as_of': '02/03/2026'})
 
+    def test_native_text_area_preserves_multiline_answer_through_action_binding(self):
+        doc = {'nodes': [{'id': 'input', 'config': {'text': ''}}], 'metadata': {'application': {
+            'questions': [{'id': 'notes', 'type': 'text-area', 'required': True}],
+            'actions': [{'question': 'notes', 'node_id': 'input', 'config_path': ['text']}],
+        }}}
+        answer = 'First line\nSecond line — café'
+        self.assertEqual(bind_application(doc, {'notes': answer})['nodes'][0]['config']['text'], answer)
+        with self.assertRaisesRegex(Exception, 'is required'):
+            bind_application(doc, {'notes': ''})
+
     def test_native_error_message_stops_only_on_matching_application_condition(self):
         from flowengine.errors import EngineError
         doc = {'nodes': [], 'metadata': {'application': {
