@@ -72,6 +72,82 @@ class FieldInfo(Tool):
 
 # =========================================================================== JSON Parse
 
+class JSONSchemaTool(Tool):
+    manifest = ToolManifest(
+        tool_id='core.json_schema', version='1.0.0', display_name='JSON Schema',
+        catalog_ids=('developer:json-schema',),
+        inputs=(Anchor('input', 'Input', required=False),), outputs=(Anchor('output', 'Output'),),
+        description='Generate a JSON Schema object and append its serialized form to each input row.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['title', 'fields'], 'properties': {
+            'title': {'type': 'string', 'minLength': 1}, 'description': {'type': 'string', 'default': ''},
+            'output_field': {'type': 'string', 'minLength': 1, 'default': 'JSON Schema'},
+            'fields': {'type': 'array', 'minItems': 1, 'items': {'type': 'object', 'additionalProperties': False,
+                'required': ['name', 'type'], 'properties': {
+                    'name': {'type': 'string', 'minLength': 1},
+                    'type': {'enum': ['string', 'integer', 'number', 'boolean', 'date', 'datetime', 'enum']},
+                    'description': {'type': 'string', 'default': ''},
+                    'enum_values': {'type': 'array', 'items': {'type': 'string'}, 'default': []},
+                    'default_value': {}, 'required': {'type': 'boolean', 'default': False},
+                    'minimum': {'type': 'number'}, 'maximum': {'type': 'number'},
+                    'min_length': {'type': 'integer', 'minimum': 0}, 'max_length': {'type': 'integer', 'minimum': 0},
+                    'min_date': {'type': 'string'}, 'max_date': {'type': 'string'},
+                }}}
+        }})
+
+    def check_config(self, cfg):
+        names = [f['name'] for f in cfg['fields']]
+        if len(names) != len(set(names)):
+            raise ConfigError('JSON Schema field names must be unique')
+        for f in cfg['fields']:
+            if f['type'] == 'enum' and not f['enum_values']:
+                raise ConfigError(f"Enum field {f['name']!r} requires at least one enum value")
+            if f.get('minimum') is not None and f.get('maximum') is not None and f['minimum'] > f['maximum']:
+                raise ConfigError(f"Minimum exceeds maximum for {f['name']!r}")
+            if f.get('min_length') is not None and f.get('max_length') is not None and f['min_length'] > f['max_length']:
+                raise ConfigError(f"Minimum length exceeds maximum length for {f['name']!r}")
+            if f.get('min_date') and f.get('max_date') and f['min_date'] > f['max_date']:
+                raise ConfigError(f"Minimum date exceeds maximum date for {f['name']!r}")
+
+    def run(self, ctx, cfg, inputs):
+        schema = {'$schema': 'https://json-schema.org/draft/2020-12/schema', 'title': cfg['title'], 'type': 'object', 'properties': {}}
+        if cfg['description']:
+            schema['description'] = cfg['description']
+        required = []
+        for f in cfg['fields']:
+            kind = f['type']
+            prop = {'type': 'string' if kind in ('date', 'datetime', 'enum') else kind}
+            if f.get('description'):
+                prop['description'] = f['description']
+            if kind == 'enum':
+                prop['enum'] = f['enum_values']
+            if kind == 'date':
+                prop['format'] = 'date'
+            elif kind == 'datetime':
+                prop['format'] = 'date-time'
+            for source, dest in (('minimum', 'minimum'), ('maximum', 'maximum'),
+                                 ('min_length', 'minLength'), ('max_length', 'maxLength')):
+                if f.get(source) is not None:
+                    prop[dest] = f[source]
+            if f.get('min_date'):
+                prop['x-flowbench-min-date'] = f['min_date']
+            if f.get('max_date'):
+                prop['x-flowbench-max-date'] = f['max_date']
+            if 'default_value' in f:
+                prop['default'] = f['default_value']
+            if f.get('required'):
+                required.append(f['name'])
+            schema['properties'][f['name']] = prop
+        if required:
+            schema['required'] = required
+        serialized = json.dumps(schema, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+        field = Field(cfg['output_field'], FieldType.V_WSTRING, max(1, len(serialized)))
+        incoming = inputs.get('input')
+        if incoming is None:
+            return {'output': Table.from_rows([field], [[serialized]])}
+        if cfg['output_field'] in incoming.schema:
+            raise ConfigError(f"Output field {cfg['output_field']!r} already exists in the input")
+        return {'output': incoming.with_column(field, [serialized] * len(incoming))}
+
 def _flatten(value, prefix, out):
     # empty arrays/objects produce no record [ref:probe-json-false-null]
     if isinstance(value, dict):
@@ -1080,5 +1156,5 @@ class RunCommand(Tool):
         return {'output': Table.from_rows([Field(n, FieldType.V_WSTRING, TEXT) for n in names], rows[1:])}
 
 
-TOOLS = [FieldInfo, JSONParse, DynamicRename, DynamicSelect, DynamicReplace, BlobInput, BlobOutput, BlobConvert, Base64Encoder, Message, TestTool,
+TOOLS = [FieldInfo, JSONSchemaTool, JSONParse, DynamicRename, DynamicSelect, DynamicReplace, BlobInput, BlobOutput, BlobConvert, Base64Encoder, Message, TestTool,
          BlockUntilDone, Detour, DetourEnd, ExpectEquals, Throttle, PythonTool, RTool, RunCommand]
