@@ -115,7 +115,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 13,
+      "independent_tests": 15,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:input-data)"
@@ -163,7 +163,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 8,
+      "independent_tests": 9,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:output-data)"
@@ -187,7 +187,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 114,
+      "independent_tests": 119,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:text-input)"
@@ -307,7 +307,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 21,
+      "independent_tests": 25,
       "reference_cases": 5,
       "evidence_refs": [
         "tool-contracts (contract JSON for preparation:filter)"
@@ -332,7 +332,7 @@
       "implementation_status": "implemented",
       "verification_status": "partial",
       "independent_tests": 22,
-      "reference_cases": 12,
+      "reference_cases": 13,
       "evidence_refs": [
         "tool-contracts (contract JSON for preparation:formula)"
       ]
@@ -595,7 +595,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 7,
+      "independent_tests": 8,
       "reference_cases": 2,
       "evidence_refs": [
         "tool-contracts (contract JSON for preparation:select)"
@@ -643,7 +643,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "failed",
-      "independent_tests": 12,
+      "independent_tests": 14,
       "reference_cases": 3,
       "evidence_refs": [
         "tool-contracts (contract JSON for preparation:sort)"
@@ -787,7 +787,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 8,
+      "independent_tests": 10,
       "reference_cases": 4,
       "evidence_refs": [
         "tool-contracts (contract JSON for join:join)"
@@ -859,7 +859,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 5,
+      "independent_tests": 7,
       "reference_cases": 1,
       "evidence_refs": [
         "tool-contracts (contract JSON for join:union)"
@@ -1099,7 +1099,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 9,
+      "independent_tests": 10,
       "reference_cases": 4,
       "evidence_refs": [
         "tool-contracts (contract JSON for transform:summarize)"

@@ -97,6 +97,13 @@ class Filter(Tool):
                     literal, _ = cast_value(raw, Field(field.name, FieldType.BOOL))
                 except CastFailure:
                     raise ConfigError(f'Comparison value {raw!r} is not a boolean for {field.name!r}') from None
+            elif field.type.is_temporal:
+                try:
+                    literal, _ = cast_value(raw, Field(field.name, field.type, field.size, field.scale))
+                except CastFailure:
+                    raise ConfigError(
+                        f'Comparison value {raw!r} is not a valid {field.type.value} for {field.name!r}'
+                    ) from None
             else:
                 literal = raw
             idx, op = t.schema.index(field.name), cfg['operator']

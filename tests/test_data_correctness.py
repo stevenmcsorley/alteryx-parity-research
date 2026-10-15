@@ -59,6 +59,37 @@ def case_filter_numeric_literal_from_text_preserves_int64_precision():
     assert result.outputs['filter']['true'].column('id') == [9007199254740993, 9007199254740994]
 
 
+def case_basic_filter_parses_date_time_and_datetime_literals_by_field_type():
+    for field_type, values, literal, expected in (
+        ('date', ['2024-01-01', '2024-01-03'], '2024-01-02', ['2024-01-03']),
+        ('time', ['08:00:00', '12:00:00'], '10:00:00', ['12:00:00']),
+        ('datetime', ['2024-01-01T08:00:00', '2024-01-01T12:00:00'],
+         '2024-01-01T10:00:00', ['2024-01-01T12:00:00']),
+    ):
+        nodes = [
+            {'id': 'input', 'tool': 'core.text_input', 'config': {
+                'fields': [{'name': 'value', 'type': field_type}], 'rows': [[v] for v in values]}},
+            {'id': 'filter', 'tool': 'core.filter', 'config': {
+                'field': 'value', 'operator': '>', 'value': literal}},
+        ]
+        result = run_workflow(_workflow(nodes, [_edge('input', 'output', 'filter', 'input')]),
+                              base_dir=Path.cwd())
+        assert result.ok, result.error
+        assert [v.isoformat() for v in result.outputs['filter']['true'].column('value')] == expected
+
+    invalid = [
+        {'id': 'input', 'tool': 'core.text_input', 'config': {
+            'fields': [{'name': 'value', 'type': 'time'}], 'rows': [['12:00:00']]}},
+        {'id': 'filter', 'tool': 'core.filter', 'config': {
+            'field': 'value', 'operator': '>', 'value': '25:00:00'}},
+    ]
+    import pytest
+    from flowengine.errors import WorkflowValidationError
+    with pytest.raises(WorkflowValidationError, match='valid time'):
+        run_workflow(_workflow(invalid, [_edge('input', 'output', 'filter', 'input')]),
+                     base_dir=Path.cwd())
+
+
 def case_union_preserves_large_integer_and_decimal_exactly():
     nodes = [
         {'id': 'decimal', 'tool': 'core.text_input', 'config': {
@@ -201,6 +232,9 @@ class DataCorrectnessTests(unittest.TestCase):
 
     def test_filter_numeric_literal_int64_precision(self):
         case_filter_numeric_literal_from_text_preserves_int64_precision()
+
+    def test_basic_filter_temporal_literals_are_typed(self):
+        case_basic_filter_parses_date_time_and_datetime_literals_by_field_type()
 
     def test_union_decimal_integer_exact(self):
         case_union_preserves_large_integer_and_decimal_exactly()
