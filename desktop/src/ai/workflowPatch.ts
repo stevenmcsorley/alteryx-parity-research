@@ -77,6 +77,13 @@ export async function prepareWorkflowProposal(state: EditorState, patchJson: str
       const id = nextNodeId('error_message', graph.nodes.map((n) => n.id));
       graph.nodes.push({ id, type: 'applicationError', position: requirePosition(op.position), data: { kind: 'application-error', message } });
       refs.set(ref, id); changes.push(`Add Error Message (${ref})`);
+    } else if (op.op === 'add_comment') {
+      const ref = requireString(op.ref, 'ref', 80);
+      if (!/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(ref) || refs.has(ref)) throw new Error(`Invalid or duplicate new node ref: ${ref}`);
+      const text = requireString(op.text, 'text', 4000);
+      const id = nextNodeId('comment', graph.nodes.map((n) => n.id));
+      graph.nodes.push({ id, type: 'comment', position: requirePosition(op.position), data: { kind: 'comment', text }, style: { width: 200, height: 80 } });
+      refs.set(ref, id); changes.push(`Add Comment (${ref})`);
     } else if (op.op === 'configure') {
       const ref = requireString(op.node_ref, 'node_ref', 80);
       const id = refs.get(ref); const node = graph.nodes.find((n) => n.id === id);
@@ -110,6 +117,13 @@ export async function prepareWorkflowProposal(state: EditorState, patchJson: str
       const message = requireString(op.message, 'message', 4000);
       node.data = { ...node.data, message };
       changes.push(`Configure Error Message (${ref})`);
+    } else if (op.op === 'configure_comment') {
+      const ref = requireString(op.node_ref, 'node_ref', 80), id = refs.get(ref);
+      const node = graph.nodes.find((n) => n.id === id);
+      if (node?.data.kind !== 'comment') throw new Error(`Unknown Comment reference: ${ref}`);
+      const text = requireString(op.text, 'text', 4000);
+      node.data = { ...node.data, text };
+      changes.push(`Edit Comment (${ref})`);
     } else if (op.op === 'connect') {
       const fromRef = requireString(op.source_ref, 'source_ref', 80), toRef = requireString(op.target_ref, 'target_ref', 80);
       const source = refs.get(fromRef), target = refs.get(toRef);
@@ -193,9 +207,11 @@ function validateOperation(value: unknown): Op {
     add_question: ['op', 'ref', 'question', 'config_path', 'position'],
     add_condition: ['op', 'ref', 'when', 'position'],
     add_error_message: ['op', 'ref', 'message', 'position'],
+    add_comment: ['op', 'ref', 'text', 'position'],
     configure_question: ['op', 'node_ref', 'question', 'config_path'],
     configure_condition: ['op', 'node_ref', 'when'],
     configure_error_message: ['op', 'node_ref', 'message'],
+    configure_comment: ['op', 'node_ref', 'text'],
     connect: ['op', 'source_ref', 'source_anchor', 'target_ref', 'target_anchor'],
     connect_action: ['op', 'source_ref', 'target_ref'],
     connect_condition: ['op', 'source_ref', 'source_anchor', 'target_ref'],

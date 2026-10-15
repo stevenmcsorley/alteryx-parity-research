@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { prepareWorkflowProposal, workflowRevision } from './workflowPatch';
 import { useEditor } from '../state/store';
 import { setTransport } from '../state/engineActions';
+import { toDocument } from '../model/workflow';
 
 const emptyGraph = { nodes: [], edges: [], name: 'Untitled workflow' };
 const manifest = (tool_id: string, inputs: string[], outputs: string[]) => ({ tool_id, version: '1', display_name: tool_id,
@@ -84,5 +85,18 @@ describe('AI workflow patch staging', () => {
     expect(checked.metadata.application.errors).toEqual([{ id: expect.any(String), message: 'Approval is required.', when: { question: 'approved', operator: 'falsy' } }]);
     expect(proposal.candidate.edges).toHaveLength(1);
     expect(useEditor.getState().nodes).toHaveLength(0);
+  });
+
+  it('lets the agent place and edit a workflow Comment through the editor graph', async () => {
+    useEditor.getState().loadGraph(emptyGraph as any);
+    setTransport({ request: async () => ({ valid: true, problems: [], schemas: {} }), subscribe: () => () => {} } as any);
+    const state = useEditor.getState(), baseRevision = workflowRevision(state);
+    const proposal = await prepareWorkflowProposal(state, JSON.stringify({ operations: [
+      { op: 'add_comment', ref: 'note', text: 'Initial note', position: { x: 20, y: 30 } },
+      { op: 'configure_comment', node_ref: 'note', text: 'Monthly sales summary' },
+    ] }), baseRevision);
+    expect(proposal.validation.valid).toBe(true);
+    expect(proposal.candidate.nodes[0].data).toEqual({ kind: 'comment', text: 'Monthly sales summary' });
+    expect(toDocument(proposal.candidate).metadata?.ui.comments[0].text).toBe('Monthly sales summary');
   });
 });

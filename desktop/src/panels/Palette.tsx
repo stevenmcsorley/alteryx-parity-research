@@ -15,6 +15,8 @@ export function statusOf(c: CatalogEntry): { cls: string; label: string; text: s
     return { cls: 'native', label: 'Flowbench native', text: 'Native analytic-app Condition routing; unsupported imported Alteryx Condition XML remains preserved with diagnostics.' };
   if (c.id === 'interface:error-message')
     return { cls: 'native', label: 'Flowbench native', text: 'Native analytic-app Error Message; a connected Condition can stop the run with the configured message.' };
+  if (c.id === 'documentation:comment')
+    return { cls: 'native', label: 'Flowbench native', text: 'Canvas annotation stored with the workflow and restored on reopen.' };
   if (NATIVE_QUESTION_IDS.includes(c.id))
     return { cls: 'native', label: 'Flowbench native', text: 'Native analytic-app question control with typed answers and Action configuration binding.' };
   if (c.kernel && c.implementation_status !== 'implemented')
@@ -40,12 +42,13 @@ export function Palette() {
   const addApplicationAction = useEditor((s) => s.addApplicationAction);
   const addApplicationCondition = useEditor((s) => s.addApplicationCondition);
   const addApplicationError = useEditor((s) => s.addApplicationError);
+  const addComment = useEditor((s) => s.addComment);
   const flow = useReactFlow();
 
   const categories = useMemo(() => [...new Set(catalog.map((c) => c.category))].sort(), [catalog]);
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    return catalog.filter((c) => (!cat || c.category === cat) && (!onlyReady || (c.kernel && c.implementation_status === 'implemented')) &&
+    return catalog.filter((c) => (!cat || c.category === cat) && (!onlyReady || (c.kernel && c.implementation_status === 'implemented') || statusOf(c).cls === 'native') &&
       (!needle || c.name.toLowerCase().includes(needle) || c.category.toLowerCase().includes(needle) ||
         (c.kernel && tools[c.kernel]?.description.toLowerCase().includes(needle))));
   }, [catalog, q, cat, onlyReady, tools]);
@@ -62,9 +65,10 @@ export function Palette() {
     const p = position ?? (selected ? { x: selected.position.x, y: selected.position.y + 190 } : { x: 120, y: 120 });
     if (catalogId === 'interface:condition') { addApplicationCondition(p); return; }
     if (catalogId === 'interface:error-message') { addApplicationError(p); return; }
+    if (catalogId === 'documentation:comment') { addComment(p); return; }
     addApplicationAction(p, interfaceQuestions[catalogId] ?? 'text', catalog.find((c) => c.id === catalogId)?.name ?? 'Enter a value');
   };
-  const canAddInterface = (id: string) => id in interfaceQuestions || id === 'interface:condition' || id === 'interface:error-message';
+  const canAddInterface = (id: string) => id in interfaceQuestions || id === 'interface:condition' || id === 'interface:error-message' || id === 'documentation:comment';
   const extensions = ['core.db_input', 'core.db_output'].filter((id) => tools[id] &&
     (!q.trim() || tools[id].display_name.toLowerCase().includes(q.trim().toLowerCase()) ||
       tools[id].description.toLowerCase().includes(q.trim().toLowerCase())));
@@ -122,7 +126,7 @@ export function Palette() {
                       draggable={!!c.kernel || canAddInterface(c.id)}
                       onDragStart={(e) => {
                         if (!c.kernel && !canAddInterface(c.id)) return;
-                        const special = c.id === 'interface:condition' ? 'flowengine.application_condition' : c.id === 'interface:error-message' ? 'flowengine.application_error' : `flowengine.application_action:${c.id}`;
+                        const special = c.id === 'interface:condition' ? 'flowengine.application_condition' : c.id === 'interface:error-message' ? 'flowengine.application_error' : c.id === 'documentation:comment' ? 'flowengine.comment' : `flowengine.application_action:${c.id}`;
                         e.dataTransfer.setData(TOOL_MIME, c.kernel ?? special);
                         e.dataTransfer.effectAllowed = 'copy';
                       }}
@@ -187,7 +191,7 @@ function ToolDetail({ entry, onAdd, onAddQuestion, supportsQuestion }: { entry: 
       {m && <p>{st.text}</p>}
       {entry.documentation_url && <p style={{ wordBreak: 'break-all' }}>Public reference: {entry.documentation_url}</p>}
       {m && <button className="primary" onClick={() => onAdd(m.tool_id)}>Add to canvas</button>}
-      {!m && supportsQuestion && <button className="primary" onClick={() => onAddQuestion(entry.id)}>{entry.id === 'interface:error-message' ? 'Add Error Message' : entry.id === 'interface:condition' ? 'Add Condition' : 'Add application question'}</button>}
+      {!m && supportsQuestion && <button className="primary" onClick={() => onAddQuestion(entry.id)}>{entry.id === 'interface:error-message' ? 'Add Error Message' : entry.id === 'interface:condition' ? 'Add Condition' : entry.id === 'documentation:comment' ? 'Add Comment' : 'Add application question'}</button>}
     </div>
   );
 }

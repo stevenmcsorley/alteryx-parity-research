@@ -20,6 +20,7 @@ export function Canvas() {
   const addApplicationAction = useEditor((s) => s.addApplicationAction);
   const addApplicationCondition = useEditor((s) => s.addApplicationCondition);
   const addApplicationError = useEditor((s) => s.addApplicationError);
+  const addComment = useEditor((s) => s.addComment);
   const nodeRows = useEditor((s) => s.run.nodeRows);
   const runStatus = useEditor((s) => s.run.status);
   const tools = useEditor((s) => s.tools);
@@ -76,6 +77,11 @@ export function Canvas() {
       addApplicationError({ x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
       return;
     }
+    if (toolId === 'flowengine.comment') {
+      const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      addComment({ x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
+      return;
+    }
     if (toolId === 'flowengine.application_action' || toolId.startsWith('flowengine.application_action:')) {
       const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
       const catalogId = toolId.slice('flowengine.application_action:'.length);
@@ -88,7 +94,7 @@ export function Canvas() {
     }
     const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
     addTool(toolId, { x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
-  }, [flow, tools, addTool, addApplicationAction, addApplicationCondition, addApplicationError]);
+  }, [flow, tools, addTool, addApplicationAction, addApplicationCondition, addApplicationError, addComment]);
 
   const minimapColor = useCallback((n: any) => {
     if (n.type !== 'tool') return 'transparent';

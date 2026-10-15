@@ -69,6 +69,18 @@ test('native Error Message is palette-accessible and configurable in the inspect
   await expect(page.getByTestId('node-error_message_1')).toContainText('Select a reporting period.');
 });
 
+test('catalogue Comment can be placed, edited and remains a canvas annotation', async ({ page }) => {
+  await ready(page);
+  const comment = page.getByTestId('palette-documentation:comment');
+  await expect(comment).toContainText('Flowbench native');
+  await comment.dblclick();
+  const editor = page.getByLabel('Comment text');
+  await expect(editor).toBeVisible();
+  await editor.fill('Monthly sales summary');
+  await editor.blur();
+  await expect(page.locator('.comment-node textarea')).toHaveValue('Monthly sales summary');
+});
+
 test('Inspector scrolls independently inside the right dock', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 360 });
   await ready(page);
