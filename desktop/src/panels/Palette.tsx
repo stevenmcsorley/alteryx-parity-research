@@ -8,7 +8,7 @@ import { TOOL_MIME } from '../canvas/Canvas';
 export function statusOf(c: CatalogEntry): { cls: string; label: string; text: string } {
   // Labels follow the evidence ledger (implementation_status), never mere kernel presence.
   if (c.id === 'interface:condition')
-    return { cls: 'tested', label: 'Flowbench native', text: 'Native analytic-app Condition routing; unsupported imported Alteryx Condition XML remains preserved with diagnostics.' };
+    return { cls: 'native', label: 'Flowbench native', text: 'Native analytic-app Condition routing; unsupported imported Alteryx Condition XML remains preserved with diagnostics.' };
   if (c.kernel && c.implementation_status !== 'implemented')
     return { cls: 'blocked', label: 'In progress', text: 'A kernel exists but has not yet passed the evidence rules (tests); results may change.' };
   if (c.kernel && c.verification_status === 'partial')
@@ -107,7 +107,7 @@ export function Palette() {
                 {items.map((c) => {
                   const st = statusOf(c);
                   return (
-                    <div key={c.id} className={`tool-item ${c.kernel ? '' : 'unavailable'} ${active === c.id ? 'active' : ''}`}
+                    <div key={c.id} className={`tool-item ${c.kernel || canAddInterface(c.id) ? '' : 'unavailable'} ${active === c.id ? 'active' : ''}`}
                       data-testid={`palette-${c.id}`} role="button" tabIndex={0}
                       draggable={!!c.kernel || canAddInterface(c.id)}
                       onDragStart={(e) => {

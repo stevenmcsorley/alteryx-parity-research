@@ -203,6 +203,7 @@ label { color: var(--text-2); font-size: 12px; }
 .badge { font-size: 10.5px; padding: 1px 6px; border-radius: 8px; white-space: nowrap; font-weight: 600; }
 .badge.ready { background: var(--ok-soft); color: var(--ok); }
 .badge.tested { background: var(--accent-soft); color: var(--accent); }
+.badge.native { background: var(--blue-soft, #e6f1fb); color: var(--blue, #2463a0); }
 .badge.unavailable { background: var(--muted-soft); color: var(--text-3); }
 .badge.blocked { background: var(--warn-soft); color: var(--warn); }
 .badge.refdiff { background: var(--err-soft); color: var(--err); }

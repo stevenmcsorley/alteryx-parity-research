@@ -49,6 +49,15 @@ test('palette lists every catalogue entry with an honest status', async ({ page 
   await expect(items).toHaveCount(implemented);
 });
 
+test('native Condition can be added without inflating kernel implementation count', async ({ page }) => {
+  await ready(page);
+  const condition = page.getByTestId('palette-interface:condition');
+  await expect(condition).toContainText('Flowbench native');
+  await expect(condition).not.toHaveClass(/unavailable/);
+  await condition.dblclick();
+  await expect(page.locator('.react-flow__node-applicationCondition')).toHaveCount(1);
+});
+
 test('Inspector scrolls independently inside the right dock', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 360 });
   await ready(page);
