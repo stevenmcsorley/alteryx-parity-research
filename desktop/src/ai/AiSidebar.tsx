@@ -37,7 +37,6 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   const [model, setModel] = useState('');
   const [draft, setDraft] = useState('');
   const [routingConsent, setRoutingConsent] = useState(false);
-  const [computerControl, setComputerControl] = useState(false);
   const [toolsEnabled, setToolsEnabled] = useState(true);
   const [consentUpdating, setConsentUpdating] = useState(false);
   const [error, setError] = useState('');
@@ -71,11 +70,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
 
   async function refreshAuth() {
     try {
-      const auth = await native<{ connected: boolean; plan_usage_authorized: boolean; subject_hint?: string; session_recovery_required?: boolean; data_routing_allowed?: boolean; computer_control?: boolean }>('ai_status');
+      const auth = await native<{ connected: boolean; plan_usage_authorized: boolean; subject_hint?: string; session_recovery_required?: boolean; data_routing_allowed?: boolean }>('ai_status');
       setConnected(auth.connected); setAuthorized(auth.plan_usage_authorized); setAccount(auth.subject_hint ?? '');
       setSessionRecovery(Boolean(auth.session_recovery_required));
       setRoutingConsent(Boolean(auth.data_routing_allowed));
-      setComputerControl(Boolean(auth.computer_control));
       if (!auth.connected) setRoutingConsent(false);
       if (auth.connected && auth.plan_usage_authorized) await refreshModels();
     } catch { setConnected(false); setAuthorized(false); }
@@ -97,7 +95,6 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     try {
       const auth = await native<{ remote_revocation_confirmed: boolean }>('ai_sign_out');
       setConnected(false); setAuthorized(false); setAccount(''); setModels([]); setModel(''); setRoutingConsent(false);
-      setComputerControl(false);
       useAiConversation.getState().reset();
       useAiConversation.getState().setFullControl(null);
       if (!auth.remote_revocation_confirmed) setError('Disconnected locally. OpenAI could not confirm remote token revocation; the protected local session was removed.');
@@ -109,14 +106,6 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     try { await native('ai_set_data_consent', { allowed }); setRoutingConsent(allowed); }
     catch (e) { setError(messageOf(e)); }
     finally { setConsentUpdating(false); }
-  }
-  async function updateComputerControl(enabled: boolean) {
-    setBusy(true); setError('');
-    try {
-      await native('ai_set_computer_control', { enabled });
-      setComputerControl(enabled);
-    } catch (e) { setError(messageOf(e)); }
-    finally { setBusy(false); }
   }
   async function inspect(entry: Entry) {
     setBusy(true); setError(''); setResult(null);
@@ -152,7 +141,6 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       },
       getResults: () => safeRunResults(),
       getResultPage: (nodeRef: string, offset: number, limit: number) => safeRunResultPage(nodeRef, offset, limit),
-      executeComputerCommand: (callId: string) => native('ai_execute_computer_command', { callId }),
     };
   }
   function fullControlForCurrentWorkspace() {
@@ -162,7 +150,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   }
   function setFullControl(enabled: boolean) {
     if (enabled) {
-      const accepted = window.confirm('Enable Full Control for this Flowbench workspace for the current app session? Flowbench AI may add, configure, connect, rearrange and remove workflow nodes, validate and run workflows, inspect results, and save to the current workflow path without asking each time. Changes remain undoable. Full Computer Control is enabled separately.');
+      const accepted = window.confirm('Enable Full Control for this Flowbench workspace for the current app session? Flowbench AI may discover installed Flowbench tools, add/configure/connect/remove workflow nodes, validate and run workflows, inspect results, and save to the current workflow path without asking each time. Changes remain undoable.');
       if (!accepted) return;
       useAiConversation.getState().setFullControl(controlScope);
     } else useAiConversation.getState().setFullControl(null);
@@ -302,19 +290,17 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           useAiConversation.getState().finish(turnId, 'completed');
           return;
         }
-        for (const call of calls) {
+          for (const call of calls) {
           const toolName = call.name ?? '';
           useAiConversation.getState().activity(turnId, activityLabel(toolName));
           let toolResult: unknown;
           try {
             toolResult = await dispatchAgentTool(agentEnvironment(), toolName,
-              JSON.parse(call.arguments ?? '{}'), call.call_id);
+              JSON.parse(call.arguments ?? '{}'));
           } catch (error) {
-            if (toolName === 'computer.run_command') throw error;
             toolResult = safeToolFailure(toolName, error);
           }
-          if (toolName !== 'computer.run_command')
-            await native('ai_submit_tool_result', { callId: call.call_id, result: toolResult });
+          await native('ai_submit_tool_result', { callId: call.call_id, result: toolResult });
         }
       }
       if (cancelled.current && turnId) {
@@ -374,15 +360,8 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
                 ? 'Enabled for this workspace during this app session. Turn it off here at any time.'
                 : 'Review mode asks before workflow edits, runs and saves. Full Control removes routine prompts; external effects remain separately protected.'}</small>
             </section>
-            <section className="ai-full-control" aria-label="Full Computer Control mode">
-              <label className="ai-consent"><input type="checkbox" checked={computerControl} disabled={busy || !authorized || streaming}
-                onChange={(e) => void updateComputerControl(e.target.checked)} />Full Computer Control</label>
-              <small className="ai-menu-note">{computerControl
-                ? 'PowerShell runs as your Windows user and can access installed software, files, processes, networks, databases, Docker and WSL for this app session.'
-                : 'Enables a general PowerShell command tool using your Windows user permissions. Turn it on once per app session.'}</small>
-            </section>
             <label className="ai-consent"><input type="checkbox" checked={routingConsent} disabled={!authorized || consentUpdating || streaming} onChange={(e) => void updateConsent(e.target.checked)} />
-              Allow prompts, workflow context, command output and requested data results to be sent to ChatGPT</label>
+              Allow prompts, workflow context and requested data results to be sent to ChatGPT</label>
             <label className="ai-consent"><input type="checkbox" checked={toolsEnabled} disabled={streaming} onChange={(e) => setToolsEnabled(e.target.checked)} />
               Include Flowbench application tools in requests</label>
             <small className="ai-menu-note">Turn this off for a simple no-tools comparison. Normal assistant use keeps tools enabled.</small>

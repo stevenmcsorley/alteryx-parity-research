@@ -38,8 +38,8 @@ async function ready() {
   render(<AiSidebar close={() => undefined} />);
   await screen.findByRole('option', { name: 'Available model' });
   fireEvent.click(screen.getByText('•••'));
-  fireEvent.click(screen.getByRole('checkbox', { name: /Allow prompts, workflow context, command output and requested data results/ }));
-  await waitFor(() => expect((screen.getByRole('checkbox', { name: /Allow prompts, workflow context, command output and requested data results/ }) as HTMLInputElement).checked).toBe(true));
+  fireEvent.click(screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }));
+  await waitFor(() => expect((screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }) as HTMLInputElement).checked).toBe(true));
 }
 
 describe('Flowbench AI conversation', () => {
@@ -150,8 +150,8 @@ describe('Flowbench AI conversation', () => {
     render(<AiSidebar close={() => undefined} />);
     await screen.findByRole('option', { name: 'Available model' });
     fireEvent.click(screen.getByText('•••'));
-    fireEvent.click(screen.getByRole('checkbox', { name: /Allow prompts, workflow context, command output and requested data results/ }));
-    await waitFor(() => expect((screen.getByRole('checkbox', { name: /Allow prompts, workflow context, command output and requested data results/ }) as HTMLInputElement).checked).toBe(true));
+    fireEvent.click(screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }));
+    await waitFor(() => expect((screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }) as HTMLInputElement).checked).toBe(true));
     const composer = screen.getByLabelText('Message Flowbench AI');
     for (let n = 1; n <= 10; n++) {
       fireEvent.change(composer, { target: { value: 'hello' } });

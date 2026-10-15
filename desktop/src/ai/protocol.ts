@@ -3,7 +3,7 @@ import type { CanvasNode } from '../model/workflow';
 import { workflowRevision } from './workflowPatch';
 import agentToolResults from '../../agent-tool-results.v1.json';
 
-/** Versioned application protocol for Flowbench and optional native computer tools. */
+/** Versioned application protocol for Flowbench's installed tool catalogue and editor. */
 export const AGENT_PROTOCOL = 'flowbench.agent.v1' as const;
 
 export type AgentToolName =
@@ -21,8 +21,7 @@ export type AgentToolName =
   | 'workflow.request_run'
   | 'workflow.request_save'
   | 'run.get_results'
-  | 'run.get_result_page'
-  | 'computer.run_command';
+  | 'run.get_result_page';
 
 export type AgentToolDefinition = {
   name: AgentToolName;
@@ -41,7 +40,7 @@ export const AGENT_TOOLS: AgentToolDefinition[] = [
   { name: 'app.get_active_workflow', description: 'Read the open workflow name and basic graph counts.', parameters: objectSchema() },
   { name: 'catalog.search_tools', description: 'Search the catalogue by tool name, category, kernel ID, or implementation status. The result maps catalogue IDs to executable kernel IDs where available.', parameters: objectSchema({ query: { type: 'string' } }, ['query']) },
   { name: 'catalog.get_tool_manifest', description: 'Read an installed tool manifest using its executable kernel ID (the kernel field from catalog.search_tools).', parameters: objectSchema({ tool_id: { type: 'string' } }, ['tool_id']) },
-  { name: 'workflow.get_snapshot', description: 'Read a bounded, sanitised snapshot of the active workflow. No row data or secrets are included.', parameters: objectSchema() },
+  { name: 'workflow.get_snapshot', description: 'Read the active workflow graph, connections, node names, and installed tool IDs. No row data or secrets are included.', parameters: objectSchema() },
   { name: 'workflow.get_schema', description: 'Read field names and effective types for an existing workflow node output. No records or configuration values are included.', parameters: objectSchema({ node_ref: { type: 'string' } }, ['node_ref']) },
   { name: 'workflow.validate', description: 'Run the existing Flowbench workflow validator and return its current diagnostics.', parameters: objectSchema() },
   { name: 'workflow.get_diagnostics', description: 'Read existing workflow validation problems and latest run messages.', parameters: objectSchema() },
@@ -51,7 +50,6 @@ export const AGENT_TOOLS: AgentToolDefinition[] = [
   { name: 'workflow.request_save', description: 'Save the active workflow. Full Control saves to the current authorized workflow path; choosing a new destination still uses the native file picker.', parameters: objectSchema() },
   { name: 'run.get_results', description: 'Read bounded previews from the most recent completed run. Results are shared only under the active data-routing consent.', parameters: objectSchema() },
   { name: 'run.get_result_page', description: 'Read actual rows from one Browse output in the latest completed run. Use node_ref values from run.get_results and request the row range needed for the analysis.', parameters: objectSchema({ node_ref: { type: 'string' }, offset: { type: 'integer' }, limit: { type: 'integer' } }, ['node_ref', 'offset', 'limit']) },
-  { name: 'computer.run_command', description: 'Run commands using the current Windows user environment when Full Computer Control is enabled. Discover and use installed software, files, processes, networks, databases, browsers, Docker, WSL and other available resources. Return actual command output.', parameters: objectSchema({ command: { type: 'string' }, working_directory: { type: 'string' } }, ['command', 'working_directory']) },
 ];
 
 function objectSchema(properties: AgentToolDefinition['parameters']['properties'] = {}, required: string[] = []) {
@@ -70,7 +68,6 @@ export type AgentToolEnvironment = {
   requestSave?: () => unknown;
   getResults?: () => unknown;
   getResultPage?: (nodeRef: string, offset: number, limit: number) => unknown;
-  executeComputerCommand?: (callId: string) => Promise<unknown>;
 };
 
 type ResultShape = { type: string; required?: Record<string, string>; optional?: Record<string, string>;
@@ -92,9 +89,8 @@ export async function dispatchAgentTool(
   environment: AgentToolEnvironment,
   name: string,
   args: unknown = {},
-  callId?: string,
 ): Promise<unknown> {
-  const result = await dispatchAgentToolUnchecked(environment, name, args, callId);
+  const result = await dispatchAgentToolUnchecked(environment, name, args);
   const violation = agentResultContractError(name, result);
   if (violation) throw new Error(`Flowbench result contract violation for ${name} at ${violation}`);
   return result;
@@ -104,7 +100,6 @@ async function dispatchAgentToolUnchecked(
   environment: AgentToolEnvironment,
   name: string,
   args: unknown,
-  callId?: string,
 ): Promise<unknown> {
   const input = validateArguments(name, args);
   const state = environment.getState();
@@ -178,9 +173,6 @@ async function dispatchAgentToolUnchecked(
       if (!environment.getResultPage) throw new Error('Run result paging is unavailable in this application context');
       return environment.getResultPage(String(input.node_ref), offset, limit);
     }
-    case 'computer.run_command':
-      if (!environment.executeComputerCommand || !callId) throw new Error('Enable Full Computer Control and invoke this through an active ChatGPT tool call');
-      return environment.executeComputerCommand(callId);
     default:
       throw new Error(`Unknown or unavailable agent tool: ${name}`);
   }
