@@ -138,8 +138,8 @@
     ]
   },
   "independent_tests": {
-    "count": 122,
-    "passing": 122,
+    "count": 125,
+    "passing": 125,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
@@ -149,6 +149,9 @@
       "test_data_correctness.DataCorrectnessTests.test_sort_nan_and_join_key_types",
       "test_data_correctness.DataCorrectnessTests.test_union_decimal_integer_exact",
       "test_data_correctness.DataCorrectnessTests.test_union_rejects_lossy_numeric_promotions",
+      "test_dynamic_replace.DynamicReplaceTests.test_dynamic_replace_explicit_decimal_schema",
+      "test_dynamic_replace.DynamicReplaceTests.test_dynamic_replace_first_rule_wins_nulls_and_invalid_field",
+      "test_dynamic_replace.DynamicReplaceTests.test_dynamic_replace_order_formula_and_summary",
       "test_fe_executor.ExecutionTests.test_cancellation",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
       "test_fe_executor.ExecutionTests.test_failure_reports_node_and_skips_downstream",

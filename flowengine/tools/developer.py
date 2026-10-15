@@ -255,6 +255,120 @@ class DynamicSelect(Tool):
         return {'output': t.select(keep)}
 
 
+class DynamicReplace(Tool):
+    """Apply ordered, data-driven replacement rules to selected columns."""
+    manifest = ToolManifest(
+        tool_id='core.dynamic_replace', version='1.0.0', display_name='Dynamic Replace',
+        catalog_ids=('developer:dynamic-replace',),
+        inputs=(Anchor('data', 'D'), Anchor('replacements', 'R')),
+        outputs=(Anchor('output', 'O'), Anchor('summary', 'S', required=False)),
+        description='Apply replacement rules in input order. Each rule names a data field, a Boolean expression evaluated against the data row, and a static or formula replacement value. First matching rule wins.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'properties': {
+            'field_name_field': {'type': 'string', 'default': 'Field'},
+            'condition_field': {'type': 'string', 'default': 'Condition'},
+            'value_field': {'type': 'string', 'default': 'Value'},
+            'value_is_expression': {'type': 'boolean', 'default': False},
+            'type_mode': {'enum': ['keep_original', 'auto', 'explicit'], 'default': 'keep_original'},
+            'output_type': {'enum': TYPE_ENUM},
+            'output_size': {'type': 'integer', 'minimum': 1, 'maximum': TEXT},
+            'output_scale': {'type': 'integer', 'minimum': 0, 'maximum': 49},
+            'unmatched_behavior': {'enum': ['allow', 'warn', 'error'], 'default': 'error'},
+        }})
+
+    def check_config(self, cfg):
+        if cfg['type_mode'] == 'explicit' and not cfg.get('output_type'):
+            raise ConfigError('explicit type_mode requires output_type')
+        if cfg['type_mode'] == 'explicit' and cfg['output_type'] == 'fixed_decimal':
+            if cfg.get('output_size') is None or cfg.get('output_scale') is None or cfg['output_scale'] >= cfg['output_size']:
+                raise ConfigError('explicit fixed_decimal requires output_size > output_scale')
+
+    def infer(self, ctx, cfg, inputs):
+        # The replacement input is row-driven, so affected columns are not known at plan time.
+        return None
+
+    def run(self, ctx, cfg, inputs):
+        data, rules = inputs['data'], inputs['replacements']
+        names = (cfg['field_name_field'], cfg['condition_field'], cfg['value_field'])
+        require_fields(rules.schema, names)
+        fi, ci, vi = (rules.schema.index(n) for n in names)
+        parsed = []
+        selected = set()
+        for rule_no, rule in enumerate(rules.rows(), 1):
+            field_name, condition, value = rule[fi], rule[ci], rule[vi]
+            if field_name is None or str(field_name) not in data.schema.names:
+                msg = f'Replacement rule {rule_no} refers to an unknown data field'
+                if cfg['unmatched_behavior'] == 'error':
+                    raise ConfigError(msg)
+                if cfg['unmatched_behavior'] == 'warn':
+                    ctx.warn(msg)
+                continue
+            if condition is None or not str(condition).strip():
+                raise ConfigError(f'Replacement rule {rule_no} has an empty condition')
+            try:
+                predicate = compile_expression(str(condition), data.schema)
+                replacement = compile_expression(str(value), data.schema) if cfg['value_is_expression'] and value is not None else None
+            except Exception as e:
+                raise ConfigError(f'Replacement rule {rule_no} has an invalid expression: {e}') from None
+            parsed.append((str(field_name), predicate, value, replacement))
+            selected.add(str(field_name))
+
+        original = list(data.schema)
+        row_cache = list(data.rows())
+        ec = EvalContext(now=ctx.clock)
+        columns = [list(data.column(f.name)) for f in data.schema]
+        hit_counts = {}
+        matched_rows = {name: set() for name in selected}
+        for field_name, predicate, static_value, replacement in parsed:
+            col_i = data.schema.index(field_name)
+            for row_i, row in enumerate(row_cache):
+                ctx.check_cancelled()
+                if row_i not in matched_rows[field_name] and predicate.evaluate(row, ec):
+                    raw = replacement.evaluate(row, ec) if replacement else static_value
+                    try:
+                        columns[col_i][row_i] = cast_value(raw, original[col_i])[0]
+                    except (CastFailure, ValueError, TypeError, OverflowError):
+                        raise DataError(f'Replacement rule for field {field_name!r} produced a value incompatible with its type') from None
+                    hit_counts[(field_name, str(raw) if raw is not None else None)] = hit_counts.get((field_name, str(raw) if raw is not None else None), 0) + 1
+                    matched_rows[field_name].add(row_i)
+        output_fields = original
+        if cfg['type_mode'] == 'explicit':
+            target_type = FieldType(cfg['output_type'])
+            target_size = cfg.get('output_size') if target_type.is_string or target_type is FieldType.FIXED_DECIMAL else None
+            target_scale = cfg.get('output_scale') if target_type is FieldType.FIXED_DECIMAL else None
+            output_fields = [Field(f.name, target_type, target_size, target_scale, f.description)
+                             if f.name in selected else f for f in original]
+            for col_i, f in enumerate(output_fields):
+                if f.name in selected:
+                    try:
+                        columns[col_i] = [cast_value(v, f)[0] for v in columns[col_i]]
+                    except (CastFailure, ValueError, TypeError, OverflowError):
+                        raise DataError(f'Result values for field {f.name!r} cannot be converted to {f.type.value}') from None
+        elif cfg['type_mode'] == 'auto':
+            # Infer from the complete post-replacement column and widen conservatively.
+            from ..types import infer_type, unify_fields
+            output_fields = list(original)
+            for col_i, f in enumerate(original):
+                if f.name not in selected:
+                    continue
+                kinds = [infer_type(v) for v in columns[col_i] if v is not None]
+                if not kinds:
+                    continue
+                target = Field(f.name, kinds[0])
+                try:
+                    for kind in kinds[1:]:
+                        target = unify_fields(target, Field(f.name, kind))
+                    columns[col_i] = [cast_value(v, target)[0] for v in columns[col_i]]
+                except (SchemaError, CastFailure, ValueError, TypeError, OverflowError):
+                    # A mixed column that cannot be represented exactly remains text.
+                    target = Field(f.name, FieldType.V_WSTRING, max(1, max((len(format_value(v)) for v in columns[col_i] if v is not None), default=1)))
+                    columns[col_i] = [None if v is None else format_value(v) for v in columns[col_i]]
+                output_fields[col_i] = target
+        out = Table(Schema(output_fields), columns)
+        summary_schema = Schema([Field('Field', FieldType.V_WSTRING, TEXT), Field('ReplacementValue', FieldType.V_WSTRING, TEXT), Field('Count', FieldType.INT64)])
+        summary_rows = [(field, value, count) for (field, value), count in sorted(hit_counts.items(), key=lambda x: (x[0][0], x[0][1] or ''))]
+        return {'output': out, 'summary': Table.from_rows(summary_schema, summary_rows)}
+
+
 # =========================================================================== Blob Convert / Base64
 
 class BlobInput(Tool):
@@ -957,5 +1071,5 @@ class RunCommand(Tool):
         return {'output': Table.from_rows([Field(n, FieldType.V_WSTRING, TEXT) for n in names], rows[1:])}
 
 
-TOOLS = [FieldInfo, JSONParse, DynamicRename, DynamicSelect, BlobInput, BlobOutput, BlobConvert, Base64Encoder, Message, TestTool,
+TOOLS = [FieldInfo, JSONParse, DynamicRename, DynamicSelect, DynamicReplace, BlobInput, BlobOutput, BlobConvert, Base64Encoder, Message, TestTool,
          BlockUntilDone, Detour, DetourEnd, ExpectEquals, Throttle, PythonTool, RTool, RunCommand]

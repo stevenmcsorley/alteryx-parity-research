@@ -3141,7 +3141,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/dynamic-replace-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

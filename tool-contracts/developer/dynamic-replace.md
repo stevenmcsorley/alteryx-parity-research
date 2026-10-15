@@ -1,37 +1,7 @@
 # Dynamic Replace
 
-> **Research record; NOT a working tool implementation or verified specification.**
+Independent Flowbench implementation: `core.dynamic_replace` (`developer:dynamic-replace`). It consumes data on D and ordered replacement rules on R, returning changed data on O and a replacement-count summary on S.
 
-## Identity
+The native configuration selects rule columns for target field, predicate and replacement; replacements may be formula expressions. First matching rule per field and record wins. Output type behavior can retain the input type, infer conservatively from resulting values, or cast to a configured type (including fixed-decimal precision and scale). Unmatched field names can be allowed, warned or rejected.
 
-- Catalogue ID: `developer:dynamic-replace`
-- Category: Developer
-- Published XML identifier: `AlteryxBasePluginsGui.DynamicReplace.DynamicReplace` (manual transcription; verify against installed reference)
-- Published user role: Full
-- Reference build: Designer 2026.1.4.126 (installed-build comparison outstanding)
-- Official catalogue: https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html
-- Specific reference: **NOT YET VERIFIED** — run public catalogue sync
-- Implementation: **not-started**
-- Machine-readable contract: `dynamic-replace.contract.json`
-- Conformance verification: **not-tested**
-
-## Research to complete (do not infer)
-
-- [ ] Pin per-tool public documentation and availability/version history
-- [ ] Define inputs, output anchors, schema and metadata rules
-- [ ] Define configuration fields, defaults, UI validation and errors
-- [ ] Define row order, null semantics, locale/timezone and deterministic behaviour
-- [ ] Identify add-ons, licences, external APIs, services and data-package prerequisites
-- [ ] Define concrete independent fixtures, edge cases and expected outputs
-- [ ] Implement real independently written kernel or adapter
-- [ ] Demonstrate end-to-end workflow execution and unit/integration tests
-- [ ] Where authorised, capture reference evidence and run differential tests
-- [ ] Record limitations, performance, security and version compatibility
-
-## Sources and observations
-
-No application behaviour or compatibility has been verified. Add specific links, observed facts, dates, permission scope and evidence references here. Keep assumptions explicitly labelled.
-
-## Conformance evidence
-
-Not tested. Do not mark verified without a report, input/config hashes and a reproducible comparison rule.
+The D/R/O/S anchors and ordered expression behavior are described by the [official Dynamic Replace documentation](https://help.alteryx.com/current/en/designer/tools/developer/dynamic-replace-tool.html). The independent native behavior has executable coverage in `tests/test_dynamic_replace.py`. **This tool is not reference verified.** Evidence limits: Alteryx XML configuration translation and differential parity are not implemented or verified; imported vendor configurations must not be treated as equivalent to the native Flowbench configuration.
