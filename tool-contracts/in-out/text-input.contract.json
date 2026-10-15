@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 129,
-    "passing": 129,
+    "count": 130,
+    "passing": 130,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
@@ -162,6 +162,7 @@
       "test_dynamic_replace.DynamicReplaceTests.test_dynamic_replace_first_rule_wins_nulls_and_invalid_field",
       "test_dynamic_replace.DynamicReplaceTests.test_dynamic_replace_order_formula_and_summary",
       "test_fe_executor.ExecutionTests.test_cancellation",
+      "test_fe_executor.ExecutionTests.test_disabled_flowbench_tool_container_children_skip_execution",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
       "test_fe_executor.ExecutionTests.test_failure_reports_node_and_skips_downstream",
       "test_fe_executor.ExecutionTests.test_fan_out_and_release",

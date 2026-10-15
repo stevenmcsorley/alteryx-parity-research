@@ -72,7 +72,7 @@ export type EditorState = {
   copySelected(): void;
   paste(): void;
   duplicateSelected(): void;
-  groupSelected(): string | null;
+  groupSelected(caption?: string): string | null;
   ungroup(containerId: string): void;
   commitGraphTransaction(graph: CanvasGraph): void;
   setName(name: string): void;
@@ -357,7 +357,7 @@ export const useEditor = create<EditorState>((set, get) => ({
     get().paste();
   },
 
-  groupSelected: () => {
+  groupSelected: (caption = 'Container') => {
     const s = get();
     const sel = s.nodes.filter((n) => n.selected && !n.parentId);
     if (!sel.length) return null;
@@ -369,7 +369,7 @@ export const useEditor = create<EditorState>((set, get) => ({
     const maxY = Math.max(...sel.map((n) => n.position.y + h(n))) + 30;
     const id = nextNodeId('container', s.nodes.map((n) => n.id));
     const container: CanvasNode = { id, type: 'container', position: { x: minX, y: minY },
-      data: { kind: 'container', caption: 'Container' }, style: { width: maxX - minX, height: maxY - minY } };
+      data: { kind: 'container', caption }, style: { width: maxX - minX, height: maxY - minY } };
     const ids = new Set(sel.map((n) => n.id));
     get().checkpoint();
     set({ nodes: [container, ...s.nodes.map((n) => ids.has(n.id)
@@ -384,8 +384,9 @@ export const useEditor = create<EditorState>((set, get) => ({
     get().checkpoint();
     set({ nodes: s.nodes.filter((n) => n.id !== cid).map((n) => {
       if (n.parentId !== cid) return n;
-      const { parentId: _p, ...rest } = n;
-      return { ...rest, position: { x: n.position.x + c.position.x, y: n.position.y + c.position.y } } as CanvasNode;
+      const rest = { ...n, parentId: c.parentId, position: { x: n.position.x + c.position.x, y: n.position.y + c.position.y } };
+      if (!c.parentId) delete rest.parentId;
+      return rest as CanvasNode;
     }) });
   },
 

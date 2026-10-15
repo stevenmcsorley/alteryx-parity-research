@@ -45,6 +45,16 @@ describe('AI workflow patch staging', () => {
     await expect(prepareWorkflowProposal(state, '{"operations":[]}', 'rev_stale')).rejects.toThrow('workflow changed');
   });
 
+  it('includes container membership and layout in the AI patch revision', () => {
+    useEditor.getState().loadGraph({ ...emptyGraph, nodes: [
+      { id: 'container', type: 'container', position: { x: 10, y: 20 }, data: { kind: 'container', caption: 'Group' } },
+      { id: 'child', type: 'tool', position: { x: 15, y: 30 }, data: { kind: 'tool', tool: 'core.filter', config: {} } },
+    ] } as any);
+    const before = workflowRevision(useEditor.getState());
+    useEditor.setState({ nodes: useEditor.getState().nodes.map((node) => node.id === 'child' ? { ...node, parentId: 'container' } : node) });
+    expect(workflowRevision(useEditor.getState())).not.toBe(before);
+  });
+
   it('lets the agent propose a question, Condition routes, and an Action target as one validated edit', async () => {
     useEditor.getState().loadGraph(emptyGraph as any);
     useEditor.getState().setEngineMeta({ tools: {
@@ -98,6 +108,67 @@ describe('AI workflow patch staging', () => {
     expect(proposal.validation.valid).toBe(true);
     expect(proposal.candidate.nodes[0].data).toEqual({ kind: 'comment', text: 'Monthly sales summary' });
     expect(toDocument(proposal.candidate).metadata?.ui.comments[0].text).toBe('Monthly sales summary');
+  });
+
+  it('lets the agent group nodes in a native Tool Container, configure it, and ungroup atomically', async () => {
+    const graph = { ...emptyGraph, nodes: [
+      { id: 'input-node', type: 'tool', position: { x: 100, y: 120 }, data: { kind: 'tool', tool: 'core.input_data', config: {} } },
+      { id: 'filter-node', type: 'tool', position: { x: 360, y: 120 }, data: { kind: 'tool', tool: 'core.filter', config: {} } },
+    ] };
+    useEditor.getState().loadGraph(graph as any);
+    useEditor.getState().setEngineMeta({ tools: {
+      'core.input_data': manifest('core.input_data', [], ['output']) as any,
+      'core.filter': manifest('core.filter', ['input'], ['true', 'false']) as any,
+    } });
+    let checked: any;
+    setTransport({ request: async (_method: string, params: any) => { checked = params.workflow; return { valid: true, problems: [], schemas: {} }; }, subscribe: () => () => {} } as any);
+    const state = useEditor.getState(), baseRevision = workflowRevision(state);
+    const proposal = await prepareWorkflowProposal(state, JSON.stringify({ operations: [
+      { op: 'group', ref: 'sales_container', node_refs: ['node_1', 'node_2'], caption: 'Sales preparation' },
+      { op: 'configure_container', node_ref: 'sales_container', caption: 'Sales preparation', disabled: true, collapsed: true },
+    ] }), baseRevision);
+    expect(proposal.validation.valid).toBe(true);
+    const container = proposal.candidate.nodes.find((node) => node.data.kind === 'container');
+    expect(container?.data).toEqual({ kind: 'container', caption: 'Sales preparation', disabled: true, collapsed: true });
+    expect(proposal.candidate.nodes.filter((node) => node.parentId === container?.id)).toHaveLength(2);
+    expect(proposal.consequences).toEqual(expect.arrayContaining([expect.stringContaining('Disable Tool Container')]));
+    expect(checked.metadata.ui.containers[0].children).toHaveLength(2);
+    expect(useEditor.getState().nodes).toHaveLength(2);
+
+    useEditor.getState().loadGraph(proposal.candidate);
+    const ungrouped = await prepareWorkflowProposal(useEditor.getState(), JSON.stringify({ operations: [
+      { op: 'ungroup_container', node_ref: 'node_3' },
+    ] }), workflowRevision(useEditor.getState()));
+    expect(ungrouped.candidate.nodes.every((node) => !node.parentId)).toBe(true);
+  });
+
+  it('rejects Tool Container grouping for nodes already nested inside a container', async () => {
+    useEditor.getState().loadGraph({ ...emptyGraph, nodes: [
+      { id: 'outer', type: 'container', position: { x: 0, y: 0 }, data: { kind: 'container', caption: 'Outer' } },
+      { id: 'child', type: 'tool', parentId: 'outer', position: { x: 40, y: 60 }, data: { kind: 'tool', tool: 'core.filter', config: {} } },
+    ] } as any);
+    setTransport({ request: async () => ({ valid: true, problems: [], schemas: {} }), subscribe: () => () => {} } as any);
+    const state = useEditor.getState();
+    await expect(prepareWorkflowProposal(state, JSON.stringify({ operations: [
+      { op: 'group', ref: 'nested', node_refs: ['node_2'], caption: 'Nested' },
+    ] }), workflowRevision(state))).rejects.toThrow('top-level nodes only');
+  });
+
+  it('preserves child coordinates and parent when ungrouping an inner container', async () => {
+    const graph = { ...emptyGraph, nodes: [
+      { id: 'outer', type: 'container', position: { x: 100, y: 80 }, data: { kind: 'container', caption: 'Outer' } },
+      { id: 'inner', type: 'container', parentId: 'outer', position: { x: 20, y: 30 }, data: { kind: 'container', caption: 'Inner' } },
+      { id: 'child', type: 'comment', parentId: 'inner', position: { x: 15, y: 25 }, data: { kind: 'comment', text: 'Note' } },
+    ] };
+    useEditor.getState().loadGraph(graph as any);
+    setTransport({ request: async () => ({ valid: true, problems: [], schemas: {} }), subscribe: () => () => {} } as any);
+    const state = useEditor.getState();
+    const proposal = await prepareWorkflowProposal(state, JSON.stringify({ operations: [
+      { op: 'ungroup_container', node_ref: 'node_2' },
+    ] }), workflowRevision(state));
+    const child = proposal.candidate.nodes.find((node) => node.id === 'child');
+    expect(child?.parentId).toBe('outer');
+    expect(child?.position).toEqual({ x: 35, y: 55 });
   });
 
   it('lets the agent propose a batch Control Parameter and its child Action target', async () => {

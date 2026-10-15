@@ -87,11 +87,12 @@
     ]
   },
   "independent_tests": {
-    "count": 25,
-    "passing": 25,
+    "count": 26,
+    "passing": 26,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
+      "test_fe_executor.ExecutionTests.test_disabled_flowbench_tool_container_children_skip_execution",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
       "test_fe_executor.ExecutionTests.test_jsonl_log_and_retain_none",
       "test_fe_interop.ImportTests.test_condition_branches_execute_different_filter_configurations",

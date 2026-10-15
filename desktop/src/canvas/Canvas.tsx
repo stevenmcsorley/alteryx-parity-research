@@ -12,6 +12,21 @@ export const TOOL_MIME = 'application/x-flowbench-tool';
 
 export function Canvas() {
   const nodes = useEditor((s) => s.nodes);
+  const renderedNodes = useMemo(() => {
+    const byId = new Map(nodes.map((node) => [node.id, node]));
+    return nodes.map((node) => {
+      let parent = node.parentId ? byId.get(node.parentId) : undefined;
+      let hidden = false;
+      while (parent) {
+        if (parent.data.kind === 'container' && parent.data.collapsed) { hidden = true; break; }
+        parent = parent.parentId ? byId.get(parent.parentId) : undefined;
+      }
+      if (hidden) return { ...node, hidden: true };
+      if (node.data.kind === 'container' && node.data.collapsed)
+        return { ...node, style: { ...node.style, height: 48 } };
+      return node;
+    });
+  }, [nodes]);
   const edges = useEditor((s) => s.edges);
   const onNodesChange = useEditor((s) => s.onNodesChange);
   const onEdgesChange = useEditor((s) => s.onEdgesChange);
@@ -106,7 +121,7 @@ export function Canvas() {
   return (
     <div className="canvas" ref={wrapper} onDragOver={onDragOver} onDrop={onDrop} data-testid="canvas">
       <ReactFlow
-        nodes={nodes}
+        nodes={renderedNodes}
         edges={decoratedEdges}
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}

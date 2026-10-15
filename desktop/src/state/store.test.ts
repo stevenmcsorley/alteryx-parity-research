@@ -135,6 +135,18 @@ describe('editor store', () => {
     expect(useEditor.getState().nodes.map((n) => n.id).sort()).toEqual(['filter_1', 'filter_2', 'text_input_1', 'text_input_2']);
   });
 
+  it('keeps nested children in their outer container when an inner container is ungrouped', () => {
+    useEditor.getState().loadGraph({ name: 'Nested containers', edges: [], nodes: [
+      { id: 'outer', type: 'container', position: { x: 100, y: 80 }, data: { kind: 'container', caption: 'Outer' } },
+      { id: 'inner', type: 'container', parentId: 'outer', position: { x: 20, y: 30 }, data: { kind: 'container', caption: 'Inner' } },
+      { id: 'child', type: 'comment', parentId: 'inner', position: { x: 15, y: 25 }, data: { kind: 'comment', text: 'Note' } },
+    ] } as any);
+    useEditor.getState().ungroup('inner');
+    const child = useEditor.getState().nodes.find((node) => node.id === 'child')!;
+    expect(child.parentId).toBe('outer');
+    expect(child.position).toEqual({ x: 35, y: 55 });
+  });
+
   it('ignores run results that belong to another run', () => {
     useEditor.getState().runStarted('r1');
     useEditor.getState().runFinished({ run_id: 'other', status: 'succeeded', error: null, manifest: {}, events: [], previews: {}, browse: {} });

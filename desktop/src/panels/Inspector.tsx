@@ -488,7 +488,7 @@ function TextInputEditor({ value, onChange, onBeginEdit }: { value: Record<strin
 }
 
 function ContainerInspector({ node }: { node: CanvasNode }) {
-  const d = node.data as { caption: string; disabled?: boolean };
+  const d = node.data as { caption: string; disabled?: boolean; collapsed?: boolean };
   const update = useEditor((s) => s.updateNodeData);
   const ungroup = useEditor((s) => s.ungroup);
   const count = useEditor((s) => s.nodes.filter((n) => n.parentId === node.id).length);
@@ -500,6 +500,8 @@ function ContainerInspector({ node }: { node: CanvasNode }) {
         <input id="cap" type="text" value={d.caption} onChange={(e) => update(node.id, { caption: e.target.value }, false)} />
         <label htmlFor="cdis">Disabled</label>
         <input id="cdis" type="checkbox" style={{ justifySelf: 'start' }} checked={!!d.disabled} onChange={(e) => update(node.id, { disabled: e.target.checked })} />
+        <label htmlFor="ccol">Collapsed</label>
+        <input id="ccol" type="checkbox" style={{ justifySelf: 'start' }} checked={!!d.collapsed} onChange={(e) => update(node.id, { collapsed: e.target.checked })} />
         <label>Contents</label><span>{count} item(s)</span>
       </div>
       <div className="section"><p style={{ color: 'var(--text-2)', fontSize: 12 }}>Disabling a container disables every tool inside it and everything downstream of them.</p>

@@ -80,10 +80,11 @@
     ]
   },
   "independent_tests": {
-    "count": 7,
-    "passing": 7,
+    "count": 8,
+    "passing": 8,
     "tests": [
       "test_fe_executor.ExecutionTests.test_cancellation",
+      "test_fe_executor.ExecutionTests.test_disabled_flowbench_tool_container_children_skip_execution",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
       "test_fe_executor.ExecutionTests.test_failure_reports_node_and_skips_downstream",
       "test_fe_executor.ExecutionTests.test_fan_out_and_release",

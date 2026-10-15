@@ -33,6 +33,19 @@ describe('flowbench.agent.v1 application tools', () => {
     expect(output).not.toContain('test-profile');
   });
 
+  it('identifies editor containers and comments as catalogue entries in the safe graph snapshot', async () => {
+    const state = context();
+    state.nodes = [...state.nodes,
+      { id: 'container_1', type: 'container', position: { x: 0, y: 120 }, data: { kind: 'container', caption: 'Private label' } } as CanvasNode,
+      { id: 'comment_1', type: 'comment', position: { x: 0, y: 240 }, data: { kind: 'comment', text: 'Private annotation' } } as CanvasNode,
+    ];
+    const result: any = await dispatchAgentTool({ ...env, getState: () => state }, 'workflow.get_snapshot');
+    expect(result.nodes).toContainEqual({ ref: 'node_2', kind: 'container', tool_id: 'documentation:tool-container' });
+    expect(result.nodes).toContainEqual({ ref: 'node_3', kind: 'comment', tool_id: 'documentation:comment' });
+    expect(JSON.stringify(result)).not.toContain('Private label');
+    expect(JSON.stringify(result)).not.toContain('Private annotation');
+  });
+
   it('exposes actionable node configuration while excluding credentials and raw row data', async () => {
     const result: any = await dispatchAgentTool(env, 'workflow.get_node_config', { node_ref: 'node_1' });
     expect(result).toMatchObject({ node_ref: 'node_1', kind: 'tool', tool_id: 'core.text_input', config: { file_path: 'C:/private/data.csv' } });

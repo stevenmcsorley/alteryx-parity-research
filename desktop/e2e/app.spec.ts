@@ -92,6 +92,32 @@ test('catalogue Comment can be placed, edited and remains a canvas annotation', 
   await expect(page.locator('.comment-node textarea')).toHaveValue('Monthly sales summary');
 });
 
+test('Tool Container groups selected editor nodes and exposes disable/collapse controls', async ({ page }) => {
+  await ready(page);
+  await addFromPalette(page, 'in-out:text-input');
+  await addFromPalette(page, 'in-out:text-input');
+  await page.locator('[data-testid="canvas"]').click();
+  await page.keyboard.press('Control+a');
+  const entry = page.getByTestId('palette-documentation:tool-container');
+  await expect(entry).toContainText('Flowbench native');
+  await entry.click();
+  const group = page.getByTestId('group-as-tool-container');
+  await expect(group).toBeEnabled();
+  await group.click();
+  const container = page.locator('.container-node').last();
+  await expect(container).toContainText('Tool Container');
+  await container.click();
+  await expect(page.getByLabel('Caption')).toHaveValue('Tool Container');
+  await expect(page.getByLabel('Disabled')).toBeVisible();
+  await expect(page.getByLabel('Collapsed')).toBeVisible();
+  const child = page.getByTestId('node-text_input_1');
+  await expect(child).toBeVisible();
+  await container.getByRole('button', { name: 'Collapse container' }).click();
+  await expect(child).toBeHidden();
+  await container.getByRole('button', { name: 'Expand container' }).click();
+  await expect(child).toBeVisible();
+});
+
 test('Inspector scrolls independently inside the right dock', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 360 });
   await ready(page);

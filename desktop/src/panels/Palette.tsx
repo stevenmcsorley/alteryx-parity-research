@@ -17,6 +17,8 @@ export function statusOf(c: CatalogEntry): { cls: string; label: string; text: s
     return { cls: 'native', label: 'Flowbench native', text: 'Native analytic-app Error Message; a connected Condition can stop the run with the configured message.' };
   if (c.id === 'documentation:comment')
     return { cls: 'native', label: 'Flowbench native', text: 'Canvas annotation stored with the workflow and restored on reopen.' };
+  if (c.id === 'documentation:tool-container')
+    return { cls: 'native', label: 'Flowbench native', text: 'Groups selected canvas nodes, with caption, disable and collapse controls. Alteryx Tool Container XML import parity is not verified.' };
   if (c.id === 'interface:control-parameter')
     return { cls: 'native', label: 'Flowbench native', text: 'Batch Macro control-row field mapping to a child tool configuration action; imported Alteryx parity is not verified.' };
   if (NATIVE_QUESTION_IDS.includes(c.id))
@@ -45,6 +47,8 @@ export function Palette() {
   const addApplicationCondition = useEditor((s) => s.addApplicationCondition);
   const addApplicationError = useEditor((s) => s.addApplicationError);
   const addComment = useEditor((s) => s.addComment);
+  const groupSelected = useEditor((s) => s.groupSelected);
+  const selectedTopLevelCount = useEditor((s) => s.nodes.filter((n) => n.selected && !n.parentId).length);
   const flow = useReactFlow();
 
   const categories = useMemo(() => [...new Set(catalog.map((c) => c.category))].sort(), [catalog]);
@@ -134,9 +138,10 @@ export function Palette() {
                         e.dataTransfer.effectAllowed = 'copy';
                       }}
                       onClick={() => setActive(c.id)}
-                      onDoubleClick={() => canAddInterface(c.id) ? addInterfaceQuestion(c.id) : c.kernel && addAtCentre(c.kernel)}
+                      onDoubleClick={() => c.id === 'documentation:tool-container' ? groupSelected('Tool Container') : canAddInterface(c.id) ? addInterfaceQuestion(c.id) : c.kernel && addAtCentre(c.kernel)}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && (c.kernel || canAddInterface(c.id))) canAddInterface(c.id) ? addInterfaceQuestion(c.id) : addAtCentre(c.kernel!);
+                        if (e.key === 'Enter' && c.id === 'documentation:tool-container') groupSelected('Tool Container');
+                        else if (e.key === 'Enter' && (c.kernel || canAddInterface(c.id))) canAddInterface(c.id) ? addInterfaceQuestion(c.id) : addAtCentre(c.kernel!);
                         if (e.key === ' ') setActive(c.id);
                       }}
                       title={st.text}>
@@ -170,14 +175,15 @@ export function Palette() {
             </div>}
             {!grouped.length && !extensions.length && !macroExtensions.length && <div className="empty">No tools match.</div>}
           </div>
-          {activeEntry && <ToolDetail entry={activeEntry} onAdd={addAtCentre} onAddQuestion={addInterfaceQuestion} supportsQuestion={canAddInterface(activeEntry.id)} />}
+          {activeEntry && <ToolDetail entry={activeEntry} onAdd={addAtCentre} onAddQuestion={addInterfaceQuestion} supportsQuestion={canAddInterface(activeEntry.id)}
+            onGroup={() => groupSelected('Tool Container')} canGroup={selectedTopLevelCount > 0} />}
         </>
       )}
     </aside>
   );
 }
 
-function ToolDetail({ entry, onAdd, onAddQuestion, supportsQuestion }: { entry: CatalogEntry; onAdd: (k: string) => void; onAddQuestion: (catalogId: string) => void; supportsQuestion: boolean }) {
+function ToolDetail({ entry, onAdd, onAddQuestion, supportsQuestion, onGroup, canGroup }: { entry: CatalogEntry; onAdd: (k: string) => void; onAddQuestion: (catalogId: string) => void; supportsQuestion: boolean; onGroup: () => void; canGroup: boolean }) {
   const m = useEditor((s) => (entry.kernel ? s.tools[entry.kernel] : undefined));
   const st = statusOf(entry);
   return (
@@ -195,6 +201,7 @@ function ToolDetail({ entry, onAdd, onAddQuestion, supportsQuestion }: { entry: 
       {entry.documentation_url && <p style={{ wordBreak: 'break-all' }}>Public reference: {entry.documentation_url}</p>}
       {m && <button className="primary" onClick={() => onAdd(m.tool_id)}>Add to canvas</button>}
       {!m && supportsQuestion && <button className="primary" onClick={() => onAddQuestion(entry.id)}>{entry.id === 'interface:error-message' ? 'Add Error Message' : entry.id === 'interface:condition' ? 'Add Condition' : entry.id === 'documentation:comment' ? 'Add Comment' : 'Add application question'}</button>}
+      {entry.id === 'documentation:tool-container' && <button className="primary" data-testid="group-as-tool-container" disabled={!canGroup} onClick={onGroup}>Group selected nodes</button>}
     </div>
   );
 }

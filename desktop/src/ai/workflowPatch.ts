@@ -17,7 +17,8 @@ export type WorkflowProposal = {
 type Op = Record<string, unknown> & { op: string };
 
 export function workflowRevision(state: Pick<EditorState, 'nodes' | 'edges' | 'name' | 'description' | 'metadata' | 'profile'>): string {
-  const text = JSON.stringify({ nodes: state.nodes.map((n) => ({ id: n.id, data: n.data, position: n.position })), edges: state.edges,
+  const text = JSON.stringify({ nodes: state.nodes.map((n) => ({ id: n.id, data: n.data, position: n.position,
+    parentId: n.parentId ?? null, width: n.width ?? null, height: n.height ?? null, style: n.style ?? null })), edges: state.edges,
     name: state.name, description: state.description, metadata: state.metadata, profile: state.profile });
   let hash = 2166136261;
   for (let i = 0; i < text.length; i++) hash = Math.imul(hash ^ text.charCodeAt(i), 16777619);
@@ -84,6 +85,53 @@ export async function prepareWorkflowProposal(state: EditorState, patchJson: str
       const id = nextNodeId('comment', graph.nodes.map((n) => n.id));
       graph.nodes.push({ id, type: 'comment', position: requirePosition(op.position), data: { kind: 'comment', text }, style: { width: 200, height: 80 } });
       refs.set(ref, id); changes.push(`Add Comment (${ref})`);
+    } else if (op.op === 'group') {
+      const ref = requireRef(op.ref, refs);
+      const caption = requireString(op.caption, 'caption', 120);
+      if (!Array.isArray(op.node_refs) || op.node_refs.length < 1 || op.node_refs.length > graph.nodes.length)
+        throw new Error('Tool Container requires one or more existing node references');
+      const ids = op.node_refs.map((value) => {
+        if (typeof value !== 'string' || !refs.has(value)) throw new Error(`Unknown node reference in Tool Container: ${String(value)}`);
+        return refs.get(value)!;
+      });
+      if (new Set(ids).size !== ids.length) throw new Error('Tool Container node_refs must be unique');
+      const members = ids.map((id) => graph.nodes.find((node) => node.id === id)!);
+      if (members.some((node) => !!node.parentId)) throw new Error('AI Tool Container grouping currently accepts top-level nodes only');
+      const width = (node: CanvasNode) => Number(node.measured?.width ?? node.width ?? (node.style as any)?.width ?? (node.data.kind === 'comment' ? 200 : 180));
+      const height = (node: CanvasNode) => Number(node.measured?.height ?? node.height ?? (node.style as any)?.height ?? (node.data.kind === 'comment' ? 80 : 64));
+      const minX = Math.min(...members.map((node) => node.position.x)) - 30;
+      const minY = Math.min(...members.map((node) => node.position.y)) - 50;
+      const maxX = Math.max(...members.map((node) => node.position.x + width(node))) + 30;
+      const maxY = Math.max(...members.map((node) => node.position.y + height(node))) + 30;
+      const id = nextNodeId('container', graph.nodes.map((node) => node.id));
+      graph.nodes.push({ id, type: 'container', position: { x: minX, y: minY },
+        data: { kind: 'container', caption }, style: { width: maxX - minX, height: maxY - minY } });
+      for (const member of members) {
+        member.parentId = id;
+        member.position = { x: member.position.x - minX, y: member.position.y - minY };
+        member.selected = false;
+      }
+      refs.set(ref, id);
+      changes.push(`Group ${members.length} node(s) in Tool Container “${caption}” (${ref})`);
+    } else if (op.op === 'configure_container') {
+      const ref = requireString(op.node_ref, 'node_ref', 80), id = refs.get(ref);
+      const node = graph.nodes.find((n) => n.id === id);
+      if (node?.data.kind !== 'container') throw new Error(`Unknown Tool Container reference: ${ref}`);
+      const caption = requireString(op.caption, 'caption', 120);
+      if (typeof op.disabled !== 'boolean' || typeof op.collapsed !== 'boolean') throw new Error('Tool Container disabled and collapsed values must be booleans');
+      if (node.data.disabled !== op.disabled) consequences.push(`${op.disabled ? 'Disable' : 'Enable'} Tool Container ${ref}; contained tools will ${op.disabled ? 'not execute' : 'be eligible to execute'}`);
+      node.data = { ...node.data, caption, disabled: op.disabled, collapsed: op.collapsed };
+      changes.push(`Configure Tool Container (${ref}) · ${caption}`);
+    } else if (op.op === 'ungroup_container') {
+      const ref = requireString(op.node_ref, 'node_ref', 80), id = refs.get(ref);
+      const container = graph.nodes.find((n) => n.id === id);
+      if (container?.data.kind !== 'container') throw new Error(`Unknown Tool Container reference: ${ref}`);
+      graph.nodes = graph.nodes.filter((n) => n.id !== id).map((node) => {
+        if (node.parentId !== id) return node;
+        return { ...node, parentId: container.parentId, position: { x: node.position.x + container.position.x, y: node.position.y + container.position.y } };
+      });
+      refs.delete(ref);
+      changes.push(`Ungroup Tool Container (${ref})`);
     } else if (op.op === 'configure') {
       const ref = requireString(op.node_ref, 'node_ref', 80);
       const id = refs.get(ref); const node = graph.nodes.find((n) => n.id === id);
@@ -208,6 +256,9 @@ function validateOperation(value: unknown): Op {
     add_condition: ['op', 'ref', 'when', 'position'],
     add_error_message: ['op', 'ref', 'message', 'position'],
     add_comment: ['op', 'ref', 'text', 'position'],
+    group: ['op', 'ref', 'node_refs', 'caption'],
+    configure_container: ['op', 'node_ref', 'caption', 'disabled', 'collapsed'],
+    ungroup_container: ['op', 'node_ref'],
     configure_question: ['op', 'node_ref', 'question', 'config_path'],
     configure_condition: ['op', 'node_ref', 'when'],
     configure_error_message: ['op', 'node_ref', 'message'],

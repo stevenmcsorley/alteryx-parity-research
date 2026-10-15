@@ -136,10 +136,16 @@ export const CommentNode = memo(function CommentNode({ id, data, selected }: Nod
 
 export const ContainerNode = memo(function ContainerNode({ id, data, selected }: NodeProps<CanvasNode>) {
   const d = data as ContainerNodeData;
+  const update = useEditor((s) => s.updateNodeData);
   return (
     <div className={`container-node ${d.disabled ? 'disabled' : ''}`} data-testid={`container-${id}`}>
       <NodeResizer isVisible={!!selected} minWidth={160} minHeight={80} />
-      <div className="cap">{d.caption}{d.disabled && <span className="badge unavailable">disabled</span>}</div>
+      <div className="cap"><span>{d.caption}{d.disabled && <span className="badge unavailable">disabled</span>}</span>
+        <button type="button" className="container-collapse nodrag" aria-label={d.collapsed ? 'Expand container' : 'Collapse container'}
+          title={d.collapsed ? 'Expand container' : 'Collapse container'} onClick={(e) => { e.stopPropagation(); update(id, { collapsed: !d.collapsed }); }}>
+          {d.collapsed ? '▸' : '▾'}
+        </button>
+      </div>
     </div>
   );
 });

@@ -45,6 +45,17 @@ from catalog_lib import CATALOG, save_catalog  # noqa: E402
 
 TARGET = 'Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8'
 APPLICATION_ADAPTERS = {
+    'documentation:tool-container': {
+        'module': 'desktop editor ContainerNode + desktop/src/model/workflow.ts',
+        'engine': 'Flowbench native editor container adapter',
+        'test_ids': [
+            'test_fe_executor.ExecutionTests.test_disabled_flowbench_tool_container_children_skip_execution',
+        ],
+        'supported': ['Group top-level canvas nodes; edit caption; collapse/expand child nodes; disable/enable contained tools; persist container metadata through workflow save/reopen; propose these edits through atomic AI workflow patches'],
+        'unsupported': ['Authentic Alteryx Tool Container XML configuration mapping and imported Style variants are not verified'],
+        'evidence': 'docs/TOOL_CONTAINERS.md',
+        'evidence_type': 'project-authored-ui-serialization-and-execution-evidence',
+    },
     'interface:control-parameter': {
         'module': 'flowengine.tools.macros.BatchMacro + flowengine.interface_app',
         'engine': 'Flowbench batch-macro control parameter adapter',
@@ -304,7 +315,7 @@ def build(check=False):
             sources.append({'url': 'data/reference-observations.json', 'evidence_type': 'authorised-reference-structural-scan',
                             'accessed_utc': obs.get('scanned_utc')})
         if adapter:
-            sources.append({'url': adapter['evidence'], 'evidence_type': 'authorised-reference-observation-and-project-authored-execution',
+            sources.append({'url': adapter['evidence'], 'evidence_type': adapter.get('evidence_type', 'authorised-reference-observation-and-project-authored-execution'),
                             'accessed_utc': catalog_doc['metadata'].get('source_retrieved_at_utc')})
         contract = {
             'id': cid, 'target_version': TARGET, 'name': row['name'], 'category': row['category'],
