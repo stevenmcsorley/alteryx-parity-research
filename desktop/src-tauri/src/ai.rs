@@ -968,6 +968,7 @@ fn sanitize_agent_config(value: &Value, depth: usize) -> Value {
             Value::Object(clean)
         }
         Value::Array(items) => Value::Array(items.iter().map(|item| sanitize_agent_config(item, depth + 1)).collect()),
+        Value::String(text) if sensitive_agent_config_text(text) => Value::String("[REDACTED]".into()),
         _ => value.clone(),
     }
 }
@@ -2905,6 +2906,16 @@ mod tests {
         assert_eq!(diag["usage"]["reasoning_tokens"], 3);
     }
     #[cfg(windows)]
+    #[test]
+    fn redacts_sensitive_config_strings_inside_nested_arrays() {
+        let raw = json!({"headers":["Authorization: Bearer account-secret","Accept: application/json"],"nested":[{"value":["api_key=nested-secret"]}]});
+        let sanitized = sanitize_agent_config(&raw, 0);
+        assert_eq!(sanitized["headers"][0], "[REDACTED]");
+        assert_eq!(sanitized["headers"][1], "Accept: application/json");
+        assert_eq!(sanitized["nested"][0]["value"][0], "[REDACTED]");
+        assert!(!sanitized.to_string().contains("account-secret"));
+        assert!(!sanitized.to_string().contains("nested-secret"));
+    }
     #[test]
     fn credential_payload_is_protected_for_current_windows_user() {
         let secret = br#"{"access_token":"private","refresh_token":"rotating"}"#;
