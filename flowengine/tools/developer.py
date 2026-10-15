@@ -25,7 +25,7 @@ from ..formula import EvalContext, compile_expression, truthy
 from ..plugin import Anchor, Tool, ToolManifest
 from ..table import Table
 from ..types import CastFailure, Field, FieldType, Schema, cast_value, format_value
-from ._common import FIELD_SPEC, TYPE_ENUM, require_fields
+from ._common import FIELD_SPEC, TYPE_ENUM, cast_column, require_fields
 
 TEXT = 2**30 - 1
 
@@ -318,6 +318,7 @@ class DynamicReplace(Tool):
         columns = [list(data.column(f.name)) for f in data.schema]
         hit_counts = {}
         matched_rows = {name: set() for name in selected}
+        truncations = {}
         for field_name, predicate, static_value, replacement in parsed:
             col_i = data.schema.index(field_name)
             for row_i, row in enumerate(row_cache):
@@ -325,11 +326,17 @@ class DynamicReplace(Tool):
                 if row_i not in matched_rows[field_name] and predicate.evaluate(row, ec):
                     raw = replacement.evaluate(row, ec) if replacement else static_value
                     try:
-                        columns[col_i][row_i] = cast_value(raw, original[col_i])[0]
+                        converted, warning = cast_value(raw, original[col_i])
+                        columns[col_i][row_i] = converted
+                        if warning:
+                            truncations[field_name] = truncations.get(field_name, 0) + 1
                     except (CastFailure, ValueError, TypeError, OverflowError):
                         raise DataError(f'Replacement rule for field {field_name!r} produced a value incompatible with its type') from None
                     hit_counts[(field_name, str(raw) if raw is not None else None)] = hit_counts.get((field_name, str(raw) if raw is not None else None), 0) + 1
                     matched_rows[field_name].add(row_i)
+        for field_name, count in truncations.items():
+            ctx.warn(f'{count} replacement value(s) truncated to the existing field size',
+                     field=field_name, count=count)
         output_fields = original
         if cfg['type_mode'] == 'explicit':
             target_type = FieldType(cfg['output_type'])
@@ -340,7 +347,7 @@ class DynamicReplace(Tool):
             for col_i, f in enumerate(output_fields):
                 if f.name in selected:
                     try:
-                        columns[col_i] = [cast_value(v, f)[0] for v in columns[col_i]]
+                        columns[col_i] = cast_column(columns[col_i], f, ctx)
                     except (CastFailure, ValueError, TypeError, OverflowError):
                         raise DataError(f'Result values for field {f.name!r} cannot be converted to {f.type.value}') from None
         elif cfg['type_mode'] == 'auto':
@@ -354,6 +361,8 @@ class DynamicReplace(Tool):
                 if not kinds:
                     continue
                 target = Field(f.name, kinds[0])
+                if target.type.is_string:
+                    target = Field(f.name, target.type, max(1, max((len(format_value(v)) for v in columns[col_i] if v is not None), default=1)))
                 try:
                     for kind in kinds[1:]:
                         target = unify_fields(target, Field(f.name, kind))
