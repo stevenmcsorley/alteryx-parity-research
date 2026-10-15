@@ -49,6 +49,17 @@ test('palette lists every catalogue entry with an honest status', async ({ page 
   await expect(items).toHaveCount(implemented);
 });
 
+test('Inspector scrolls independently inside the right dock', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 360 });
+  await ready(page);
+  const inspector = page.getByTestId('inspector');
+  await expect(inspector).toBeVisible();
+  const dimensions = await inspector.evaluate((el) => ({ client: el.clientHeight, scroll: el.scrollHeight }));
+  expect(dimensions.scroll).toBeGreaterThan(dimensions.client);
+  await inspector.evaluate((el) => { el.scrollTop = el.scrollHeight; });
+  await expect.poll(() => inspector.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+});
+
 test('build, configure, connect and run a workflow from scratch', async ({ page }) => {
   await ready(page);
   await addFromPalette(page, 'in-out:text-input');
@@ -356,4 +367,28 @@ test('database extensions are available and the connection manager opens', async
   await page.getByTestId('palette-extension-flowengine.iterative_macro').dblclick();
   await expect(page.getByTestId('inspector')).toContainText('Iterative Macro');
   await expect(page.getByTestId('inspector').getByLabel('Terminate expression')).toBeVisible();
+});
+
+test('Flowbench AI workspace exposes bounded local tools and honest provider state', async ({ page }) => {
+  await ready(page);
+  await page.getByRole('toolbar').getByRole('button', { name: 'Flowbench AI' }).click();
+  const sidebar = page.getByTestId('ai-sidebar');
+  await expect(sidebar).toBeVisible();
+  await expect(sidebar.getByRole('heading', { name: 'What would you like to analyse?' })).toBeVisible();
+  await expect(sidebar).toContainText('External AI routing off');
+  await sidebar.getByText('•••').click();
+  await expect(sidebar.locator('details')).toContainText('ChatGPT · Not connected');
+  await expect(sidebar.getByRole('button', { name: 'Continue with ChatGPT' }).first()).toBeEnabled();
+  await page.getByRole('tab', { name: 'Inspector' }).click();
+  await expect(page.getByTestId('inspector')).toBeVisible();
+  await page.getByRole('tab', { name: 'Flowbench AI' }).click();
+  await expect(sidebar).toBeVisible();
+  await sidebar.getByText('•••').click();
+  await sidebar.getByLabel('Search tool catalogue').fill('Fuzzy Match');
+  await sidebar.getByRole('button', { name: 'Search' }).click();
+  await sidebar.getByText('Local inspection result').click();
+  await expect(sidebar.locator('.ai-local-result pre')).toContainText('join:fuzzy-match');
+  await sidebar.getByRole('button', { name: 'Inspect this workflow' }).click();
+  await sidebar.locator('.ai-local-result summary').click();
+  await expect(sidebar.locator('.ai-local-result pre')).toContainText('diagnostic messages are excluded');
 });

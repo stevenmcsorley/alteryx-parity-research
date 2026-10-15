@@ -12,7 +12,7 @@
 | Machine-readable contracts generated | 323 |
 | Entries with known anchors (manifest, reference-observed or public-doc) | 183 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 63 |
+| Independent kernels implemented and passing tests | 64 |
 | Independently implemented application adapters (in progress) | 1 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -20,7 +20,7 @@
 | Reference cases passed / run — E2 (AMP profile) | 74 / 75 |
 | Holdout: shipped sample workflows fully matching — E1 | 15 / 31 (sinks 87 / 126) |
 | Holdout: shipped sample workflows fully matching — E2 | 16 / 31 (sinks 88 / 126) |
-| Kernels registered but without passing evidence (in-progress) | 1 |
+| Kernels registered but without passing evidence (in-progress) | 0 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
 | Unit/integration tests in last ledger build | 202 run, 0 failed |
@@ -36,7 +36,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:directory` | `core.directory` | 1 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 13 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 8 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 114 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 115 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -91,7 +91,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `developer:json-parse` | `core.json_parse` | 1 | 2/2 | partial |
 | `developer:message` | `core.message` | 1 | 0/0 | not-tested |
 | `developer:python` | `core.python` | 4 | 0/0 | not-tested |
-| `developer:r` | `core.r` | 0 | 0/0 | not-tested |
+| `developer:r` | `core.r` | 1 | 0/0 | not-tested |
 | `developer:run-command` | `core.run_command` | 1 | 0/0 | not-tested |
 | `developer:test` | `core.test` | 1 | 0/0 | not-tested |
 | `developer:throttle` | `core.throttle` | 1 | 0/0 | not-tested |

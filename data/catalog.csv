@@ -270,7 +270,7 @@ developer:json-schema,Developer,JSON Schema,JSONSchema_1_0,Full,https://help.alt
 developer:license-api,Developer,License API,LicenseAPITool_1_0,Full,https://help.alteryx.com/current/en/designer/tools/developer/license-api-tool.html,official-catalog-verified,not-started,not-tested
 developer:message,Developer,Message,AlteryxBasePluginsGui.Message.Message,"Basic, Full",https://help.alteryx.com/current/en/designer/tools/developer/message-tool.html,official-catalog-verified,implemented,not-tested
 developer:python,Developer,Python,JupyterCode,Full,https://help.alteryx.com/current/en/designer/tools/developer/python-tool.html,official-catalog-verified,implemented,not-tested
-developer:r,Developer,R,AlteryxRPluginGui.R,Full,https://help.alteryx.com/current/en/designer/tools/developer/r-tool.html,official-catalog-verified,in-progress,not-tested
+developer:r,Developer,R,AlteryxRPluginGui.R,Full,https://help.alteryx.com/current/en/designer/tools/developer/r-tool.html,official-catalog-verified,implemented,not-tested
 developer:run-command,Developer,Run Command,AlteryxBasePluginsGui.RunCommand.RunCommand,Full,https://help.alteryx.com/current/en/designer/tools/developer/run-command-tool.html,official-catalog-verified,implemented,not-tested
 developer:runner,Developer,Runner,CReW_Runner\CReW_Runner.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/developer/runner-tool.html,official-catalog-verified,not-started,not-tested
 developer:server-api,Developer,Server API,ServerAPI_1_0,Full,https://help.alteryx.com/current/en/designer/tools/developer/server-api-tool.html,official-catalog-verified,not-started,not-tested

@@ -6,12 +6,12 @@ import { SchemaForm, type FieldContext } from './SchemaForm';
 import { categoryColor, glyph } from '../ui/categories';
 import { engine, describe } from '../state/engineActions';
 
-export function Inspector() {
+export function Inspector({ embedded = false }: { embedded?: boolean } = {}) {
   const selected = useEditor((s) => s.nodes.filter((n) => n.selected));
-  if (selected.length > 1) return <MultiSelection count={selected.length} />;
+  if (selected.length > 1) return <MultiSelection count={selected.length} embedded={embedded} />;
   const node = selected[0];
   return (
-    <aside className="app-right" aria-label="Configuration" data-testid="inspector">
+    <aside className={embedded ? 'inspector-content' : 'app-right'} aria-label="Configuration" data-testid="inspector">
       {!node ? <WorkflowProperties /> : node.data.kind === 'tool' ? <ToolInspector node={node} /> :
         node.data.kind === 'application-action' ? <ApplicationActionInspector node={node} /> :
         node.data.kind === 'container' ? <ContainerInspector node={node} /> : <CommentInspector node={node} />}
@@ -66,12 +66,12 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
   </>;
 }
 
-function MultiSelection({ count }: { count: number }) {
+function MultiSelection({ count, embedded = false }: { count: number; embedded?: boolean }) {
   const group = useEditor((s) => s.groupSelected);
   const del = useEditor((s) => s.deleteSelected);
   const dup = useEditor((s) => s.duplicateSelected);
   return (
-    <aside className="app-right" aria-label="Configuration" data-testid="inspector">
+    <aside className={embedded ? 'inspector-content' : 'app-right'} aria-label="Configuration" data-testid="inspector">
       <div className="section"><h2>{count} items selected</h2></div>
       <div className="section" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         <button onClick={() => group()}>Group in container (Ctrl+G)</button>
