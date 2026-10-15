@@ -64,9 +64,10 @@ export function Canvas() {
     const toolId = e.dataTransfer.getData(TOOL_MIME);
     if (!toolId) return;
     e.preventDefault();
-    if (toolId === 'flowengine.application_action') {
+    if (toolId === 'flowengine.application_action' || toolId.startsWith('flowengine.application_action:')) {
       const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
-      addApplicationAction({ x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
+      const catalogId = toolId.slice('flowengine.application_action:'.length);
+      addApplicationAction({ x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) }, catalogId ? catalogId.split(':').pop() : undefined, catalogId || 'Enter a value');
       return;
     }
     if (!tools[toolId]) {

@@ -23,7 +23,7 @@ def _spec(doc):
         raise EngineError('Application questions and actions must be arrays', code='application-invalid')
     ids = set()
     for q in questions:
-        if not isinstance(q, dict) or q.get('type') not in ('text', 'boolean', 'number', 'choice'):
+        if not isinstance(q, dict) or q.get('type') not in ('text', 'boolean', 'number', 'choice', 'date', 'file', 'folder', 'multi-choice'):
             raise EngineError('Each application question needs a supported type', code='application-invalid')
         qid = q.get('id')
         if not isinstance(qid, str) or not qid or qid in ids:
@@ -33,11 +33,18 @@ def _spec(doc):
             raise EngineError(f'Secret application question {qid!r} must not store a default value', code='application-invalid')
         if q.get('secret') and q['type'] != 'text':
             raise EngineError(f'Secret application question {qid!r} must be text', code='application-invalid')
-        if q['type'] == 'choice' and (not isinstance(q.get('options'), list) or not q['options']):
+        if q['type'] in ('choice', 'multi-choice') and (not isinstance(q.get('options'), list) or not q['options']):
             raise EngineError(f'Choice question {qid!r} requires options', code='application-invalid')
     for a in actions:
         if not isinstance(a, dict) or a.get('question') not in ids or not isinstance(a.get('node_id'), str):
             raise EngineError('Application action references an unknown question or node', code='application-invalid')
+        when = a.get('when')
+        if when is not None:
+            allowed = ('equals', 'not_equals', 'truthy', 'falsy', 'contains', 'not_contains')
+            if (not isinstance(when, dict) or set(when) - {'question', 'operator', 'value'}
+                    or when.get('question') not in ids or when.get('operator') not in allowed
+                    or (when['operator'] in ('equals', 'not_equals', 'contains', 'not_contains')) != ('value' in when)):
+                raise EngineError('Application action has an invalid conditional predicate', code='application-invalid')
         path = a.get('config_path')
         if not isinstance(path, list) or not path or any(not isinstance(k, str) or k in ('__proto__', 'prototype', 'constructor') for k in path):
             raise EngineError('Application action config_path must be a safe list of property names', code='application-invalid')
@@ -49,6 +56,25 @@ def _spec(doc):
                               code='application-invalid', node_id=a['node_id'])
         occupied.add(target)
     return {'questions': questions, 'actions': actions}
+
+
+def _condition_matches(predicate, answers):
+    if not predicate:
+        return True
+    actual = answers[predicate['question']]
+    operation = predicate['operator']
+    if operation == 'truthy':
+        return bool(actual)
+    if operation == 'falsy':
+        return not bool(actual)
+    expected = predicate['value']
+    if operation in ('equals', 'not_equals'):
+        equal = actual == expected and type(actual) is type(expected)
+        return equal if operation == 'equals' else not equal
+    # A multi-select question can control an action by membership; for a
+    # scalar question this is deliberately false rather than substring matching.
+    has_value = isinstance(actual, list) and expected in actual
+    return has_value if operation == 'contains' else not has_value
 
 
 def describe_application(doc):
@@ -88,16 +114,27 @@ def bind_application(doc, supplied):
             values[qid] = value
         elif q['type'] == 'number' and isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value):
             values[qid] = value
-        elif q['type'] == 'choice' and value in q['options']:
+        elif q['type'] in ('text', 'date', 'file', 'folder') and isinstance(value, str):
+            values[qid] = value
+        elif q['type'] in ('choice', 'multi-choice') and value in q['options']:
+            values[qid] = value
+        elif q['type'] == 'multi-choice' and isinstance(value, list) and all(v in q['options'] for v in value) and len(set(value)) == len(value):
             values[qid] = value
         else:
             raise EngineError(f'Application input {qid!r} has an invalid value or type', code='application-input-invalid')
+        if q['type'] == 'number' and values[qid] is not None:
+            if q.get('minimum') is not None and values[qid] < q['minimum']:
+                raise EngineError(f'Application input {qid!r} is below its minimum', code='application-input-invalid')
+            if q.get('maximum') is not None and values[qid] > q['maximum']:
+                raise EngineError(f'Application input {qid!r} is above its maximum', code='application-input-invalid')
     result = copy.deepcopy(doc)
     nodes = {n['id']: n for n in result['nodes']}
     for action in spec['actions']:
         node = nodes.get(action['node_id'])
         if node is None:
             raise EngineError(f"Application action target {action['node_id']!r} does not exist", code='application-invalid')
+        if not _condition_matches(action.get('when'), values):
+            continue
         target = node.get('config')
         for key in action['config_path'][:-1]:
             if isinstance(target, dict) and key in target:

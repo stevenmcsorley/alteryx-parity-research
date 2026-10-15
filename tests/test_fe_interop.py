@@ -221,6 +221,75 @@ class ImportTests(unittest.TestCase):
         self.assertEqual(problems, [])
         self.assertNotIn('dont-store-this', exported)
 
+    def test_imported_application_controls_expose_typed_questions(self):
+        xml = '''<AlteryxDocument><Nodes>
+          <Node ToolID="1"><GuiSettings Plugin="AlteryxGuiToolkit.Questions.NumericUpDown.NumericUpDown"/><Properties><Configuration/></Properties></Node>
+          <Node ToolID="2"><GuiSettings Plugin="AlteryxGuiToolkit.Questions.Date.Date"/><Properties><Configuration/></Properties></Node>
+          <Node ToolID="3"><GuiSettings Plugin="AlteryxGuiToolkit.Questions.FileBrowse.FileBrowse"/><Properties><Configuration/></Properties></Node>
+          <Node ToolID="4"><GuiSettings Plugin="AlteryxGuiToolkit.Questions.DropDownListBox.DropDown"/><Properties><Configuration/></Properties></Node>
+        </Nodes><Properties><RuntimeProperties><Questions>
+          <Question><Type>NumericUpDown</Type><ToolId value="1"/><Default>5</Default></Question>
+          <Question><Type>Date</Type><ToolId value="2"/><Default>2026-01-02</Default></Question>
+          <Question><Type>FileBrowse</Type><ToolId value="3"/></Question>
+          <Question><Type>DropDown</Type><ToolId value="4"><![CDATA[<Option>red</Option><Option>blue</Option>]]></ToolId><Option>red</Option><Option>blue</Option></Question>
+        </Questions></RuntimeProperties></Properties></AlteryxDocument>'''
+        imported, report = import_document(xml)
+        questions = imported['metadata']['application']['questions']
+        self.assertEqual([q['type'] for q in questions], ['number', 'date', 'file', 'choice'])
+        self.assertEqual(questions[0]['default'], 5.0)
+        self.assertEqual(questions[3]['options'], ['red', 'blue'])
+        self.assertEqual(report['edge_warnings'], [])
+
+    def test_application_answers_enforce_numeric_bounds_and_multiselect_options(self):
+        doc = {'nodes': [{'id': 'n', 'config': {'value': 0}}], 'metadata': {'application': {
+            'questions': [{'id': 'n', 'type': 'number', 'minimum': 1, 'maximum': 9},
+                          {'id': 'colors', 'type': 'multi-choice', 'options': ['red', 'blue']}],
+            'actions': [{'question': 'n', 'node_id': 'n', 'config_path': ['value']}]}}}
+        with self.assertRaises(Exception):
+            bind_application(doc, {'n': 10, 'colors': ['red']})
+        bound = bind_application(doc, {'n': 4, 'colors': ['red', 'blue']})
+        self.assertEqual(bound['nodes'][0]['config']['value'], 4)
+
+    def test_native_conditional_action_updates_only_when_activated(self):
+        # Native Flowbench predicate, not a claim of Alteryx Condition XML parity.
+        doc = {'nodes': [{'id': 'n', 'config': {'expression': 'original'}}],
+               'metadata': {'application': {
+                   'questions': [{'id': 'enabled', 'type': 'boolean', 'default': False},
+                                 {'id': 'value', 'type': 'text', 'default': 'replacement'},
+                                 {'id': 'tags', 'type': 'multi-choice', 'options': ['red', 'blue'],
+                                  'default': ['red']}],
+                   'actions': [{'question': 'value', 'node_id': 'n', 'config_path': ['expression'],
+                                'when': {'question': 'enabled', 'operator': 'truthy'}}]}}}
+        original = json.dumps(doc, sort_keys=True)
+        self.assertEqual(bind_application(doc, {})['nodes'][0]['config']['expression'], 'original')
+        self.assertEqual(bind_application(doc, {'enabled': True})['nodes'][0]['config']['expression'], 'replacement')
+        self.assertEqual(json.dumps(doc, sort_keys=True), original)
+        doc['metadata']['application']['actions'][0]['when'] = {
+            'question': 'tags', 'operator': 'contains', 'value': 'blue'}
+        self.assertEqual(bind_application(doc, {})['nodes'][0]['config']['expression'], 'original')
+        self.assertEqual(bind_application(doc, {'tags': ['blue']})['nodes'][0]['config']['expression'], 'replacement')
+        doc['metadata']['application']['actions'][0]['when'] = {
+            'question': 'missing', 'operator': 'truthy'}
+        with self.assertRaises(Exception):
+            bind_application(doc, {})
+
+    def test_simple_action_updates_an_existing_text_input_cell(self):
+        xml = '''<AlteryxDocument><Nodes>
+          <Node ToolID="1"><GuiSettings Plugin="AlteryxGuiToolkit.Questions.TextBox.QuestionTextBox"/><Properties><Configuration/></Properties></Node>
+          <Node ToolID="2"><GuiSettings Plugin="AlteryxGuiToolkit.Action.Action"/><Properties><Configuration/></Properties></Node>
+          <Node ToolID="3"><GuiSettings Plugin="AlteryxBasePluginsGui.TextInput.TextInput"/><Properties><Configuration><Fields><Field name="region"/></Fields><Data><r><c>East</c></r></Data></Configuration></Properties></Node>
+        </Nodes><Connections><Connection><Origin ToolID="1" Connection="Question"/><Destination ToolID="2" Connection="Question"/></Connection>
+          <Connection><Origin ToolID="2" Connection="Action"/><Destination ToolID="3" Connection="Action"/></Connection></Connections>
+        <Properties><RuntimeProperties><Actions><NoCondition><Type>NoCondition</Type><True><Action><Type>UpdateValue</Type><ToolId value="2"/><Mode>Simple</Mode><Destination>3/Text Input Data/r[1]/c[1]</Destination></Action></True></NoCondition></Actions>
+          <Questions><Question><Type>TextBox</Type><ToolId value="1"/><Default>West</Default></Question></Questions></RuntimeProperties></Properties></AlteryxDocument>'''
+        imported, report = import_document(xml)
+        self.assertEqual(report['edge_warnings'], [])
+        self.assertEqual(imported['metadata']['application']['actions'][0]['config_path'], ['rows', '0', '0'])
+        bound = bind_application(imported, {'alteryx-question-1': 'West'})
+        result = run_workflow(bound, base_dir=ROOT)
+        self.assertTrue(result.ok, result.error)
+        self.assertEqual(rows(result.output('t3')), [['West']])
+
     def test_imported_fuzzy_match_executes_supported_flowbench_translation_and_roundtrips_xml(self):
         # Project-authored fixture uses structurally observed FuzzyMatch XML fields.
         # Scores use Flowbench v1 and are explicitly not asserted as Alteryx parity.

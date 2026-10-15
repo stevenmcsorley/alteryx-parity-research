@@ -44,6 +44,12 @@ export function Palette() {
   }, [filtered]);
   const implemented = catalog.filter((c) => c.kernel && c.implementation_status === 'implemented').length;
   const activeEntry = catalog.find((c) => c.id === active);
+  const interfaceQuestions: Record<string, string> = { 'interface:action': 'text', 'interface:control-parameter': 'control-parameter', 'interface:text-box': 'text-box', 'interface:check-box': 'check-box', 'interface:drop-down': 'drop-down', 'interface:numeric-up-down': 'numeric-up-down', 'interface:radio-button': 'radio-button', 'interface:file-browse': 'file-browse', 'interface:folder-browse': 'folder-browse' };
+  const addInterfaceQuestion = (catalogId: string, position?: { x: number; y: number }) => {
+    const selected = useEditor.getState().nodes.find((n) => n.selected);
+    const p = position ?? (selected ? { x: selected.position.x, y: selected.position.y + 190 } : { x: 120, y: 120 });
+    addApplicationAction(p, interfaceQuestions[catalogId] ?? 'text', catalog.find((c) => c.id === catalogId)?.name ?? 'Enter a value');
+  };
   const extensions = ['core.db_input', 'core.db_output'].filter((id) => tools[id] &&
     (!q.trim() || tools[id].display_name.toLowerCase().includes(q.trim().toLowerCase()) ||
       tools[id].description.toLowerCase().includes(q.trim().toLowerCase())));
@@ -98,16 +104,16 @@ export function Palette() {
                   return (
                     <div key={c.id} className={`tool-item ${c.kernel ? '' : 'unavailable'} ${active === c.id ? 'active' : ''}`}
                       data-testid={`palette-${c.id}`} role="button" tabIndex={0}
-                      draggable={!!c.kernel || c.id === 'interface:action'}
+                      draggable={!!c.kernel || c.id in interfaceQuestions}
                       onDragStart={(e) => {
-                        if (!c.kernel && c.id !== 'interface:action') return;
-                        e.dataTransfer.setData(TOOL_MIME, c.kernel ?? 'flowengine.application_action');
+                        if (!c.kernel && !(c.id in interfaceQuestions)) return;
+                        e.dataTransfer.setData(TOOL_MIME, c.kernel ?? `flowengine.application_action:${c.id}`);
                         e.dataTransfer.effectAllowed = 'copy';
                       }}
                       onClick={() => setActive(c.id)}
-                      onDoubleClick={() => c.id === 'interface:action' ? addAtCentre('flowengine.application_action') : c.kernel && addAtCentre(c.kernel)}
+                      onDoubleClick={() => c.id in interfaceQuestions ? addInterfaceQuestion(c.id) : c.kernel && addAtCentre(c.kernel)}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && (c.kernel || c.id === 'interface:action')) addAtCentre(c.kernel ?? 'flowengine.application_action');
+                        if (e.key === 'Enter' && (c.kernel || c.id in interfaceQuestions)) c.id in interfaceQuestions ? addInterfaceQuestion(c.id) : addAtCentre(c.kernel!);
                         if (e.key === ' ') setActive(c.id);
                       }}
                       title={st.text}>
@@ -141,14 +147,14 @@ export function Palette() {
             </div>}
             {!grouped.length && !extensions.length && !macroExtensions.length && <div className="empty">No tools match.</div>}
           </div>
-          {activeEntry && <ToolDetail entry={activeEntry} onAdd={addAtCentre} />}
+          {activeEntry && <ToolDetail entry={activeEntry} onAdd={addAtCentre} onAddQuestion={addInterfaceQuestion} supportsQuestion={activeEntry.id in interfaceQuestions} />}
         </>
       )}
     </aside>
   );
 }
 
-function ToolDetail({ entry, onAdd }: { entry: CatalogEntry; onAdd: (k: string) => void }) {
+function ToolDetail({ entry, onAdd, onAddQuestion, supportsQuestion }: { entry: CatalogEntry; onAdd: (k: string) => void; onAddQuestion: (catalogId: string) => void; supportsQuestion: boolean }) {
   const m = useEditor((s) => (entry.kernel ? s.tools[entry.kernel] : undefined));
   const st = statusOf(entry);
   return (
@@ -165,7 +171,7 @@ function ToolDetail({ entry, onAdd }: { entry: CatalogEntry; onAdd: (k: string) 
       {m && <p>{st.text}</p>}
       {entry.documentation_url && <p style={{ wordBreak: 'break-all' }}>Public reference: {entry.documentation_url}</p>}
       {m && <button className="primary" onClick={() => onAdd(m.tool_id)}>Add to canvas</button>}
-      {!m && entry.id === 'interface:action' && <button className="primary" onClick={() => onAdd('flowengine.application_action')}>Add Flowbench Action</button>}
+      {!m && supportsQuestion && <button className="primary" onClick={() => onAddQuestion(entry.id)}>Add application question</button>}
     </div>
   );
 }

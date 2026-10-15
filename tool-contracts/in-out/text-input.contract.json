@@ -82,8 +82,17 @@
               "string",
               "number",
               "boolean",
-              "null"
-            ]
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
           }
         }
       }
@@ -138,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 126,
-    "passing": 126,
+    "count": 127,
+    "passing": 127,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
@@ -170,6 +179,7 @@
       "test_fe_interop.ImportTests.test_imported_fuzzy_match_executes_supported_flowbench_translation_and_roundtrips_xml",
       "test_fe_interop.ImportTests.test_imported_update_value_action_targets_single_formula_expression",
       "test_fe_interop.ImportTests.test_runs_once_the_unsupported_branch_is_removed",
+      "test_fe_interop.ImportTests.test_simple_action_updates_an_existing_text_input_cell",
       "test_fe_interop.ImportTests.test_validation_reports_the_unsupported_catalogue_tool",
       "test_fe_scale.ArrowTests.test_parquet_and_ipc_io_through_tools",
       "test_fe_scale.HistoryAndProfileTests.test_history_records_runs",
