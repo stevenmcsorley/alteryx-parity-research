@@ -68,12 +68,15 @@ def _infer_delimited_fields(names, rows, cfg):
                     d = Decimal(value)
                     tup = d.as_tuple()
                     scale = max(0, -tup.exponent)
-                    precision = max(1, len(tup.digits), scale + max(0, tup.exponent))
+                    # A fixed decimal needs at least one whole-number digit,
+                    # even for values below 1; positive exponents expand it.
+                    whole_digits = max(1, len(tup.digits) + tup.exponent)
+                    precision = whole_digits + scale
                     if precision <= 50:
                         s['kinds'].add('decimal')
                         s['precision'] = max(s['precision'], precision)
                         s['scale'] = max(s['scale'], scale)
-                        s['integer_digits'] = max(s['integer_digits'], precision - scale)
+                        s['integer_digits'] = max(s['integer_digits'], whole_digits)
                     else:
                         s['kinds'].add('text')
                 except InvalidOperation:
@@ -119,7 +122,12 @@ def _infer_delimited_fields(names, rows, cfg):
         else:
             scale = s['scale']
             precision = max(1, s['integer_digits'] + scale)
-            fields.append(Field(name, FieldType.FIXED_DECIMAL, min(50, precision), min(scale, precision - 1)))
+            # Mixed values can exceed 50 digits after unifying the column.
+            # Preserve their source text instead of narrowing decimal scale.
+            if precision > 50:
+                fields.append(Field(name, FieldType.V_WSTRING, max(1, s['max_len'])))
+            else:
+                fields.append(Field(name, FieldType.FIXED_DECIMAL, precision, scale))
     return fields
 
 
