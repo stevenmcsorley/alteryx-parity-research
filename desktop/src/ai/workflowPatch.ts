@@ -70,6 +70,13 @@ export async function prepareWorkflowProposal(state: EditorState, patchJson: str
       const id = nextNodeId('condition', graph.nodes.map((n) => n.id));
       graph.nodes.push({ id, type: 'applicationCondition', position: requirePosition(op.position), data: { kind: 'application-condition', when } });
       refs.set(ref, id); changes.push(`Add Condition (${ref}) · ${when.question} ${when.operator}`);
+    } else if (op.op === 'add_error_message') {
+      const ref = requireString(op.ref, 'ref', 80);
+      if (!/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(ref) || refs.has(ref)) throw new Error(`Invalid or duplicate new node ref: ${ref}`);
+      const message = requireString(op.message, 'message', 4000);
+      const id = nextNodeId('error_message', graph.nodes.map((n) => n.id));
+      graph.nodes.push({ id, type: 'applicationError', position: requirePosition(op.position), data: { kind: 'application-error', message } });
+      refs.set(ref, id); changes.push(`Add Error Message (${ref})`);
     } else if (op.op === 'configure') {
       const ref = requireString(op.node_ref, 'node_ref', 80);
       const id = refs.get(ref); const node = graph.nodes.find((n) => n.id === id);
@@ -96,6 +103,13 @@ export async function prepareWorkflowProposal(state: EditorState, patchJson: str
       const when = validatePredicate(op.when);
       node.data = { ...node.data, when };
       changes.push(`Configure Condition (${ref}) · ${when.question} ${when.operator}`);
+    } else if (op.op === 'configure_error_message') {
+      const ref = requireString(op.node_ref, 'node_ref', 80), id = refs.get(ref);
+      const node = graph.nodes.find((n) => n.id === id);
+      if (node?.data.kind !== 'application-error') throw new Error(`Unknown Error Message reference: ${ref}`);
+      const message = requireString(op.message, 'message', 4000);
+      node.data = { ...node.data, message };
+      changes.push(`Configure Error Message (${ref})`);
     } else if (op.op === 'connect') {
       const fromRef = requireString(op.source_ref, 'source_ref', 80), toRef = requireString(op.target_ref, 'target_ref', 80);
       const source = refs.get(fromRef), target = refs.get(toRef);
@@ -127,9 +141,9 @@ export async function prepareWorkflowProposal(state: EditorState, patchJson: str
       const source = refs.get(fromRef), target = refs.get(toRef);
       const sourceNode = graph.nodes.find((n) => n.id === source), targetNode = graph.nodes.find((n) => n.id === target);
       const anchor = requireString(op.source_anchor, 'source_anchor', 40);
-      if (sourceNode?.data.kind !== 'application-condition' || targetNode?.data.kind !== 'application-action' ||
+      if (sourceNode?.data.kind !== 'application-condition' || !['application-action', 'application-error'].includes(targetNode?.data.kind ?? '') ||
           !['True Condition', 'False Condition'].includes(anchor)) throw new Error('Condition wiring requires a Condition branch and an application Action');
-      if (graph.edges.some((e) => e.target === target && e.data?.kind === 'application-condition')) throw new Error('Action already has a Condition route');
+      if (graph.edges.some((e) => e.target === target && e.data?.kind === 'application-condition')) throw new Error('Target already has a Condition route');
       const id = edgeId(source!, anchor, target!, 'Condition');
       if (graph.edges.some((e) => e.id === id)) throw new Error('Condition route already exists');
       graph.edges.push({ id, source: source!, sourceHandle: anchor, target: target!, targetHandle: 'Condition',
@@ -178,8 +192,10 @@ function validateOperation(value: unknown): Op {
     add: ['op', 'ref', 'tool_id', 'config', 'position'], configure: ['op', 'node_ref', 'config'],
     add_question: ['op', 'ref', 'question', 'config_path', 'position'],
     add_condition: ['op', 'ref', 'when', 'position'],
+    add_error_message: ['op', 'ref', 'message', 'position'],
     configure_question: ['op', 'node_ref', 'question', 'config_path'],
     configure_condition: ['op', 'node_ref', 'when'],
+    configure_error_message: ['op', 'node_ref', 'message'],
     connect: ['op', 'source_ref', 'source_anchor', 'target_ref', 'target_anchor'],
     connect_action: ['op', 'source_ref', 'target_ref'],
     connect_condition: ['op', 'source_ref', 'source_anchor', 'target_ref'],

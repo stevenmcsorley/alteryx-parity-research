@@ -250,6 +250,28 @@ class ImportTests(unittest.TestCase):
         bound = bind_application(doc, {'n': 4, 'colors': ['red', 'blue']})
         self.assertEqual(bound['nodes'][0]['config']['value'], 4)
 
+    def test_native_error_message_stops_only_on_matching_application_condition(self):
+        from flowengine.errors import EngineError
+        doc = {'nodes': [], 'metadata': {'application': {
+            'questions': [{'id': 'continue', 'type': 'boolean'}], 'actions': [],
+            'errors': [{'id': 'error_message_1', 'message': 'Choose a valid region.',
+                        'when': {'question': 'continue', 'operator': 'falsy'}}]}}}
+        self.assertEqual(bind_application(doc, {'continue': True})['nodes'], [])
+        with self.assertRaises(EngineError) as caught:
+            bind_application(doc, {'continue': False})
+        self.assertEqual(caught.exception.code, 'application-error-message')
+        self.assertEqual(caught.exception.message, 'Choose a valid region.')
+        self.assertEqual(caught.exception.node_id, 'error_message_1')
+
+    def test_native_error_message_rejects_invalid_predicates_and_empty_messages(self):
+        doc = {'nodes': [], 'metadata': {'application': {'questions': [{'id': 'ok', 'type': 'boolean'}],
+            'actions': [], 'errors': [{'message': ' ', 'when': {'question': 'missing', 'operator': 'truthy'}}]}}}
+        with self.assertRaisesRegex(Exception, 'non-empty message'):
+            bind_application(doc, {})
+        doc['metadata']['application']['errors'][0] = {'message': 'Stop', 'when': {'question': 'missing', 'operator': 'truthy'}}
+        with self.assertRaisesRegex(Exception, 'invalid conditional predicate'):
+            bind_application(doc, {})
+
     def test_native_conditional_action_updates_only_when_activated(self):
         # Native Flowbench predicate, not a claim of Alteryx Condition XML parity.
         doc = {'nodes': [{'id': 'n', 'config': {'expression': 'original'}}],

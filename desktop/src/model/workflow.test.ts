@@ -98,6 +98,23 @@ describe('workflow model', () => {
     expect(toDocument(loaded).metadata?.application?.actions.map((a: any) => a.when)).toEqual(saved.metadata?.application?.actions.map((a: any) => a.when));
   });
 
+  it('round-trips a conditional native Error Message node without adding a row-data edge', () => {
+    const graph: CanvasGraph = { name: 'application error', nodes: [
+      { id: 'condition', type: 'applicationCondition', position: { x: 0, y: 0 }, data: { kind: 'application-condition',
+        when: { question: 'valid', operator: 'truthy' } } },
+      { id: 'error', type: 'applicationError', position: { x: 200, y: 0 }, data: { kind: 'application-error', message: 'Provide a valid value.' } },
+    ], edges: [{ id: 'condition:True Condition->error:Condition', source: 'condition', sourceHandle: 'True Condition',
+      target: 'error', targetHandle: 'Condition', data: { kind: 'application-condition' } }] };
+    const saved = toDocument(graph);
+    expect(saved.edges).toEqual([]);
+    expect(saved.metadata?.application?.errors).toEqual([{ id: 'error', message: 'Provide a valid value.',
+      when: { question: 'valid', operator: 'truthy' } }]);
+    const loaded = fromDocument(saved);
+    expect(loaded.nodes.find((n) => n.id === 'error')?.data).toEqual({ kind: 'application-error', message: 'Provide a valid value.', when: { question: 'valid', operator: 'truthy' } });
+    expect(loaded.edges).toHaveLength(1);
+    expect(toDocument(loaded).metadata?.application?.errors).toEqual(saved.metadata?.application?.errors);
+  });
+
   it('auto-lays out documents without positions by dependency depth', () => {
     const g = fromDocument({ ...doc, metadata: undefined, nodes: doc.nodes.map(({ position: _p, ...n }) => n) });
     const a = g.nodes.find((n) => n.id === 'a')!, b = g.nodes.find((n) => n.id === 'b')!;

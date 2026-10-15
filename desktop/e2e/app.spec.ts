@@ -58,6 +58,17 @@ test('native Condition can be added without inflating kernel implementation coun
   await expect(page.locator('.react-flow__node-applicationCondition')).toHaveCount(1);
 });
 
+test('native Error Message is palette-accessible and configurable in the inspector', async ({ page }) => {
+  await ready(page);
+  const item = page.getByTestId('palette-interface:error-message');
+  await expect(item).toContainText('Flowbench native');
+  await expect(item).not.toHaveClass(/unavailable/);
+  await item.dblclick();
+  await expect(page.locator('.react-flow__node-applicationError')).toHaveCount(1);
+  await page.getByLabel('Error Message text').fill('Select a reporting period.');
+  await expect(page.getByTestId('node-error_message_1')).toContainText('Select a reporting period.');
+});
+
 test('Inspector scrolls independently inside the right dock', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 360 });
   await ready(page);

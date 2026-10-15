@@ -45,6 +45,16 @@ from catalog_lib import CATALOG, save_catalog  # noqa: E402
 
 TARGET = 'Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8'
 APPLICATION_ADAPTERS = {
+    'interface:error-message': {
+        'module': 'flowengine.interface_app',
+        'test_ids': [
+            'test_fe_interop.ImportTests.test_native_error_message_stops_only_on_matching_application_condition',
+            'test_fe_interop.ImportTests.test_native_error_message_rejects_invalid_predicates_and_empty_messages',
+        ],
+        'supported': ['Native Flowbench application Error Message with optional typed Condition predicate; failure is raised before node execution'],
+        'unsupported': ['Alteryx Error Message XML-to-native mapping has not been established against an authorised reference fixture'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+    },
     'interface:action': {
         'module': 'flowengine.interop.yxmd',
         'test_ids': [

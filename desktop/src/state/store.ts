@@ -64,6 +64,7 @@ export type EditorState = {
   addTool(toolId: string, position: { x: number; y: number }): string;
   addApplicationAction(position: { x: number; y: number }, questionType?: string, prompt?: string): string;
   addApplicationCondition(position: { x: number; y: number }): string;
+  addApplicationError(position: { x: number; y: number }): string;
   addComment(position: { x: number; y: number }): string;
   updateNodeData(id: string, patch: Record<string, unknown>, record?: boolean): void;
   deleteSelected(): void;
@@ -182,12 +183,12 @@ export const useEditor = create<EditorState>((set, get) => ({
     const target = s.nodes.find((n) => n.id === c.target);
     const source = s.nodes.find((n) => n.id === c.source);
     if (source?.data.kind === 'application-condition') {
-      if (target?.data.kind !== 'application-action' || !['True Condition', 'False Condition'].includes(c.sourceHandle ?? '') || c.targetHandle !== 'Condition')
-        return 'Condition outputs must connect to an Action Condition input';
+      if (!['application-action', 'application-error'].includes(target?.data.kind ?? '') || !['True Condition', 'False Condition'].includes(c.sourceHandle ?? '') || c.targetHandle !== 'Condition')
+        return 'Condition outputs must connect to an Action or Error Message Condition input';
       const id = edgeId(c.source, c.sourceHandle!, c.target, 'Condition');
       if (s.edges.some((e) => e.id === id)) return 'Already connected';
       if (s.edges.some((e) => e.target === c.target && e.data?.kind === 'application-condition'))
-        return 'An Action can have only one Condition route';
+        return 'A target can have only one Condition route';
       get().checkpoint();
       set({ edges: [...s.edges, { id, source: c.source, sourceHandle: c.sourceHandle!, target: c.target,
         targetHandle: 'Condition', data: { kind: 'application-condition' },
@@ -269,6 +270,15 @@ export const useEditor = create<EditorState>((set, get) => ({
     get().checkpoint();
     set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'applicationCondition', position,
       selected: true, data: { kind: 'application-condition', when: { question: questionId, operator: 'truthy' } } }] });
+    return id;
+  },
+
+  addApplicationError: (position) => {
+    const s = get();
+    const id = nextNodeId('error_message', s.nodes.map((n) => n.id));
+    get().checkpoint();
+    set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'applicationError', position,
+      selected: true, data: { kind: 'application-error', message: 'Please correct the application inputs before running.' } }] });
     return id;
   },
 

@@ -26,7 +26,8 @@ export type ApplicationActionNodeData = {
 };
 export type ApplicationPredicate = NonNullable<ApplicationActionNodeData['when']>;
 export type ApplicationConditionNodeData = { kind: 'application-condition'; when: ApplicationPredicate };
-export type CanvasNodeData = ToolNodeData | CommentNodeData | ContainerNodeData | ApplicationActionNodeData | ApplicationConditionNodeData;
+export type ApplicationErrorNodeData = { kind: 'application-error'; message: string; when?: ApplicationPredicate };
+export type CanvasNodeData = ToolNodeData | CommentNodeData | ContainerNodeData | ApplicationActionNodeData | ApplicationConditionNodeData | ApplicationErrorNodeData;
 export type CanvasNode = Node<CanvasNodeData>;
 export type CanvasEdge = Edge<{ kind?: 'application-action' | 'application-condition' }>;
 
@@ -74,6 +75,7 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
   const comments: any[] = [];
   const applicationActions: any[] = [];
   const applicationConditions: any[] = [];
+  const applicationErrors: any[] = [];
   for (const n of g.nodes) {
     const pos = absolutePosition(n, byId);
     if (n.data.kind === 'tool') {
@@ -99,6 +101,13 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
         condition_node: conditionLink?.source ?? null, condition_branch: conditionLink?.sourceHandle ?? null });
     } else if (n.data.kind === 'application-condition') {
       applicationConditions.push({ id: n.id, when: structuredClone(n.data.when), position: pos });
+    } else if (n.data.kind === 'application-error') {
+      const conditionLink = g.edges.find((e) => e.target === n.id && e.data?.kind === 'application-condition');
+      const conditionNode = conditionLink && g.nodes.find((x) => x.id === conditionLink.source && x.data.kind === 'application-condition');
+      const when = conditionNode?.data.kind === 'application-condition'
+        ? branchPredicate(conditionNode.data.when, conditionLink?.sourceHandle === 'False Condition') : n.data.when;
+      applicationErrors.push({ id: n.id, message: n.data.message, when, condition_node: conditionLink?.source ?? null,
+        condition_branch: conditionLink?.sourceHandle ?? null, position: pos });
     } else {
       comments.push({ id: n.id, text: n.data.text, position: pos, parent: n.parentId ?? null,
         size: { width: Number(n.style?.width ?? n.width ?? 200), height: Number(n.style?.height ?? n.height ?? 80) } });
@@ -116,7 +125,7 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
   );
   const metadata = structuredClone(g.metadata ?? {});
   const actionNodes = g.nodes.filter((n) => n.data.kind === 'application-action');
-  if (actionNodes.length || (metadata.ui?.applicationActions?.length ?? 0) > 0 || (metadata.application?.actions?.length ?? 0) > 0) {
+  if (actionNodes.length || applicationErrors.length || (metadata.ui?.applicationActions?.length ?? 0) > 0 || (metadata.application?.actions?.length ?? 0) > 0 || (metadata.application?.errors?.length ?? 0) > 0) {
     const old = metadata.application ?? { questions: [], actions: [] };
     const baselineActions: any[] = metadata.ui?.applicationActions ?? [];
     const currentQuestionIds = new Set(actionNodes.map((n) => (n.data as ApplicationActionNodeData).question.id));
@@ -150,9 +159,13 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
       if (duplicate >= 0) actions.splice(duplicate, 1);
       actions.push(action);
     }
-    metadata.application = { ...old, questions, actions };
+    const previousErrors: any[] = metadata.ui?.applicationErrors ?? [];
+    const replacedErrors = new Set(previousErrors.map((error) => error.id));
+    const errors = (old.errors ?? []).filter((error: any) => !replacedErrors.has(error.id));
+    errors.push(...applicationErrors.map(({ condition_node: _node, condition_branch: _branch, position: _position, ...error }) => error));
+    metadata.application = { ...old, questions, actions, errors };
   }
-  doc.metadata = { ...metadata, ui: { containers, comments, ownDisabled, applicationActions, applicationConditions } };
+  doc.metadata = { ...metadata, ui: { containers, comments, ownDisabled, applicationActions, applicationConditions, applicationErrors } };
   if (g.profile) doc.metadata.profile = g.profile;
   return doc;
 }
@@ -163,6 +176,7 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
   const comments: any[] = ui.comments ?? [];
   const applicationActions: any[] = ui.applicationActions ?? [];
   const applicationConditions: any[] = ui.applicationConditions ?? [];
+  const applicationErrors: any[] = ui.applicationErrors ?? (doc.metadata?.application?.errors ?? []).map((e: any) => e);
   const ownDisabled: Record<string, boolean> = ui.ownDisabled ?? {};
   const parentOf = new Map<string, string>();
   for (const c of containers) for (const child of c.children ?? []) parentOf.set(child, c.id);
@@ -172,6 +186,7 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
   for (const c of comments) absById.set(c.id, c.position);
   for (const a of applicationActions) absById.set(a.id, a.position ?? { x: 0, y: 0 });
   for (const c of applicationConditions) absById.set(c.id, c.position ?? { x: 0, y: 0 });
+  for (const e of applicationErrors) absById.set(e.id, e.position ?? { x: 0, y: 0 });
   const rel = (id: string) => {
     const p = absById.get(id) ?? { x: 0, y: 0 };
     const parent = parentOf.get(id);
@@ -219,6 +234,10 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
       id: c.id, type: 'applicationCondition', position: rel(c.id),
       data: { kind: 'application-condition', when: structuredClone(c.when) },
     })),
+    ...applicationErrors.map((e: any): CanvasNode => ({
+      id: e.id, type: 'applicationError', position: rel(e.id),
+      data: { kind: 'application-error', message: e.message, when: e.when ? structuredClone(e.when) : undefined },
+    })),
   ];
   for (const n of nodes) if (!n.parentId) delete n.parentId;
   autoLayout(nodes, doc);
@@ -239,6 +258,11 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
       style: { stroke: '#dd8a36', strokeDasharray: '4 4' }, label: a.condition_branch === 'True Condition' ? 'True' : 'False',
     });
   }
+  for (const e of applicationErrors) if (e.condition_node && ['True Condition', 'False Condition'].includes(e.condition_branch)) edges.push({
+    id: `${e.condition_node}:${e.condition_branch}->${e.id}:Condition`, source: e.condition_node,
+    sourceHandle: e.condition_branch, target: e.id, targetHandle: 'Condition', data: { kind: 'application-condition' },
+    style: { stroke: '#dd8a36', strokeDasharray: '4 4' }, label: e.condition_branch === 'True Condition' ? 'True' : 'False',
+  });
   if (!applicationActions.length) {
     const app = doc.metadata?.application ?? {};
     for (const [i, action] of ((app.actions ?? []) as any[]).entries()) {
@@ -257,7 +281,7 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
     }
   }
   const metadata = doc.metadata ? structuredClone(doc.metadata) : {};
-  metadata.ui = { ...(metadata.ui ?? {}), applicationActions, applicationConditions };
+  metadata.ui = { ...(metadata.ui ?? {}), applicationActions, applicationConditions, applicationErrors };
   return { nodes, edges, name: doc.name ?? 'Untitled', description: doc.description, profile: doc.metadata?.profile, metadata };
 }
 

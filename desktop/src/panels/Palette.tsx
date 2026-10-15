@@ -9,6 +9,8 @@ export function statusOf(c: CatalogEntry): { cls: string; label: string; text: s
   // Labels follow the evidence ledger (implementation_status), never mere kernel presence.
   if (c.id === 'interface:condition')
     return { cls: 'native', label: 'Flowbench native', text: 'Native analytic-app Condition routing; unsupported imported Alteryx Condition XML remains preserved with diagnostics.' };
+  if (c.id === 'interface:error-message')
+    return { cls: 'native', label: 'Flowbench native', text: 'Native analytic-app Error Message; a connected Condition can stop the run with the configured message.' };
   if (c.kernel && c.implementation_status !== 'implemented')
     return { cls: 'blocked', label: 'In progress', text: 'A kernel exists but has not yet passed the evidence rules (tests); results may change.' };
   if (c.kernel && c.verification_status === 'partial')
@@ -31,6 +33,7 @@ export function Palette() {
   const addTool = useEditor((s) => s.addTool);
   const addApplicationAction = useEditor((s) => s.addApplicationAction);
   const addApplicationCondition = useEditor((s) => s.addApplicationCondition);
+  const addApplicationError = useEditor((s) => s.addApplicationError);
   const flow = useReactFlow();
 
   const categories = useMemo(() => [...new Set(catalog.map((c) => c.category))].sort(), [catalog]);
@@ -52,9 +55,10 @@ export function Palette() {
     const selected = useEditor.getState().nodes.find((n) => n.selected);
     const p = position ?? (selected ? { x: selected.position.x, y: selected.position.y + 190 } : { x: 120, y: 120 });
     if (catalogId === 'interface:condition') { addApplicationCondition(p); return; }
+    if (catalogId === 'interface:error-message') { addApplicationError(p); return; }
     addApplicationAction(p, interfaceQuestions[catalogId] ?? 'text', catalog.find((c) => c.id === catalogId)?.name ?? 'Enter a value');
   };
-  const canAddInterface = (id: string) => id in interfaceQuestions || id === 'interface:condition';
+  const canAddInterface = (id: string) => id in interfaceQuestions || id === 'interface:condition' || id === 'interface:error-message';
   const extensions = ['core.db_input', 'core.db_output'].filter((id) => tools[id] &&
     (!q.trim() || tools[id].display_name.toLowerCase().includes(q.trim().toLowerCase()) ||
       tools[id].description.toLowerCase().includes(q.trim().toLowerCase())));
@@ -112,7 +116,7 @@ export function Palette() {
                       draggable={!!c.kernel || canAddInterface(c.id)}
                       onDragStart={(e) => {
                         if (!c.kernel && !canAddInterface(c.id)) return;
-                        const special = c.id === 'interface:condition' ? 'flowengine.application_condition' : `flowengine.application_action:${c.id}`;
+                        const special = c.id === 'interface:condition' ? 'flowengine.application_condition' : c.id === 'interface:error-message' ? 'flowengine.application_error' : `flowengine.application_action:${c.id}`;
                         e.dataTransfer.setData(TOOL_MIME, c.kernel ?? special);
                         e.dataTransfer.effectAllowed = 'copy';
                       }}
@@ -153,7 +157,7 @@ export function Palette() {
             </div>}
             {!grouped.length && !extensions.length && !macroExtensions.length && <div className="empty">No tools match.</div>}
           </div>
-          {activeEntry && <ToolDetail entry={activeEntry} onAdd={addAtCentre} onAddQuestion={addInterfaceQuestion} supportsQuestion={activeEntry.id in interfaceQuestions} />}
+          {activeEntry && <ToolDetail entry={activeEntry} onAdd={addAtCentre} onAddQuestion={addInterfaceQuestion} supportsQuestion={canAddInterface(activeEntry.id)} />}
         </>
       )}
     </aside>
@@ -177,7 +181,7 @@ function ToolDetail({ entry, onAdd, onAddQuestion, supportsQuestion }: { entry: 
       {m && <p>{st.text}</p>}
       {entry.documentation_url && <p style={{ wordBreak: 'break-all' }}>Public reference: {entry.documentation_url}</p>}
       {m && <button className="primary" onClick={() => onAdd(m.tool_id)}>Add to canvas</button>}
-      {!m && supportsQuestion && <button className="primary" onClick={() => onAddQuestion(entry.id)}>Add application question</button>}
+      {!m && supportsQuestion && <button className="primary" onClick={() => onAddQuestion(entry.id)}>{entry.id === 'interface:error-message' ? 'Add Error Message' : entry.id === 'interface:condition' ? 'Add Condition' : 'Add application question'}</button>}
     </div>
   );
 }

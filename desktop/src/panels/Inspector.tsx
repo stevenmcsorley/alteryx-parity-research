@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useEditor } from '../state/store';
 import type { FieldDef } from '../engine/types';
-import type { ApplicationActionNodeData, ApplicationConditionNodeData, CanvasNode, ToolNodeData } from '../model/workflow';
+import type { ApplicationActionNodeData, ApplicationConditionNodeData, ApplicationErrorNodeData, CanvasNode, ToolNodeData } from '../model/workflow';
 import { SchemaForm, type FieldContext } from './SchemaForm';
 import { categoryColor, glyph } from '../ui/categories';
 import { engine, describe } from '../state/engineActions';
@@ -15,9 +15,25 @@ export function Inspector({ embedded = false }: { embedded?: boolean } = {}) {
       {!node ? <WorkflowProperties /> : node.data.kind === 'tool' ? <ToolInspector node={node} /> :
         node.data.kind === 'application-action' ? <ApplicationActionInspector node={node} /> :
         node.data.kind === 'application-condition' ? <ApplicationConditionInspector node={node} /> :
+        node.data.kind === 'application-error' ? <ApplicationErrorInspector node={node} /> :
         node.data.kind === 'container' ? <ContainerInspector node={node} /> : <CommentInspector node={node} />}
     </aside>
   );
+}
+
+function ApplicationErrorInspector({ node }: { node: CanvasNode }) {
+  const d = node.data as ApplicationErrorNodeData;
+  const update = useEditor((s) => s.updateNodeData);
+  const checkpoint = useEditor((s) => s.checkpoint);
+  return <>
+    <div className="section"><h3>Interface</h3><h2>Error Message</h2>
+      <p className="help">When the connected Condition route is active, the analytic application stops before running its workflow and displays this message. Without a condition connection, it stops every run.</p>
+    </div>
+    <div className="section"><label htmlFor="application-error-message">Message</label>
+      <textarea id="application-error-message" aria-label="Error Message text" rows={4} value={d.message} onFocus={checkpoint}
+        onChange={(e) => update(node.id, { message: e.target.value }, false)} />
+    </div>
+  </>;
 }
 
 function ApplicationConditionInspector({ node }: { node: CanvasNode }) {

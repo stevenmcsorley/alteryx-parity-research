@@ -68,4 +68,21 @@ describe('AI workflow patch staging', () => {
     expect(proposal.candidate.nodes.filter((n) => n.data.kind.startsWith('application-'))).toHaveLength(3);
     expect(useEditor.getState().nodes).toHaveLength(0);
   });
+
+  it('lets the agent add and conditionally route a native Error Message', async () => {
+    useEditor.getState().loadGraph(emptyGraph as any);
+    let checked: any;
+    setTransport({ request: async (_method: string, params: any) => { checked = params.workflow; return { valid: true, problems: [], schemas: {} }; }, subscribe: () => () => {} } as any);
+    const state = useEditor.getState(), baseRevision = workflowRevision(state);
+    const proposal = await prepareWorkflowProposal(state, JSON.stringify({ operations: [
+      { op: 'add_question', ref: 'approved', question: { id: 'approved', prompt: 'Approved?', type: 'boolean', default: false }, config_path: ['value'], position: { x: 0, y: 0 } },
+      { op: 'add_condition', ref: 'gate', when: { question: 'approved', operator: 'falsy' }, position: { x: 180, y: 0 } },
+      { op: 'add_error_message', ref: 'invalid', message: 'Approval is required.', position: { x: 360, y: 0 } },
+      { op: 'connect_condition', source_ref: 'gate', source_anchor: 'True Condition', target_ref: 'invalid' },
+    ] }), baseRevision);
+    expect(proposal.validation.valid).toBe(true);
+    expect(checked.metadata.application.errors).toEqual([{ id: expect.any(String), message: 'Approval is required.', when: { question: 'approved', operator: 'falsy' } }]);
+    expect(proposal.candidate.edges).toHaveLength(1);
+    expect(useEditor.getState().nodes).toHaveLength(0);
+  });
 });

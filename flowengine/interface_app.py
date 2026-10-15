@@ -16,12 +16,12 @@ from .errors import EngineError
 def _spec(doc):
     spec = (doc.get('metadata') or {}).get('application')
     if spec is None:
-        return {'questions': [], 'actions': []}
-    if not isinstance(spec, dict) or set(spec) - {'questions', 'actions'}:
-        raise EngineError('metadata.application must contain only questions and actions', code='application-invalid')
-    questions, actions = spec.get('questions', []), spec.get('actions', [])
-    if not isinstance(questions, list) or not isinstance(actions, list):
-        raise EngineError('Application questions and actions must be arrays', code='application-invalid')
+        return {'questions': [], 'actions': [], 'errors': []}
+    if not isinstance(spec, dict) or set(spec) - {'questions', 'actions', 'errors'}:
+        raise EngineError('metadata.application may contain only questions, actions, and errors', code='application-invalid')
+    questions, actions, errors = spec.get('questions', []), spec.get('actions', []), spec.get('errors', [])
+    if not isinstance(questions, list) or not isinstance(actions, list) or not isinstance(errors, list):
+        raise EngineError('Application questions, actions, and errors must be arrays', code='application-invalid')
     ids = set()
     question_types = {}
     for q in questions:
@@ -48,7 +48,12 @@ def _spec(doc):
         path = a.get('config_path')
         if not isinstance(path, list) or not path or any(not isinstance(k, str) or k in ('__proto__', 'prototype', 'constructor') for k in path):
             raise EngineError('Application action config_path must be a safe list of property names', code='application-invalid')
-    return {'questions': questions, 'actions': actions}
+    for error in errors:
+        if not isinstance(error, dict) or not isinstance(error.get('message'), str) or not error['message'].strip():
+            raise EngineError('Each application error needs a non-empty message', code='application-invalid')
+        if error.get('when') is not None and not _valid_predicate(error['when'], ids, question_types):
+            raise EngineError('Application error has an invalid conditional predicate', code='application-invalid')
+    return {'questions': questions, 'actions': actions, 'errors': errors}
 
 
 def _valid_predicate(predicate, question_ids, question_types, depth=0):
@@ -179,6 +184,9 @@ def bind_application(doc, supplied):
                 raise EngineError(f'Application input {qid!r} is below its minimum', code='application-input-invalid')
             if q.get('maximum') is not None and values[qid] > q['maximum']:
                 raise EngineError(f'Application input {qid!r} is above its maximum', code='application-input-invalid')
+    for error in spec['errors']:
+        if _condition_matches(error.get('when'), values):
+            raise EngineError(error['message'], code='application-error-message', node_id=error.get('id'))
     result = copy.deepcopy(doc)
     nodes = {n['id']: n for n in result['nodes']}
     active_actions = [a for a in spec['actions'] if _condition_matches(a.get('when'), values)]
