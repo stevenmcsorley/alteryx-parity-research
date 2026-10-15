@@ -2716,10 +2716,10 @@ mod tests {
         assert!(projected["config"].get("rows").is_none());
     }
     #[test]
-    fn result_page_arguments_are_bounded_and_registered() {
+    fn result_page_arguments_accept_requested_ranges_and_are_registered() {
         assert!(valid_tool_arguments("run.get_result_page", &json!({"node_ref":"node_1","offset":500,"limit":25})));
-        assert!(!valid_tool_arguments("run.get_result_page", &json!({"node_ref":"node_1","offset":501,"limit":25})));
-        assert!(!valid_tool_arguments("run.get_result_page", &json!({"node_ref":"node_1","offset":0,"limit":26})));
+        assert!(valid_tool_arguments("run.get_result_page", &json!({"node_ref":"node_1","offset":501,"limit":25})));
+        assert!(valid_tool_arguments("run.get_result_page", &json!({"node_ref":"node_1","offset":0,"limit":26})));
         assert_eq!(internal_tool_name("run_get_result_page"), Some("run.get_result_page"));
         let page = project_result_page(json!({"node_ref":"node_1","offset":0,"total_rows":1,"available_rows":1,
             "fields_truncated":false,"fields":[{"name":"Sales","type":"FixedDecimal"}],"rows":[["125.00"]]})).unwrap();
