@@ -116,11 +116,16 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     finally { setBusy(false); }
   }
   function agentEnvironment() {
+    const originatingTurnId = useAiConversation.getState().turnId;
     return {
       getState: () => useEditor.getState(),
       validate: async () => { await validateNow(); },
       proposePatch: async (patchJson: string, baseRevision: string) => {
         const prepared = await prepareWorkflowProposal(useEditor.getState(), patchJson, baseRevision);
+        // Validation can outlive Stop or a replaced conversation turn.
+        // Never apply an asynchronously prepared patch after either occurs.
+        if (cancelled.current || (originatingTurnId && useAiConversation.getState().turnId !== originatingTurnId))
+          return { status: 'cancelled', operation_count: prepared.changes.length, valid: false, problem_codes: [] };
         if (fullControlForCurrentWorkspace()) return applyProposal(prepared, false);
         if (resolvePatchApproval) throw new Error('A graph proposal is already awaiting approval');
         useAiConversation.getState().setProposal(prepared);
