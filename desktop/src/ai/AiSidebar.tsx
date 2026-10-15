@@ -10,6 +10,8 @@ import { doSave } from '../panels/Toolbar';
 type Entry = { label: string; tool: AgentToolName; args?: Record<string, unknown> };
 type Model = { slug: string; display_name: string };
 type ValueItem = { type?: string; name?: string; arguments?: string; call_id?: string; [key: string]: unknown };
+const MAX_AGENT_RESPONSE_CYCLES = 64;
+const MAX_AGENT_TOOL_CALLS_PER_TURN = 256;
 const quickActions: Entry[] = [
   { label: 'Inspect this workflow', tool: 'workflow.get_snapshot' },
   { label: 'Check validation', tool: 'workflow.validate' },
@@ -45,12 +47,17 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   const proposal = useAiConversation((s) => s.proposal);
   const runApprovalRequested = useAiConversation((s) => s.runApprovalRequested);
   const saveApprovalRequested = useAiConversation((s) => s.saveApprovalRequested);
+  const fullControlScope = useAiConversation((s) => s.fullControlScope);
   const status = useAiConversation((s) => s.status);
   const chatScroll = useRef<HTMLDivElement>(null);
   const stickToBottom = useRef(true);
   const cancelled = useRef(false);
   const name = useEditor((s) => s.name);
+  const baseDir = useEditor((s) => s.baseDir);
+  const filePath = useEditor((s) => s.filePath);
   const nodes = useEditor((s) => s.nodes.length);
+  const controlScope = baseDir || filePath || `untitled:${name}`;
+  const fullControl = fullControlScope === controlScope;
   const streaming = ['submitting', 'streaming', 'tool-running'].includes(status);
 
   useEffect(() => {
@@ -91,6 +98,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       const auth = await native<{ remote_revocation_confirmed: boolean }>('ai_sign_out');
       setConnected(false); setAuthorized(false); setAccount(''); setModels([]); setModel(''); setRoutingConsent(false);
       useAiConversation.getState().reset();
+      useAiConversation.getState().setFullControl(null);
       if (!auth.remote_revocation_confirmed) setError('Disconnected locally. OpenAI could not confirm remote token revocation; the protected local session was removed.');
     } catch (e) { setError(messageOf(e)); }
     finally { setBusy(false); }
@@ -115,46 +123,72 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       validate: async () => { await validateNow(); },
       proposePatch: async (patchJson: string, baseRevision: string) => {
         const prepared = await prepareWorkflowProposal(useEditor.getState(), patchJson, baseRevision);
+        if (fullControlForCurrentWorkspace()) return applyProposal(prepared, false);
         if (resolvePatchApproval) throw new Error('A graph proposal is already awaiting approval');
         useAiConversation.getState().setProposal(prepared);
         return new Promise((resolve) => { resolvePatchApproval = resolve; });
       },
       requestRun: () => {
-        if (useEditor.getState().run.status === 'running') return Promise.resolve({ status: 'already_running' });
+        if (fullControlForCurrentWorkspace()) return executeRunForAgent();
+        if (useEditor.getState().run.status === 'running') return Promise.resolve({ status: 'already_running', outputs: [] });
         if (resolveRunApproval) throw new Error('A workflow run is already awaiting user approval');
         useAiConversation.getState().requestRunApproval();
         return new Promise((resolve) => { resolveRunApproval = resolve; });
       },
       requestSave: () => {
+        if (fullControlForCurrentWorkspace()) return saveForAgent();
         if (resolveSaveApproval) throw new Error('A workflow save is already awaiting approval');
         useAiConversation.getState().requestSaveApproval();
         return new Promise((resolve) => { resolveSaveApproval = resolve; });
       },
       getResults: () => safeRunResults(),
+      getResultPage: (nodeRef: string, offset: number, limit: number) => safeRunResultPage(nodeRef, offset, limit),
     };
   }
-  async function approvePatch() {
-    const pending = useAiConversation.getState().proposal;
-    if (!pending) return;
-    if (workflowRevision(useEditor.getState()) !== pending.baseRevision) {
-      setError('The workflow changed after this preview. Ask Flowbench AI to prepare a fresh proposal.');
-      useAiConversation.getState().setProposal(null);
-      resolvePatchApproval?.({ status: 'stale', operation_count: pending.changes.length, valid: false, problem_codes: [] }); resolvePatchApproval = null;
-      return;
-    }
-    if (!pending.validation.valid) { setError('This proposal has validation errors and cannot be applied.'); return; }
-    if (pending.consequences.length && !window.confirm(`Review these consequential changes before applying:\n\n${pending.consequences.join('\n')}\n\nApply the validated graph change?`)) return;
+  function fullControlForCurrentWorkspace() {
+    const state = useEditor.getState();
+    const scope = state.baseDir || state.filePath || `untitled:${state.name}`;
+    return useAiConversation.getState().fullControlScope === scope;
+  }
+  function setFullControl(enabled: boolean) {
+    if (enabled) {
+      const accepted = window.confirm('Enable Full Control for this Flowbench workspace for the current app session? Flowbench AI may add, configure, connect, rearrange and remove workflow nodes, validate and run ordinary workflows, inspect bounded results, and save to the current workflow path without asking each time. Changes remain undoable. File/database writes, scripts, unrestricted process execution, and private-data routing retain their separate permission checks.');
+      if (!accepted) return;
+      useAiConversation.getState().setFullControl(controlScope);
+    } else useAiConversation.getState().setFullControl(null);
+  }
+  async function applyProposal(pending: import('./workflowPatch').WorkflowProposal, requireReviewConfirmation: boolean) {
+    if (workflowRevision(useEditor.getState()) !== pending.baseRevision)
+      return { status: 'stale', operation_count: pending.changes.length, valid: false, problem_codes: [] };
+    if (!pending.validation.valid)
+      return { status: 'validation_failed', operation_count: pending.changes.length, valid: false,
+        problem_codes: pending.validation.problems.map((problem) => problem.code).slice(0, 20) };
+    if (requireReviewConfirmation && pending.consequences.length &&
+        !window.confirm(`Review these consequential changes before applying:\n\n${pending.consequences.join('\n')}\n\nApply the validated graph change?`)) return null;
     useEditor.getState().commitGraphTransaction(pending.candidate);
     const committedRevision = workflowRevision(useEditor.getState());
     useAiConversation.getState().setProposal(null);
     const validation = await validateNow();
     if (!validation?.valid) {
-      // Do not undo over any manual edit made while post-commit validation was in flight.
       if (workflowRevision(useEditor.getState()) === committedRevision) useEditor.getState().undo();
-      else setError('Post-commit validation failed after the workflow was edited again. The newer editor state was preserved; review validation before running.');
+      else setError('Post-commit validation failed after the workflow was edited again. The newer editor state was preserved.');
     }
-    resolvePatchApproval?.({ status: validation?.valid ? 'approved' : 'revalidation_failed', operation_count: pending.changes.length, valid: Boolean(validation?.valid),
-      problem_codes: validation?.problems.map((problem) => problem.code).slice(0, 20) ?? [] }); resolvePatchApproval = null;
+    return { status: validation?.valid ? 'approved' : 'revalidation_failed', operation_count: pending.changes.length,
+      valid: Boolean(validation?.valid), problem_codes: validation?.problems.map((problem) => problem.code).slice(0, 20) ?? [] };
+  }
+  async function approvePatch() {
+    const pending = useAiConversation.getState().proposal;
+    if (!pending) return;
+    const outcome = await applyProposal(pending, true);
+    if (!outcome) return;
+    if (outcome.status === 'stale') {
+      setError('The workflow changed after this preview. Ask Flowbench AI to prepare a fresh proposal.');
+      useAiConversation.getState().setProposal(null);
+    } else if (outcome.status === 'validation_failed') {
+      setError('This proposal has validation errors and cannot be applied.');
+      return;
+    }
+    resolvePatchApproval?.(outcome); resolvePatchApproval = null;
   }
   function rejectPatch() {
     const pending = useAiConversation.getState().proposal;
@@ -180,6 +214,30 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
     resolveRunApproval?.({ status: 'timed_out', outputs: [] }); resolveRunApproval = null;
+  }
+  async function executeRunForAgent() {
+    const initial = useEditor.getState().run;
+    if (initial.status === 'running') return { status: 'already_running', outputs: [] };
+    await runWorkflow();
+    const started = Date.now();
+    while (Date.now() - started < 15 * 60_000) {
+      const run = useEditor.getState().run;
+      if (run.runId && run.runId !== initial.runId && run.status !== 'running') return safeRunResults();
+      if (run.status === 'running') {
+        if (run.runId && run.runId !== initial.runId) {
+          await new Promise((resolve) => setTimeout(resolve, 250));
+          continue;
+        }
+      } else if (run.status !== initial.status) return safeRunResults();
+      if (Date.now() - started > 1500 && run.runId === initial.runId && run.status === initial.status)
+        return { status: 'not_started', outputs: [] };
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+    return { status: 'timed_out', outputs: [] };
+  }
+  async function saveForAgent() {
+    const outcome = await doSave();
+    return { status: outcome === 'failed' ? 'save_failed' : outcome, path_selected: outcome === 'saved' };
   }
   function rejectRun() {
     useAiConversation.setState({ runApprovalRequested: false });
@@ -221,7 +279,9 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         { id: `user_${turnId}`, turnId, role: 'user', text, state: 'completed' },
         { id: started.assistant_message_id, turnId, role: 'assistant', text: '', state: 'streaming' },
       );
-      for (let cycle = 0; cycle < 12; cycle++) {
+      let toolCallsThisTurn = 0;
+      const maxCycles = MAX_AGENT_RESPONSE_CYCLES;
+      for (let cycle = 0; cycle < maxCycles; cycle++) {
         const cycleId = `cycle_${crypto.randomUUID().replaceAll('-', '')}`;
         useAiConversation.getState().responseStart(turnId, cycleId);
         const response: { turn_id: string; message_id: string; cycle_id: string; text: string; text_source?: string; empty_reason?: string; calls?: ValueItem[] } = await native('ai_respond', { model, turnId, cycleId, toolsEnabled });
@@ -235,7 +295,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           useAiConversation.getState().finish(turnId, 'completed');
           return;
         }
-        if (cycle === 11) throw new Error('The assistant reached Flowbench’s bounded tool-call limit for this turn.');
+        if (toolCallsThisTurn + calls.length > MAX_AGENT_TOOL_CALLS_PER_TURN)
+          throw new Error(`The assistant reached the ${MAX_AGENT_TOOL_CALLS_PER_TURN}-operation resource budget for this turn.`);
+        toolCallsThisTurn += calls.length;
+        if (cycle === maxCycles - 1) throw new Error('The assistant reached the 64-cycle resource budget for this turn. Start a new request to continue.');
         for (const call of calls) {
           const toolName = call.name ?? '';
           useAiConversation.getState().activity(turnId, activityLabel(toolName));
@@ -243,7 +306,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           try {
             toolResult = await dispatchAgentTool(agentEnvironment(), toolName,
               JSON.parse(call.arguments ?? '{}'));
-          } catch { toolResult = { error: 'The requested Flowbench tool could not complete.' }; }
+          } catch (error) { toolResult = safeToolFailure(toolName, error); }
           await native('ai_submit_tool_result', { callId: call.call_id, result: toolResult });
         }
       }
@@ -293,6 +356,13 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         <details className="ai-menu"><summary aria-label="AI settings" title="AI settings">•••</summary>
           <div className="ai-menu-panel">
             <strong>ChatGPT · {connected && authorized ? account || 'Connected' : 'Not connected'}</strong>
+            <section className="ai-full-control" aria-label="Full Control mode">
+              <label className="ai-consent"><input type="checkbox" checked={fullControl} disabled={busy || !authorized || (streaming && !fullControl)}
+                onChange={(e) => setFullControl(e.target.checked)} />Full Control for this workspace</label>
+              <small className="ai-menu-note">{fullControl
+                ? 'Enabled for this workspace during this app session. Turn it off here at any time.'
+                : 'Review mode asks before workflow edits, runs and saves. Full Control removes routine prompts; external effects remain separately protected.'}</small>
+            </section>
             <label className="ai-consent"><input type="checkbox" checked={routingConsent} disabled={!authorized || consentUpdating || streaming} onChange={(e) => void updateConsent(e.target.checked)} />
               Allow prompt and bounded tool results to be sent to ChatGPT</label>
             <label className="ai-consent"><input type="checkbox" checked={toolsEnabled} disabled={streaming} onChange={(e) => setToolsEnabled(e.target.checked)} />
@@ -331,7 +401,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         {messages.length === 0 && <div className="ai-empty">
           <div className="ai-orb" aria-hidden="true">✦</div>
           <h2>What would you like to analyse?</h2>
-          <p>Flowbench AI can build and validate workflows using installed tools. You approve graph changes and runs before they happen.</p>
+          <p>{fullControl ? 'Flowbench AI can build, validate and run workflows in this workspace. External effects remain separately protected.' : 'Flowbench AI can build and validate workflows using installed tools. Enable Full Control in settings to delegate routine workspace operations.'}</p>
           {!authorized && <div className="ai-connect-inline">
             <span>{sessionRecovery ? 'Reconnect your protected ChatGPT session to continue.' : connected ? 'ChatGPT plan usage is not authorised yet.' : 'Connect an eligible ChatGPT account to start a conversation.'}</span>
             <button className="primary" onClick={() => void signIn()} disabled={busy}>{busy ? 'Opening sign-in…' : 'Continue with ChatGPT'}</button>
@@ -370,7 +440,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       <footer className="ai-composer-wrap">
         <div className="ai-contextline"><span className={`routing-dot ${connected && authorized ? 'connected' : ''}`} />
           <span title={name}>{name}</span><span>·</span><span>{nodes} nodes</span>
-          <span className="ai-tools-mode">{toolsEnabled ? 'Tools on' : 'No-tools probe'}</span>
+          <span className="ai-tools-mode" title={fullControl ? 'Full Control is enabled for the active workspace during this app session' : undefined}>{fullControl ? 'Full Control' : toolsEnabled ? 'Tools on' : 'No-tools probe'}</span>
           <span className={`ai-routing-label ${routingConsent ? '' : 'off'}`}>{routingConsent ? 'External AI routing allowed' : 'External AI routing off'}</span>
         </div>
         {authorized && <form className="ai-compose" onSubmit={(e) => { e.preventDefault(); void send(); }}>
@@ -390,13 +460,38 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
 function safeRunResults() {
   const run = useEditor.getState().run;
   if (run.status !== 'succeeded' || !run.result) return { status: run.status, outputs: [] };
-  const outputs = Object.entries(run.result.browse ?? {}).slice(0, 2).map(([nodeId, preview]) => ({
+  const allOutputs = Object.entries(run.result.browse ?? {});
+  const outputs = allOutputs.slice(0, 20).map(([nodeId, preview]) => ({
     node_ref: `node_${useEditor.getState().nodes.findIndex((node) => node.id === nodeId) + 1}`,
-    fields: preview.fields.slice(0, 10).map((field) => ({ name: field.name, type: field.type })),
+    fields: preview.fields.slice(0, 30).map((field) => ({ name: field.name, type: field.type })),
+    fields_truncated: preview.fields.length > 30,
     total_rows: preview.total_rows,
-    rows: preview.rows.slice(0, 4).map((row) => row.slice(0, 10).map((value) => typeof value === 'string' && value.length > 128 ? `${value.slice(0, 128)}…` : value)),
+    available_rows: preview.rows.length,
+    rows: preview.rows.slice(0, 1).map((row) => row.slice(0, 30).map((value) => typeof value === 'string' && value.length > 128 ? `${value.slice(0, 128)}…` : value)),
   }));
-  return { status: 'succeeded', outputs };
+  return { status: 'succeeded', outputs, outputs_truncated: allOutputs.length > outputs.length };
+}
+
+function safeRunResultPage(nodeRef: string, offset: number, limit: number) {
+  const run = useEditor.getState().run;
+  if (run.status !== 'succeeded' || !run.result) throw new Error('No successful workflow result is available');
+  const index = Number(nodeRef.match(/^node_(\d+)$/)?.[1] ?? 0) - 1;
+  const node = useEditor.getState().nodes[index];
+  if (!node) throw new Error('Unknown Browse result node reference');
+  const preview = run.result.browse?.[node.id];
+  if (!preview) throw new Error('The selected node has no Browse output in the latest run');
+  const safeFields = preview.fields.map((field, i) => ({ field, i })).filter(({ field }) =>
+    !/password|passwd|secret|token|credential|api.?key|access.?key/i.test(field.name));
+  const keep = safeFields.slice(0, 30);
+  return {
+    node_ref: nodeRef, offset, total_rows: preview.total_rows, available_rows: preview.rows.length,
+    fields: keep.map(({ field }) => ({ name: field.name, type: field.type })), fields_truncated: safeFields.length > keep.length,
+    rows: preview.rows.slice(offset, offset + limit).map((row) => keep.map(({ i }) => {
+      const value = row[i];
+      if (typeof value === 'string' && value.length > 128) return `${value.slice(0, 128)}…`;
+      return value;
+    })),
+  };
 }
 
 function Message({ message, onRetry }: { message: ChatMessage; onRetry: () => void }) {
@@ -428,11 +523,22 @@ function activityLabel(tool: string) {
   if (tool === 'workflow.propose_patch') return 'Preparing a validated workflow change…';
   if (tool === 'workflow.request_run') return 'Waiting for run approval and execution…';
   if (tool === 'run.get_results') return 'Reading actual workflow results…';
+  if (tool === 'run.get_result_page') return 'Reading the requested result page…';
   if (tool === 'workflow.get_schema') return 'Inspecting output fields and types…';
   if (tool === 'workflow.get_snapshot' || tool === 'app.get_active_workflow') return 'Inspecting workflow…';
   if (tool === 'catalog.search_tools' || tool === 'catalog.get_tool_manifest' || tool === 'app.get_capabilities') return 'Searching tool catalogue…';
   if (tool === 'workflow.validate' || tool === 'workflow.get_diagnostics') return 'Checking validation…';
   return 'Inspecting Flowbench…';
+}
+function safeToolFailure(tool: string, error: unknown) {
+  const text = error instanceof Error ? error.message : '';
+  const contract = text.match(/Flowbench result contract violation for [a-z0-9_.-]+ at (\$[a-z0-9_.$-]+)/i);
+  return {
+    tool,
+    code: contract ? 'result_contract_violation' : 'tool_execution_failed',
+    stage: contract ? 'result_validation' : 'flowbench_dispatch',
+    error: contract ? `Result violated the registered shape at ${contract[1]}.` : 'The Flowbench capability failed; inspect its current state and retry if appropriate.',
+  };
 }
 function messageOf(error: unknown) { return error instanceof Error ? error.message : String(error); }
 function emptyResponseMessage(reason?: string) {

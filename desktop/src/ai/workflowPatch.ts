@@ -25,13 +25,13 @@ export function workflowRevision(state: Pick<EditorState, 'nodes' | 'edges' | 'n
 }
 
 export async function prepareWorkflowProposal(state: EditorState, patchJson: string, baseRevision: string): Promise<WorkflowProposal> {
-  if (patchJson.length > 16000) throw new Error('Workflow patch exceeds the 16 KB limit');
+  if (patchJson.length > 131072) throw new Error('Workflow patch exceeds the 128 KB safety limit');
   if (workflowRevision(state) !== baseRevision) throw new Error('The workflow changed while the proposal was being prepared. Ask Flowbench AI to inspect it again.');
   let parsed: unknown;
   try { parsed = JSON.parse(patchJson); } catch { throw new Error('The proposed patch is not valid JSON'); }
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || Object.keys(parsed).some((k) => k !== 'operations')) throw new Error('Patch must contain only an operations array');
   const operations = (parsed as { operations?: unknown }).operations;
-  if (!Array.isArray(operations) || operations.length < 1 || operations.length > 40) throw new Error('Patch requires between 1 and 40 operations');
+  if (!Array.isArray(operations) || operations.length < 1 || operations.length > 256) throw new Error('Patch requires between 1 and 256 operations');
 
   const graph = structuredClone(graphOf(state));
   const refs = new Map(graph.nodes.map((node, i) => [`node_${i + 1}`, node.id]));
@@ -130,7 +130,7 @@ function requireString(value: unknown, name: string, max: number): string {
   return value;
 }
 function requireObject(value: unknown, name: string): Record<string, unknown> {
-  if (!value || typeof value !== 'object' || Array.isArray(value) || JSON.stringify(value).length > 12000) throw new Error(`${name} must be an object no larger than 12 KB`);
+  if (!value || typeof value !== 'object' || Array.isArray(value) || JSON.stringify(value).length > 65536) throw new Error(`${name} must be an object no larger than 64 KB`);
   return value as Record<string, unknown>;
 }
 function requirePosition(value: unknown): { x: number; y: number } {

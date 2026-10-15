@@ -33,6 +33,14 @@ describe('flowbench.agent.v1 application tools', () => {
     expect(output).not.toContain('test-profile');
   });
 
+  it('exposes actionable node configuration while excluding credentials and local source data', async () => {
+    const result: any = await dispatchAgentTool(env, 'workflow.get_node_config', { node_ref: 'node_1' });
+    expect(result).toMatchObject({ node_ref: 'node_1', kind: 'tool', tool_id: 'core.text_input', config: {} });
+    expect(JSON.stringify(result)).not.toContain('private-secret');
+    expect(JSON.stringify(result)).not.toContain('Sensitive customer value');
+    expect(JSON.stringify(result)).not.toContain('C:/private/data.csv');
+  });
+
   it('strictly rejects unknown tools and unregistered write operations', async () => {
     await expect(dispatchAgentTool(env, 'workflow.delete_node', { node_id: 'input_1' })).rejects.toThrow('Unknown or unavailable');
     await expect(dispatchAgentTool(env, 'workflow.get_snapshot', { include_rows: true })).rejects.toThrow('Unexpected argument');
@@ -81,11 +89,37 @@ describe('flowbench.agent.v1 application tools', () => {
     expect(calls).toBe(1);
   });
 
+  it('keeps snapshot, validate and diagnostics problem summaries in the shared result shape', async () => {
+    const state = context();
+    const local = { ...env, getState: () => state, validate: async () => undefined };
+    const snapshot: any = await dispatchAgentTool(local, 'workflow.get_snapshot');
+    const validation: any = await dispatchAgentTool(local, 'workflow.validate');
+    const diagnostics: any = await dispatchAgentTool(local, 'workflow.get_diagnostics');
+    expect(snapshot.problems).toEqual({ count: 1, problems: [{ code: 'bad-config', node_ref: 'node_1' }] });
+    expect(validation).toEqual({ count: 1, problems: [{ code: 'bad-config', node_ref: 'node_1' }] });
+    expect(diagnostics.problems).toEqual(validation);
+  });
+
+  it('matches the shared contracts for disconnected status and already-running execution', async () => {
+    expect(await dispatchAgentTool({ ...env, getState: () => ({ ...context(), engineInfo: null }) }, 'app.get_status'))
+      .toMatchObject({ engine: { connected: false, version: 'unavailable' } });
+    expect(await dispatchAgentTool({ ...env, requestRun: () => ({ status: 'already_running', outputs: [] }) }, 'workflow.request_run'))
+      .toEqual({ status: 'already_running', outputs: [] });
+  });
+
+  it('routes bounded result-page requests to retained engine Browse output', async () => {
+    const page = { node_ref: 'node_1', offset: 20, total_rows: 1000, available_rows: 500, fields: [], fields_truncated: false, rows: [] };
+    const getResultPage = vi.fn(() => page);
+    await expect(dispatchAgentTool({ ...env, getResultPage }, 'run.get_result_page', { node_ref: 'node_1', offset: 20, limit: 25 })).resolves.toEqual(page);
+    expect(getResultPage).toHaveBeenCalledWith('node_1', 20, 25);
+    await expect(dispatchAgentTool({ ...env, getResultPage }, 'run.get_result_page', { node_ref: 'node_1', offset: 501, limit: 25 })).rejects.toThrow('offset 0–500');
+  });
+
   it('routes a workflow patch only to the isolated proposal callback', async () => {
-    const proposePatch = vi.fn(async (_patch: string, _revision: string) => ({ status: 'preview_ready' }));
+    const proposePatch = vi.fn(async (_patch: string, _revision: string) => ({ status: 'approved', operation_count: 1, valid: true, problem_codes: [] }));
     const patch = JSON.stringify({ operations: [{ op: 'remove', node_ref: 'node_1' }] });
     await expect(dispatchAgentTool({ ...env, proposePatch }, 'workflow.propose_patch', { patch_json: patch, base_revision: 'rev_12345678' }))
-      .resolves.toEqual({ status: 'preview_ready' });
+      .resolves.toEqual({ status: 'approved', operation_count: 1, valid: true, problem_codes: [] });
     expect(proposePatch).toHaveBeenCalledWith(patch, 'rev_12345678');
     await expect(dispatchAgentTool(env, 'workflow.propose_patch', { patch_json: patch, base_revision: 'rev_12345678' }))
       .rejects.toThrow('unavailable in this application context');
