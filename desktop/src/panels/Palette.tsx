@@ -57,7 +57,8 @@ export function Palette() {
     for (const c of filtered) m.set(c.category, [...(m.get(c.category) ?? []), c]);
     return [...m.entries()];
   }, [filtered]);
-  const implemented = catalog.filter((c) => c.kernel && c.implementation_status === 'implemented').length;
+  const available = catalog.filter((c) =>
+    (c.kernel && c.implementation_status === 'implemented') || statusOf(c).cls === 'native').length;
   const activeEntry = catalog.find((c) => c.id === active);
   const interfaceQuestions: Record<string, string> = { 'interface:action': 'text', 'interface:text-box': 'text-box', 'interface:check-box': 'check-box', 'interface:drop-down': 'drop-down', 'interface:numeric-up-down': 'numeric-up-down', 'interface:radio-button': 'radio-button', 'interface:date': 'date', 'interface:list-box': 'list-box', 'interface:file-browse': 'file-browse', 'interface:folder-browse': 'folder-browse' };
   const addInterfaceQuestion = (catalogId: string, position?: { x: number; y: number }) => {
@@ -111,7 +112,7 @@ export function Palette() {
             </div>
             <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <input type="checkbox" checked={onlyReady} onChange={(e) => setOnlyReady(e.target.checked)} />
-              Implemented only ({implemented} of {catalog.length})
+              Available only ({available} of {catalog.length})
             </label>
           </div>
           <div className="palette-list" data-testid="palette-list">

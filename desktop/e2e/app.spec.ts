@@ -36,8 +36,8 @@ test('palette lists every catalogue entry with an honest status', async ({ page 
   await ready(page);
   const items = page.locator('[data-testid^="palette-"].tool-item');
   await expect(items).toHaveCount(323);
-  const implemented = await page.locator('.tool-item .badge.ready, .tool-item .badge.tested, .tool-item .badge.refdiff').count();
-  expect(implemented).toBeGreaterThanOrEqual(26);
+  const available = await page.locator('.tool-item .badge.ready, .tool-item .badge.tested, .tool-item .badge.refdiff, .tool-item .badge.native').count();
+  expect(available).toBeGreaterThanOrEqual(26);
   await page.getByTestId('palette-address:us-geocoder').click();
   await expect(page.getByTestId('tool-detail')).toContainText('licensed data');
   await expect(page.getByTestId('palette-address:us-geocoder')).toHaveAttribute('draggable', 'false');
@@ -45,8 +45,8 @@ test('palette lists every catalogue entry with an honest status', async ({ page 
   await expect(page.getByTestId('palette-join:join')).toBeVisible();
   await expect(page.getByTestId('palette-preparation:filter')).toHaveCount(0);
   await page.getByLabel('Search tools').fill('');
-  await page.getByText(/Implemented only/).click();
-  await expect(items).toHaveCount(implemented);
+  await page.getByText(/Available only/).click();
+  await expect(items).toHaveCount(available);
 });
 
 test('native Condition can be added without inflating kernel implementation count', async ({ page }) => {
