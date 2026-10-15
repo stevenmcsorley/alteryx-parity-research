@@ -69,7 +69,7 @@ describe('editor store', () => {
     expect(toDocument(reopened).edges).toEqual([]);
   });
 
-  it('connects Condition true/false routes only to Action control inputs', () => {
+  it('connects Condition routes only to application control inputs', () => {
     const st = useEditor.getState();
     const questionAction = st.addApplicationAction({ x: 0, y: 0 });
     const questionTarget = useEditor.getState().addTool('core.filter', { x: 300, y: 0 });
@@ -78,17 +78,22 @@ describe('editor store', () => {
     const noAction = useEditor.getState().addApplicationAction({ x: 0, y: 400 });
     const noTarget = useEditor.getState().addTool('core.filter', { x: 300, y: 400 });
     const condition = useEditor.getState().addApplicationCondition({ x: 150, y: 100 });
+    const error = useEditor.getState().addApplicationError({ x: 450, y: 400 });
     const connect = useEditor.getState().connect;
     expect(connect({ source: condition, sourceHandle: 'True Condition', target: yesAction, targetHandle: 'Condition' })).toBeNull();
     expect(connect({ source: condition, sourceHandle: 'False Condition', target: noAction, targetHandle: 'Condition' })).toBeNull();
+    expect(connect({ source: condition, sourceHandle: 'False Condition', target: error, targetHandle: 'Condition' })).toBeNull();
     expect(connect({ source: yesAction, sourceHandle: 'Action', target: yesTarget, targetHandle: '__action__' })).toBeNull();
     expect(connect({ source: noAction, sourceHandle: 'Action', target: noTarget, targetHandle: '__action__' })).toBeNull();
     expect(connect({ source: questionAction, sourceHandle: 'Action', target: questionTarget, targetHandle: '__action__' })).toBeNull();
     expect(connect({ source: condition, sourceHandle: 'output', target: yesAction, targetHandle: 'Condition' })).toMatch(/Condition outputs/);
     const doc = toDocument({ ...useEditor.getState(), description: undefined } as any);
+    const questionId = (useEditor.getState().nodes.find((n) => n.id === questionAction)!.data as any).question.id;
     expect(doc.metadata?.application?.actions.find((a: any) => a.node_id === yesTarget)?.when.operator).toBe('truthy');
     expect(doc.metadata?.application?.actions.find((a: any) => a.node_id === noTarget)?.when.operator).toBe('falsy');
     expect(doc.metadata?.ui.applicationConditions).toHaveLength(1);
+    expect(doc.metadata?.application?.errors).toEqual([{ id: error, message: 'Please correct the application inputs before running.',
+      when: { question: questionId, operator: 'falsy' } }]);
   });
 
   it('groups, ungroups, copies and pastes', () => {
