@@ -100,7 +100,9 @@ def _condition_matches(predicate, answers):
         return not bool(actual)
     expected = predicate['value']
     if operation in ('equals', 'not_equals'):
-        equal = actual == expected and type(actual) is type(expected)
+        both_numeric = (isinstance(actual, (int, float)) and not isinstance(actual, bool)
+                        and isinstance(expected, (int, float)) and not isinstance(expected, bool))
+        equal = actual == expected and (both_numeric or type(actual) is type(expected))
         return equal if operation == 'equals' else not equal
     if operation in ('greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal'):
         if actual is None:

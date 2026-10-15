@@ -333,6 +333,9 @@ class ImportTests(unittest.TestCase):
         self.assertEqual(bind_application(doc, {'amount': 101, 'day': '2026-10-15'})['nodes'][0]['config']['value'], 101)
         self.assertEqual(bind_application(doc, {'amount': 100, 'day': '2026-10-15'})['nodes'][0]['config']['value'], 0)
         doc['metadata']['application']['actions'][0]['when'] = {
+            'question': 'amount', 'operator': 'equals', 'value': 100.0}
+        self.assertEqual(bind_application(doc, {'amount': 100, 'day': '2026-10-15'})['nodes'][0]['config']['value'], 100)
+        doc['metadata']['application']['actions'][0]['when'] = {
             'question': 'day', 'operator': 'greater_than_or_equal', 'value': '2026-01-01'}
         self.assertEqual(bind_application(doc, {'amount': 1, 'day': '2026-10-15'})['nodes'][0]['config']['value'], 1)
         with self.assertRaisesRegex(Exception, 'ISO date'):
