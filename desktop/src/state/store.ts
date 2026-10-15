@@ -62,7 +62,7 @@ export type EditorState = {
   onEdgesChange(changes: EdgeChange<CanvasEdge>[]): void;
   connect(c: Connection): string | null;
   addTool(toolId: string, position: { x: number; y: number }): string;
-  addApplicationAction(position: { x: number; y: number }): string;
+  addApplicationAction(position: { x: number; y: number }, questionType?: string, prompt?: string): string;
   addComment(position: { x: number; y: number }): string;
   updateNodeData(id: string, patch: Record<string, unknown>, record?: boolean): void;
   deleteSelected(): void;
@@ -231,14 +231,17 @@ export const useEditor = create<EditorState>((set, get) => ({
     return id;
   },
 
-  addApplicationAction: (position) => {
+  addApplicationAction: (position, questionType = 'text', prompt = 'Enter a value') => {
     const s = get();
     const id = nextNodeId('application_action', s.nodes.map((n) => n.id));
     const used = new Set<string>((s.metadata?.application?.questions ?? []).map((q: any) => String(q.id)));
     const questionId = nextNodeId('question', used);
     get().checkpoint();
     set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'applicationAction', position,
-      selected: true, data: { kind: 'application-action', question: { id: questionId, prompt: 'Enter a value', type: 'text' },
+      selected: true, data: { kind: 'application-action', question: { id: questionId, prompt,
+        type: (questionType === 'check-box' ? 'boolean' : questionType === 'numeric-up-down' ? 'number' : questionType === 'drop-down' || questionType === 'radio-button' ? 'choice' : questionType === 'date' ? 'date' : questionType === 'file-browse' ? 'file' : questionType === 'folder-browse' ? 'folder' : questionType === 'list-box' || questionType === 'check-box' ? 'multi-choice' : 'text') as any,
+        ...(['drop-down', 'radio-button'].includes(questionType) ? { options: ['Option 1', 'Option 2'] } : questionType === 'list-box' ? { type: 'multi-choice' as const, options: ['Option 1', 'Option 2'] } : {}),
+        ...(questionType === 'numeric-up-down' ? { minimum: 0, maximum: 100, default: 0 } : questionType === 'check-box' ? { default: false } : {}) },
         config_path: ['expression'] } }] });
     return id;
   },

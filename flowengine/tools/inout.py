@@ -639,7 +639,8 @@ class TextInput(Tool):
             'properties': {
                 'fields': {'type': 'array', 'minItems': 1, 'items': FIELD_SPEC},
                 'rows': {'type': 'array', 'items': {'type': 'array',
-                                                    'items': {'type': ['string', 'number', 'boolean', 'null']}}},
+                                                    'items': {'type': ['string', 'number', 'boolean', 'null', 'array'],
+                                                              'items': {'type': ['string', 'number', 'boolean', 'null']}}}},
             },
         })
 

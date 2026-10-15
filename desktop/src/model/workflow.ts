@@ -19,7 +19,7 @@ export type CommentNodeData = { kind: 'comment'; text: string };
 export type ContainerNodeData = { kind: 'container'; caption: string; disabled?: boolean; collapsed?: boolean };
 export type ApplicationActionNodeData = {
   kind: 'application-action';
-  question: { id: string; prompt: string; label?: string; type: 'text' | 'number' | 'boolean'; required?: boolean; default?: string | number | boolean };
+  question: { id: string; prompt: string; label?: string; description?: string; type: 'text' | 'number' | 'boolean' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder'; required?: boolean; default?: unknown; options?: unknown[]; secret?: boolean; minimum?: number; maximum?: number };
   config_path: string[];
   source_action_index?: number;
 };

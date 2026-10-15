@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { isTauri } from '../engine/transport';
 
 type Request = { title: string; initial: string; ext: string; mode: 'save' | 'open'; resolve: (v: string | null) => void };
-export type AppQuestion = { id: string; label?: string; type: 'text' | 'boolean' | 'number' | 'choice'; default?: unknown; required?: boolean; options?: unknown[]; description?: string; secret?: boolean };
+export type AppQuestion = { id: string; label?: string; type: 'text' | 'boolean' | 'number' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder'; default?: unknown; required?: boolean; options?: unknown[]; description?: string; secret?: boolean; minimum?: number; maximum?: number };
 type AppRequest = { title: string; questions: AppQuestion[]; resolve: (v: Record<string, unknown> | null) => void };
 let host: ((r: Request) => void) | null = null;
 let appHost: ((r: AppRequest) => void) | null = null;
@@ -57,11 +57,24 @@ export function DialogHost() {
 }
 
 function ApplicationDialog({ request, close }: { request: AppRequest; close: (v: Record<string, unknown> | null) => void }) {
-  const [values, setValues] = useState<Record<string, unknown>>(() => Object.fromEntries(request.questions.map((q) => [q.id, q.default ?? (q.type === 'boolean' ? false : q.type === 'number' ? 0 : q.type === 'choice' ? q.options?.[0] ?? '' : '')])));
+  const [values, setValues] = useState<Record<string, unknown>>(() => Object.fromEntries(request.questions.map((q) => [q.id, q.default ?? (q.type === 'boolean' ? false : q.type === 'number' ? q.minimum ?? 0 : q.type === 'choice' ? q.options?.[0] ?? '' : q.type === 'multi-choice' ? [] : '')])));
   const [error, setError] = useState('');
+  const choosePath = async (q: AppQuestion) => {
+    try {
+      let selected: string | null = null;
+      if (isTauri()) {
+        const dlg = await import('@tauri-apps/plugin-dialog');
+        const result = await dlg.open({ title: q.label || q.id, directory: q.type === 'folder', multiple: false });
+        selected = typeof result === 'string' ? result : null;
+      } else selected = window.prompt(q.type === 'folder' ? 'Choose a folder path' : 'Choose a file path', String(values[q.id] ?? ''));
+      if (selected !== null) setValues((old) => ({ ...old, [q.id]: selected }));
+    } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+  };
   const submit = () => {
     const missing = request.questions.find((q) => q.required && (values[q.id] === '' || values[q.id] == null));
     if (missing) { setError(`${missing.label || missing.id} is required.`); return; }
+    const outOfRange = request.questions.find((q) => q.type === 'number' && values[q.id] != null && ((q.minimum != null && Number(values[q.id]) < q.minimum) || (q.maximum != null && Number(values[q.id]) > q.maximum)));
+    if (outOfRange) { setError(`${outOfRange.label || outOfRange.id} is outside the allowed range.`); return; }
     close(values);
   };
   return <div className="modal-backdrop" onMouseDown={() => close(null)}>
@@ -71,10 +84,10 @@ function ApplicationDialog({ request, close }: { request: AppRequest; close: (v:
         <span>{q.label || q.id}{q.required ? ' *' : ''}</span>
         {q.type === 'boolean' ? <input aria-label={q.label || q.id} type="checkbox" checked={Boolean(values[q.id])}
           onChange={(e) => setValues({ ...values, [q.id]: e.target.checked })} />
-          : q.type === 'choice' ? <select aria-label={q.label || q.id} value={String(values[q.id] ?? '')}
-            onChange={(e) => setValues({ ...values, [q.id]: e.target.value })}>{(q.options ?? []).map((option) => <option key={String(option)} value={String(option)}>{String(option)}</option>)}</select>
-            : <input aria-label={q.label || q.id} type={q.secret ? 'password' : q.type === 'number' ? 'number' : 'text'} value={String(values[q.id] ?? '')}
-              onChange={(e) => setValues({ ...values, [q.id]: q.type === 'number' ? Number(e.target.value) : e.target.value })} />}
+          : q.type === 'choice' || q.type === 'multi-choice' ? <select aria-label={q.label || q.id} multiple={q.type === 'multi-choice'} value={q.type === 'multi-choice' ? (values[q.id] as string[] ?? []) : String(values[q.id] ?? '')}
+            onChange={(e) => setValues({ ...values, [q.id]: q.type === 'multi-choice' ? [...e.target.selectedOptions].map((o) => o.value) : e.target.value })}>{(q.options ?? []).map((option) => <option key={String(option)} value={String(option)}>{String(option)}</option>)}</select>
+            : <span style={{ display: 'flex', gap: 6 }}>{(q.type === 'file' || q.type === 'folder') && <button type="button" onClick={() => void choosePath(q)}>Browse…</button>}<input aria-label={q.label || q.id} type={q.secret ? 'password' : q.type === 'number' ? 'number' : q.type === 'date' ? 'date' : 'text'} min={q.type === 'number' ? q.minimum : undefined} max={q.type === 'number' ? q.maximum : undefined} value={String(values[q.id] ?? '')}
+              onChange={(e) => setValues({ ...values, [q.id]: q.type === 'number' ? (e.target.value === '' ? null : Number(e.target.value)) : e.target.value })} /></span>}
         {q.description && <small style={{ display: 'block' }}>{q.description}</small>}
       </label>)}
       {error && <p role="alert">{error}</p>}

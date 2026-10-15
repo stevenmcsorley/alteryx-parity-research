@@ -832,7 +832,10 @@ def _import_alteryx_application(root, interface_tool_ids, connections, nodes):
         if not tid:
             continue
         qtype = _t(q, 'Type', '')
-        typ = {'TextBox': 'text', 'NumericUpDown': 'number', 'CheckBox': 'boolean'}.get(qtype)
+        typ = {'TextBox': 'text', 'NumericUpDown': 'number', 'CheckBox': 'boolean',
+               'DropDown': 'choice', 'ListBox': 'multi-choice', 'RadioButton': 'choice',
+               'Date': 'date', 'FileBrowse': 'file', 'FolderBrowse': 'folder',
+               'CheckBoxGroup': 'multi-choice'}.get(qtype)
         if not typ:
             warnings.append(f'Alteryx application question {tid} ({qtype or "unknown"}) is preserved but not exposed in the Flowbench run form')
             continue
@@ -845,9 +848,20 @@ def _import_alteryx_application(root, interface_tool_ids, connections, nodes):
                     default = float(raw) if typ == 'number' else (raw.strip().lower() == 'true' if typ == 'boolean' else raw)
                 except ValueError:
                     default = None
+        options = []
+        for option in q.findall('.//Option') + q.findall('.//Item'):
+            value = option.get('value') or option.get('name') or (option.text or '').strip()
+            if value and value not in options:
+                options.append(value)
+        if typ in ('choice', 'multi-choice') and not options:
+            # Imported choices without a recoverable option list remain preserved in XML,
+            # but cannot safely be prompted or bound.
+            warnings.append(f'Alteryx application question {tid} ({qtype}) has no recoverable options and is preserved but not exposed')
+            continue
         secret = _b(_v(q, 'Password', 'False'))
         qs[str(tid)] = {'id': f'alteryx-question-{tid}', 'label': _t(q, 'Description', '') or _t(q, 'Name', f'Question {tid}'),
                         'type': typ, 'required': False, 'secret': secret,
+                        **({'options': options} if options else {}),
                         **({'default': default} if default is not None and not secret else {})}
     source_questions = {}
     for c in connections:
@@ -873,6 +887,18 @@ def _import_alteryx_application(root, interface_tool_ids, connections, nodes):
             path = None
             if target_node and target_node['tool'] == 'core.filter' and destination_path == 'Expression':
                 path = ['expression']
+            elif target_node and target_node['tool'] == 'core.text_input':
+                cell = re.fullmatch(r'Text\s+Input\s+Data/r\[(\d+)\]/c\[(\d+)\]', destination_path)
+                if cell:
+                    # Designer RuntimeProperties uses one-based row/cell indices.
+                    row, col = int(cell.group(1)) - 1, int(cell.group(2)) - 1
+                    rows = target_node.get('config', {}).get('rows', [])
+                    fields = target_node.get('config', {}).get('fields', [])
+                    if row < len(rows) and col < len(fields):
+                        path = ['rows', str(row), str(col)]
+            elif target_node and target_node['tool'] == 'core.sort' and re.fullmatch(r'SortInfo/Field(?:\[\d+\])?/@order', destination_path):
+                if len(target_node.get('config', {}).get('keys', [])) == 1:
+                    path = ['keys', '0', 'order']
             elif (target_node and target_node['tool'] == 'core.formula'
                   and destination_path == 'FormulaFields/FormulaField/@expression'
                   and len(target_node.get('config', {}).get('formulas', [])) == 1):
