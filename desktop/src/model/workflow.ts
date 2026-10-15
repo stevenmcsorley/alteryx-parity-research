@@ -21,6 +21,7 @@ export type ApplicationActionNodeData = {
   kind: 'application-action';
   question: { id: string; prompt: string; label?: string; description?: string; type: 'text' | 'number' | 'boolean' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder'; required?: boolean; default?: unknown; options?: unknown[]; secret?: boolean; minimum?: number; maximum?: number };
   config_path: string[];
+  when?: { question: string; operator: 'equals' | 'not_equals' | 'truthy' | 'falsy' | 'contains' | 'not_contains'; value?: unknown };
   source_action_index?: number;
 };
 export type CanvasNodeData = ToolNodeData | CommentNodeData | ContainerNodeData | ApplicationActionNodeData;
@@ -113,7 +114,8 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
       const q = { ...questionFields, label: prompt };
       const qi = questions.findIndex((x: any) => x.id === q.id);
       if (qi >= 0) questions[qi] = q; else questions.push(q);
-      actions.push({ question: q.id, node_id: target.id, config_path: d.config_path });
+      actions.push({ question: q.id, node_id: target.id, config_path: d.config_path,
+        ...(d.when ? { when: structuredClone(d.when) } : {}) });
     }
     metadata.application = { ...old, questions, actions };
   }
@@ -176,7 +178,7 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
     ...applicationActions.map((a: any): CanvasNode => ({
       id: a.id, type: 'applicationAction', position: rel(a.id),
       data: { kind: 'application-action', question: { ...a.question, prompt: a.question.prompt ?? a.question.label ?? a.question.id },
-        config_path: a.config_path, source_action_index: a.source_action_index },
+        config_path: a.config_path, when: a.when ? structuredClone(a.when) : undefined, source_action_index: a.source_action_index },
     })),
   ];
   for (const n of nodes) if (!n.parentId) delete n.parentId;
@@ -202,7 +204,7 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
       const position = { x: 180, y: 80 + i * 110 };
       nodes.push({ id, type: 'applicationAction', position,
         data: { kind: 'application-action', question: { ...structuredClone(question), prompt: question.prompt ?? question.label ?? question.id },
-          config_path: [...action.config_path], source_action_index: i } });
+          config_path: [...action.config_path], when: action.when ? structuredClone(action.when) : undefined, source_action_index: i } });
       edges.push({ id: `${id}:Action->${action.node_id}:__action__`, source: id, sourceHandle: 'Action',
         target: action.node_id, targetHandle: '__action__', data: { kind: 'application-action' },
         style: { stroke: '#805ad5', strokeDasharray: '5 4' }, label: 'Action' });

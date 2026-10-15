@@ -35,6 +35,12 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
   };
   if (target?.data.kind === 'tool') walk(target.data.config);
   const pathKey = d.config_path.join('.');
+  const knownQuestions = [...new Map(nodes.filter((n) => n.data.kind === 'application-action')
+    .map((n) => { const q = (n.data as ApplicationActionNodeData).question; return [q.id, q] as const; })).values()];
+  const conditionedQuestion = knownQuestions.find((q) => q.id === d.when?.question);
+  const changeCondition = (when: ApplicationActionNodeData['when']) => {
+    update(node.id, { when }, false);
+  };
   const changeQuestion = (patch: Partial<ApplicationActionNodeData['question']>) => {
     update(node.id, { question: { ...d.question, ...patch } }, false);
   };
@@ -59,6 +65,37 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
         : d.question.type === 'multi-choice' ? <textarea aria-label="Action default answer" rows={2} placeholder="One selected value per line" value={Array.isArray(d.question.default) ? d.question.default.join('\n') : ''} onFocus={checkpoint} onChange={(e) => changeQuestion({ default: e.target.value.split(/\r?\n/).filter(Boolean) })} />
         : <input aria-label="Action default answer" type={d.question.type === 'number' ? 'number' : 'text'} value={d.question.default == null ? '' : String(d.question.default)}
           onFocus={checkpoint} onChange={(e) => changeQuestion({ default: d.question.type === 'number' ? Number(e.target.value) : e.target.value })} />}
+      <label>Condition question</label>
+      <select aria-label="Action condition question" value={d.when?.question ?? ''} onFocus={checkpoint}
+        onChange={(e) => changeCondition(e.target.value ? { question: e.target.value, operator: 'truthy' } : undefined)}>
+        <option value="">Always apply</option>
+        {knownQuestions.map((q) => <option key={q.id} value={q.id}>{q.prompt || q.id}</option>)}
+      </select>
+      {d.when && <><label>Condition</label>
+        <select aria-label="Action condition operator" value={d.when.operator} onFocus={checkpoint}
+          onChange={(e) => {
+            const operator = e.target.value as NonNullable<ApplicationActionNodeData['when']>['operator'];
+            changeCondition({ question: d.when!.question, operator,
+              ...(['equals', 'not_equals', 'contains', 'not_contains'].includes(operator)
+                ? { value: conditionedQuestion?.type === 'number' ? 0 : '' } : {}) });
+          }}>
+          <option value="truthy">Answer is true / nonempty</option>
+          <option value="falsy">Answer is false / empty</option>
+          <option value="equals">Answer equals</option>
+          <option value="not_equals">Answer does not equal</option>
+          {conditionedQuestion?.type === 'multi-choice' && <><option value="contains">Selection includes</option><option value="not_contains">Selection excludes</option></>}
+        </select>
+        {['equals', 'not_equals', 'contains', 'not_contains'].includes(d.when.operator) &&
+          <><label>Compare to</label>
+            {conditionedQuestion?.type === 'boolean'
+              ? <select aria-label="Action condition value" value={String(d.when.value ?? false)} onFocus={checkpoint}
+                  onChange={(e) => changeCondition({ ...d.when!, value: e.target.value === 'true' })}>
+                  <option value="true">True</option><option value="false">False</option></select>
+              : <input aria-label="Action condition value" type={conditionedQuestion?.type === 'number' ? 'number' : 'text'}
+                  value={String(d.when.value ?? '')} onFocus={checkpoint}
+                  onChange={(e) => changeCondition({ ...d.when!, value: conditionedQuestion?.type === 'number' ? Number(e.target.value) : e.target.value })} />}
+          </>}
+      </>}
       <label>Target</label><span>{target?.data.kind === 'tool' ? target.id : 'Connect Action to a tool’s Action anchor'}</span>
       <label>Configuration field</label><select aria-label="Action configuration field" value={pathKey} disabled={!target} onFocus={checkpoint}
         onChange={(e) => update(node.id, { config_path: e.target.value.split('.') })}>

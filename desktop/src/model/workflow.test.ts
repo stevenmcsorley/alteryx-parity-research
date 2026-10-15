@@ -53,6 +53,20 @@ describe('workflow model', () => {
     expect(saved.metadata?.application?.questions[0]).toEqual({ id: 'threshold', label: 'Threshold', type: 'text', default: '[amount] > 2' });
   });
 
+  it('preserves conditional Action predicates across desktop workflow roundtrips', () => {
+    const appDoc = { ...doc, metadata: { ...doc.metadata!, application: {
+      questions: [{ id: 'enabled', label: 'Enable', type: 'boolean', default: false },
+        { id: 'replacement', label: 'Expression', type: 'text', default: '[amount] > 2' }],
+      actions: [{ question: 'replacement', node_id: 'b', config_path: ['expression'],
+        when: { question: 'enabled', operator: 'equals', value: true } }],
+    } } } as WorkflowDoc;
+    const graph = fromDocument(appDoc);
+    const action = graph.nodes.find((n) => n.data.kind === 'application-action')!;
+    expect((action.data as any).when).toEqual({ question: 'enabled', operator: 'equals', value: true });
+    const roundtripped = toDocument(graph);
+    expect(roundtripped.metadata?.application?.actions[0].when).toEqual({ question: 'enabled', operator: 'equals', value: true });
+  });
+
   it('auto-lays out documents without positions by dependency depth', () => {
     const g = fromDocument({ ...doc, metadata: undefined, nodes: doc.nodes.map(({ position: _p, ...n }) => n) });
     const a = g.nodes.find((n) => n.id === 'a')!, b = g.nodes.find((n) => n.id === 'b')!;

@@ -250,6 +250,29 @@ class ImportTests(unittest.TestCase):
         bound = bind_application(doc, {'n': 4, 'colors': ['red', 'blue']})
         self.assertEqual(bound['nodes'][0]['config']['value'], 4)
 
+    def test_native_conditional_action_updates_only_when_activated(self):
+        # Native Flowbench predicate, not a claim of Alteryx Condition XML parity.
+        doc = {'nodes': [{'id': 'n', 'config': {'expression': 'original'}}],
+               'metadata': {'application': {
+                   'questions': [{'id': 'enabled', 'type': 'boolean', 'default': False},
+                                 {'id': 'value', 'type': 'text', 'default': 'replacement'},
+                                 {'id': 'tags', 'type': 'multi-choice', 'options': ['red', 'blue'],
+                                  'default': ['red']}],
+                   'actions': [{'question': 'value', 'node_id': 'n', 'config_path': ['expression'],
+                                'when': {'question': 'enabled', 'operator': 'truthy'}}]}}}
+        original = json.dumps(doc, sort_keys=True)
+        self.assertEqual(bind_application(doc, {})['nodes'][0]['config']['expression'], 'original')
+        self.assertEqual(bind_application(doc, {'enabled': True})['nodes'][0]['config']['expression'], 'replacement')
+        self.assertEqual(json.dumps(doc, sort_keys=True), original)
+        doc['metadata']['application']['actions'][0]['when'] = {
+            'question': 'tags', 'operator': 'contains', 'value': 'blue'}
+        self.assertEqual(bind_application(doc, {})['nodes'][0]['config']['expression'], 'original')
+        self.assertEqual(bind_application(doc, {'tags': ['blue']})['nodes'][0]['config']['expression'], 'replacement')
+        doc['metadata']['application']['actions'][0]['when'] = {
+            'question': 'missing', 'operator': 'truthy'}
+        with self.assertRaises(Exception):
+            bind_application(doc, {})
+
     def test_simple_action_updates_an_existing_text_input_cell(self):
         xml = '''<AlteryxDocument><Nodes>
           <Node ToolID="1"><GuiSettings Plugin="AlteryxGuiToolkit.Questions.TextBox.QuestionTextBox"/><Properties><Configuration/></Properties></Node>
