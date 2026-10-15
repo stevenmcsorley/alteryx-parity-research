@@ -60,7 +60,12 @@ class Join(Tool):
             require_fields(rt.schema, rk, 'right key field')
             for a, b in zip(lk, rk):
                 fa, fb = lt.schema.field(a), rt.schema.field(b)
-                if (fa.type.is_string != fb.type.is_string) or (fa.type.is_numeric != fb.type.is_numeric):
+                compatible = (
+                    (fa.type.is_string and fb.type.is_string)
+                    or (fa.type.is_numeric and fb.type.is_numeric)
+                    or fa.type is fb.type
+                )
+                if not compatible:
                     raise SchemaError(f'Key types are incompatible: {a} ({fa.type.value}) vs {b} ({fb.type.value})')
             li = [lt.schema.index(k) for k in lk]
             ri = [rt.schema.index(k) for k in rk]

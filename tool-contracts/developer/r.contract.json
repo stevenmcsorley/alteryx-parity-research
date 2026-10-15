@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxRPluginGui.R",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/r-tool.html",
-  "status": "implemented",
-  "implementation_status": "implemented",
+  "status": "in-progress",
+  "implementation_status": "in-progress",
   "verification_status": "not-tested",
   "inputs": [
     {
@@ -114,11 +114,9 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
-    "tests": [
-      "test_fe_tools_wave2.UserCodeTools.test_r_tool"
-    ]
+    "count": 0,
+    "passing": 0,
+    "tests": []
   },
   "sources": [
     {

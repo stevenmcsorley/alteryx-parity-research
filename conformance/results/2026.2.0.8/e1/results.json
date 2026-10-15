@@ -5,7 +5,7 @@
   "flowengine_profile": "ayx-2026.2-e1",
   "holdout": false,
   "authorisation": "docs/AUTHORISATION.md",
-  "executed_utc": "2026-10-14T15:34:26+00:00",
+  "executed_utc": "2026-10-15T02:35:15+00:00",
   "flowengine_clock": "2026-01-15T09:30:00",
   "limits": [
     "CSV output cannot distinguish null from empty string",
@@ -18,7 +18,7 @@
       "failed": 0
     },
     "preparation:formula": {
-      "passed": 12,
+      "passed": 13,
       "failed": 0
     },
     "preparation:select": {
@@ -1559,6 +1559,34 @@
         "messages": [],
         "digests": {
           "output": "a25955a4d4d3c7b11283e4324dba525f02f987e809ff6f3caff36efbc521a0b6"
+        },
+        "observed": null
+      }
+    },
+    {
+      "case_id": "probe-fixed-decimal-double-comparison",
+      "catalog_id": "preparation:formula",
+      "description": "FixedDecimal compared with a Double literal at binary precision boundaries",
+      "status": "passed",
+      "differences": [],
+      "config_digest": "3eaa7f3e866422435d0e53dbd10fbc893f30ba886eda83d2aaeecdf356aa3704",
+      "comparison_rule": {
+        "expect": "match",
+        "ordered": true
+      },
+      "ours": {
+        "status": "succeeded",
+        "digests": {
+          "output": "1a9fe328962b656791efc1cbebe353d141611816e98a291a10fa1209caedd9d8"
+        }
+      },
+      "reference": {
+        "exit_code": 0,
+        "errors": [],
+        "warnings": [],
+        "messages": [],
+        "digests": {
+          "output": "1a9fe328962b656791efc1cbebe353d141611816e98a291a10fa1209caedd9d8"
         },
         "observed": null
       }

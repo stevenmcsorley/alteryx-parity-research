@@ -220,8 +220,13 @@ export const useEditor = create<EditorState>((set, get) => ({
     const m = s.tools[toolId];
     const id = nextNodeId(toolId, s.nodes.map((n) => n.id));
     get().checkpoint();
+    const config = m ? defaultConfig(m.config_schema) : {};
+    // New Flowbench Input Data nodes opt into the modern inference policy.
+    // Legacy native workflows and imported Alteryx workflows keep their saved
+    // all-text behavior unless the user changes this setting explicitly.
+    if (toolId === 'core.input_data') config.type_inference = 'flowbench';
     set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'tool', position, selected: true,
-      data: { kind: 'tool', tool: toolId, config: m ? defaultConfig(m.config_schema) : {} } }] });
+      data: { kind: 'tool', tool: toolId, config } }] });
     return id;
   },
 

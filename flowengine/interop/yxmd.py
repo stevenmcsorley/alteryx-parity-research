@@ -120,7 +120,8 @@ def c_text_input(cfg):
 def c_input_data(cfg):
     f = cfg.find('File')
     if f is not None and f.get('FileFormat') == '19':
-        return Converted('core.input_data', {'path': (f.text or '').replace('\\', '/'), 'format': 'yxdb'},
+        return Converted('core.input_data', {'path': (f.text or '').replace('\\', '/'), 'format': 'yxdb',
+                                             'type_inference': 'alteryx-compat'},
                          outputs={'Output': 'output'},
                          warnings=['.yxdb read with coarse types (no original sizes/integer widths)'])
     if f is None or f.get('FileFormat') not in ('0', None):
@@ -136,15 +137,15 @@ def c_input_data(cfg):
         fmt = {'format': 'delimited', 'delimiter': delim}
     else:
         raise Unsupported(f'Delimiter {delim!r}')
-    conv = Converted('core.input_data', {'path': path, **fmt,
+    conv = Converted('core.input_data', {'path': path, **fmt, 'type_inference': 'alteryx-compat',
                                          'has_header': _b(_t(opts, 'HeaderRow', 'True')) if opts is not None else True},
                      outputs={'Output': 'output'})
     if opts is not None and _t(opts, 'CodePage') not in (None, '65001', '28591', '1252'):
         conv.warnings.append(f"Code page {_t(opts, 'CodePage')} read as UTF-8")
     if opts is not None and _t(opts, 'CodePage') in ('28591', '1252'):
         conv.config['encoding'] = 'latin-1' if _t(opts, 'CodePage') == '28591' else 'cp1252'
-    conv.warnings.append('Delimited text is read as text fields (source tool reads V_String size 254 and trims '
-                         'unquoted whitespace; flowengine keeps values unbounded and untrimmed)')
+    conv.warnings.append('Alteryx compatibility mode preserves delimited values as text; Flowbench automatic type '
+                         'inference is available for native workflows. Source whitespace trimming may differ.')
     return conv
 
 

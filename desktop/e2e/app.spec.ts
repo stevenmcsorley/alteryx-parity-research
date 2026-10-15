@@ -91,6 +91,48 @@ test('build, configure, connect and run a workflow from scratch', async ({ page 
   await expect(page.getByTestId('fields-table')).toContainText('int32');
 });
 
+test('CSV auto typing filters numeric quantities and keeps identifiers as text', async ({ page }) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'flowbench-type-audit-'));
+  const csv = path.join(dir, 'quantities.csv');
+  const quantities = ['0', '1', '10', '09', '00123', '-2', '2', '3', '5', '6', '11', '12', '20', '50', '100'];
+  fs.writeFileSync(csv, `CustomerID,Quantity,Sales,Postcode\n${quantities.map((q, i) => `${String(i + 1).padStart(5, '0')},${q},1.25,02139`).join('\n')}\n`);
+  await ready(page);
+  await addFromPalette(page, 'in-out:input-data');
+  await page.getByLabel('Path').fill(csv);
+  await addFromPalette(page, 'preparation:filter');
+  await connect(page, 'out-input_data_1-output', 'in-filter_1-input');
+  await page.getByRole('radio', { name: /Basic:/ }).click();
+  await page.getByLabel('Field', { exact: true }).fill('Quantity');
+  await page.getByLabel('Operator').selectOption('>');
+  await page.getByLabel('Value').fill('10');
+  await addFromPalette(page, 'in-out:browse');
+  await connect(page, 'out-filter_1-true', 'in-browse_1-input');
+  await page.getByTestId('run').click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+  await page.getByTestId('node-filter_1').click();
+  await expect(page.getByTestId('rows-filter_1-true')).toHaveText('6');
+  await expect(page.getByTestId('rows-filter_1-false')).toHaveText('9');
+  await page.getByTestId('node-input_data_1').click();
+  await expect(page.getByTestId('inspector')).toContainText('Quantity');
+  await expect(page.getByTestId('inspector')).toContainText('int64');
+  await expect(page.getByTestId('inspector')).toContainText('fixed_decimal');
+
+  // The modern reader preserves identifier representation despite numeric content.
+  await page.getByLabel('Output to display').selectOption('browse_1::(browse)');
+  await expect(page.getByTestId('results-grid').locator('tbody tr')).toHaveCount(6);
+  await expect(page.getByTestId('results-grid').locator('tbody tr td:nth-child(3)'))
+    .toHaveText(['123', '11', '12', '20', '50', '100']);
+  await expect(page.getByTestId('results-grid')).toContainText('02139');
+
+  // Users can still opt into legacy all-text behavior for compatibility.
+  await page.getByTestId('node-input_data_1').click();
+  await page.getByLabel('Type inference').selectOption('alteryx-compat');
+  await page.getByTestId('run').click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+  await expect(page.getByTestId('rows-filter_1-true')).toHaveText('9');
+  await expect(page.getByTestId('rows-filter_1-false')).toHaveText('6');
+});
+
 test('configure Fuzzy Match through field selectors and execute indexed matching', async ({ page }) => {
   await ready(page);
   await addFromPalette(page, 'in-out:text-input');

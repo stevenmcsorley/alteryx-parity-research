@@ -240,7 +240,10 @@ def _to_decimal(value) -> Decimal:
     if isinstance(value, bool):
         return Decimal(int(value))
     if isinstance(value, (int, Decimal)):
-        return Decimal(value)
+        d = Decimal(value)
+        if not d.is_finite():
+            raise CastFailure(f'{value!r} is not a finite number')
+        return d
     if isinstance(value, float):
         if math.isnan(value) or math.isinf(value):
             raise CastFailure(f'{value!r} has no decimal representation')
@@ -298,23 +301,33 @@ def cast_value(value, field: Field):
         return n, None
     if t is FieldType.FIXED_DECIMAL:
         d = _to_decimal(value)
+        if not d.is_finite():
+            raise CastFailure(f'{value!r} is not a finite fixed-decimal value')
         with localcontext() as ctx:
             ctx.prec = 60
-            q = d.quantize(Decimal(1).scaleb(-field.scale), rounding=ROUND_HALF_EVEN)
+            try:
+                q = d.quantize(Decimal(1).scaleb(-field.scale), rounding=ROUND_HALF_EVEN)
+            except InvalidOperation:
+                raise CastFailure(f'{value!r} cannot be represented as fixed_decimal({field.size},{field.scale})') from None
         digits = len(q.as_tuple().digits)
         if digits > field.size:
             raise CastFailure(f'{value!r} exceeds fixed_decimal({field.size},{field.scale})')
         return q, None
     if t in (FieldType.FLOAT, FieldType.DOUBLE):
-        if isinstance(value, (bool, int, float, Decimal)):
-            f = float(value)
-        elif isinstance(value, str):
-            text = value.strip()
-            if not _NUM_RE.match(text):
-                raise CastFailure(f'{value!r} is not a number')
-            f = float(text)
-        else:
-            raise CastFailure(f'Cannot convert {type(value).__name__} to {t.value}')
+        try:
+            if isinstance(value, (bool, int, float, Decimal)):
+                f = float(value)
+            elif isinstance(value, str):
+                text = value.strip()
+                if not _NUM_RE.match(text):
+                    raise CastFailure(f'{value!r} is not a number')
+                f = float(text)
+            else:
+                raise CastFailure(f'Cannot convert {type(value).__name__} to {t.value}')
+        except (OverflowError, ValueError):
+            raise CastFailure(f'Value overflows {t.value}') from None
+        if isinstance(value, (int, Decimal)) and not isinstance(value, bool) and math.isinf(f):
+            raise CastFailure(f'Value overflows {t.value}')
         if t is FieldType.FLOAT and math.isfinite(f) and abs(f) > 3.4028234663852886e38:
             raise CastFailure(f'{value!r} overflows float')
         return f, None
@@ -382,11 +395,55 @@ def infer_type(value) -> FieldType:
 
 def unify_fields(a: Field, b: Field) -> Field:
     """Smallest common field able to hold values of both (used by Union)."""
+    if a.type is FieldType.FIXED_DECIMAL and b.type is FieldType.FIXED_DECIMAL:
+        scale = max(a.scale, b.scale)
+        precision = max(a.size - a.scale, b.size - b.scale) + scale
+        if precision > 50:
+            raise SchemaError(
+                f'Cannot unify fixed_decimal fields for {a.name!r} without exceeding '
+                f'precision 50 (required {precision})'
+            )
+        return Field(a.name, FieldType.FIXED_DECIMAL, max(1, precision), scale)
     if a.type == b.type:
         size = max(a.size, b.size) if a.size is not None and b.size is not None else (a.size or b.size)
         scale = max(a.scale, b.scale) if a.scale is not None and b.scale is not None else (a.scale or b.scale)
         return Field(a.name, a.type, size, scale)
     if a.type in _NUMERIC_RANK and b.type in _NUMERIC_RANK:
+        # Keep exact decimal/integer combinations exact. Promoting these to a
+        # binary float silently changes values above 2**53 and decimal cents.
+        exact_numeric = {FieldType.BOOL, FieldType.BYTE, FieldType.INT16, FieldType.INT32,
+                         FieldType.INT64, FieldType.FIXED_DECIMAL}
+        if a.type in exact_numeric and b.type in exact_numeric and (
+                a.type is FieldType.FIXED_DECIMAL or b.type is FieldType.FIXED_DECIMAL):
+            integer_digits = {
+                FieldType.BOOL: 1, FieldType.BYTE: 3, FieldType.INT16: 5,
+                FieldType.INT32: 10, FieldType.INT64: 19,
+            }
+            decimals = [f for f in (a, b) if f.type is FieldType.FIXED_DECIMAL]
+            scale = max(f.scale for f in decimals)
+            whole_digits = max(
+                [f.size - f.scale for f in decimals]
+                + [integer_digits[f.type] for f in (a, b) if f.type in integer_digits]
+            )
+            precision = max(1, whole_digits) + scale
+            if precision > 50:
+                raise SchemaError(
+                    f'Cannot unify {a.type.value} and {b.type.value} for {a.name!r} '
+                    f'without exceeding fixed_decimal precision 50 (required {precision})'
+                )
+            return Field(a.name, FieldType.FIXED_DECIMAL, precision, scale)
+        if (a.type is FieldType.FIXED_DECIMAL and b.type in (FieldType.FLOAT, FieldType.DOUBLE)) or (
+                b.type is FieldType.FIXED_DECIMAL and a.type in (FieldType.FLOAT, FieldType.DOUBLE)):
+            raise SchemaError(
+                f'Cannot safely unify fixed_decimal with binary floating point for {a.name!r}; '
+                'convert explicitly after choosing an acceptable precision policy'
+            )
+        if FieldType.INT64 in (a.type, b.type) and any(
+                f.type in (FieldType.FLOAT, FieldType.DOUBLE) for f in (a, b)):
+            raise SchemaError(
+                f'Cannot safely unify int64 with binary floating point for {a.name!r}; '
+                'values above 2**53 may lose integer precision'
+            )
         hi = max(a.type, b.type, key=_NUMERIC_RANK.index)
         if hi is FieldType.FIXED_DECIMAL:
             return Field(a.name, FieldType.DOUBLE)
