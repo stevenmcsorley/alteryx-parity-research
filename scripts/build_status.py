@@ -11,8 +11,8 @@ Derives every status from evidence; nothing is hand-set:
 * conformance   - conformance/results/<build>/results.json (differential runs)
 
 Status rules (docs/TOOL_STATUS_RULES.md):
-  implementation_status = implemented  if a kernel is registered AND >=1 test exercises it AND all such tests pass
-                        = in-progress  if a kernel is registered but tests are missing or failing
+  implementation_status = implemented  if a kernel has passing tests, or a registered application adapter has passing tests and no known unsupported variants
+                        = in-progress  if a kernel or application adapter exists but has missing/failing tests or unsupported variants
                         = not-started  otherwise
   verification_status   = partial      if >=1 conformance case exists and all pass
                         = failed       if any conformance case fails
@@ -45,6 +45,16 @@ from catalog_lib import CATALOG, save_catalog  # noqa: E402
 
 TARGET = 'Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8'
 APPLICATION_ADAPTERS = {
+    'interface:control-parameter': {
+        'module': 'flowengine.tools.macros.BatchMacro + flowengine.interface_app',
+        'engine': 'Flowbench batch-macro control parameter adapter',
+        'test_ids': [
+            'test_macros.BatchMacroTests.test_native_control_parameter_uses_each_parent_row_and_updates_child_configuration',
+        ],
+        'supported': ['Native control-parameter question maps a parent control-record field to connected child configuration actions for each ordered Batch Macro invocation'],
+        'unsupported': ['Authentic Alteryx Control Parameter XML/action connection mapping is not verified'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+    },
     'interface:error-message': {
         'module': 'flowengine.interface_app',
         'test_ids': [
@@ -268,7 +278,7 @@ def build(check=False):
             # kernel registered in the data-processing plugin registry.
             impl_status = ('in-progress' if not tool_tests or not all(ok for _, ok in tool_tests) or adapter['unsupported']
                            else 'implemented')
-            implementation = {'engine': 'Alteryx workflow import/application adapter',
+            implementation = {'engine': adapter.get('engine', 'Alteryx workflow import/application adapter'),
                               'tool_id': cid, 'module': adapter['module'],
                               'supported_variants': adapter['supported'],
                               'unimplemented_variants': adapter['unsupported']}

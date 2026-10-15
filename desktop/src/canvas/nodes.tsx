@@ -69,13 +69,13 @@ export const ApplicationActionNode = memo(function ApplicationActionNode({ id, d
   const connected = useEditor((s) => s.edges.some((e) => e.source === id && e.data?.kind === 'application-action'));
   return <div className={`tool-node application-action-node ${selected ? 'selected' : ''}`} data-testid={`node-${id}`}>
     <div className="head" style={{ background: 'color-mix(in srgb, #805ad5 13%, transparent)' }}>
-      <div className="glyph" style={{ background: '#805ad5' }} aria-hidden>A</div>
-      <div className="names"><div className="tname">Flowbench Action</div><div className="nid">{id}</div></div>
+        <div className="glyph" style={{ background: '#805ad5' }} aria-hidden>{d.question.type === 'control-parameter' ? 'P' : 'A'}</div>
+        <div className="names"><div className="tname">{d.question.type === 'control-parameter' ? 'Control Parameter' : 'Flowbench Action'}</div><div className="nid">{id}</div></div>
     </div>
     <div className="ports" style={{ minHeight: 44 }}>
       <div>
-        <div className="port in" title="Question is supplied by the analytic application form">Question <span className="count">{d.question.type}</span></div>
-        <div className="port in" title="Optional Condition routing input">Condition<Handle type="target" position={Position.Left} id="Condition" className="multiple" style={{ top: '50%' }} data-testid={`in-${id}-Condition`} /></div>
+        <div className="port in" title={d.question.type === 'control-parameter' ? 'Value comes from this field on each parent Batch Macro control record' : 'Question is supplied by the analytic application form'}>{d.question.type === 'control-parameter' ? d.question.control_field || 'Control field required' : 'Question'} <span className="count">{d.question.type}</span></div>
+        {d.question.type !== 'control-parameter' && <div className="port in" title="Optional Condition routing input">Condition<Handle type="target" position={Position.Left} id="Condition" className="multiple" style={{ top: '50%' }} data-testid={`in-${id}-Condition`} /></div>}
       </div>
       <div className="port out">Action
         <Handle type="source" position={Position.Right} id="Action" style={{ top: '50%' }} data-testid={`out-${id}-Action`} />

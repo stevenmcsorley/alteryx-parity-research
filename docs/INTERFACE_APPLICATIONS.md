@@ -60,3 +60,13 @@ above. This is native Flowbench functionality, not a claim that every Alteryx
 Interface connection or Action XML variant is interchangeable. Imported XML
 retention and the limited imported UpdateValue adapter remain tracked
 independently in the generated contract and roadmap.
+# Native Batch Macro Control Parameter
+
+Flowbench-native analytic-app metadata supports a `control-parameter` question
+inside a Batch Macro child definition. Its `control_field` names a column on the
+parent macro's `control` input. Each ordered control row supplies that value to
+the child workflow's connected configuration Action before the child executes.
+The parameter is omitted from the standalone application form and cannot be
+bound as an ordinary application answer. This adapter does not establish
+Alteryx Control Parameter XML compatibility; imported vendor configurations
+remain subject to their existing preservation and diagnostic behavior.

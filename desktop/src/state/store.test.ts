@@ -45,6 +45,20 @@ describe('editor store', () => {
     expect(new Set(saved.metadata?.application?.questions.map((q: any) => q.id)).size).toBe(2);
   });
 
+  it('serializes a batch Control Parameter as a control-row mapping and Action target', () => {
+    const target = useEditor.getState().addTool('core.filter', { x: 400, y: 100 });
+    const parameter = useEditor.getState().addApplicationAction({ x: 100, y: 100 }, 'control-parameter', 'Threshold');
+    const node = useEditor.getState().nodes.find((n) => n.id === parameter)!;
+    const question = (node.data as any).question;
+    useEditor.getState().updateNodeData(parameter, { question: { ...question, id: 'threshold', control_field: 'threshold' } }, false);
+    expect(useEditor.getState().connect({ source: parameter, sourceHandle: 'Action', target, targetHandle: '__action__' })).toBeNull();
+    const saved = toDocument({ ...useEditor.getState(), description: undefined } as any);
+    expect(saved.metadata?.application?.questions).toContainEqual({ id: 'threshold', label: 'Threshold', type: 'control-parameter', control_field: 'threshold' });
+    expect(saved.metadata?.application?.actions).toContainEqual({ question: 'threshold', node_id: target, config_path: ['expression'] });
+    const reopened = fromDocument(saved);
+    expect((reopened.nodes.find((n) => n.id === parameter)!.data as any).question).toMatchObject({ type: 'control-parameter', control_field: 'threshold' });
+  });
+
   it('enforces anchor cardinality, self-loops and cycles', () => {
     const st = useEditor.getState();
     const t1 = st.addTool('core.text_input', { x: 0, y: 0 });

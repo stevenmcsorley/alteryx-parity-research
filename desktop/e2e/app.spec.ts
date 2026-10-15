@@ -69,6 +69,17 @@ test('native Error Message is palette-accessible and configurable in the inspect
   await expect(page.getByTestId('node-error_message_1')).toContainText('Select a reporting period.');
 });
 
+test('Control Parameter exposes a batch control field in the editor', async ({ page }) => {
+  await ready(page);
+  const item = page.getByTestId('palette-interface:control-parameter');
+  await expect(item).toContainText('Flowbench native');
+  await item.dblclick();
+  await expect(page.locator('.react-flow__node-applicationAction')).toHaveCount(1);
+  await page.getByLabel('Control input field').fill('threshold');
+  await expect(page.locator('.application-action-node')).toContainText('Control Parameter');
+  await expect(page.locator('.application-action-node')).toContainText('threshold');
+});
+
 test('catalogue Comment can be placed, edited and remains a canvas annotation', async ({ page }) => {
   await ready(page);
   const comment = page.getByTestId('palette-documentation:comment');

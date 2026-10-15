@@ -228,11 +228,12 @@ function requireRef(value: unknown, refs: Map<string, string>): string {
 }
 function validateQuestion(value: unknown): ApplicationActionNodeData['question'] {
   const q = requireObject(value, 'question');
-  const allowed = ['id', 'prompt', 'description', 'type', 'required', 'default', 'options', 'secret', 'minimum', 'maximum'];
+  const allowed = ['id', 'prompt', 'description', 'type', 'control_field', 'required', 'default', 'options', 'secret', 'minimum', 'maximum'];
   if (Object.keys(q).some((k) => !allowed.includes(k))) throw new Error('Application question contains unsupported fields');
   const id = requireString(q.id, 'question.id', 80), prompt = requireString(q.prompt, 'question.prompt', 300);
-  const types = ['text', 'number', 'boolean', 'choice', 'multi-choice', 'date', 'file', 'folder'];
+  const types = ['text', 'number', 'boolean', 'choice', 'multi-choice', 'date', 'file', 'folder', 'control-parameter'];
   if (typeof q.type !== 'string' || !types.includes(q.type)) throw new Error('Unsupported application question type');
+  if (q.type === 'control-parameter' && (typeof q.control_field !== 'string' || !q.control_field.trim())) throw new Error('Control parameters require a control_field mapping');
   if (q.secret && q.default !== undefined) throw new Error('Secret questions cannot contain a default value');
   if ((q.type === 'choice' || q.type === 'multi-choice') && (!Array.isArray(q.options) || q.options.length === 0 || q.options.some((x) => typeof x !== 'string'))) throw new Error('Choice questions require string options');
   if (q.type === 'number' && ((q.minimum !== undefined && !Number.isFinite(q.minimum)) || (q.maximum !== undefined && !Number.isFinite(q.maximum)))) throw new Error('Numeric question bounds must be finite');

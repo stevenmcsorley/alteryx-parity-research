@@ -185,6 +185,8 @@ export const useEditor = create<EditorState>((set, get) => ({
     if (source?.data.kind === 'application-condition') {
       if (!['application-action', 'application-error'].includes(target?.data.kind ?? '') || !['True Condition', 'False Condition'].includes(c.sourceHandle ?? '') || c.targetHandle !== 'Condition')
         return 'Condition outputs must connect to an Action or Error Message Condition input';
+      if (target?.data.kind === 'application-action' && target.data.question.type === 'control-parameter')
+        return 'Control Parameters cannot be conditionally routed; configure the parent control records instead';
       const id = edgeId(c.source, c.sourceHandle!, c.target, 'Condition');
       if (s.edges.some((e) => e.id === id)) return 'Already connected';
       if (s.edges.some((e) => e.target === c.target && e.data?.kind === 'application-condition'))
@@ -258,7 +260,8 @@ export const useEditor = create<EditorState>((set, get) => ({
     get().checkpoint();
     set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'applicationAction', position,
       selected: true, data: { kind: 'application-action', question: { id: questionId, prompt,
-        type: (questionType === 'check-box' ? 'boolean' : questionType === 'numeric-up-down' ? 'number' : questionType === 'drop-down' || questionType === 'radio-button' ? 'choice' : questionType === 'date' ? 'date' : questionType === 'file-browse' ? 'file' : questionType === 'folder-browse' ? 'folder' : questionType === 'list-box' || questionType === 'check-box' ? 'multi-choice' : 'text') as any,
+        type: (questionType === 'control-parameter' ? 'control-parameter' : questionType === 'check-box' ? 'boolean' : questionType === 'numeric-up-down' ? 'number' : questionType === 'drop-down' || questionType === 'radio-button' ? 'choice' : questionType === 'date' ? 'date' : questionType === 'file-browse' ? 'file' : questionType === 'folder-browse' ? 'folder' : questionType === 'list-box' || questionType === 'check-box' ? 'multi-choice' : 'text') as any,
+        ...(questionType === 'control-parameter' ? { control_field: '' } : {}),
         ...(['drop-down', 'radio-button'].includes(questionType) ? { options: ['Option 1', 'Option 2'] } : questionType === 'list-box' ? { type: 'multi-choice' as const, options: ['Option 1', 'Option 2'] } : {}),
         ...(questionType === 'numeric-up-down' ? { minimum: 0, maximum: 100, default: 0 } : questionType === 'check-box' ? { default: false } : {}) },
         config_path: ['expression'] } }] });

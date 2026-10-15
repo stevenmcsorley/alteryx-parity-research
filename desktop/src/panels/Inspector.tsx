@@ -41,7 +41,7 @@ function ApplicationConditionInspector({ node }: { node: CanvasNode }) {
   const update = useEditor((s) => s.updateNodeData);
   const checkpoint = useEditor((s) => s.checkpoint);
   const questions = useEditor((s) => s.nodes.filter((n) => n.data.kind === 'application-action')
-    .map((n) => (n.data as ApplicationActionNodeData).question));
+    .map((n) => (n.data as ApplicationActionNodeData).question).filter((q) => q.type !== 'control-parameter'));
   const question = questions.find((q) => q.id === d.when.question);
   const updateWhen = (when: ApplicationConditionNodeData['when']) => update(node.id, { when }, false);
   const operators: NonNullable<ApplicationConditionNodeData['when']>['operator'][] = ['truthy', 'falsy', 'equals', 'not_equals'];
@@ -84,14 +84,17 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
   const target = nodes.find((n) => n.id === targetEdge?.target);
   const paths: string[][] = [];
   const walk = (value: unknown, prefix: string[] = []) => {
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
+    if (Array.isArray(value)) {
+      value.forEach((child, index) => walk(child, [...prefix, String(index)]));
+    } else if (value && typeof value === 'object') {
       for (const [key, child] of Object.entries(value)) walk(child, [...prefix, key]);
     } else if (prefix.length && (value === null || ['string', 'number', 'boolean'].includes(typeof value))) paths.push(prefix);
   };
   if (target?.data.kind === 'tool') walk(target.data.config);
   const pathKey = d.config_path.join('.');
   const knownQuestions = [...new Map(nodes.filter((n) => n.data.kind === 'application-action')
-    .map((n) => { const q = (n.data as ApplicationActionNodeData).question; return [q.id, q] as const; })).values()];
+    .map((n) => { const q = (n.data as ApplicationActionNodeData).question; return [q.id, q] as const; })).values()]
+    .filter((q) => q.type !== 'control-parameter');
   const conditionedQuestion = knownQuestions.find((q) => q.id === d.when?.question);
   const actionOperators: NonNullable<ApplicationActionNodeData['when']>['operator'][] = ['truthy', 'falsy', 'equals', 'not_equals'];
   if (conditionedQuestion?.type === 'multi-choice') actionOperators.push('contains', 'not_contains');
@@ -103,11 +106,17 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
     update(node.id, { question: { ...d.question, ...patch } }, false);
   };
   return <>
-    <div className="section"><h3>Flowbench Action</h3><h2>Configuration action</h2>
-      <p className="help">Native Flowbench analytic-app action. This editor representation is distinct from an Alteryx Action XML node; imported XML is retained separately.</p>
+    <div className="section"><h3>{d.question.type === 'control-parameter' ? 'Batch Macro' : 'Flowbench Action'}</h3><h2>{d.question.type === 'control-parameter' ? 'Control Parameter' : 'Configuration action'}</h2>
+      <p className="help">{d.question.type === 'control-parameter'
+        ? 'For each parent Batch Macro control record, read the mapped field and apply its value to the connected child tool configuration. This is native Flowbench behavior; imported Alteryx Control Parameter configurations remain separately identified.'
+        : 'Native Flowbench analytic-app action. This editor representation is distinct from an Alteryx Action XML node; imported XML is retained separately.'}</p>
     </div>
     <div className="section kv">
-      <label>Question ID</label><input aria-label="Action question ID" value={d.question.id} onFocus={checkpoint} onChange={(e) => changeQuestion({ id: e.target.value })} />
+      <label>{d.question.type === 'control-parameter' ? 'Parameter name' : 'Question ID'}</label><input aria-label={d.question.type === 'control-parameter' ? 'Control parameter name' : 'Action question ID'} value={d.question.id} onFocus={checkpoint} onChange={(e) => changeQuestion({ id: e.target.value })} />
+      {d.question.type === 'control-parameter' && <><label>Control input field</label><input aria-label="Control input field" value={d.question.control_field ?? ''} onFocus={checkpoint} onChange={(e) => changeQuestion({ control_field: e.target.value })} />
+        <label>Description</label><input aria-label="Control parameter description" value={d.question.prompt} onFocus={checkpoint} onChange={(e) => changeQuestion({ prompt: e.target.value })} />
+      </>}
+      {d.question.type !== 'control-parameter' && <>
       <label>Prompt</label><input aria-label="Action prompt" value={d.question.prompt} onFocus={checkpoint} onChange={(e) => changeQuestion({ prompt: e.target.value })} />
       <label>Answer type</label><select aria-label="Action answer type" value={d.question.type} onFocus={checkpoint} onChange={(e) => changeQuestion({ type: e.target.value as any,
         default: e.target.value === 'text' || e.target.value === 'date' || e.target.value === 'file' || e.target.value === 'folder' ? '' : e.target.value === 'number' ? 0 : e.target.value === 'choice' ? d.question.options?.[0] ?? '' : e.target.value === 'multi-choice' ? [] : false })}>
@@ -150,6 +159,7 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
                   onChange={(e) => changeCondition({ ...d.when!, value: conditionedQuestion?.type === 'number' ? Number(e.target.value) : e.target.value })} />}
           </>}
       </>}
+      </>}
       <label>Target</label><span>{target?.data.kind === 'tool' ? target.id : 'Connect Action to a tool’s Action anchor'}</span>
       <label>Configuration field</label><select aria-label="Action configuration field" value={pathKey} disabled={!target} onFocus={checkpoint}
         onChange={(e) => update(node.id, { config_path: e.target.value.split('.') })}>
@@ -157,7 +167,9 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
         {paths.map((p) => <option key={p.join('.')} value={p.join('.')}>{p.join('.')}</option>)}
       </select>
     </div>
-    <div className="section"><p className="help">Run prompts for the question, applies the answer to the selected target field on a private workflow copy, validates, then executes. Action links are configuration dependencies and are not row-data connections.</p></div>
+    <div className="section"><p className="help">{d.question.type === 'control-parameter'
+      ? 'The Action connection updates this target for each batch record. It is a configuration dependency, not a row-data connection.'
+      : 'Run prompts for the question, applies the answer to the selected target field on a private workflow copy, validates, then executes. Action links are configuration dependencies and are not row-data connections.'}</p></div>
   </>;
 }
 

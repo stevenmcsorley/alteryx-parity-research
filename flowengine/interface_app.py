@@ -25,13 +25,15 @@ def _spec(doc):
     ids = set()
     question_types = {}
     for q in questions:
-        if not isinstance(q, dict) or q.get('type') not in ('text', 'boolean', 'number', 'choice', 'date', 'file', 'folder', 'multi-choice'):
+        if not isinstance(q, dict) or q.get('type') not in ('text', 'boolean', 'number', 'choice', 'date', 'file', 'folder', 'multi-choice', 'control-parameter'):
             raise EngineError('Each application question needs a supported type', code='application-invalid')
         qid = q.get('id')
         if not isinstance(qid, str) or not qid or qid in ids:
             raise EngineError('Application question ids must be unique non-empty strings', code='application-invalid')
         ids.add(qid)
         question_types[qid] = q['type']
+        if q['type'] == 'control-parameter' and (not isinstance(q.get('control_field'), str) or not q['control_field'].strip()):
+            raise EngineError(f'Control parameter {qid!r} needs a control_field name', code='application-invalid')
         if q.get('secret') and 'default' in q:
             raise EngineError(f'Secret application question {qid!r} must not store a default value', code='application-invalid')
         if q.get('secret') and q['type'] != 'text':
@@ -72,7 +74,8 @@ def _valid_predicate(predicate, question_ids, question_types, depth=0):
                  'less_than', 'less_than_or_equal')
     allowed = (*value_ops, 'truthy', 'falsy')
     qid = predicate.get('question')
-    if (set(predicate) - {'question', 'operator', 'value'} or qid not in question_ids or op not in allowed
+    if (set(predicate) - {'question', 'operator', 'value'} or qid not in question_ids
+            or question_types.get(qid) == 'control-parameter' or op not in allowed
             or ((op in value_ops) != ('value' in predicate))):
         return False
     if op in ('greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal'):
@@ -133,6 +136,8 @@ def describe_application(doc):
     spec = _spec(doc)
     public = []
     for question in spec['questions']:
+        if question['type'] == 'control-parameter':
+            continue
         q = {k: copy.deepcopy(v) for k, v in question.items() if k not in ('secret', 'default')}
         if not question.get('secret') and 'default' in question:
             q['default'] = copy.deepcopy(question['default'])
@@ -149,6 +154,9 @@ def bind_application(doc, supplied):
     if not isinstance(supplied, dict):
         raise EngineError('application_values must be an object', code='application-input-invalid')
     by_id = {q['id']: q for q in spec['questions']}
+    if any(q['type'] == 'control-parameter' for q in spec['questions']):
+        raise EngineError('This workflow requires a Batch Macro control input; control parameters cannot be supplied as standalone application answers',
+                          code='application-control-parameter-context')
     unknown = set(supplied) - set(by_id)
     if unknown:
         raise EngineError('Unknown application input(s): ' + ', '.join(sorted(unknown)), code='application-input-invalid')

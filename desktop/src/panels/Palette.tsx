@@ -6,7 +6,7 @@ import { categoryColor } from '../ui/categories';
 import { TOOL_MIME } from '../canvas/Canvas';
 
 const NATIVE_QUESTION_IDS = ['interface:action', 'interface:text-box', 'interface:check-box', 'interface:drop-down',
-  'interface:numeric-up-down', 'interface:radio-button', 'interface:date', 'interface:list-box',
+  'interface:numeric-up-down', 'interface:radio-button', 'interface:date', 'interface:list-box', 'interface:control-parameter',
   'interface:file-browse', 'interface:folder-browse'];
 
 export function statusOf(c: CatalogEntry): { cls: string; label: string; text: string } {
@@ -17,6 +17,8 @@ export function statusOf(c: CatalogEntry): { cls: string; label: string; text: s
     return { cls: 'native', label: 'Flowbench native', text: 'Native analytic-app Error Message; a connected Condition can stop the run with the configured message.' };
   if (c.id === 'documentation:comment')
     return { cls: 'native', label: 'Flowbench native', text: 'Canvas annotation stored with the workflow and restored on reopen.' };
+  if (c.id === 'interface:control-parameter')
+    return { cls: 'native', label: 'Flowbench native', text: 'Batch Macro control-row field mapping to a child tool configuration action; imported Alteryx parity is not verified.' };
   if (NATIVE_QUESTION_IDS.includes(c.id))
     return { cls: 'native', label: 'Flowbench native', text: 'Native analytic-app question control with typed answers and Action configuration binding.' };
   if (c.kernel && c.implementation_status !== 'implemented')
@@ -60,7 +62,7 @@ export function Palette() {
   const available = catalog.filter((c) =>
     (c.kernel && c.implementation_status === 'implemented') || statusOf(c).cls === 'native').length;
   const activeEntry = catalog.find((c) => c.id === active);
-  const interfaceQuestions: Record<string, string> = { 'interface:action': 'text', 'interface:text-box': 'text-box', 'interface:check-box': 'check-box', 'interface:drop-down': 'drop-down', 'interface:numeric-up-down': 'numeric-up-down', 'interface:radio-button': 'radio-button', 'interface:date': 'date', 'interface:list-box': 'list-box', 'interface:file-browse': 'file-browse', 'interface:folder-browse': 'folder-browse' };
+  const interfaceQuestions: Record<string, string> = { 'interface:action': 'text', 'interface:text-box': 'text-box', 'interface:check-box': 'check-box', 'interface:drop-down': 'drop-down', 'interface:numeric-up-down': 'numeric-up-down', 'interface:radio-button': 'radio-button', 'interface:date': 'date', 'interface:list-box': 'list-box', 'interface:control-parameter': 'control-parameter', 'interface:file-browse': 'file-browse', 'interface:folder-browse': 'folder-browse' };
   const addInterfaceQuestion = (catalogId: string, position?: { x: number; y: number }) => {
     const selected = useEditor.getState().nodes.find((n) => n.selected);
     const p = position ?? (selected ? { x: selected.position.x, y: selected.position.y + 190 } : { x: 120, y: 120 });

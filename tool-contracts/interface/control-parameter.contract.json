@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.ControlParam.ControlParam",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/control-parameter-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "in-progress",
+  "implementation_status": "in-progress",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [
@@ -19,11 +19,15 @@
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "status": "partially-specified",
+    "source": "docs/INTERFACE_APPLICATIONS.md",
+    "supported_variants": [
+      "Native control-parameter question maps a parent control-record field to connected child configuration actions for each ordered Batch Macro invocation"
+    ],
+    "unsupported_variants": [
+      "Authentic Alteryx Control Parameter XML/action connection mapping is not verified"
+    ],
+    "preserved_runtime_xml": true
   },
   "deterministic": null,
   "external_dependencies": [
@@ -32,7 +36,17 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "Flowbench batch-macro control parameter adapter",
+    "tool_id": "interface:control-parameter",
+    "module": "flowengine.tools.macros.BatchMacro + flowengine.interface_app",
+    "supported_variants": [
+      "Native control-parameter question maps a parent control-record field to connected child configuration actions for each ordered Batch Macro invocation"
+    ],
+    "unimplemented_variants": [
+      "Authentic Alteryx Control Parameter XML/action connection mapping is not verified"
+    ]
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -58,9 +72,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_macros.BatchMacroTests.test_native_control_parameter_uses_each_parent_row_and_updates_child_configuration"
+    ]
   },
   "sources": [
     {
@@ -77,10 +93,15 @@
       "url": "data/reference-observations.json",
       "evidence_type": "authorised-reference-structural-scan",
       "accessed_utc": "2026-10-13T09:34:26+00:00"
+    },
+    {
+      "url": "docs/INTERFACE_APPLICATIONS.md",
+      "evidence_type": "authorised-reference-observation-and-project-authored-execution",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
     }
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No independent row-processing kernel; this entry is implemented as a workflow application adapter."
   ]
 }

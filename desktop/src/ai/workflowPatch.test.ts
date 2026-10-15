@@ -99,4 +99,23 @@ describe('AI workflow patch staging', () => {
     expect(proposal.candidate.nodes[0].data).toEqual({ kind: 'comment', text: 'Monthly sales summary' });
     expect(toDocument(proposal.candidate).metadata?.ui.comments[0].text).toBe('Monthly sales summary');
   });
+
+  it('lets the agent propose a batch Control Parameter and its child Action target', async () => {
+    useEditor.getState().loadGraph(emptyGraph as any);
+    useEditor.getState().setEngineMeta({ tools: {
+      'core.filter': { ...manifest('core.filter', ['input'], ['true', 'false']),
+        config_schema: { type: 'object', properties: { field: { type: 'string' }, operator: { type: 'string' }, value: { type: 'number' } } } } as any,
+    } });
+    let checked: any;
+    setTransport({ request: async (_method: string, params: any) => { checked = params.workflow; return { valid: true, problems: [], schemas: {} }; }, subscribe: () => () => {} } as any);
+    const state = useEditor.getState(), baseRevision = workflowRevision(state);
+    const proposal = await prepareWorkflowProposal(state, JSON.stringify({ operations: [
+      { op: 'add', ref: 'filter', tool_id: 'core.filter', config: { field: 'Sales', operator: '>', value: 0 }, position: { x: 320, y: 0 } },
+      { op: 'add_question', ref: 'threshold', question: { id: 'threshold', prompt: 'Minimum sales', type: 'control-parameter', control_field: 'minimum_sales' }, config_path: ['value'], position: { x: 0, y: 0 } },
+      { op: 'connect_action', source_ref: 'threshold', target_ref: 'filter' },
+    ] }), baseRevision);
+    expect(proposal.validation.valid).toBe(true);
+    expect(checked.metadata.application.questions).toContainEqual({ id: 'threshold', label: 'Minimum sales', type: 'control-parameter', control_field: 'minimum_sales' });
+    expect(checked.metadata.application.actions).toContainEqual({ question: 'threshold', node_id: expect.any(String), config_path: ['value'] });
+  });
 });
