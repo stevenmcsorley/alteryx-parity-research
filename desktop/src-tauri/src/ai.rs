@@ -957,6 +957,218 @@ fn find_sse_boundary(bytes: &[u8]) -> Option<(usize, usize)> {
     None
 }
 const MAX_RESPONSE_TEXT_BYTES: usize = 64_000;
+const MAX_FUNCTION_ARGUMENT_BYTES: usize = 16_000;
+
+/// Reconstructs Responses output from the authoritative event stream. Output indexes and item IDs
+/// are used to reconcile `added`/`done` events with the terminal response without duplication.
+#[derive(Default)]
+struct StreamedOutput {
+    items: BTreeMap<usize, Value>,
+    item_ids: HashMap<String, usize>,
+    text_parts: BTreeMap<(usize, usize, &'static str), String>,
+    arguments: BTreeMap<usize, String>,
+    arguments_done: HashSet<usize>,
+    item_done: HashSet<usize>,
+    event_types: BTreeMap<String, usize>,
+    text_delta_count: usize,
+    overflowed: bool,
+}
+
+impl StreamedOutput {
+    fn content_index(event: &Value) -> Option<usize> {
+        event.get("content_index").and_then(Value::as_u64).map(|v| v as usize).filter(|v| *v < 128)
+    }
+
+    fn index_for(&mut self, event: &Value) -> Option<usize> {
+        if let Some(index) = event.get("output_index").and_then(Value::as_u64) {
+            if index >= 32 { self.overflowed = true; return None; }
+            return Some(index as usize);
+        }
+        event.get("item_id").and_then(Value::as_str).and_then(|id| self.item_ids.get(id).copied())
+    }
+
+    fn observe(&mut self, event: &Value) {
+        let kind = event.get("type").and_then(Value::as_str).unwrap_or("unknown");
+        let diagnostic_kind = match kind {
+            "error" | "response.created" | "response.in_progress" | "response.completed" | "response.failed" | "response.incomplete"
+            | "response.output_item.added" | "response.output_item.done" | "response.content_part.added" | "response.content_part.done"
+            | "response.output_text.delta" | "response.output_text.done" | "response.refusal.delta" | "response.refusal.done"
+            | "response.function_call_arguments.delta" | "response.function_call_arguments.done"
+            | "response.reasoning_summary_text.delta" | "response.reasoning_summary_text.done" => kind,
+            _ => "other",
+        };
+        *self.event_types.entry(diagnostic_kind.to_owned()).or_default() += 1;
+        if let (Some(index), Some(id)) = (event.get("output_index").and_then(Value::as_u64).filter(|v| *v < 32), event.get("item_id").and_then(Value::as_str)) {
+            self.item_ids.insert(id.to_owned(), index as usize);
+        }
+        match kind {
+            "response.output_item.added" | "response.output_item.done" => {
+                if event.get("output_index").and_then(Value::as_u64).is_some_and(|v| v >= 32) { self.overflowed = true; return; }
+                let Some(index) = event.get("output_index").and_then(Value::as_u64).map(|v| v as usize).filter(|v| *v < 32) else { return };
+                let Some(item) = event.get("item").filter(|v| v.is_object()) else { return };
+                if let Some(id) = item.get("id").and_then(Value::as_str) { self.item_ids.insert(id.to_owned(), index); }
+                if kind == "response.output_item.done" { self.item_done.insert(index); }
+                self.items.insert(index, item.clone());
+            }
+            "response.content_part.added" | "response.content_part.done" => {
+                let Some(index) = self.index_for(event) else { return };
+                let Some(part) = event.get("part") else { return };
+                let Some(content_index) = Self::content_index(event) else { self.overflowed = true; return };
+                let part_type = part.get("type").and_then(Value::as_str).unwrap_or("");
+                let (key, field) = match part_type {
+                    "output_text" => ("output_text", "text"),
+                    "refusal" => ("refusal", "refusal"),
+                    _ => return,
+                };
+                if let Some(text) = part.get(field).and_then(Value::as_str) {
+                    if text.len() > MAX_RESPONSE_TEXT_BYTES { self.overflowed = true; return; }
+                    self.text_parts.insert((index, content_index, key), text.to_owned());
+                    self.items.entry(index).or_insert_with(|| json!({"type":"message","role":"assistant","content":[]}));
+                }
+            }
+            "response.output_text.delta" | "response.refusal.delta" => {
+                let Some(index) = self.index_for(event) else { return };
+                let Some(content_index) = Self::content_index(event) else { self.overflowed = true; return };
+                let Some(delta) = event.get("delta").and_then(Value::as_str) else { return };
+                let part_type = if kind == "response.refusal.delta" { "refusal" } else { "output_text" };
+                self.text_delta_count += 1;
+                let stored = self.text_parts.entry((index, content_index, part_type)).or_default();
+                if stored.len().saturating_add(delta.len()) > MAX_RESPONSE_TEXT_BYTES { self.overflowed = true; } else { stored.push_str(delta); }
+            }
+            "response.output_text.done" | "response.refusal.done" => {
+                let Some(index) = self.index_for(event) else { return };
+                let Some(content_index) = Self::content_index(event) else { self.overflowed = true; return };
+                let field = if kind == "response.refusal.done" { "refusal" } else { "text" };
+                if let Some(text) = event.get(field).and_then(Value::as_str) {
+                    if text.len() > MAX_RESPONSE_TEXT_BYTES { self.overflowed = true; return; }
+                    let part_type = if field == "refusal" { "refusal" } else { "output_text" };
+                    self.text_parts.insert((index, content_index, part_type), text.to_owned());
+                }
+            }
+            "response.function_call_arguments.delta" => {
+                if let (Some(index), Some(delta)) = (self.index_for(event), event.get("delta").and_then(Value::as_str)) {
+                    let arguments = self.arguments.entry(index).or_default();
+                    if arguments.len().saturating_add(delta.len()) > MAX_FUNCTION_ARGUMENT_BYTES { self.overflowed = true; } else { arguments.push_str(delta); }
+                }
+            }
+            "response.function_call_arguments.done" => {
+                if let Some(index) = self.index_for(event) {
+                    if let Some(arguments) = event.get("arguments").and_then(Value::as_str) {
+                        if arguments.len() > MAX_FUNCTION_ARGUMENT_BYTES { self.overflowed = true; }
+                        else { self.arguments.insert(index, arguments.to_owned()); self.arguments_done.insert(index); }
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    fn finish(&mut self) {
+        for ((index, content_index, part_type), text) in &self.text_parts {
+            let item = self.items.entry(*index).or_insert_with(|| json!({"type":"message","role":"assistant","content":[]}));
+            if item.get("type").and_then(Value::as_str) != Some("message") { continue; }
+            let content = item.get("content").and_then(Value::as_array).cloned().unwrap_or_default();
+            let mut content = content;
+            while content.len() <= *content_index { content.push(Value::Null); }
+            let existing = &content[*content_index];
+            let existing_text = if *part_type == "refusal" { existing.get("refusal").and_then(Value::as_str) } else { existing.get("text").and_then(Value::as_str) };
+            let chosen = existing_text.filter(|value| !value.is_empty()).unwrap_or(text);
+            let part = if *part_type == "refusal" { json!({"type":"refusal","refusal":chosen}) } else { json!({"type":"output_text","text":chosen}) };
+            content[*content_index] = part;
+            item["content"] = Value::Array(content);
+            item["role"] = json!("assistant");
+            item["status"] = json!("completed");
+            if let Some(id) = self.item_ids.iter().find_map(|(id, item_index)| (*item_index == *index).then_some(id)) {
+                item["id"] = json!(id);
+            }
+        }
+        for (index, arguments) in &self.arguments {
+            if let Some(item) = self.items.get_mut(index).filter(|item| item.get("type").and_then(Value::as_str) == Some("function_call")) {
+                item["arguments"] = Value::String(arguments.clone());
+            }
+        }
+    }
+
+    fn reconcile(&self, terminal: &Value) -> Vec<Value> {
+        let terminal_items = terminal.as_array().cloned().unwrap_or_default();
+        let mut result = terminal_items.clone();
+        for (index, streamed) in &self.items {
+            let target_index = streamed.get("id").and_then(Value::as_str)
+                .and_then(|id| terminal_items.iter().position(|item| item.get("id").and_then(Value::as_str) == Some(id)))
+                .unwrap_or(*index);
+            while result.len() <= target_index { result.push(Value::Null); }
+            let current = &result[target_index];
+            if current.is_null() {
+                result[target_index] = streamed.clone();
+                continue;
+            }
+            if current.get("id") != streamed.get("id") && current.get("id").is_some() && streamed.get("id").is_some() {
+                // A terminal item at this output index is authoritative; do not merge another ID.
+                continue;
+            }
+            let mut merged = current.clone();
+            let terminal_has_visible_content = merged.get("content").and_then(Value::as_array).is_some_and(|parts| parts.iter().any(|part| {
+                part.get("text").and_then(Value::as_str).is_some_and(|text| !text.is_empty())
+                    || part.get("refusal").and_then(Value::as_str).is_some_and(|text| !text.is_empty())
+            }));
+            if !terminal_has_visible_content {
+                if let Some(content) = streamed.get("content") { merged["content"] = content.clone(); }
+            }
+            if merged.get("arguments").and_then(Value::as_str).is_none_or(str::is_empty) {
+                if let Some(args) = streamed.get("arguments") { merged["arguments"] = args.clone(); }
+            }
+            result[target_index] = merged;
+        }
+        result.into_iter().filter(|v| !v.is_null()).collect()
+    }
+
+    fn diagnostics(&self, terminal: &Value, reconciled: &[Value]) -> Value {
+        let terminal_shape = response_output_shape(terminal);
+        let reconciled_shape = response_output_shape(&json!(reconciled));
+        json!({
+            "event_type_counts": self.event_types,
+            "streamed_item_count": self.items.len(),
+            "streamed_item_types": count_labels(self.items.values().filter_map(|item| item.get("type").and_then(Value::as_str))),
+            "streamed_item_done_count": self.item_done.len(),
+            "streamed_function_arguments_done_count": self.arguments_done.len(),
+            "streamed_text_delta_count": self.text_delta_count,
+            "stream_overflow": self.overflowed,
+            "terminal_item_count": terminal_shape["item_count"],
+            "terminal_item_types": terminal_shape["item_types"],
+            "reconciled_item_count": reconciled_shape["item_count"],
+            "reconciled_item_types": reconciled_shape["item_types"],
+            "terminal_output_was_array": terminal.is_array()
+        })
+    }
+}
+
+fn merge_stream_output(terminal: &Value, mut stream: StreamedOutput) -> (Vec<Value>, StreamedOutput) {
+    stream.finish();
+    let output = stream.reconcile(terminal);
+    (output, stream)
+}
+
+fn append_completed_output(history: &mut Vec<Value>, items: &[Value]) {
+    history.extend(items.iter().cloned());
+}
+
+fn function_call_completion_evidence(
+    terminal_has_call: bool,
+    item: &Value,
+    stream: &StreamedOutput,
+    output_index: usize,
+) -> bool {
+    if item.get("status").and_then(Value::as_str).is_some_and(|status| status != "completed") {
+        return false;
+    }
+    terminal_has_call || (item.get("status").and_then(Value::as_str) == Some("completed")
+        && stream.item_done.contains(&output_index)
+        && stream.arguments_done.contains(&output_index))
+}
+
+fn streamed_index_for_item(stream: &StreamedOutput, item: &Value, fallback: usize) -> usize {
+    item.get("id").and_then(Value::as_str).and_then(|id| stream.item_ids.get(id).copied()).unwrap_or(fallback)
+}
 
 fn response_output_text(output: &Value) -> Result<String, String> {
     let items = output
@@ -1571,6 +1783,7 @@ pub async fn ai_respond(
     let mut refusal_delta_count = 0usize;
     let mut refusal_done_count = 0usize;
     let mut text_overflow = false;
+    let mut streamed_output = StreamedOutput::default();
     loop {
         let next = tokio::select! {
             item=stream.next()=>item,
@@ -1609,6 +1822,7 @@ pub async fn ai_respond(
         };
         for value in events {
             let event_type = value.get("type").and_then(Value::as_str).unwrap_or("");
+            streamed_output.observe(&value);
             if let Some(id) = value.pointer("/response/id").and_then(Value::as_str) {
                 response_id = safe_diagnostic_label(Some(id));
             }
@@ -1718,16 +1932,32 @@ pub async fn ai_respond(
     }
     response_id = response_id
         .or_else(|| safe_diagnostic_label(response_value.get("id").and_then(Value::as_str)));
-    let completed_output_text = if completed && final_output.is_array() {
+    let (reconciled_items, streamed_output) = merge_stream_output(&final_output, streamed_output);
+    let reconciled_output = json!(reconciled_items);
+    let terminal_output_text = if completed && final_output.is_array() {
         response_output_text(&final_output).unwrap_or_default()
     } else {
         String::new()
     };
-    let completed_text_present = !completed_output_text.trim().is_empty();
-    let available_stream_text = streamed_final_text.as_deref().unwrap_or(&streamed_text);
-    let (final_text, text_source) =
-        select_response_text(completed, completed_output_text, available_stream_text);
-    let diagnostic = response_diagnostic(
+    let completed_text_present = !terminal_output_text.trim().is_empty();
+    let reconstructed_text = if completed {
+        response_output_text(&reconciled_output).unwrap_or_default()
+    } else {
+        String::new()
+    };
+    let available_stream_text = if !reconstructed_text.trim().is_empty() {
+        reconstructed_text.as_str()
+    } else {
+        streamed_final_text.as_deref().unwrap_or(&streamed_text)
+    };
+    let (final_text, selected_text_source) =
+        select_response_text(completed, terminal_output_text, available_stream_text);
+    let text_source = if !completed_text_present && !reconstructed_text.trim().is_empty() {
+        "streamed_item_reconstruction"
+    } else {
+        selected_text_source
+    };
+    let mut diagnostic = response_diagnostic(
         Some(http_status),
         request_id,
         &model,
@@ -1749,6 +1979,7 @@ pub async fn ai_respond(
         !final_text.trim().is_empty(),
         text_source,
     );
+    diagnostic["stream_reconciliation"] = streamed_output.diagnostics(&final_output, &reconciled_items);
     save_response_diagnostic(&state, diagnostic).await;
     if terminal_status == "cancelled" {
         return Err("Generation cancelled".into());
@@ -1773,9 +2004,9 @@ pub async fn ai_respond(
             "ChatGPT stream ended before response.completed; safe response diagnostics are available in AI settings".into()
         });
     }
-    let items = final_output.as_array().cloned().unwrap_or_default();
-    if text_overflow {
-        return Err("ChatGPT streamed more text than Flowbench can safely display".into());
+    let items = reconciled_items;
+    if text_overflow || streamed_output.overflowed {
+        return Err("ChatGPT streamed content exceeded Flowbench's safe response limits".into());
     }
     if items.len() > 32 {
         return Err("ChatGPT response exceeded the tool/output item limit".into());
@@ -1783,8 +2014,9 @@ pub async fn ai_respond(
     let mut calls = Vec::new();
     let mut validated_calls: Vec<(String, String, Value)> = Vec::new();
     let mut pending = state.pending_calls.lock().await;
-    for item in &items {
+    for (position, item) in items.iter().enumerate() {
         if item.get("type").and_then(Value::as_str) == Some("function_call") {
+            let output_index = streamed_index_for_item(&streamed_output, item, position);
             if !tools_enabled {
                 return Err(
                     "ChatGPT returned a function call during a no-tools diagnostic request".into(),
@@ -1804,6 +2036,16 @@ pub async fn ai_respond(
                 .get("arguments")
                 .and_then(Value::as_str)
                 .ok_or("Function call arguments are invalid")?;
+            if item.get("status").and_then(Value::as_str).is_some_and(|status| status != "completed") {
+                return Err("ChatGPT returned a function call that was not complete; it was not executed".into());
+            }
+            let terminal_has_call = final_output.as_array().is_some_and(|terminal| terminal.iter().any(|candidate| {
+                candidate.get("type").and_then(Value::as_str) == Some("function_call")
+                    && candidate.get("call_id").and_then(Value::as_str) == Some(call_id)
+            }));
+            if !function_call_completion_evidence(terminal_has_call, item, &streamed_output, output_index) {
+                return Err("ChatGPT streamed an incomplete function call; it was not executed".into());
+            }
             let args: Value = serde_json::from_str(raw_args)
                 .map_err(|_| "Function call arguments are invalid")?;
             if !ALLOWED_TOOLS.contains(&name) || !valid_tool_arguments(name, &args) {
@@ -1829,14 +2071,12 @@ pub async fn ai_respond(
         pending.insert(id, (name, args));
     }
     drop(pending);
-    state
-        .conversation
-        .lock()
-        .await
-        .extend(items.iter().cloned());
+    let mut history = state.conversation.lock().await;
+    append_completed_output(&mut history, &items);
+    drop(history);
     let empty_reason = if final_text.trim().is_empty() {
         Some(empty_response_reason(
-            &final_output,
+            &reconciled_output,
             calls.len(),
             text_delta_count,
         ))
@@ -2245,6 +2485,90 @@ mod tests {
             empty_response_reason(&json!([]), 0, 1),
             "streamed_text_unavailable"
         );
+    }
+
+    #[test]
+    fn streamed_assistant_message_is_reconstructed_and_saved_when_terminal_output_is_empty() {
+        let mut history = Vec::new();
+        for turn in 0..10 {
+            append_user_prompt(&mut history, "hello").unwrap();
+            let item_id = format!("msg_live_{turn}");
+            let mut stream = StreamedOutput::default();
+            stream.observe(&json!({"type":"response.output_item.added","output_index":0,"item":{"id":item_id,"type":"message","role":"assistant","status":"in_progress","content":[]}}));
+            stream.observe(&json!({"type":"response.output_text.delta","item_id":item_id,"output_index":0,"content_index":0,"delta":"Hello "}));
+            stream.observe(&json!({"type":"response.output_text.delta","item_id":item_id,"output_index":0,"content_index":0,"delta":"again"}));
+            stream.observe(&json!({"type":"response.output_text.done","item_id":item_id,"output_index":0,"content_index":0,"text":"Hello again"}));
+            stream.observe(&json!({"type":"response.output_item.done","output_index":0,"item":{"id":item_id,"type":"message","role":"assistant","status":"completed","content":[]}}));
+            let (items, stream) = merge_stream_output(&json!([]), stream);
+            assert_eq!(response_output_text(&json!(items)).unwrap(), "Hello again");
+            assert_eq!(stream.item_done.len(), 1);
+            append_completed_output(&mut history, &items);
+            assert_eq!(history.last().unwrap()["role"], "assistant");
+            assert_eq!(response_output_text(&json!([history.last().unwrap()])).unwrap(), "Hello again");
+        }
+        assert_eq!(history.len(), 20);
+        assert_eq!(request_history_shape(&history)["roles"]["assistant"], 10);
+
+        let mut stream = StreamedOutput::default();
+        stream.observe(&json!({"type":"response.output_item.added","output_index":0,"item":{"id":"msg_empty_terminal","type":"message","role":"assistant","status":"in_progress","content":[]}}));
+        stream.observe(&json!({"type":"response.output_text.delta","item_id":"msg_empty_terminal","output_index":0,"content_index":0,"delta":"Recovered"}));
+        stream.observe(&json!({"type":"response.output_item.done","output_index":0,"item":{"id":"msg_empty_terminal","type":"message","role":"assistant","status":"completed","content":[]}}));
+        let terminal = json!([{"id":"msg_empty_terminal","type":"message","role":"assistant","status":"completed","content":[{"type":"output_text","text":""}]}]);
+        let (items, _) = merge_stream_output(&terminal, stream);
+        assert_eq!(response_output_text(&json!(items)).unwrap(), "Recovered");
+    }
+
+    #[test]
+    fn streamed_function_call_requires_done_arguments_and_item_and_is_not_duplicated() {
+        let mut stream = StreamedOutput::default();
+        stream.observe(&json!({"type":"response.output_item.added","output_index":0,"item":{"id":"fc_item","type":"function_call","status":"in_progress","call_id":"call_1","name":"workflow_get_snapshot","arguments":""}}));
+        stream.observe(&json!({"type":"response.function_call_arguments.delta","item_id":"fc_item","output_index":0,"delta":"{}"}));
+        stream.observe(&json!({"type":"response.function_call_arguments.done","item_id":"fc_item","output_index":0,"arguments":"{}"}));
+        stream.observe(&json!({"type":"response.output_item.done","output_index":0,"item":{"id":"fc_item","type":"function_call","status":"completed","call_id":"call_1","name":"workflow_get_snapshot","arguments":"{}"}}));
+        let (items, stream) = merge_stream_output(&json!([]), stream);
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0]["type"], "function_call");
+        assert_eq!(items[0]["arguments"], "{}");
+        assert!(stream.item_done.contains(&0) && stream.arguments_done.contains(&0));
+
+        let mut incomplete = StreamedOutput::default();
+        incomplete.observe(&json!({"type":"response.output_item.added","output_index":0,"item":{"id":"fc_item_2","type":"function_call","status":"in_progress","call_id":"call_2","name":"workflow_get_snapshot","arguments":""}}));
+        incomplete.observe(&json!({"type":"response.function_call_arguments.delta","output_index":0,"delta":"{}"}));
+        let partial = json!({"type":"function_call","status":"in_progress"});
+        assert!(!function_call_completion_evidence(false, &partial, &incomplete, 0));
+        let complete = json!({"type":"function_call","status":"completed"});
+        assert!(function_call_completion_evidence(false, &complete, &stream, 0));
+        assert!(!function_call_completion_evidence(true, &partial, &incomplete, 0));
+
+        let terminal = json!([{"id":"fc_item","type":"function_call","status":"completed","call_id":"call_1","name":"workflow_get_snapshot","arguments":"{}"}]);
+        let (merged, _) = merge_stream_output(&terminal, stream);
+        assert_eq!(merged.len(), 1);
+
+        let mut relocated_stream = StreamedOutput::default();
+        relocated_stream.observe(&json!({"type":"response.output_item.added","output_index":1,"item":{"id":"same_item","type":"function_call","status":"in_progress","call_id":"same_call","name":"workflow_get_snapshot","arguments":""}}));
+        relocated_stream.observe(&json!({"type":"response.function_call_arguments.done","item_id":"same_item","output_index":1,"arguments":"{}"}));
+        relocated_stream.observe(&json!({"type":"response.output_item.done","output_index":1,"item":{"id":"same_item","type":"function_call","status":"completed","call_id":"same_call","name":"workflow_get_snapshot","arguments":"{}"}}));
+        let terminal = json!([{"id":"same_item","type":"function_call","status":"completed","call_id":"same_call","name":"workflow_get_snapshot","arguments":"{}"}]);
+        let (merged, relocated_stream) = merge_stream_output(&terminal, relocated_stream);
+        assert_eq!(merged.len(), 1, "stable item identity prevents index-based duplication");
+        let stream_index = streamed_index_for_item(&relocated_stream, &merged[0], 0);
+        assert_eq!(stream_index, 1);
+        assert!(function_call_completion_evidence(false, &merged[0], &relocated_stream, stream_index));
+    }
+
+    #[test]
+    fn response_event_diagnostics_are_aggregate_and_never_include_payloads() {
+        let mut stream = StreamedOutput::default();
+        stream.observe(&json!({"type":"response.output_text.delta","output_index":0,"content_index":0,"delta":"sensitive answer"}));
+        stream.observe(&json!({"type":"response.completed"}));
+        let (items, stream) = merge_stream_output(&json!([]), stream);
+        let diagnostics = stream.diagnostics(&json!([]), &items);
+        let encoded = diagnostics.to_string();
+        assert!(!encoded.contains("sensitive answer"));
+        assert_eq!(diagnostics["event_type_counts"]["response.output_text.delta"], 1);
+        assert_eq!(diagnostics["streamed_item_count"], 1);
+        assert_eq!(diagnostics["terminal_item_count"], 0);
+        assert_eq!(diagnostics["reconciled_item_count"], 1);
     }
 
     #[test]

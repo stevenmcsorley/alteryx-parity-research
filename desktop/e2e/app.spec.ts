@@ -49,6 +49,17 @@ test('palette lists every catalogue entry with an honest status', async ({ page 
   await expect(items).toHaveCount(implemented);
 });
 
+test('Inspector scrolls independently inside the right dock', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 440 });
+  await ready(page);
+  const inspector = page.getByTestId('inspector');
+  await expect(inspector).toBeVisible();
+  const dimensions = await inspector.evaluate((el) => ({ client: el.clientHeight, scroll: el.scrollHeight }));
+  expect(dimensions.scroll).toBeGreaterThan(dimensions.client);
+  await inspector.evaluate((el) => { el.scrollTop = el.scrollHeight; });
+  await expect.poll(() => inspector.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+});
+
 test('build, configure, connect and run a workflow from scratch', async ({ page }) => {
   await ready(page);
   await addFromPalette(page, 'in-out:text-input');
