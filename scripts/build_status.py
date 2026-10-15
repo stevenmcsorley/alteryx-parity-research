@@ -75,6 +75,15 @@ APPLICATION_ADAPTERS = {
         'evidence': 'docs/INTERFACE_TREE.md',
         'evidence_type': 'project-authored-runtime-and-ui-evidence',
     },
+    'interface:date': {
+        'module': 'flowengine.interface_app + desktop/src/ui/dialogs.tsx',
+        'engine': 'Flowbench native analytic-app ISO date question adapter',
+        'test_ids': ['test_fe_interop.ImportTests.test_native_date_question_binds_only_a_real_iso_calendar_date'],
+        'supported': ['Native date control accepts valid YYYY-MM-DD calendar dates and binds the selected ISO string through configured actions'],
+        'unsupported': ['Authentic Alteryx Date question XML configuration and locale-specific date parsing have not been verified'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+        'evidence_type': 'project-authored-runtime-and-ui-evidence',
+    },
     'interface:error-message': {
         'module': 'flowengine.interface_app',
         'test_ids': [

@@ -266,6 +266,19 @@ class ImportTests(unittest.TestCase):
         with self.assertRaisesRegex(EngineError, 'duplicate paths or a selectable parent'):
             bind_application(doc, {})
 
+    def test_native_date_question_binds_only_a_real_iso_calendar_date(self):
+        from flowengine.errors import EngineError
+        doc = {'nodes': [{'id': 'input', 'config': {'date': '2000-01-01'}}], 'metadata': {'application': {
+            'questions': [{'id': 'as_of', 'type': 'date', 'default': '2026-01-02'}],
+            'actions': [{'question': 'as_of', 'node_id': 'input', 'config_path': ['date']}],
+        }}}
+        self.assertEqual(bind_application(doc, {'as_of': '2024-02-29'})['nodes'][0]['config']['date'], '2024-02-29')
+        with self.assertRaises(EngineError) as caught:
+            bind_application(doc, {'as_of': '2023-02-29'})
+        self.assertEqual(caught.exception.code, 'application-input-invalid')
+        with self.assertRaisesRegex(EngineError, 'ISO date'):
+            bind_application(doc, {'as_of': '02/03/2026'})
+
     def test_native_error_message_stops_only_on_matching_application_condition(self):
         from flowengine.errors import EngineError
         doc = {'nodes': [], 'metadata': {'application': {
