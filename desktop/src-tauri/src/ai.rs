@@ -63,6 +63,14 @@ pub struct AiService {
     model_slugs: Mutex<HashSet<String>>,
     conversation: Mutex<Vec<Value>>,
     pending_calls: Mutex<HashMap<String, (String, Value)>>,
+    active_turn: Mutex<Option<AiTurn>>,
+}
+
+#[derive(Clone)]
+struct AiTurn {
+    id: String,
+    checkpoint: usize,
+    assistant_message_id: String,
 }
 
 impl AiService {
@@ -81,6 +89,7 @@ impl AiService {
             model_slugs: Mutex::new(HashSet::new()),
             conversation: Mutex::new(Vec::new()),
             pending_calls: Mutex::new(HashMap::new()),
+            active_turn: Mutex::new(None),
         }
     }
 }
@@ -156,14 +165,16 @@ pub async fn ai_status(state: tauri::State<'_, AiService>) -> Result<Value, Stri
     let creds = state.credentials.lock().await;
     if let Some(c) = creds.as_ref() {
         if !c.scopes.iter().any(|s| s == REQUIRED_SCOPE) {
-            return Ok(json!({"connected":true,"plan_usage_authorized":false}));
+            return Ok(
+                json!({"connected":true,"plan_usage_authorized":false,"data_routing_allowed":state.provider_consent.load(Ordering::SeqCst)}),
+            );
         }
         return Ok(
-            json!({"connected":true,"plan_usage_authorized":true,"subject_hint":subject_hint(&c.subject)}),
+            json!({"connected":true,"plan_usage_authorized":true,"subject_hint":subject_hint(&c.subject),"data_routing_allowed":state.provider_consent.load(Ordering::SeqCst)}),
         );
     }
     Ok(
-        json!({"connected":false,"plan_usage_authorized":false,"session_recovery_required":state.session_recovery_required.load(Ordering::SeqCst)}),
+        json!({"connected":false,"plan_usage_authorized":false,"data_routing_allowed":false,"session_recovery_required":state.session_recovery_required.load(Ordering::SeqCst)}),
     )
 }
 fn subject_hint(subject: &str) -> String {
@@ -864,30 +875,82 @@ fn visible_models(value: Value) -> Vec<Value> {
         .filter(|m|m.get("visibility").and_then(Value::as_str)==Some("list"))
         .filter_map(|m|Some(json!({"slug":m.get("slug")?.as_str()?,"display_name":m.get("display_name")?.as_str()?}))).collect()
 }
-fn take_sse_events(pending: &mut String, chunk: &str) -> Result<Vec<Value>, String> {
-    pending.push_str(chunk);
-    if pending.len() > 1_000_000 {
-        return Err("ChatGPT stream event exceeded the safety limit".into());
+#[derive(Default)]
+struct SseParser {
+    pending: Vec<u8>,
+}
+impl SseParser {
+    fn push(&mut self, chunk: &[u8]) -> Result<Vec<Value>, String> {
+        self.pending.extend_from_slice(chunk);
+        let mut values = Vec::new();
+        loop {
+            let Some((end, width)) = find_sse_boundary(&self.pending) else {
+                break;
+            };
+            if end > 1_000_000 {
+                return Err("ChatGPT stream event exceeded the safety limit".into());
+            }
+            let frame = self.pending.drain(..end).collect::<Vec<_>>();
+            self.pending.drain(..width);
+            let text = std::str::from_utf8(&frame)
+                .map_err(|_| "ChatGPT sent invalid UTF-8 in a stream event".to_string())?;
+            let data = text
+                .lines()
+                .filter_map(|line| line.strip_prefix("data:").map(str::trim_start))
+                .collect::<Vec<_>>()
+                .join("\n");
+            if data.is_empty() || data == "[DONE]" {
+                continue;
+            }
+            values.push(
+                serde_json::from_str(&data)
+                    .map_err(|_| "ChatGPT sent an invalid stream event".to_string())?,
+            );
+        }
+        if self.pending.len() > 1_000_000 {
+            return Err("ChatGPT stream event exceeded the safety limit".into());
+        }
+        Ok(values)
     }
-    *pending = pending.replace("\r\n", "\n");
-    let mut values = Vec::new();
-    while let Some(end) = pending.find("\n\n") {
-        let event = pending[..end].to_string();
-        pending.drain(..end + 2);
-        let data = event
-            .lines()
-            .filter_map(|line| line.strip_prefix("data:").map(str::trim_start))
-            .collect::<Vec<_>>()
-            .join("\n");
-        if data.is_empty() || data == "[DONE]" {
+}
+fn find_sse_boundary(bytes: &[u8]) -> Option<(usize, usize)> {
+    for i in 0..bytes.len().saturating_sub(1) {
+        if bytes[i] == b'\n' && bytes[i + 1] == b'\n' {
+            return Some((i, 2));
+        }
+        if i + 3 < bytes.len() && &bytes[i..i + 4] == b"\r\n\r\n" {
+            return Some((i, 4));
+        }
+    }
+    None
+}
+fn response_output_text(output: &Value) -> Result<String, String> {
+    let items = output
+        .as_array()
+        .ok_or("ChatGPT returned an invalid response output")?;
+    let mut messages = Vec::new();
+    for item in items {
+        if item.get("type").and_then(Value::as_str) != Some("message") {
             continue;
         }
-        values.push(
-            serde_json::from_str(&data)
-                .map_err(|_| "ChatGPT sent an invalid stream event".to_string())?,
-        );
+        let mut text = String::new();
+        if let Some(content) = item.get("content").and_then(Value::as_array) {
+            for part in content {
+                match part.get("type").and_then(Value::as_str) {
+                    Some("output_text") | Some("refusal") => {
+                        if let Some(s) = part.get("text").and_then(Value::as_str) {
+                            text.push_str(s);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+        if !text.is_empty() {
+            messages.push(text);
+        }
     }
-    Ok(values)
+    Ok(messages.join("\n"))
 }
 fn oauth_http_error(error: reqwest::Error) -> String {
     if error.status().is_some_and(|s| s.as_u16() == 401) {
@@ -956,6 +1019,7 @@ pub async fn ai_models(state: tauri::State<'_, AiService>) -> Result<Vec<Value>,
 pub async fn ai_sign_out(state: tauri::State<'_, AiService>) -> Result<Value, String> {
     state.provider_consent.store(false, Ordering::SeqCst);
     state.cancel.store(true, Ordering::SeqCst);
+    *state.active_turn.lock().await = None;
     state.conversation.lock().await.clear();
     state.pending_calls.lock().await.clear();
     let mut guard = state.credentials.lock().await;
@@ -1028,15 +1092,74 @@ pub async fn ai_cancel(state: tauri::State<'_, AiService>) -> Result<(), String>
 }
 
 #[tauri::command]
-pub async fn ai_begin(state: tauri::State<'_, AiService>, prompt: String) -> Result<(), String> {
+pub async fn ai_begin(state: tauri::State<'_, AiService>, prompt: String) -> Result<Value, String> {
     if state.running.load(Ordering::SeqCst) {
         return Err("A ChatGPT response is already running".into());
     }
     require_consent(&state.provider_consent)?;
+    let mut active = state.active_turn.lock().await;
+    if active.is_some() {
+        return Err("Finish or cancel the current conversation turn first".into());
+    }
     let mut conversation = state.conversation.lock().await;
+    let checkpoint = conversation.len();
     append_user_prompt(&mut conversation, &prompt)?;
+    let turn = AiTurn {
+        id: format!("turn_{}", random_token()),
+        checkpoint,
+        assistant_message_id: format!("msg_{}", random_token()),
+    };
     drop(conversation);
     state.cancel.store(false, Ordering::SeqCst);
+    let value = json!({"turn_id":turn.id,"assistant_message_id":turn.assistant_message_id});
+    *active = Some(turn);
+    Ok(value)
+}
+
+#[tauri::command]
+pub async fn ai_finish_turn(
+    state: tauri::State<'_, AiService>,
+    turn_id: String,
+) -> Result<(), String> {
+    let mut active = state.active_turn.lock().await;
+    if active.as_ref().is_none_or(|turn| turn.id != turn_id) {
+        return Err("Conversation turn is no longer active".into());
+    }
+    *active = None;
+    state.pending_calls.lock().await.clear();
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn ai_abort_turn(
+    state: tauri::State<'_, AiService>,
+    turn_id: String,
+) -> Result<(), String> {
+    let mut active = state.active_turn.lock().await;
+    if let Some(turn) = active.as_ref() {
+        if turn.id != turn_id {
+            return Err("Conversation turn is no longer active".into());
+        }
+        state.conversation.lock().await.truncate(turn.checkpoint);
+    }
+    *active = None;
+    state.pending_calls.lock().await.clear();
+    state.cancel.store(false, Ordering::SeqCst);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn ai_new_conversation(state: tauri::State<'_, AiService>) -> Result<(), String> {
+    if state.running.load(Ordering::SeqCst) {
+        return Err("Stop the active response before starting a new conversation".into());
+    }
+    let mut active = state.active_turn.lock().await;
+    if active.is_some() {
+        return Err("Finish or cancel the active conversation turn before clearing it".into());
+    }
+    state.conversation.lock().await.clear();
+    state.pending_calls.lock().await.clear();
+    *active = None;
     Ok(())
 }
 
@@ -1067,6 +1190,8 @@ pub async fn ai_respond(
     app: tauri::AppHandle,
     state: tauri::State<'_, AiService>,
     model: String,
+    turn_id: String,
+    cycle_id: String,
 ) -> Result<Value, String> {
     require_consent(&state.provider_consent)?;
     if !state.model_slugs.lock().await.contains(&model) {
@@ -1080,6 +1205,18 @@ pub async fn ai_respond(
         return Err("A ChatGPT response is already running".into());
     }
     let _active = ActiveResponse(&state.running);
+    let active_turn = state
+        .active_turn
+        .lock()
+        .await
+        .clone()
+        .ok_or("No active conversation turn")?;
+    if active_turn.id != turn_id {
+        return Err("Conversation turn ID does not match the active turn".into());
+    }
+    if !valid_token(&cycle_id, 80) {
+        return Err("Conversation response cycle ID is invalid".into());
+    }
     if model.is_empty() || model.len() > 160 {
         return Err("Select an available ChatGPT model".into());
     }
@@ -1113,7 +1250,7 @@ pub async fn ai_respond(
         });
     }
     let mut stream = response.bytes_stream();
-    let mut pending = String::new();
+    let mut parser = SseParser::default();
     let mut completed = false;
     let mut final_output = json!([]);
     loop {
@@ -1133,11 +1270,11 @@ pub async fn ai_respond(
         }
         let chunk =
             chunk.map_err(|_| "ChatGPT stream was interrupted before completion".to_string())?;
-        let events = take_sse_events(&mut pending, &String::from_utf8_lossy(&chunk))?;
+        let events = parser.push(&chunk)?;
         for value in events {
             match value.get("type").and_then(Value::as_str).unwrap_or("") {
                 "response.output_text.delta" => {
-                    let _=app.emit("ai-stream",json!({"type":"delta","text":value.get("delta").and_then(Value::as_str).unwrap_or("")}));
+                    let _=app.emit("ai-stream",json!({"type":"delta","turn_id":active_turn.id,"message_id":active_turn.assistant_message_id,"cycle_id":cycle_id,"text":value.get("delta").and_then(Value::as_str).unwrap_or("")}));
                 }
                 "response.completed" => {
                     completed = true;
@@ -1145,7 +1282,7 @@ pub async fn ai_respond(
                         .pointer("/response/output")
                         .cloned()
                         .unwrap_or(json!([]));
-                    let _ = app.emit("ai-stream", json!({"type":"completed"}));
+                    let _ = app.emit("ai-stream", json!({"type":"completed","turn_id":active_turn.id,"message_id":active_turn.assistant_message_id,"cycle_id":cycle_id}));
                 }
                 "response.failed" => {
                     let code = value
@@ -1167,6 +1304,7 @@ pub async fn ai_respond(
     let items = final_output
         .as_array()
         .ok_or("ChatGPT returned an invalid response output")?;
+    let final_text = response_output_text(&final_output)?;
     if items.len() > 32 {
         return Err("ChatGPT response exceeded the tool/output item limit".into());
     }
@@ -1217,7 +1355,9 @@ pub async fn ai_respond(
         .lock()
         .await
         .extend(items.iter().cloned());
-    Ok(json!({"calls":calls}))
+    Ok(
+        json!({"turn_id":active_turn.id,"message_id":active_turn.assistant_message_id,"cycle_id":cycle_id,"text":final_text,"calls":calls}),
+    )
 }
 
 #[tauri::command]
@@ -1467,20 +1607,45 @@ mod tests {
     }
     #[test]
     fn sse_parser_handles_incremental_chunks_and_crlf() {
-        let mut pending = String::new();
-        let first = "event: response.output_text.delta\r\ndata: {\"type\":\"response.output_text.delta\",\"delta\":\"Hel";
-        assert!(take_sse_events(&mut pending, first).unwrap().is_empty());
-        let events = take_sse_events(&mut pending, "lo\"}\r\n\r\ndata: {\"type\":\"response.completed\",\"response\":{\"output\":[]}}\r\n\r\n").unwrap();
+        let mut parser = SseParser::default();
+        let first = b"event: response.output_text.delta\r\ndata: {\"type\":\"response.output_text.delta\",\"delta\":\"Hel";
+        assert!(parser.push(first).unwrap().is_empty());
+        let events = parser.push(b"lo\"}\r\n\r\ndata: {\"type\":\"response.completed\",\"response\":{\"output\":[]}}\r\n\r\n").unwrap();
         assert_eq!(events.len(), 2);
         assert_eq!(events[0]["delta"], "Hello");
         assert_eq!(events[1]["type"], "response.completed");
-        assert!(pending.is_empty());
+        assert!(parser.pending.is_empty());
     }
     #[test]
     fn sse_parser_rejects_invalid_json_and_bounds_unterminated_events() {
-        let mut pending = String::new();
-        assert!(take_sse_events(&mut pending, "data: nope\n\n").is_err());
-        assert!(take_sse_events(&mut pending, &"x".repeat(1_000_001)).is_err());
+        let mut parser = SseParser::default();
+        assert!(parser.push(b"data: nope\n\n").is_err());
+        let mut parser = SseParser::default();
+        assert!(parser.push(&vec![b'x'; 1_000_001]).is_err());
+    }
+    #[test]
+    fn sse_parser_preserves_utf8_split_at_every_byte_boundary() {
+        let frame = "data: {\"type\":\"response.output_text.delta\",\"delta\":\"Hi 🧪 café\"}\n\n"
+            .as_bytes();
+        let mut parser = SseParser::default();
+        let mut events = Vec::new();
+        for byte in frame {
+            events.extend(parser.push(&[*byte]).unwrap());
+        }
+        assert_eq!(events[0]["delta"], "Hi 🧪 café");
+    }
+    #[test]
+    fn final_text_is_recovered_from_completed_response_output() {
+        let output = json!([
+            {"type":"reasoning","summary":[]},
+            {"type":"message","content":[{"type":"output_text","text":"Hello"},{"type":"output_text","text":" again"}]},
+            {"type":"function_call","name":"workflow.get_snapshot"}
+        ]);
+        assert_eq!(response_output_text(&output).unwrap(), "Hello again");
+        assert_eq!(
+            response_output_text(&json!([{"type":"message","content":[]}])).unwrap(),
+            ""
+        );
     }
     #[cfg(windows)]
     #[test]

@@ -13,16 +13,19 @@ Flowbench uses the public Sign in with ChatGPT OAuth flow. First registration st
 
 ## Acceptance steps
 
-1. Launch Flowbench and open **Flowbench AI** in the right dock. Confirm the Inspector tab remains available.
-2. Select **Continue with ChatGPT**. Complete the OpenAI flow in the system browser and grant the requested plan usage permission. Return to Flowbench after the loopback callback confirmation.
-3. Confirm the workspace reports ChatGPT plan authorization and a model list appears. The choices must be the account's visible models, not a static built-in list.
-4. Select an available model. Tick the consent checkbox describing prompt and bounded tool-result routing.
-5. Ask: `Which implemented Flowbench tools are available?` Confirm the activity card reports `app.get_capabilities`, and the response reflects the installed catalogue's actual counts and statuses.
-6. Ask: `Why is this workflow invalid?` Confirm the assistant requests `workflow.validate` or `workflow.get_diagnostics`, displays tool activity, and reports sanitized validation codes without raw diagnostic messages or configuration values.
-7. Ask: `What does this workflow contain?` Confirm `workflow.get_snapshot` is used and the answer reflects actual graph nodes/edges. No workflow name, description, raw configuration, file path, query, schema, record data, or diagnostic prose should be included in the outbound safe projection.
-8. While a response streams, select **Stop** and confirm generation ends without leaving the sidebar locked.
-9. Select **Disconnect**. Confirm the account is disconnected and local protected session data is removed. If OpenAI revocation is unreachable, Flowbench must say remote revocation could not be confirmed while still reporting local disconnection.
-10. Restart Flowbench and confirm the protected session resumes if not disconnected; after disconnect, confirm the app asks for sign-in again.
+1. Launch Flowbench and open **Flowbench AI** in the right dock. Confirm the Inspector tab remains available and the conversation dock can be resized.
+2. Open the **•••** menu and select **Continue with ChatGPT**. Complete the OpenAI flow in the system browser and grant the requested plan usage permission. Return to Flowbench after loopback callback confirmation.
+3. Confirm a connected indicator and an account-specific model selector appear. Select one of the visible models returned for this account.
+4. In **••• → Allow prompt and bounded tool results to be sent to ChatGPT**, enable routing and accept the native Windows confirmation. The composer should show whether external routing is allowed.
+5. Send `hello` ten times, waiting for each answer before sending the next. Confirm every completed response appears once, no assistant bubble is blank, and the composer remains enabled.
+6. In the same conversation ask three unrelated questions: `What tools are implemented in Flowbench?`, `What does the open workflow do?`, and `Why is this workflow invalid?` Confirm distinct answers and preserved history.
+7. Ask `Which implemented Flowbench tools are available?` Confirm compact tool activity appears when `app.get_capabilities` is called and the final response reflects installed catalogue statuses.
+8. Ask `Why is this workflow invalid?` Confirm the assistant uses `workflow.validate` or `workflow.get_diagnostics` when appropriate and reports sanitized validation codes, not raw diagnostics or configuration values.
+9. Ask `What does this workflow contain?` Confirm `workflow.get_snapshot` is used and the answer reflects actual graph nodes/edges. The outbound projection must exclude workflow names/descriptions, raw configuration, paths, queries, schemas, records and diagnostic prose.
+10. Switch to **Inspector** while the conversation has history, then return to **Flowbench AI**. Confirm the transcript is preserved. Open **••• → Inspect Flowbench** to test local inspection and catalogue search.
+11. Cancel a response mid-stream with **Stop**. Confirm it is marked stopped, the composer unlocks, then send a new prompt successfully. Also retry after a temporary network failure if one occurs.
+12. Use **New conversation** and confirm only the transcript is cleared; the account remains connected. Test disconnect/reconnect from the menu. After disconnect, confirm the protected local session is removed; if OpenAI revocation is unreachable, Flowbench must explain this while reporting local disconnection.
+13. Restart Flowbench and confirm the protected account session resumes. Conversation text is intentionally not persisted across application restarts.
 
 ## Evidence to record
 
@@ -33,9 +36,11 @@ Record the Flowbench build/version, Windows version, date, whether login and sco
 - The currently exposed agent registry is read-only. It cannot edit a graph, execute a workflow, read raw rows, browse arbitrary files, or perform database writes.
 - Flowbench sends the user's explicitly submitted prompt and bounded results returned by the existing safe projections only after both the checkbox and native Windows confirmation are accepted. Rust owns the fixed tool definitions and conversation transcript, and verifies tool calls and outputs against native allowlists. The renderer cannot submit system/developer messages or prebuilt tool-result transcript entries. Sign-out and app restart clear the in-memory transcript and consent; requests disable server-side response storage.
 - Native code projects and bounds each read-only result before adding it to the transcript. Unknown fields and diagnostic prose are rejected; graph snapshots and capability lists are truncated with explicit indicators when large. The app does not automatically send the open workflow's configuration, schema, or dataset.
-- ChatGPT conversation history remains in native process memory for the current application session; the UI keeps its rendered copy in memory. No server-side response storage is enabled. The selected model slug and conversation are cleared at sign-out/restart.
+- ChatGPT conversation history remains in native process memory for the current application session; the UI keeps a correlated in-memory copy that survives Inspector/AI tab changes and dock resizing. No server-side response storage is enabled. New Conversation clears both copies; conversation text is cleared at sign-out/restart.
 - A deterministic mock-provider UI test proves stream rendering and function routing. It is not evidence that live account registration, a given plan's eligibility, or real account inference succeeded. Record owner-run evidence separately.
 - Sign-in currently keeps one active ChatGPT account. The UI refreshes the available model list from that account. Multi-account selection is not included in this checkpoint.
+- Deltas are tagged with turn, message and response-cycle identifiers. The native command also returns the text from the completed Responses API output as the authoritative recovery path. This protects the renderer against missed/late event delivery but still requires the live acceptance above to verify the installed account/session and provider route.
+- The next focused PR will add revision-bound graph proposals, isolated validation and preview, explicit approval, stale-revision checks, atomic application with a single undo checkpoint, and separately authorized workflow execution. This checkpoint adds no AI graph mutation or run tool.
 
 ## Official references
 
