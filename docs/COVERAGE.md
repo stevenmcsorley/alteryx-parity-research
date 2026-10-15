@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 214 run, 0 failed |
+| Unit/integration tests in last ledger build | 215 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -34,7 +34,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:browse` | `core.browse` | 23 | 0/0 | not-tested |
 | `in-out:date-time-now` | `core.date_time_now` | 1 | 0/0 | not-tested |
 | `in-out:directory` | `core.directory` | 1 | 0/0 | not-tested |
-| `in-out:input-data` | `core.input_data` | 16 | 0/0 | not-tested |
+| `in-out:input-data` | `core.input_data` | 17 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 9 | 0/0 | not-tested |
 | `in-out:text-input` | `core.text_input` | 119 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
