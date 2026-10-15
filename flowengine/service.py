@@ -94,6 +94,9 @@ class EngineService:
                     'python': sys.version.split()[0], 'history': bool(self.history), 'cwd': os.getcwd()}
         if method == 'tools.list':
             return [t.manifest.to_dict() for t in reg.tools()]
+        if method == 'workflow.permissions':
+            from .workflow_effects import workflow_effects
+            return workflow_effects(params['workflow'], self._base(params), registry=reg)
         if method == 'profiles.list':
             return [p.to_dict() for p in PROFILES.values()]
         if method.startswith('database.'):
