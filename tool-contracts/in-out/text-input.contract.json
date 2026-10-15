@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 127,
-    "passing": 127,
+    "count": 128,
+    "passing": 128,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
@@ -173,6 +173,7 @@
       "test_fe_executor.ValidationTests.test_static_schema_errors_detected_before_running",
       "test_fe_executor.ValidationTests.test_static_schemas_propagate",
       "test_fe_executor.ValidationTests.test_tool_version_mismatch",
+      "test_fe_interop.ImportTests.test_condition_branches_execute_different_filter_configurations",
       "test_fe_interop.ImportTests.test_designer_action_acceptance_fixture_executes_on_a_private_copy",
       "test_fe_interop.ImportTests.test_export_round_trip",
       "test_fe_interop.ImportTests.test_imported_alteryx_update_value_action_binds_filter_and_executes",

@@ -163,8 +163,8 @@
     ]
   },
   "independent_tests": {
-    "count": 26,
-    "passing": 26,
+    "count": 27,
+    "passing": 27,
     "tests": [
       "test_data_correctness.DataCorrectnessTests.test_basic_filter_temporal_literals_are_typed",
       "test_data_correctness.DataCorrectnessTests.test_csv_default_inference_types_quantities_and_keeps_codes_as_text",
@@ -176,6 +176,7 @@
       "test_fe_executor.PropertyTests.test_invariants",
       "test_fe_executor.ValidationTests.test_graph_problems",
       "test_fe_executor.ValidationTests.test_static_schema_errors_detected_before_running",
+      "test_fe_interop.ImportTests.test_condition_branches_execute_different_filter_configurations",
       "test_fe_interop.ImportTests.test_designer_action_acceptance_fixture_executes_on_a_private_copy",
       "test_fe_interop.ImportTests.test_export_round_trip",
       "test_fe_interop.ImportTests.test_imported_alteryx_update_value_action_binds_filter_and_executes",
