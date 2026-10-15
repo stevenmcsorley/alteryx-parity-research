@@ -77,6 +77,24 @@ def case_csv_default_inference_makes_numeric_fields_numeric_and_preserves_identi
     assert result.outputs['sales_filter']['true'].column('Sales') == [Decimal('10.25'), Decimal('120.50'), Decimal('20.00')]
 
 
+def case_csv_inference_preserves_subunit_and_exponent_decimals(tmp_path):
+    source = tmp_path / 'precise_sales.csv'
+    source.write_text('Sales,Rate,Scientific,CustomerID\n'
+                      '0.01,0.001,1e2,00123\n'
+                      '0.99,0.250,2e2,00456\n', encoding='utf-8')
+    workflow = _workflow([{'id': 'input', 'tool': 'core.input_data',
+                           'config': {'path': str(source), 'type_inference': 'flowbench'}}], [])
+    result = run_workflow(workflow, base_dir=tmp_path)
+    assert result.ok, result.error
+    table = result.outputs['input']['output']
+    assert table.column('Sales') == [Decimal('0.01'), Decimal('0.99')]
+    assert table.column('Rate') == [Decimal('0.001'), Decimal('0.250')]
+    assert table.column('Scientific') == [Decimal('100'), Decimal('200')]
+    assert table.column('CustomerID') == ['00123', '00456']
+    for name in ('Sales', 'Rate', 'Scientific'):
+        assert table.schema.field(name).type is T.FIXED_DECIMAL
+
+
 def case_filter_numeric_literal_from_text_preserves_int64_precision():
     nodes = [
         {'id': 'input', 'tool': 'core.text_input', 'config': {
@@ -263,6 +281,9 @@ class DataCorrectnessTests(unittest.TestCase):
 
     def test_csv_default_inference_types_quantities_and_keeps_codes_as_text(self):
         case_csv_default_inference_makes_numeric_fields_numeric_and_preserves_identifiers(self.tmp_path)
+
+    def test_csv_inference_preserves_subunit_and_exponent_decimals(self):
+        case_csv_inference_preserves_subunit_and_exponent_decimals(self.tmp_path)
 
     def test_filter_numeric_literal_int64_precision(self):
         case_filter_numeric_literal_from_text_preserves_int64_precision()
