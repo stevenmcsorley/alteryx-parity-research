@@ -1,33 +1,33 @@
-# Flowbench full acceptance — 20261015T021327Z
+# Flowbench full acceptance — 20261015T022246Z
 
-Started: 2026-10-15T02:13:27.265578+00:00
+Started: 2026-10-15T02:22:46.238718+00:00
 Catalogue: 323 entries / 321 distinct names; reference E1/E2: ['2026.2.0.8/e1', '2026.2.0.8/e2']
 
 ## Suite results
 
 | Suite | Status | Tests | Skipped | Cases/workflows passed | Seconds | Evidence |
 |---|---|---:|---:|---:|---:|---|
-| repository-integrity | **PASS** | — | 0 | — | 0.047 | PASS |
-| status-ledger | **PASS** | — | 0 | — | 11.984 | tests: 212 run, 0 failed |
-| parity-roadmap | **PASS** | — | 0 | — | 0.360 | Roadmap matches the catalogue and evidence ledger |
-| python-engine-and-import-macro-security | **PASS** | 212 | 0 | — | 11.937 | OK |
-| desktop-typescript-build | **PASS** | — | 0 | — | 3.250 | ✓ built in 1.11s |
-| desktop-unit-tests | **PASS** | 12 | 0 | — | 1.641 |  |
-| desktop-playwright | **PASS** | 15 | 0 | — | 24.109 |   15 passed (23.4s) |
+| repository-integrity | **PASS** | — | 0 | — | 0.062 | PASS |
+| status-ledger | **PASS** | — | 0 | — | 11.938 | tests: 212 run, 0 failed |
+| parity-roadmap | **PASS** | — | 0 | — | 0.359 | Roadmap matches the catalogue and evidence ledger |
+| python-engine-and-import-macro-security | **PASS** | 212 | 0 | — | 11.907 | OK |
+| desktop-typescript-build | **PASS** | — | 0 | — | 3.343 | ✓ built in 1.18s |
+| desktop-unit-tests | **PASS** | 12 | 0 | — | 1.657 |  |
+| desktop-playwright | **PASS** | 15 | 0 | — | 22.968 |   15 passed (22.3s) |
 | database-integration | **BLOCKED** | — | 0 | — | 0.000 | OpenSSL CLI is required by tests/integration/db_env.py to create the PostgreSQL TLS fixture |
-| r-tool-runtime | **BLOCKED** | — | 0 | — | 0.000 | Pinned external R runtime is not installed |
-| statistical-and-ml-engine-tests | **PASS** | 26 | 0 | — | 7.344 | OK |
+| r-tool-runtime | **PASS** | 1 | 0 | — | 0.516 | OK |
+| statistical-and-ml-engine-tests | **PASS** | 26 | 0 | — | 7.421 | OK |
 | spatial-tool-tests | **NOT RUN** | — | 0 | — | 0.000 | No spatial implementation test module exists yet |
 | connector-contract-tests | **NOT RUN** | — | 0 | — | 0.000 | No connector contract test module exists yet |
-| rust-desktop-shell | **PASS** | — | 0 | — | 4.875 |  |
-| conformance-e1 | **FAIL** | — | 0 | 75/76 cases | 16.765 | 75/76 cases passed against reference build 2026.2.0.8; wrote conformance\results\2026.2.0.8\e1\results.json |
-| conformance-e1-holdout | **FAIL** | — | 0 | 15/31 workflows; 87/126 sinks | 21.000 | 15/31 sample workflows fully match; 87/126 sinks match (e1) |
-| conformance-e2 | **FAIL** | — | 0 | 75/76 cases | 28.297 | 75/76 cases passed against reference build 2026.2.0.8; wrote conformance\results\2026.2.0.8\e2\results.json |
-| conformance-e2-holdout | **FAIL** | — | 0 | 16/31 workflows; 88/126 sinks | 21.391 | 16/31 sample workflows fully match; 88/126 sinks match (e2) |
+| rust-desktop-shell | **PASS** | — | 0 | — | 4.719 |  |
+| conformance-e1 | **FAIL** | — | 0 | 75/76 cases | 16.906 | 75/76 cases passed against reference build 2026.2.0.8; wrote conformance\results\2026.2.0.8\e1\results.json |
+| conformance-e1-holdout | **FAIL** | — | 0 | 15/31 workflows; 87/126 sinks | 21.813 | 15/31 sample workflows fully match; 87/126 sinks match (e1) |
+| conformance-e2 | **FAIL** | — | 0 | 75/76 cases | 28.156 | 75/76 cases passed against reference build 2026.2.0.8; wrote conformance\results\2026.2.0.8\e2\results.json |
+| conformance-e2-holdout | **FAIL** | — | 0 | 16/31 workflows; 88/126 sinks | 22.203 | 16/31 sample workflows fully match; 88/126 sinks match (e2) |
 | performance | **NOT RUN** | — | 0 | — | 0.000 | Pass --include-performance to execute the 200k-row benchmark |
 | windows-installer-clean-runner-smoke | **NOT RUN** | — | 0 | — | 0.000 | Installer changes the host installation state; run on isolated Windows CI with --include-installer |
 
-Totals: {'BLOCKED': 2, 'FAIL': 4, 'NOT RUN': 4, 'PASS': 9, 'SKIP': 0}
+Totals: {'BLOCKED': 1, 'FAIL': 4, 'NOT RUN': 4, 'PASS': 10, 'SKIP': 0}
 
 ## Catalogue matrix
 
@@ -40,7 +40,7 @@ Totals: {'BLOCKED': 2, 'FAIL': 4, 'NOT RUN': 4, 'PASS': 9, 'SKIP': 0}
 | `in-out:input-data` | Input Data | implemented | not-tested | 0/0 | 0/0 | 15 | no |
 | `in-out:map-input` | Map Input | not-started | not-tested | 0/0 | 0/0 | 0 | no |
 | `in-out:output-data` | Output Data | implemented | not-tested | 0/0 | 0/0 | 9 | no |
-| `in-out:text-input` | Text Input | implemented | not-tested | 0/0 | 0/0 | 119 | no |
+| `in-out:text-input` | Text Input | implemented | not-tested | 0/0 | 0/0 | 118 | no |
 | `preparation:auto-field` | Auto Field | implemented | partial | 1/1 | 1/1 | 1 | no |
 | `preparation:create-samples` | Create Samples | implemented | not-tested | 0/0 | 0/0 | 1 | no |
 | `preparation:data-cleanse-pro` | Data Cleanse Pro | implemented | not-tested | 0/0 | 0/0 | 3 | no |
@@ -304,7 +304,7 @@ Totals: {'BLOCKED': 2, 'FAIL': 4, 'NOT RUN': 4, 'PASS': 9, 'SKIP': 0}
 | `developer:license-api` | License API | not-started | not-tested | 0/0 | 0/0 | 0 | no |
 | `developer:message` | Message | implemented | not-tested | 0/0 | 0/0 | 1 | no |
 | `developer:python` | Python | implemented | not-tested | 0/0 | 0/0 | 4 | no |
-| `developer:r` | R | implemented | not-tested | 0/0 | 0/0 | 1 | no |
+| `developer:r` | R | in-progress | not-tested | 0/0 | 0/0 | 0 | no |
 | `developer:run-command` | Run Command | implemented | not-tested | 0/0 | 0/0 | 1 | no |
 | `developer:runner` | Runner | not-started | not-tested | 0/0 | 0/0 | 0 | no |
 | `developer:server-api` | Server API | not-started | not-tested | 0/0 | 0/0 | 0 | no |

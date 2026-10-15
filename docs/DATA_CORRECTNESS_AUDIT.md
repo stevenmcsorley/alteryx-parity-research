@@ -8,7 +8,7 @@ Reference: Alteryx Designer 2026.2.0.8; E1 and E2/AMP reported separately.
 
 Inspected Python types/casts, Table/schema propagation, Arrow and file/database boundaries, formula comparisons, processing kernels, macro and Python/R exchange, workflow import/export, React field configuration/results, Rust RPC transport, contracts and conformance evidence.
 
-The generated ledger reports 323 catalogue entries across 321 names, 64 registered kernels, one Action adapter in progress, 32 partially reference-tested entries, zero fully verified entries and one failing reference case. All coverage counts below are evidence-derived, not palette counts.
+The generated ledger reports 323 catalogue entries across 321 names, 64 registered kernels (63 meeting the ledger's implemented rule; R remains in progress because its optional integration test is excluded from the cross-platform tool map), one Action adapter in progress, 258 not started, 32 partially reference-tested entries, zero fully verified entries and one failing reference case. The separate R-enabled acceptance job executes the R kernel; the generic status ledger remains environment-independent. All coverage counts below are evidence-derived, not palette counts.
 
 ## CSV and Filter reproduction
 
@@ -85,7 +85,7 @@ Generated from data/tool-status.json, manifests, test counts and verification le
 | in-out:directory | Directory | `core.directory` | `flowengine/tools/inout.py` | Input/output parsing, type declarations, null representation and format mappings. | 1 | not-tested |
 | in-out:input-data | Input Data | `core.input_data` | `flowengine/tools/inout.py` | Input/output parsing, type declarations, null representation and format mappings. | 15 | not-tested |
 | in-out:output-data | Output Data | `core.output_data` | `flowengine/tools/inout.py` | Input/output parsing, type declarations, null representation and format mappings. | 9 | not-tested |
-| in-out:text-input | Text Input | `core.text_input` | `flowengine/tools/inout.py` | Input/output parsing, type declarations, null representation and format mappings. | 119 | not-tested |
+| in-out:text-input | Text Input | `core.text_input` | `flowengine/tools/inout.py` | Input/output parsing, type declarations, null representation and format mappings. | 118 | not-tested |
 | preparation:auto-field | Auto Field | `core.auto_field` | `flowengine/tools/prep_extra.py` | Sampling, inference, fill/binning and schema propagation. | 1 | partial |
 | preparation:create-samples | Create Samples | `core.create_samples` | `flowengine/tools/prep_extra.py` | Sampling, inference, fill/binning and schema propagation. | 1 | not-tested |
 | preparation:data-cleanse-pro | Data Cleanse Pro | `core.data_cleanse_pro` | `flowengine/tools/preparation.py` | Select casts, Filter comparisons, Sort keys, ordering and null semantics. | 3 | not-tested |
@@ -140,7 +140,7 @@ Generated from data/tool-status.json, manifests, test counts and verification le
 | developer:json-parse | JSON Parse | `core.json_parse` | `flowengine/tools/developer.py` | Runtime boundaries and cross-language type interchange. | 1 | partial |
 | developer:message | Message | `core.message` | `flowengine/tools/developer.py` | Runtime boundaries and cross-language type interchange. | 1 | not-tested |
 | developer:python | Python | `core.python` | `flowengine/tools/developer.py` | Runtime boundaries and cross-language type interchange. | 4 | not-tested |
-| developer:r | R | `core.r` | `flowengine/tools/developer.py` | Runtime boundaries and cross-language type interchange. | 1 | not-tested |
+| developer:r | R | `core.r` | `flowengine/tools/developer.py` | Runtime boundaries and cross-language type interchange. | 0 | not-tested |
 | developer:run-command | Run Command | `core.run_command` | `flowengine/tools/developer.py` | Runtime boundaries and cross-language type interchange. | 1 | not-tested |
 | developer:test | Test | `core.test` | `flowengine/tools/developer.py` | Runtime boundaries and cross-language type interchange. | 1 | not-tested |
 | developer:throttle | Throttle | `core.throttle` | `flowengine/tools/developer.py` | Runtime boundaries and cross-language type interchange. | 1 | not-tested |
@@ -154,8 +154,8 @@ Full authorized differential rerun:
 
 | Profile | Passed | Failure |
 |---|---:|---|
-| E1 2026.2.0.8 | 74/75 | probe-sort-locale-1033, known locale discrepancy |
-| E2/AMP 2026.2.0.8 | 74/75 | probe-sort-locale-1033, known locale discrepancy |
+| E1 2026.2.0.8 | 75/76 | probe-sort-locale-1033, known locale discrepancy |
+| E2/AMP 2026.2.0.8 | 75/76 | probe-sort-locale-1033, known locale discrepancy |
 
 No assertions were weakened. New Union/Arrow/error policies are not Alteryx parity claims.
 
@@ -243,9 +243,9 @@ Additional unverified areas: authorized comparisons for decimal/float Union poli
 - TypeScript unit tests: `npm test` — 12 passed. Production build: `npm run build` — passed.
 - Rust/Tauri: `cargo test --manifest-path desktop/src-tauri/Cargo.toml` — 3 passed, 0 failed.
 - Differential reference: E1 75/76 and E2 75/76. The new mixed FixedDecimal/Double comparison probe passes in both profiles. The sole remaining failure in each is the recorded Sort locale collation case; it remains visible. The full acceptance holdout campaign reports existing workflow mismatches, itemised in its generated evidence report.
-- Generated-ledger checks: `python scripts/build_status.py --check` and `python scripts/build_parity_roadmap.py --check` — passed. The regenerated ledger reports 323 catalogue entries, 64 registered kernels, one in-progress Action adapter, 32 partial reference records, 0 fully verified entries, and 78 external prerequisites.
+- Generated-ledger checks: `python scripts/build_status.py --check` and `python scripts/build_parity_roadmap.py --check` — passed both with and without R discoverable. The ledger reports 323 catalogue entries, 64 registered kernels (63 implemented, R and Action in progress), 32 partial reference records, 0 fully verified entries, and 78 external prerequisites.
 - Native installed Tauri acceptance: not run. The available environment exposes browser Playwright and Rust tests but no native GUI automation surface. The Playwright test does not substitute for installed-app verification.
-- Full acceptance orchestrator: 9 suites passed, 4 failed, 2 blocked, and 4 not run. The four failing suites are E1/E2 conformance (75/76 in each; the remaining Sort locale mismatch) and E1/E2 holdouts (15/31 workflows, 87/126 sinks in E1; 16/31 workflows, 88/126 sinks in E2). Database integration is blocked because OpenSSL is not on PATH for provisioning the PostgreSQL TLS fixture; R is blocked because the pinned R runtime is not installed. Spatial, connector contracts, performance and isolated Windows installer smoke were not run. Full JSON/Markdown evidence is in `acceptance-results-data-audit-final/`.
+- Full acceptance orchestrator: 10 suites passed, 4 failed, 1 blocked, and 4 not run. The four failing suites are E1/E2 conformance (75/76 in each; the remaining Sort locale mismatch) and E1/E2 holdouts (15/31 workflows, 87/126 sinks in E1; 16/31 workflows, 88/126 sinks in E2). Database integration is blocked because OpenSSL is not on PATH for provisioning the PostgreSQL TLS fixture. R 4.6.0 was found through Flowbench's runtime resolver and its tool test passed. Spatial, connector contracts, performance and isolated Windows installer smoke were not run. Full JSON/Markdown evidence is in `acceptance-results-data-audit-final/`.
 
 ## Release risks and outstanding validation
 

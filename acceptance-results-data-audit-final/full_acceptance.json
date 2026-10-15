@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "run_id": "20261015T021327Z",
-  "started_utc": "2026-10-15T02:13:27.265578+00:00",
-  "finished_utc": "2026-10-15T02:16:00.286964+00:00",
+  "run_id": "20261015T022246Z",
+  "started_utc": "2026-10-15T02:22:46.238718+00:00",
+  "finished_utc": "2026-10-15T02:25:20.233304+00:00",
   "host": {
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.12.5"
@@ -16,10 +16,10 @@
     "2026.2.0.8/e2"
   ],
   "summary": {
-    "BLOCKED": 2,
+    "BLOCKED": 1,
     "FAIL": 4,
     "NOT RUN": 4,
-    "PASS": 9,
+    "PASS": 10,
     "SKIP": 0
   },
   "suites": [
@@ -27,7 +27,7 @@
       "name": "repository-integrity",
       "status": "PASS",
       "return_code": 0,
-      "duration_seconds": 0.047,
+      "duration_seconds": 0.062,
       "test_count": null,
       "skipped_count": 0,
       "command": [
@@ -40,7 +40,7 @@
       "name": "status-ledger",
       "status": "PASS",
       "return_code": 0,
-      "duration_seconds": 11.984,
+      "duration_seconds": 11.938,
       "test_count": null,
       "skipped_count": 0,
       "command": [
@@ -48,13 +48,13 @@
         "scripts/build_status.py",
         "--check"
       ],
-      "output_tail": "{\n  \"catalogue_entries\": 323,\n  \"kernels_registered\": 64,\n  \"application_adapters\": 1,\n  \"implementation_status\": {\n    \"implemented\": 64,\n    \"in-progress\": 1,\n    \"not-started\": 258\n  },\n  \"verification_status\": {\n    \"failed\": 1,\n    \"not-tested\": 290,\n    \"partial\": 32\n  },\n  \"anchors_known\": 183,\n  \"reference_observed\": 127,\n  \"conformance_cases\": 76,\n  \"conformance_cases_passed\": 75,\n  \"e2_cases\": 76,\n  \"e2_cases_passed\": 75,\n  \"external_prerequisites_blocking\": 78\n}\ntests: 212 run, 0 failed\n"
+      "output_tail": "{\n  \"catalogue_entries\": 323,\n  \"kernels_registered\": 64,\n  \"application_adapters\": 1,\n  \"implementation_status\": {\n    \"implemented\": 63,\n    \"in-progress\": 2,\n    \"not-started\": 258\n  },\n  \"verification_status\": {\n    \"failed\": 1,\n    \"not-tested\": 290,\n    \"partial\": 32\n  },\n  \"anchors_known\": 183,\n  \"reference_observed\": 127,\n  \"conformance_cases\": 76,\n  \"conformance_cases_passed\": 75,\n  \"e2_cases\": 76,\n  \"e2_cases_passed\": 75,\n  \"external_prerequisites_blocking\": 78\n}\ntests: 212 run, 0 failed\n"
     },
     {
       "name": "parity-roadmap",
       "status": "PASS",
       "return_code": 0,
-      "duration_seconds": 0.36,
+      "duration_seconds": 0.359,
       "test_count": null,
       "skipped_count": 0,
       "command": [
@@ -68,7 +68,7 @@
       "name": "python-engine-and-import-macro-security",
       "status": "PASS",
       "return_code": 0,
-      "duration_seconds": 11.937,
+      "duration_seconds": 11.907,
       "test_count": 212,
       "skipped_count": 0,
       "command": [
@@ -80,13 +80,13 @@
         "tests",
         "-v"
       ],
-      "output_tail": "d_honours_rate (test_fe_tools_wave2.DeveloperWave2.test_throttle_passes_records_and_honours_rate) ... ok\ntest_datetime_parse_and_format (test_fe_tools_wave2.JoinParseTransformWave2.test_datetime_parse_and_format) ... ok\ntest_find_replace (test_fe_tools_wave2.JoinParseTransformWave2.test_find_replace) ... ok\ntest_join_multiple (test_fe_tools_wave2.JoinParseTransformWave2.test_join_multiple) ... ok\ntest_make_columns_and_weighted_average (test_fe_tools_wave2.JoinParseTransformWave2.test_make_columns_and_weighted_average) ... ok\ntest_make_group (test_fe_tools_wave2.JoinParseTransformWave2.test_make_group) ... ok\ntest_xml_parse (test_fe_tools_wave2.JoinParseTransformWave2.test_xml_parse) ... ok\ntest_python_tool_runs_in_a_named_isolated_environment (test_fe_tools_wave2.ManagedEnvironmentTests.test_python_tool_runs_in_a_named_isolated_environment) ... ok\ntest_auto_field_picks_smallest_types (test_fe_tools_wave2.PreparationWave2.test_auto_field_picks_smallest_types) ... ok\ntest_imputation_and_binning (test_fe_tools_wave2.PreparationWave2.test_imputation_and_binning) ... ok\ntest_multi_field_formula (test_fe_tools_wave2.PreparationWave2.test_multi_field_formula) ... ok\ntest_random_samples_are_seeded_and_reproducible (test_fe_tools_wave2.PreparationWave2.test_random_samples_are_seeded_and_reproducible) ... ok\ntest_rank_ties (test_fe_tools_wave2.PreparationWave2.test_rank_ties) ... ok\ntest_select_records_ranges (test_fe_tools_wave2.PreparationWave2.test_select_records_ranges) ... ok\ntest_tile_methods (test_fe_tools_wave2.PreparationWave2.test_tile_methods) ... ok\ntest_python_errors_timeouts_and_environment (test_fe_tools_wave2.UserCodeTools.test_python_errors_timeouts_and_environment) ... ok\ntest_python_tool_requires_permission (test_fe_tools_wave2.UserCodeTools.test_python_tool_requires_permission) ... ok\ntest_python_tool_runs_isolated_code_with_typed_exchange (test_fe_tools_wave2.UserCodeTools.test_python_tool_runs_isolated_code_with_typed_exchange) ... C:\\Users\\smcso\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\pathlib.py:404: ResourceWarning: unclosed file <_io.FileIO name=3 mode='rb' closefd=True>\n  parsed = [sys.intern(str(x)) for x in rel.split(sep) if x and x != '.']\nResourceWarning: Enable tracemalloc to get the object allocation traceback\nC:\\Users\\smcso\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\pathlib.py:404: ResourceWarning: unclosed file <_io.FileIO name=4 mode='rb' closefd=True>\n  parsed = [sys.intern(str(x)) for x in rel.split(sep) if x and x != '.']\nResourceWarning: Enable tracemalloc to get the object allocation traceback\nok\ntest_r_tool (test_fe_tools_wave2.UserCodeTools.test_r_tool) ... ok\ntest_run_command (test_fe_tools_wave2.UserCodeTools.test_run_command) ... ok\ntest_comments_and_whitespace (test_fe_types_formula.FormulaTests.test_comments_and_whitespace) ... ok\ntest_conditionals (test_fe_types_formula.FormulaTests.test_conditionals) ... ok\ntest_conversion_and_math (test_fe_types_formula.FormulaTests.test_conversion_and_math) ... ok\ntest_dates (test_fe_types_formula.FormulaTests.test_dates) ... ok\ntest_division_by_zero_warns_and_nulls (test_fe_types_formula.FormulaTests.test_division_by_zero_warns_and_nulls) ... ok\ntest_iif_is_lazy (test_fe_types_formula.FormulaTests.test_iif_is_lazy) ... ok\ntest_in_and_switch (test_fe_types_formula.FormulaTests.test_in_and_switch) ... ok\ntest_null_semantics (test_fe_types_formula.FormulaTests.test_null_semantics) ... ok\ntest_precedence (test_fe_types_formula.FormulaTests.test_precedence) ... ok\ntest_runtime_type_error (test_fe_types_formula.FormulaTests.test_runtime_type_error) ... ok\ntest_static_errors_carry_positions (test_fe_types_formula.FormulaTests.test_static_errors_carry_positions) ... ok\ntest_strings (test_fe_types_formula.FormulaTests.test_strings) ... ok\ntest_bool (test_fe_types_formula.TypeTests.test_bool) ... ok\ntest_dates (test_fe_types_formula.TypeTests.test_dates) ... ok\ntest_decimal_float_comparison_uses_reference_double_promotion (test_fe_types_formula.TypeTests.test_decimal_float_comparison_uses_reference_double_promotion) ... ok\ntest_digest_is_order_sensitive (test_fe_types_formula.TypeTests.test_digest_is_order_sensitive) ... ok\ntest_fixed_decimal_nonfinite_and_extreme_cast_failures_are_explicit (test_fe_types_formula.TypeTests.test_fixed_decimal_nonfinite_and_extreme_cast_failures_are_explicit) ... ok\ntest_fixed_decimal_rounding_and_precision (test_fe_types_formula.TypeTests.test_fixed_decimal_rounding_and_precision) ... ok\ntest_format_value (test_fe_types_formula.TypeTests.test_format_value) ... ok\ntest_integer_ranges (test_fe_types_formula.TypeTests.test_integer_ranges) ... ok\ntest_null_passes_every_type (test_fe_types_formula.TypeTests.test_null_passes_every_type) ... ok\ntest_number_grammar_is_strict (test_fe_types_formula.TypeTests.test_number_grammar_is_strict) ... ok\ntest_schema_rules (test_fe_types_formula.TypeTests.test_schema_rules) ... ok\ntest_string_truncation_is_warning (test_fe_types_formula.TypeTests.test_string_truncation_is_warning) ... ok\ntest_unify (test_fe_types_formula.TypeTests.test_unify) ... ok\ntest_unify_exact_decimal_and_integer_without_binary_float (test_fe_types_formula.TypeTests.test_unify_exact_decimal_and_integer_without_binary_float) ... ok\ntest_catalogue_matrix_is_complete_without_inflating_status (test_full_acceptance.FullAcceptanceTests.test_catalogue_matrix_is_complete_without_inflating_status) ... ok\ntest_report_contains_every_catalogue_entry_and_status (test_full_acceptance.FullAcceptanceTests.test_report_contains_every_catalogue_entry_and_status) ... ok\ntest_report_handles_empty_command_output (test_full_acceptance.FullAcceptanceTests.test_report_handles_empty_command_output) ... ok\ntest_suite_runner_records_differential_and_holdout_counts (test_full_acceptance.FullAcceptanceTests.test_suite_runner_records_differential_and_holdout_counts) ... ok\ntest_suite_runner_records_test_and_skip_counts (test_full_acceptance.FullAcceptanceTests.test_suite_runner_records_test_and_skip_counts) ... ok\ntest_unavailable_suite_is_not_represented_as_success (test_full_acceptance.FullAcceptanceTests.test_unavailable_suite_is_not_represented_as_success) ... ok\ntest_classic_soundex_and_double_metaphone_candidate_collisions (test_fuzzy_match.FuzzyAlgorithmTests.test_classic_soundex_and_double_metaphone_candidate_collisions) ... ok\ntest_known_levenshtein_distances_and_normalised_scores (test_fuzzy_match.FuzzyAlgorithmTests.test_known_levenshtein_distances_and_normalised_scores) ... ok\ntest_word_modes_and_digit_guard (test_fuzzy_match.FuzzyAlgorithmTests.test_word_modes_and_digit_guard) ... ok\ntest_10k_records_use_indexed_candidates (test_fuzzy_match.FuzzyMatchTests.test_10k_records_use_indexed_candidates) ... ok\ntest_cancellation_is_reported_without_partial_results (test_fuzzy_match.FuzzyMatchTests.test_cancellation_is_reported_without_partial_results) ... ok\ntest_candidate_work_limit_fails_without_truncating (test_fuzzy_match.FuzzyMatchTests.test_candidate_work_limit_fails_without_truncating) ... ok\ntest_duplicate_and_null_identifiers_fail (test_fuzzy_match.FuzzyMatchTests.test_duplicate_and_null_identifiers_fail) ... ok\ntest_empty_values_can_match_only_when_explicit (test_fuzzy_match.FuzzyMatchTests.test_empty_values_can_match_only_when_explicit) ... ok\ntest_invalid_settings_and_field_names_fail_clearly (test_fuzzy_match.FuzzyMatchTests.test_invalid_settings_and_field_names_fail_clearly) ... ok\ntest_key_only_scoring_accepts_key_collisions_without_string_score (test_fuzzy_match.FuzzyMatchTests.test_key_only_scoring_accepts_key_collisions_without_string_score) ... ok\ntest_merge_excludes_same_sources_and_requires_source_field (test_fuzzy_match.FuzzyMatchTests.test_merge_excludes_same_sources_and_requires_source_field) ... ok\ntest_multiple_weighted_fields_threshold_and_punctuation_preprocessing (test_fuzzy_match.FuzzyMatchTests.test_multiple_weighted_fields_threshold_and_punctuation_preprocessing) ... ok\ntest_preprocessing_variants_and_key_length_are_bounded (test_fuzzy_match.FuzzyMatchTests.test_preprocessing_variants_and_key_length_are_bounded) ... ok\ntest_purge_emits_candidate_pairs_scores_and_stable_order (test_fuzzy_match.FuzzyMatchTests.test_purge_emits_candidate_pairs_scores_and_stable_order) ... ok\ntest_purge_ignores_source_id_even_if_imported_xml_reuses_record_id (test_fuzzy_match.FuzzyMatchTests.test_purge_ignores_source_id_even_if_imported_xml_reuses_record_id) ... ok\ntest_repeated_block_keys_have_an_explicit_generation_work_limit (test_fuzzy_match.FuzzyMatchTests.test_repeated_block_keys_have_an_explicit_generation_work_limit) ... ok\ntest_threshold_boundary_is_inclusive (test_fuzzy_match.FuzzyMatchTests.test_threshold_boundary_is_inclusive) ... ok\ntest_unicode_exact_supported_phonetic_boundary_is_explicit (test_fuzzy_match.FuzzyMatchTests.test_unicode_exact_supported_phonetic_boundary_is_explicit) ... ok\ntest_unmatched_null_empty_and_keys_only (test_fuzzy_match.FuzzyMatchTests.test_unmatched_null_empty_and_keys_only) ... ok\ntest_batch_child_validation_failure_reports_iteration_and_call_node (test_macros.BatchMacroTests.test_batch_child_validation_failure_reports_iteration_and_call_node) ... ok\ntest_batch_iteration_limit_and_bad_action_fail_explicitly (test_macros.BatchMacroTests.test_batch_iteration_limit_and_bad_action_fail_explicitly) ... ok\ntest_control_records_reconfigure_and_run_in_input_order (test_macros.BatchMacroTests.test_control_records_reconfigure_and_run_in_input_order) ... ok\ntest_empty_control_table_returns_inferred_empty_schema (test_macros.BatchMacroTests.test_empty_control_table_returns_inferred_empty_schema) ... ok\ntest_macro_child_failure_reports_call_node_and_stack (test_macros.IterativeMacroTests.test_macro_child_failure_reports_call_node_and_stack) ... ok\ntest_recursive_macro_definition_is_rejected (test_macros.IterativeMacroTests.test_recursive_macro_definition_is_rejected) ... ok\ntest_state_is_fed_back_until_all_rows_meet_termination (test_macros.IterativeMacroTests.test_state_is_fed_back_until_all_rows_meet_termination) ... ok\ntest_zero_rows_terminate_and_iteration_limit_is_a_failure (test_macros.IterativeMacroTests.test_zero_rows_terminate_and_iteration_limit_is_a_failure) ... ok\ntest_imported_macro_with_unmapped_anchor_is_rejected (test_macros.StandardMacroTests.test_imported_macro_with_unmapped_anchor_is_rejected) ... ok\ntest_imported_macro_with_unmapped_input_settings_is_rejected (test_macros.StandardMacroTests.test_imported_macro_with_unmapped_input_settings_is_rejected) ... ok\ntest_imported_yxmc_macro_input_output_runs_from_relative_path (test_macros.StandardMacroTests.test_imported_yxmc_macro_input_output_runs_from_relative_path) ... ok\ntest_macro_binds_multiple_parent_connections_to_distinct_child_inputs (test_macros.StandardMacroTests.test_macro_binds_multiple_parent_connections_to_distinct_child_inputs) ... ok\ntest_macro_input_filter_formula_output_matches_direct_workflow (test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow) ... ok\ntest_macro_resolves_child_resources_relative_to_definition (test_macros.StandardMacroTests.test_macro_resolves_child_resources_relative_to_definition) ... ok\ntest_nested_macro_executes_once_at_each_level (test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level) ... ok\ntest_every_category_occurrence_has_a_brief_and_valid_contract (test_research_coverage.ResearchCoverageTests.test_every_category_occurrence_has_a_brief_and_valid_contract) ... ok\ntest_statuses_match_evidence_ledger (test_research_coverage.ResearchCoverageTests.test_statuses_match_evidence_ledger) ... ok\ntest_unimplemented_catalogue_tools_fail_clearly (test_research_coverage.ResearchCoverageTests.test_unimplemented_catalogue_tools_fail_clearly) ... ok\ntest_verified_is_never_claimed_without_review (test_research_coverage.ResearchCoverageTests.test_verified_is_never_claimed_without_review) ... ok\n\n----------------------------------------------------------------------\nRan 212 tests in 11.561s\n\nOK\n"
+      "output_tail": "d_honours_rate (test_fe_tools_wave2.DeveloperWave2.test_throttle_passes_records_and_honours_rate) ... ok\ntest_datetime_parse_and_format (test_fe_tools_wave2.JoinParseTransformWave2.test_datetime_parse_and_format) ... ok\ntest_find_replace (test_fe_tools_wave2.JoinParseTransformWave2.test_find_replace) ... ok\ntest_join_multiple (test_fe_tools_wave2.JoinParseTransformWave2.test_join_multiple) ... ok\ntest_make_columns_and_weighted_average (test_fe_tools_wave2.JoinParseTransformWave2.test_make_columns_and_weighted_average) ... ok\ntest_make_group (test_fe_tools_wave2.JoinParseTransformWave2.test_make_group) ... ok\ntest_xml_parse (test_fe_tools_wave2.JoinParseTransformWave2.test_xml_parse) ... ok\ntest_python_tool_runs_in_a_named_isolated_environment (test_fe_tools_wave2.ManagedEnvironmentTests.test_python_tool_runs_in_a_named_isolated_environment) ... ok\ntest_auto_field_picks_smallest_types (test_fe_tools_wave2.PreparationWave2.test_auto_field_picks_smallest_types) ... ok\ntest_imputation_and_binning (test_fe_tools_wave2.PreparationWave2.test_imputation_and_binning) ... ok\ntest_multi_field_formula (test_fe_tools_wave2.PreparationWave2.test_multi_field_formula) ... ok\ntest_random_samples_are_seeded_and_reproducible (test_fe_tools_wave2.PreparationWave2.test_random_samples_are_seeded_and_reproducible) ... ok\ntest_rank_ties (test_fe_tools_wave2.PreparationWave2.test_rank_ties) ... ok\ntest_select_records_ranges (test_fe_tools_wave2.PreparationWave2.test_select_records_ranges) ... ok\ntest_tile_methods (test_fe_tools_wave2.PreparationWave2.test_tile_methods) ... ok\ntest_python_errors_timeouts_and_environment (test_fe_tools_wave2.UserCodeTools.test_python_errors_timeouts_and_environment) ... ok\ntest_python_tool_requires_permission (test_fe_tools_wave2.UserCodeTools.test_python_tool_requires_permission) ... ok\ntest_python_tool_runs_isolated_code_with_typed_exchange (test_fe_tools_wave2.UserCodeTools.test_python_tool_runs_isolated_code_with_typed_exchange) ... C:\\Users\\smcso\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\pathlib.py:404: ResourceWarning: unclosed file <_io.FileIO name=3 mode='rb' closefd=True>\n  parsed = [sys.intern(str(x)) for x in rel.split(sep) if x and x != '.']\nResourceWarning: Enable tracemalloc to get the object allocation traceback\nC:\\Users\\smcso\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\pathlib.py:404: ResourceWarning: unclosed file <_io.FileIO name=4 mode='rb' closefd=True>\n  parsed = [sys.intern(str(x)) for x in rel.split(sep) if x and x != '.']\nResourceWarning: Enable tracemalloc to get the object allocation traceback\nok\ntest_r_tool (test_fe_tools_wave2.UserCodeTools.test_r_tool) ... ok\ntest_run_command (test_fe_tools_wave2.UserCodeTools.test_run_command) ... ok\ntest_comments_and_whitespace (test_fe_types_formula.FormulaTests.test_comments_and_whitespace) ... ok\ntest_conditionals (test_fe_types_formula.FormulaTests.test_conditionals) ... ok\ntest_conversion_and_math (test_fe_types_formula.FormulaTests.test_conversion_and_math) ... ok\ntest_dates (test_fe_types_formula.FormulaTests.test_dates) ... ok\ntest_division_by_zero_warns_and_nulls (test_fe_types_formula.FormulaTests.test_division_by_zero_warns_and_nulls) ... ok\ntest_iif_is_lazy (test_fe_types_formula.FormulaTests.test_iif_is_lazy) ... ok\ntest_in_and_switch (test_fe_types_formula.FormulaTests.test_in_and_switch) ... ok\ntest_null_semantics (test_fe_types_formula.FormulaTests.test_null_semantics) ... ok\ntest_precedence (test_fe_types_formula.FormulaTests.test_precedence) ... ok\ntest_runtime_type_error (test_fe_types_formula.FormulaTests.test_runtime_type_error) ... ok\ntest_static_errors_carry_positions (test_fe_types_formula.FormulaTests.test_static_errors_carry_positions) ... ok\ntest_strings (test_fe_types_formula.FormulaTests.test_strings) ... ok\ntest_bool (test_fe_types_formula.TypeTests.test_bool) ... ok\ntest_dates (test_fe_types_formula.TypeTests.test_dates) ... ok\ntest_decimal_float_comparison_uses_reference_double_promotion (test_fe_types_formula.TypeTests.test_decimal_float_comparison_uses_reference_double_promotion) ... ok\ntest_digest_is_order_sensitive (test_fe_types_formula.TypeTests.test_digest_is_order_sensitive) ... ok\ntest_fixed_decimal_nonfinite_and_extreme_cast_failures_are_explicit (test_fe_types_formula.TypeTests.test_fixed_decimal_nonfinite_and_extreme_cast_failures_are_explicit) ... ok\ntest_fixed_decimal_rounding_and_precision (test_fe_types_formula.TypeTests.test_fixed_decimal_rounding_and_precision) ... ok\ntest_format_value (test_fe_types_formula.TypeTests.test_format_value) ... ok\ntest_integer_ranges (test_fe_types_formula.TypeTests.test_integer_ranges) ... ok\ntest_null_passes_every_type (test_fe_types_formula.TypeTests.test_null_passes_every_type) ... ok\ntest_number_grammar_is_strict (test_fe_types_formula.TypeTests.test_number_grammar_is_strict) ... ok\ntest_schema_rules (test_fe_types_formula.TypeTests.test_schema_rules) ... ok\ntest_string_truncation_is_warning (test_fe_types_formula.TypeTests.test_string_truncation_is_warning) ... ok\ntest_unify (test_fe_types_formula.TypeTests.test_unify) ... ok\ntest_unify_exact_decimal_and_integer_without_binary_float (test_fe_types_formula.TypeTests.test_unify_exact_decimal_and_integer_without_binary_float) ... ok\ntest_catalogue_matrix_is_complete_without_inflating_status (test_full_acceptance.FullAcceptanceTests.test_catalogue_matrix_is_complete_without_inflating_status) ... ok\ntest_report_contains_every_catalogue_entry_and_status (test_full_acceptance.FullAcceptanceTests.test_report_contains_every_catalogue_entry_and_status) ... ok\ntest_report_handles_empty_command_output (test_full_acceptance.FullAcceptanceTests.test_report_handles_empty_command_output) ... ok\ntest_suite_runner_records_differential_and_holdout_counts (test_full_acceptance.FullAcceptanceTests.test_suite_runner_records_differential_and_holdout_counts) ... ok\ntest_suite_runner_records_test_and_skip_counts (test_full_acceptance.FullAcceptanceTests.test_suite_runner_records_test_and_skip_counts) ... ok\ntest_unavailable_suite_is_not_represented_as_success (test_full_acceptance.FullAcceptanceTests.test_unavailable_suite_is_not_represented_as_success) ... ok\ntest_classic_soundex_and_double_metaphone_candidate_collisions (test_fuzzy_match.FuzzyAlgorithmTests.test_classic_soundex_and_double_metaphone_candidate_collisions) ... ok\ntest_known_levenshtein_distances_and_normalised_scores (test_fuzzy_match.FuzzyAlgorithmTests.test_known_levenshtein_distances_and_normalised_scores) ... ok\ntest_word_modes_and_digit_guard (test_fuzzy_match.FuzzyAlgorithmTests.test_word_modes_and_digit_guard) ... ok\ntest_10k_records_use_indexed_candidates (test_fuzzy_match.FuzzyMatchTests.test_10k_records_use_indexed_candidates) ... ok\ntest_cancellation_is_reported_without_partial_results (test_fuzzy_match.FuzzyMatchTests.test_cancellation_is_reported_without_partial_results) ... ok\ntest_candidate_work_limit_fails_without_truncating (test_fuzzy_match.FuzzyMatchTests.test_candidate_work_limit_fails_without_truncating) ... ok\ntest_duplicate_and_null_identifiers_fail (test_fuzzy_match.FuzzyMatchTests.test_duplicate_and_null_identifiers_fail) ... ok\ntest_empty_values_can_match_only_when_explicit (test_fuzzy_match.FuzzyMatchTests.test_empty_values_can_match_only_when_explicit) ... ok\ntest_invalid_settings_and_field_names_fail_clearly (test_fuzzy_match.FuzzyMatchTests.test_invalid_settings_and_field_names_fail_clearly) ... ok\ntest_key_only_scoring_accepts_key_collisions_without_string_score (test_fuzzy_match.FuzzyMatchTests.test_key_only_scoring_accepts_key_collisions_without_string_score) ... ok\ntest_merge_excludes_same_sources_and_requires_source_field (test_fuzzy_match.FuzzyMatchTests.test_merge_excludes_same_sources_and_requires_source_field) ... ok\ntest_multiple_weighted_fields_threshold_and_punctuation_preprocessing (test_fuzzy_match.FuzzyMatchTests.test_multiple_weighted_fields_threshold_and_punctuation_preprocessing) ... ok\ntest_preprocessing_variants_and_key_length_are_bounded (test_fuzzy_match.FuzzyMatchTests.test_preprocessing_variants_and_key_length_are_bounded) ... ok\ntest_purge_emits_candidate_pairs_scores_and_stable_order (test_fuzzy_match.FuzzyMatchTests.test_purge_emits_candidate_pairs_scores_and_stable_order) ... ok\ntest_purge_ignores_source_id_even_if_imported_xml_reuses_record_id (test_fuzzy_match.FuzzyMatchTests.test_purge_ignores_source_id_even_if_imported_xml_reuses_record_id) ... ok\ntest_repeated_block_keys_have_an_explicit_generation_work_limit (test_fuzzy_match.FuzzyMatchTests.test_repeated_block_keys_have_an_explicit_generation_work_limit) ... ok\ntest_threshold_boundary_is_inclusive (test_fuzzy_match.FuzzyMatchTests.test_threshold_boundary_is_inclusive) ... ok\ntest_unicode_exact_supported_phonetic_boundary_is_explicit (test_fuzzy_match.FuzzyMatchTests.test_unicode_exact_supported_phonetic_boundary_is_explicit) ... ok\ntest_unmatched_null_empty_and_keys_only (test_fuzzy_match.FuzzyMatchTests.test_unmatched_null_empty_and_keys_only) ... ok\ntest_batch_child_validation_failure_reports_iteration_and_call_node (test_macros.BatchMacroTests.test_batch_child_validation_failure_reports_iteration_and_call_node) ... ok\ntest_batch_iteration_limit_and_bad_action_fail_explicitly (test_macros.BatchMacroTests.test_batch_iteration_limit_and_bad_action_fail_explicitly) ... ok\ntest_control_records_reconfigure_and_run_in_input_order (test_macros.BatchMacroTests.test_control_records_reconfigure_and_run_in_input_order) ... ok\ntest_empty_control_table_returns_inferred_empty_schema (test_macros.BatchMacroTests.test_empty_control_table_returns_inferred_empty_schema) ... ok\ntest_macro_child_failure_reports_call_node_and_stack (test_macros.IterativeMacroTests.test_macro_child_failure_reports_call_node_and_stack) ... ok\ntest_recursive_macro_definition_is_rejected (test_macros.IterativeMacroTests.test_recursive_macro_definition_is_rejected) ... ok\ntest_state_is_fed_back_until_all_rows_meet_termination (test_macros.IterativeMacroTests.test_state_is_fed_back_until_all_rows_meet_termination) ... ok\ntest_zero_rows_terminate_and_iteration_limit_is_a_failure (test_macros.IterativeMacroTests.test_zero_rows_terminate_and_iteration_limit_is_a_failure) ... ok\ntest_imported_macro_with_unmapped_anchor_is_rejected (test_macros.StandardMacroTests.test_imported_macro_with_unmapped_anchor_is_rejected) ... ok\ntest_imported_macro_with_unmapped_input_settings_is_rejected (test_macros.StandardMacroTests.test_imported_macro_with_unmapped_input_settings_is_rejected) ... ok\ntest_imported_yxmc_macro_input_output_runs_from_relative_path (test_macros.StandardMacroTests.test_imported_yxmc_macro_input_output_runs_from_relative_path) ... ok\ntest_macro_binds_multiple_parent_connections_to_distinct_child_inputs (test_macros.StandardMacroTests.test_macro_binds_multiple_parent_connections_to_distinct_child_inputs) ... ok\ntest_macro_input_filter_formula_output_matches_direct_workflow (test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow) ... ok\ntest_macro_resolves_child_resources_relative_to_definition (test_macros.StandardMacroTests.test_macro_resolves_child_resources_relative_to_definition) ... ok\ntest_nested_macro_executes_once_at_each_level (test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level) ... ok\ntest_every_category_occurrence_has_a_brief_and_valid_contract (test_research_coverage.ResearchCoverageTests.test_every_category_occurrence_has_a_brief_and_valid_contract) ... ok\ntest_statuses_match_evidence_ledger (test_research_coverage.ResearchCoverageTests.test_statuses_match_evidence_ledger) ... ok\ntest_unimplemented_catalogue_tools_fail_clearly (test_research_coverage.ResearchCoverageTests.test_unimplemented_catalogue_tools_fail_clearly) ... ok\ntest_verified_is_never_claimed_without_review (test_research_coverage.ResearchCoverageTests.test_verified_is_never_claimed_without_review) ... ok\n\n----------------------------------------------------------------------\nRan 212 tests in 11.530s\n\nOK\n"
     },
     {
       "name": "desktop-typescript-build",
       "status": "PASS",
       "return_code": 0,
-      "duration_seconds": 3.25,
+      "duration_seconds": 3.343,
       "test_count": null,
       "skipped_count": 0,
       "command": [
@@ -94,26 +94,26 @@
         "run",
         "build"
       ],
-      "output_tail": "\n> flowengine-desktop@0.2.0 build\n> tsc -b && vite build\n\nvite v5.4.21 building for production...\ntransforming...\n✓ 214 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.39 kB │ gzip:   0.26 kB\ndist/assets/index-DBG-EvVX.css   30.27 kB │ gzip:   6.02 kB\ndist/assets/core-BEOw45JP.js      0.24 kB │ gzip:   0.19 kB │ map:    18.91 kB\ndist/assets/event-Gip4rtXm.js     1.16 kB │ gzip:   0.63 kB │ map:    10.15 kB\ndist/assets/index-D7Xt2u2L.js     1.30 kB │ gzip:   0.52 kB │ map:     9.01 kB\ndist/assets/index-DhqxzVVn.js   418.47 kB │ gzip: 132.44 kB │ map: 1,414.13 kB\n✓ built in 1.11s\n"
+      "output_tail": "\n> flowengine-desktop@0.2.0 build\n> tsc -b && vite build\n\nvite v5.4.21 building for production...\ntransforming...\n✓ 214 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.39 kB │ gzip:   0.26 kB\ndist/assets/index-DBG-EvVX.css   30.27 kB │ gzip:   6.02 kB\ndist/assets/core-BEOw45JP.js      0.24 kB │ gzip:   0.19 kB │ map:    18.91 kB\ndist/assets/event-Gip4rtXm.js     1.16 kB │ gzip:   0.63 kB │ map:    10.15 kB\ndist/assets/index-D7Xt2u2L.js     1.30 kB │ gzip:   0.52 kB │ map:     9.01 kB\ndist/assets/index-DhqxzVVn.js   418.47 kB │ gzip: 132.44 kB │ map: 1,414.13 kB\n✓ built in 1.18s\n"
     },
     {
       "name": "desktop-unit-tests",
       "status": "PASS",
       "return_code": 0,
-      "duration_seconds": 1.641,
+      "duration_seconds": 1.657,
       "test_count": 12,
       "skipped_count": 0,
       "command": [
         "C:\\Program Files\\nodejs\\npm.CMD",
         "test"
       ],
-      "output_tail": "\n> flowengine-desktop@0.2.0 test\n> vitest run\n\n\n RUN  v2.1.9 F:/flowbench-data-type-audit/desktop\n\n ✓ src/model/workflow.test.ts (5 tests) 5ms\n ✓ src/state/store.test.ts (7 tests) 7ms\n\n Test Files  2 passed (2)\n      Tests  12 passed (12)\n   Start at  03:13:55\n   Duration  1.13s (transform 188ms, setup 41ms, collect 493ms, tests 12ms, environment 807ms, prepare 173ms)\n\n"
+      "output_tail": "\n> flowengine-desktop@0.2.0 test\n> vitest run\n\n\n RUN  v2.1.9 F:/flowbench-data-type-audit/desktop\n\n ✓ src/model/workflow.test.ts (5 tests) 5ms\n ✓ src/state/store.test.ts (7 tests) 7ms\n\n Test Files  2 passed (2)\n      Tests  12 passed (12)\n   Start at  03:23:14\n   Duration  1.13s (transform 189ms, setup 32ms, collect 512ms, tests 12ms, environment 767ms, prepare 176ms)\n\n"
     },
     {
       "name": "desktop-playwright",
       "status": "PASS",
       "return_code": 0,
-      "duration_seconds": 24.109,
+      "duration_seconds": 22.968,
       "test_count": 15,
       "skipped_count": 0,
       "command": [
@@ -121,7 +121,7 @@
         "run",
         "e2e"
       ],
-      "output_tail": "\n> flowengine-desktop@0.2.0 e2e\n> playwright test\n\n\u001b[2m[WebServer] \u001b[22m(node:61988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n\u001b[2m[WebServer] \u001b[22m(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[2m[WebServer] \u001b[22m(node:26056) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n\u001b[2m[WebServer] \u001b[22m(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[2m[WebServer] \u001b[22m(node:37284) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n\u001b[2m[WebServer] \u001b[22m(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[2m[WebServer] \u001b[22m(node:26080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n\u001b[2m[WebServer] \u001b[22m(Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 15 tests using 1 worker\n\n(node:3432) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:3432) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  ✓  1 app.spec.ts:35:1 › palette lists every catalogue entry with an honest status (931ms)\n  ✓  2 app.spec.ts:52:1 › build, configure, connect and run a workflow from scratch (2.3s)\n  ✓  3 app.spec.ts:83:1 › CSV text typing is visible in Filter and changes only after an explicit numeric declaration (2.6s)\n  ✓  4 app.spec.ts:130:1 › configure Fuzzy Match through field selectors and execute indexed matching (1.9s)\n  ✓  5 app.spec.ts:172:1 › run a typed analytic application and apply its configuration action (613ms)\n  ✓  6 app.spec.ts:205:1 › palette Action configures a target through a non-data connection and runs (1.8s)\n  ✓  7 app.spec.ts:241:1 › validation feedback names the node and the problem (2.2s)\n  ✓  8 app.spec.ts:259:1 › open the example workflow and run it end to end (749ms)\n  ✓  9 app.spec.ts:277:1 › undo, redo, grouping, duplicate and delete (715ms)\n  ✓  10 app.spec.ts:298:1 › cancel a long-running workflow (643ms)\n  ✓  11 app.spec.ts:317:1 › save and reopen preserves nodes, connections, containers and comments (933ms)\n  ✓  12 app.spec.ts:342:1 › import a .yxmd workflow, see the report, remove the unsupported tool and run (1.0s)\n  ✓  13 app.spec.ts:356:1 › code tools run only after the user allows them (892ms)\n  ✓  14 app.spec.ts:378:1 › database extensions are available and the connection manager opens (749ms)\n  ✓  15 screenshot.spec.ts:5:1 › documentation screenshot of the example workflow after a run (815ms)\n\n  Slow test file: app.spec.ts (18.3s)\n  Consider splitting slow test files to speed up parallel execution\n  15 passed (23.4s)\n"
+      "output_tail": "\n> flowengine-desktop@0.2.0 e2e\n> playwright test\n\n\u001b[2m[WebServer] \u001b[22m(node:15268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n\u001b[2m[WebServer] \u001b[22m(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[2m[WebServer] \u001b[22m(node:30760) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n\u001b[2m[WebServer] \u001b[22m(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[2m[WebServer] \u001b[22m(node:3168) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n\u001b[2m[WebServer] \u001b[22m(Use `node --trace-warnings ...` to show where the warning was created)\n\u001b[2m[WebServer] \u001b[22m(node:43312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n\u001b[2m[WebServer] \u001b[22m(Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 15 tests using 1 worker\n\n(node:31080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:31080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n  ✓  1 app.spec.ts:35:1 › palette lists every catalogue entry with an honest status (905ms)\n  ✓  2 app.spec.ts:52:1 › build, configure, connect and run a workflow from scratch (1.7s)\n  ✓  3 app.spec.ts:83:1 › CSV text typing is visible in Filter and changes only after an explicit numeric declaration (2.7s)\n  ✓  4 app.spec.ts:130:1 › configure Fuzzy Match through field selectors and execute indexed matching (2.0s)\n  ✓  5 app.spec.ts:172:1 › run a typed analytic application and apply its configuration action (632ms)\n  ✓  6 app.spec.ts:205:1 › palette Action configures a target through a non-data connection and runs (1.7s)\n  ✓  7 app.spec.ts:241:1 › validation feedback names the node and the problem (1.7s)\n  ✓  8 app.spec.ts:259:1 › open the example workflow and run it end to end (735ms)\n  ✓  9 app.spec.ts:277:1 › undo, redo, grouping, duplicate and delete (708ms)\n  ✓  10 app.spec.ts:298:1 › cancel a long-running workflow (648ms)\n  ✓  11 app.spec.ts:317:1 › save and reopen preserves nodes, connections, containers and comments (933ms)\n  ✓  12 app.spec.ts:342:1 › import a .yxmd workflow, see the report, remove the unsupported tool and run (1.1s)\n  ✓  13 app.spec.ts:356:1 › code tools run only after the user allows them (912ms)\n  ✓  14 app.spec.ts:378:1 › database extensions are available and the connection manager opens (782ms)\n  ✓  15 screenshot.spec.ts:5:1 › documentation screenshot of the example workflow after a run (715ms)\n\n  Slow test file: app.spec.ts (17.1s)\n  Consider splitting slow test files to speed up parallel execution\n  15 passed (22.3s)\n"
     },
     {
       "name": "database-integration",
@@ -135,19 +135,31 @@
     },
     {
       "name": "r-tool-runtime",
-      "status": "BLOCKED",
-      "return_code": null,
-      "duration_seconds": 0,
-      "test_count": null,
+      "status": "PASS",
+      "return_code": 0,
+      "duration_seconds": 0.516,
+      "test_count": 1,
       "skipped_count": 0,
-      "command": [],
-      "output_tail": "Pinned external R runtime is not installed"
+      "command": [
+        "C:\\Users\\smcso\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_fe_tools_wave2.py",
+        "-k",
+        "test_r_tool",
+        "-v"
+      ],
+      "output_tail": "test_r_tool (test_fe_tools_wave2.UserCodeTools.test_r_tool) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.340s\n\nOK\n"
     },
     {
       "name": "statistical-and-ml-engine-tests",
       "status": "PASS",
       "return_code": 0,
-      "duration_seconds": 7.344,
+      "duration_seconds": 7.421,
       "test_count": 26,
       "skipped_count": 0,
       "command": [
@@ -161,7 +173,7 @@
         "test_fe_tools_wave2.py",
         "-v"
       ],
-      "output_tail": "test_blob_and_base64 (test_fe_tools_wave2.DeveloperWave2.test_blob_and_base64) ... ok\ntest_detour_and_block_until_done (test_fe_tools_wave2.DeveloperWave2.test_detour_and_block_until_done) ... ok\ntest_dynamic_rename_modes (test_fe_tools_wave2.DeveloperWave2.test_dynamic_rename_modes) ... ok\ntest_field_info_and_dynamic_select (test_fe_tools_wave2.DeveloperWave2.test_field_info_and_dynamic_select) ... ok\ntest_json_parse (test_fe_tools_wave2.DeveloperWave2.test_json_parse) ... ok\ntest_message_test_and_expect_equals (test_fe_tools_wave2.DeveloperWave2.test_message_test_and_expect_equals) ... ok\ntest_throttle_passes_records_and_honours_rate (test_fe_tools_wave2.DeveloperWave2.test_throttle_passes_records_and_honours_rate) ... ok\ntest_datetime_parse_and_format (test_fe_tools_wave2.JoinParseTransformWave2.test_datetime_parse_and_format) ... ok\ntest_find_replace (test_fe_tools_wave2.JoinParseTransformWave2.test_find_replace) ... ok\ntest_join_multiple (test_fe_tools_wave2.JoinParseTransformWave2.test_join_multiple) ... ok\ntest_make_columns_and_weighted_average (test_fe_tools_wave2.JoinParseTransformWave2.test_make_columns_and_weighted_average) ... ok\ntest_make_group (test_fe_tools_wave2.JoinParseTransformWave2.test_make_group) ... ok\ntest_xml_parse (test_fe_tools_wave2.JoinParseTransformWave2.test_xml_parse) ... ok\ntest_python_tool_runs_in_a_named_isolated_environment (test_fe_tools_wave2.ManagedEnvironmentTests.test_python_tool_runs_in_a_named_isolated_environment) ... ok\ntest_auto_field_picks_smallest_types (test_fe_tools_wave2.PreparationWave2.test_auto_field_picks_smallest_types) ... ok\ntest_imputation_and_binning (test_fe_tools_wave2.PreparationWave2.test_imputation_and_binning) ... ok\ntest_multi_field_formula (test_fe_tools_wave2.PreparationWave2.test_multi_field_formula) ... ok\ntest_random_samples_are_seeded_and_reproducible (test_fe_tools_wave2.PreparationWave2.test_random_samples_are_seeded_and_reproducible) ... ok\ntest_rank_ties (test_fe_tools_wave2.PreparationWave2.test_rank_ties) ... ok\ntest_select_records_ranges (test_fe_tools_wave2.PreparationWave2.test_select_records_ranges) ... ok\ntest_tile_methods (test_fe_tools_wave2.PreparationWave2.test_tile_methods) ... ok\ntest_python_errors_timeouts_and_environment (test_fe_tools_wave2.UserCodeTools.test_python_errors_timeouts_and_environment) ... ok\ntest_python_tool_requires_permission (test_fe_tools_wave2.UserCodeTools.test_python_tool_requires_permission) ... ok\ntest_python_tool_runs_isolated_code_with_typed_exchange (test_fe_tools_wave2.UserCodeTools.test_python_tool_runs_isolated_code_with_typed_exchange) ... C:\\Users\\smcso\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\json\\decoder.py:353: ResourceWarning: unclosed file <_io.FileIO name=3 mode='rb' closefd=True>\n  obj, end = self.scan_once(s, idx)\nResourceWarning: Enable tracemalloc to get the object allocation traceback\nC:\\Users\\smcso\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\json\\decoder.py:353: ResourceWarning: unclosed file <_io.FileIO name=4 mode='rb' closefd=True>\n  obj, end = self.scan_once(s, idx)\nResourceWarning: Enable tracemalloc to get the object allocation traceback\nok\ntest_r_tool (test_fe_tools_wave2.UserCodeTools.test_r_tool) ... ok\ntest_run_command (test_fe_tools_wave2.UserCodeTools.test_run_command) ... ok\n\n----------------------------------------------------------------------\nRan 26 tests in 7.167s\n\nOK\n"
+      "output_tail": "test_blob_and_base64 (test_fe_tools_wave2.DeveloperWave2.test_blob_and_base64) ... ok\ntest_detour_and_block_until_done (test_fe_tools_wave2.DeveloperWave2.test_detour_and_block_until_done) ... ok\ntest_dynamic_rename_modes (test_fe_tools_wave2.DeveloperWave2.test_dynamic_rename_modes) ... ok\ntest_field_info_and_dynamic_select (test_fe_tools_wave2.DeveloperWave2.test_field_info_and_dynamic_select) ... ok\ntest_json_parse (test_fe_tools_wave2.DeveloperWave2.test_json_parse) ... ok\ntest_message_test_and_expect_equals (test_fe_tools_wave2.DeveloperWave2.test_message_test_and_expect_equals) ... ok\ntest_throttle_passes_records_and_honours_rate (test_fe_tools_wave2.DeveloperWave2.test_throttle_passes_records_and_honours_rate) ... ok\ntest_datetime_parse_and_format (test_fe_tools_wave2.JoinParseTransformWave2.test_datetime_parse_and_format) ... ok\ntest_find_replace (test_fe_tools_wave2.JoinParseTransformWave2.test_find_replace) ... ok\ntest_join_multiple (test_fe_tools_wave2.JoinParseTransformWave2.test_join_multiple) ... ok\ntest_make_columns_and_weighted_average (test_fe_tools_wave2.JoinParseTransformWave2.test_make_columns_and_weighted_average) ... ok\ntest_make_group (test_fe_tools_wave2.JoinParseTransformWave2.test_make_group) ... ok\ntest_xml_parse (test_fe_tools_wave2.JoinParseTransformWave2.test_xml_parse) ... ok\ntest_python_tool_runs_in_a_named_isolated_environment (test_fe_tools_wave2.ManagedEnvironmentTests.test_python_tool_runs_in_a_named_isolated_environment) ... ok\ntest_auto_field_picks_smallest_types (test_fe_tools_wave2.PreparationWave2.test_auto_field_picks_smallest_types) ... ok\ntest_imputation_and_binning (test_fe_tools_wave2.PreparationWave2.test_imputation_and_binning) ... ok\ntest_multi_field_formula (test_fe_tools_wave2.PreparationWave2.test_multi_field_formula) ... ok\ntest_random_samples_are_seeded_and_reproducible (test_fe_tools_wave2.PreparationWave2.test_random_samples_are_seeded_and_reproducible) ... ok\ntest_rank_ties (test_fe_tools_wave2.PreparationWave2.test_rank_ties) ... ok\ntest_select_records_ranges (test_fe_tools_wave2.PreparationWave2.test_select_records_ranges) ... ok\ntest_tile_methods (test_fe_tools_wave2.PreparationWave2.test_tile_methods) ... ok\ntest_python_errors_timeouts_and_environment (test_fe_tools_wave2.UserCodeTools.test_python_errors_timeouts_and_environment) ... ok\ntest_python_tool_requires_permission (test_fe_tools_wave2.UserCodeTools.test_python_tool_requires_permission) ... ok\ntest_python_tool_runs_isolated_code_with_typed_exchange (test_fe_tools_wave2.UserCodeTools.test_python_tool_runs_isolated_code_with_typed_exchange) ... C:\\Users\\smcso\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\json\\decoder.py:353: ResourceWarning: unclosed file <_io.FileIO name=3 mode='rb' closefd=True>\n  obj, end = self.scan_once(s, idx)\nResourceWarning: Enable tracemalloc to get the object allocation traceback\nC:\\Users\\smcso\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\json\\decoder.py:353: ResourceWarning: unclosed file <_io.FileIO name=4 mode='rb' closefd=True>\n  obj, end = self.scan_once(s, idx)\nResourceWarning: Enable tracemalloc to get the object allocation traceback\nok\ntest_r_tool (test_fe_tools_wave2.UserCodeTools.test_r_tool) ... ok\ntest_run_command (test_fe_tools_wave2.UserCodeTools.test_run_command) ... ok\n\n----------------------------------------------------------------------\nRan 26 tests in 7.244s\n\nOK\n"
     },
     {
       "name": "spatial-tool-tests",
@@ -187,7 +199,7 @@
       "name": "rust-desktop-shell",
       "status": "PASS",
       "return_code": 0,
-      "duration_seconds": 4.875,
+      "duration_seconds": 4.719,
       "test_count": null,
       "skipped_count": 0,
       "command": [
@@ -196,13 +208,13 @@
         "--manifest-path",
         "F:\\flowbench-data-type-audit\\desktop\\src-tauri\\Cargo.toml"
       ],
-      "output_tail": "   Compiling flowbench v0.2.0 (F:\\flowbench-data-type-audit\\desktop\\src-tauri)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.66s\n     Running unittests src\\lib.rs (desktop\\src-tauri\\target\\debug\\deps\\flowbench_lib-c7fbe7629aa168b6.exe)\n\nrunning 3 tests\ntest engine::tests::classifies_responses_and_notifications ... ok\ntest engine::tests::discovers_bundled_engine_and_python_from_resource_root_or_parent ... ok\ntest engine::tests::round_trip_with_real_engine ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s\n\n     Running unittests src\\main.rs (desktop\\src-tauri\\target\\debug\\deps\\flowbench-9c65e4e2585745b7.exe)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n   Doc-tests flowbench_lib\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n"
+      "output_tail": "   Compiling flowbench v0.2.0 (F:\\flowbench-data-type-audit\\desktop\\src-tauri)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.78s\n     Running unittests src\\lib.rs (desktop\\src-tauri\\target\\debug\\deps\\flowbench_lib-c7fbe7629aa168b6.exe)\n\nrunning 3 tests\ntest engine::tests::classifies_responses_and_notifications ... ok\ntest engine::tests::discovers_bundled_engine_and_python_from_resource_root_or_parent ... ok\ntest engine::tests::round_trip_with_real_engine ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.56s\n\n     Running unittests src\\main.rs (desktop\\src-tauri\\target\\debug\\deps\\flowbench-9c65e4e2585745b7.exe)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n   Doc-tests flowbench_lib\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n"
     },
     {
       "name": "conformance-e1",
       "status": "FAIL",
       "return_code": 0,
-      "duration_seconds": 16.765,
+      "duration_seconds": 16.906,
       "test_count": null,
       "skipped_count": 0,
       "command": [
@@ -221,7 +233,7 @@
       "name": "conformance-e1-holdout",
       "status": "FAIL",
       "return_code": 0,
-      "duration_seconds": 21.0,
+      "duration_seconds": 21.813,
       "test_count": null,
       "skipped_count": 0,
       "command": [
@@ -242,7 +254,7 @@
       "name": "conformance-e2",
       "status": "FAIL",
       "return_code": 0,
-      "duration_seconds": 28.297,
+      "duration_seconds": 28.156,
       "test_count": null,
       "skipped_count": 0,
       "command": [
@@ -261,7 +273,7 @@
       "name": "conformance-e2-holdout",
       "status": "FAIL",
       "return_code": 0,
-      "duration_seconds": 21.391,
+      "duration_seconds": 22.203,
       "test_count": null,
       "skipped_count": 0,
       "command": [
@@ -397,7 +409,7 @@
       "category": "In/Out",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 119,
+      "independent_tests": 118,
       "reference_cases": 0,
       "reference_passed": 0,
       "e2_cases": 0,
@@ -3827,9 +3839,9 @@
       "catalogue_id": "developer:r",
       "name": "R",
       "category": "Developer",
-      "implementation_status": "implemented",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 1,
+      "independent_tests": 0,
       "reference_cases": 0,
       "reference_passed": 0,
       "e2_cases": 0,

@@ -138,8 +138,8 @@
     ]
   },
   "independent_tests": {
-    "count": 119,
-    "passing": 119,
+    "count": 118,
+    "passing": 118,
     "tests": [
       "test_data_correctness.DataCorrectnessTests.test_filter_numeric_literal_int64_precision",
       "test_data_correctness.DataCorrectnessTests.test_sort_nan_and_join_key_types",
@@ -228,7 +228,6 @@
       "test_fe_tools_wave2.UserCodeTools.test_python_errors_timeouts_and_environment",
       "test_fe_tools_wave2.UserCodeTools.test_python_tool_requires_permission",
       "test_fe_tools_wave2.UserCodeTools.test_python_tool_runs_isolated_code_with_typed_exchange",
-      "test_fe_tools_wave2.UserCodeTools.test_r_tool",
       "test_fe_tools_wave2.UserCodeTools.test_run_command",
       "test_fuzzy_match.FuzzyMatchTests.test_10k_records_use_indexed_candidates",
       "test_fuzzy_match.FuzzyMatchTests.test_cancellation_is_reported_without_partial_results",

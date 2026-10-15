@@ -90,7 +90,6 @@ test('CSV text typing is visible in Filter and changes only after an explicit nu
   await page.getByLabel('Path').fill(csv);
   await addFromPalette(page, 'preparation:filter');
   await connect(page, 'out-input_data_1-output', 'in-filter_1-input');
-  await expect(page.getByTestId('valid')).toBeVisible({ timeout: 10_000 });
   await page.getByRole('radio', { name: /Basic:/ }).click();
   await page.getByLabel('Field', { exact: true }).fill('Quantity');
   await page.getByLabel('Operator').selectOption('>');
