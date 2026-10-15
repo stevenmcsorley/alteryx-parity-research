@@ -286,7 +286,7 @@ function validateQuestion(value: unknown): ApplicationActionNodeData['question']
   if (typeof q.type !== 'string' || !types.includes(q.type)) throw new Error('Unsupported application question type');
   if (q.type === 'control-parameter' && (typeof q.control_field !== 'string' || !q.control_field.trim())) throw new Error('Control parameters require a control_field mapping');
   if (q.secret && q.default !== undefined) throw new Error('Secret questions cannot contain a default value');
-  if ((q.type === 'choice' || q.type === 'multi-choice') && (!Array.isArray(q.options) || q.options.length === 0 || q.options.some((x) => typeof x !== 'string'))) throw new Error('Choice questions require string options');
+  if ((q.type === 'choice' || q.type === 'multi-choice') && (!Array.isArray(q.options) || q.options.length === 0 || q.options.some((x) => typeof x !== 'string') || new Set(q.options).size !== q.options.length)) throw new Error('Choice questions require unique string options');
   if (q.type === 'tree') {
     if (!Array.isArray(q.options) || q.options.length === 0 || q.options.length > 1000 || q.options.some((x) => typeof x !== 'string')) throw new Error('Tree questions require 1 to 1000 string paths');
     const normalized = (q.options as string[]).map((path) => path.split('>').map((part) => part.trim()));

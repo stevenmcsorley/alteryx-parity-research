@@ -38,8 +38,11 @@ def _spec(doc):
             raise EngineError(f'Secret application question {qid!r} must not store a default value', code='application-invalid')
         if q.get('secret') and q['type'] != 'text':
             raise EngineError(f'Secret application question {qid!r} must be text', code='application-invalid')
-        if q['type'] in ('choice', 'multi-choice') and (not isinstance(q.get('options'), list) or not q['options']):
-            raise EngineError(f'Choice question {qid!r} requires options', code='application-invalid')
+        if q['type'] in ('choice', 'multi-choice') and (
+                not isinstance(q.get('options'), list) or not q['options']
+                or any(not isinstance(option, str) for option in q['options'])
+                or len(set(q['options'])) != len(q['options'])):
+            raise EngineError(f'Choice question {qid!r} requires unique string options', code='application-invalid')
         if q['type'] == 'tree':
             options = q.get('options')
             if not isinstance(options, list) or not options or len(options) > 1000 or any(not isinstance(path, str) for path in options):
@@ -187,7 +190,8 @@ def bind_application(doc, supplied):
     values = {}
     for qid, q in by_id.items():
         value = supplied.get(qid, q.get('default'))
-        if (value is None or (q['type'] in ('text', 'text-area', 'file', 'folder', 'tree') and value == '')) and q.get('required', False):
+        empty_answer = (value is None or value == '' or (q['type'] == 'multi-choice' and value == []))
+        if empty_answer and q.get('required', False):
             raise EngineError(f'Application input {qid!r} is required', code='application-input-invalid')
         if value is None:
             values[qid] = None
@@ -205,7 +209,7 @@ def bind_application(doc, supplied):
             values[qid] = value
         elif q['type'] in ('text', 'file', 'folder') and isinstance(value, str):
             values[qid] = value
-        elif q['type'] in ('choice', 'multi-choice') and value in q['options']:
+        elif q['type'] == 'choice' and value in q['options']:
             values[qid] = value
         elif q['type'] == 'multi-choice' and isinstance(value, list) and all(v in q['options'] for v in value) and len(set(value)) == len(value):
             values[qid] = value

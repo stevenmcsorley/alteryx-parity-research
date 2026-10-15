@@ -61,6 +61,12 @@ Flowbench functionality, not a claim that every Alteryx
 Interface connection or Action XML variant is interchangeable. Imported XML
 retention and the limited imported UpdateValue adapter remain tracked
 independently in the generated contract and roadmap.
+
+Choice and List Box answers have distinct types: a single choice is a string,
+while a List Box submits a list even when only one value is selected. Options
+must be unique strings; required multi-select questions cannot submit an empty
+list. Check Box answers remain booleans and Numeric Up Down values remain
+finite numbers subject to configured bounds.
 # Native Batch Macro Control Parameter
 
 Flowbench-native analytic-app metadata supports a `control-parameter` question

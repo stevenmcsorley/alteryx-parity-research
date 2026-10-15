@@ -279,6 +279,35 @@ class ImportTests(unittest.TestCase):
         with self.assertRaisesRegex(EngineError, 'ISO date'):
             bind_application(doc, {'as_of': '02/03/2026'})
 
+    def test_native_choice_controls_enforce_single_and_multi_select_shapes(self):
+        from flowengine.errors import EngineError
+        doc = {'nodes': [{'id': 'target', 'config': {'choice': '', 'list': []}}], 'metadata': {'application': {
+            'questions': [
+                {'id': 'region', 'type': 'choice', 'options': ['North', 'South']},
+                {'id': 'channels', 'type': 'multi-choice', 'options': ['Web', 'Store'], 'required': True},
+            ],
+            'actions': [
+                {'question': 'region', 'node_id': 'target', 'config_path': ['choice']},
+                {'question': 'channels', 'node_id': 'target', 'config_path': ['list']},
+            ],
+        }}}
+        bound = bind_application(doc, {'region': 'South', 'channels': ['Web']})
+        self.assertEqual(bound['nodes'][0]['config'], {'choice': 'South', 'list': ['Web']})
+        with self.assertRaises(EngineError):
+            bind_application(doc, {'region': 'South', 'channels': 'Web'})
+        with self.assertRaisesRegex(EngineError, 'required'):
+            bind_application(doc, {'region': 'South', 'channels': []})
+
+    def test_native_checkbox_binds_boolean_without_string_coercion(self):
+        from flowengine.errors import EngineError
+        doc = {'nodes': [{'id': 'target', 'config': {'enabled': False}}], 'metadata': {'application': {
+            'questions': [{'id': 'enabled', 'type': 'boolean', 'default': False}],
+            'actions': [{'question': 'enabled', 'node_id': 'target', 'config_path': ['enabled']}],
+        }}}
+        self.assertIs(bind_application(doc, {'enabled': True})['nodes'][0]['config']['enabled'], True)
+        with self.assertRaises(EngineError):
+            bind_application(doc, {'enabled': 'true'})
+
     def test_native_text_area_preserves_multiline_answer_through_action_binding(self):
         doc = {'nodes': [{'id': 'input', 'config': {'text': ''}}], 'metadata': {'application': {
             'questions': [{'id': 'notes', 'type': 'text-area', 'required': True}],

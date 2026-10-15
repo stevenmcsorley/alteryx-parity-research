@@ -71,7 +71,7 @@ function ApplicationDialog({ request, close }: { request: AppRequest; close: (v:
     } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
   };
   const submit = () => {
-    const missing = request.questions.find((q) => q.required && (values[q.id] === '' || values[q.id] == null));
+    const missing = request.questions.find((q) => q.required && (values[q.id] === '' || values[q.id] == null || (q.type === 'multi-choice' && Array.isArray(values[q.id]) && (values[q.id] as unknown[]).length === 0)));
     if (missing) { setError(`${missing.label || missing.id} is required.`); return; }
     const outOfRange = request.questions.find((q) => q.type === 'number' && values[q.id] != null && ((q.minimum != null && Number(values[q.id]) < q.minimum) || (q.maximum != null && Number(values[q.id]) > q.maximum)));
     if (outOfRange) { setError(`${outOfRange.label || outOfRange.id} is outside the allowed range.`); return; }

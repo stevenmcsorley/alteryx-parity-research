@@ -136,6 +136,24 @@ test('native Text Box question accepts multiline text in the analytic-app prompt
   await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
 });
 
+test('native List Box question presents a multi-select control and runs', async ({ page }) => {
+  await ready(page);
+  await page.getByTestId('palette-interface:list-box').dblclick();
+  await addFromPalette(page, 'in-out:text-input');
+  const editor = page.getByTestId('text-input-editor');
+  await editor.getByRole('button', { name: '+ field' }).click();
+  await editor.getByLabel('Field 1 name').fill('category');
+  await editor.getByRole('button', { name: '+ row' }).click();
+  await editor.getByLabel('Row 1 field 1').fill('Online');
+  await page.getByTestId('run').click();
+  const app = page.getByRole('dialog', { name: 'Run analytic application' });
+  const choices = app.getByLabel('List Box');
+  await expect(choices).toHaveAttribute('multiple', '');
+  await choices.selectOption(['Option 1']);
+  await app.getByRole('button', { name: 'Run' }).click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+});
+
 test('catalogue Comment can be placed, edited and remains a canvas annotation', async ({ page }) => {
   await ready(page);
   const comment = page.getByTestId('palette-documentation:comment');
