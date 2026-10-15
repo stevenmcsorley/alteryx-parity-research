@@ -15,6 +15,7 @@ from .plugin import CancelToken, RunContext, default_registry
 
 MACRO_TOOLS = {'flowengine.macro', 'flowengine.batch_macro', 'flowengine.iterative_macro'}
 DB_WRITE_TOOLS = {'core.db_output'}
+FILE_WRITE_TOOLS = {'core.blob_output'}
 
 
 def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dict:
@@ -42,7 +43,10 @@ def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dic
             if tool:
                 effect = tool.manifest.side_effects
                 record = {'node_id': node_id, 'tool_id': tool_id, 'path': list(path)}
-                if effect == 'writes-files':
+                # Blob Output is the file capability guarded by allow_file_writes.
+                # Output Data has its established workflow destination semantics and
+                # must not acquire a new confirmation just because its manifest is a sink.
+                if tool_id in FILE_WRITE_TOOLS and effect == 'writes-files':
                     found['file_writes'].append(record)
                 elif effect == 'process':
                     found['processes'].append(record)
