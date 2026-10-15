@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 224 run, 0 failed |
+| Unit/integration tests in last ledger build | 229 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -82,7 +82,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `developer:base64-encoder` | `core.base64_encoder` | 1 | 0/0 | not-tested |
 | `developer:blob-convert` | `core.blob_convert` | 3 | 0/0 | not-tested |
 | `developer:blob-input` | `core.blob_input` | 2 | 0/0 | not-tested |
-| `developer:blob-output` | `core.blob_output` | 2 | 0/0 | not-tested |
+| `developer:blob-output` | `core.blob_output` | 5 | 0/0 | not-tested |
 | `developer:block-until-done` | `core.block_until_done` | 1 | 0/0 | not-tested |
 | `developer:detour` | `core.detour` | 1 | 0/0 | not-tested |
 | `developer:detour-end` | `core.detour_end` | 1 | 0/0 | not-tested |
