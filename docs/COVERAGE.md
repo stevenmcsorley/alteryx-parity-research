@@ -10,9 +10,9 @@
 | Distinct tool names | 321 |
 | Public help URL resolved (official tool list sync) | 323 |
 | Machine-readable contracts generated | 323 |
-| Entries with known anchors (manifest, reference-observed or public-doc) | 183 |
+| Entries with known anchors (manifest, reference-observed or public-doc) | 184 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 63 |
+| Independent kernels implemented and passing tests | 67 |
 | Independently implemented application adapters (in progress) | 1 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 215 run, 0 failed |
+| Unit/integration tests in last ledger build | 229 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -36,7 +36,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:directory` | `core.directory` | 1 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 17 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 9 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 119 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 126 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -80,15 +80,19 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `interface:macro-input` | `flowengine.macro_input` | 13 | 0/0 | not-tested |
 | `interface:macro-output` | `flowengine.macro_output` | 13 | 0/0 | not-tested |
 | `developer:base64-encoder` | `core.base64_encoder` | 1 | 0/0 | not-tested |
-| `developer:blob-convert` | `core.blob_convert` | 1 | 0/0 | not-tested |
+| `developer:blob-convert` | `core.blob_convert` | 3 | 0/0 | not-tested |
+| `developer:blob-input` | `core.blob_input` | 2 | 0/0 | not-tested |
+| `developer:blob-output` | `core.blob_output` | 5 | 0/0 | not-tested |
 | `developer:block-until-done` | `core.block_until_done` | 1 | 0/0 | not-tested |
 | `developer:detour` | `core.detour` | 1 | 0/0 | not-tested |
 | `developer:detour-end` | `core.detour_end` | 1 | 0/0 | not-tested |
 | `developer:dynamic-rename` | `core.dynamic_rename` | 1 | 1/1 | partial |
+| `developer:dynamic-replace` | `core.dynamic_replace` | 3 | 0/0 | not-tested |
 | `developer:dynamic-select` | `core.dynamic_select` | 1 | 1/1 | partial |
 | `developer:expect-equals` | `core.expect_equals` | 1 | 0/0 | not-tested |
 | `developer:field-info` | `core.field_info` | 1 | 1/1 | partial |
 | `developer:json-parse` | `core.json_parse` | 1 | 2/2 | partial |
+| `developer:json-schema` | `core.json_schema` | 2 | 0/0 | not-tested |
 | `developer:message` | `core.message` | 1 | 0/0 | not-tested |
 | `developer:python` | `core.python` | 4 | 0/0 | not-tested |
 | `developer:r` | `core.r` | 0 | 0/0 | not-tested |
@@ -110,7 +114,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Connectors | 44 | 0 | 0 | 1 | 44 |
 | Data Investigation | 14 | 0 | 0 | 7 | 0 |
 | Demographic Analysis | 4 | 0 | 0 | 0 | 4 |
-| Developer | 30 | 16 | 4 | 28 | 0 |
+| Developer | 30 | 20 | 4 | 29 | 0 |
 | Documentation | 3 | 0 | 0 | 1 | 0 |
 | In-Database | 16 | 0 | 0 | 0 | 0 |
 | In/Out | 8 | 6 | 0 | 7 | 0 |

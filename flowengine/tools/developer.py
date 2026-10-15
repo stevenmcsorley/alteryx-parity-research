@@ -12,6 +12,7 @@ import base64
 import csv
 import datetime as _dt
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -24,7 +25,7 @@ from ..formula import EvalContext, compile_expression, truthy
 from ..plugin import Anchor, Tool, ToolManifest
 from ..table import Table
 from ..types import CastFailure, Field, FieldType, Schema, cast_value, format_value
-from ._common import FIELD_SPEC, TYPE_ENUM, require_fields
+from ._common import FIELD_SPEC, TYPE_ENUM, cast_column, require_fields
 
 TEXT = 2**30 - 1
 
@@ -70,6 +71,82 @@ class FieldInfo(Tool):
 
 
 # =========================================================================== JSON Parse
+
+class JSONSchemaTool(Tool):
+    manifest = ToolManifest(
+        tool_id='core.json_schema', version='1.0.0', display_name='JSON Schema',
+        catalog_ids=('developer:json-schema',),
+        inputs=(Anchor('input', 'Input', required=False),), outputs=(Anchor('output', 'Output'),),
+        description='Generate a JSON Schema object and append its serialized form to each input row.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['title', 'fields'], 'properties': {
+            'title': {'type': 'string', 'minLength': 1}, 'description': {'type': 'string', 'default': ''},
+            'output_field': {'type': 'string', 'minLength': 1, 'default': 'JSON Schema'},
+            'fields': {'type': 'array', 'minItems': 1, 'items': {'type': 'object', 'additionalProperties': False,
+                'required': ['name', 'type'], 'properties': {
+                    'name': {'type': 'string', 'minLength': 1},
+                    'type': {'enum': ['string', 'integer', 'number', 'boolean', 'date', 'datetime', 'enum']},
+                    'description': {'type': 'string', 'default': ''},
+                    'enum_values': {'type': 'array', 'items': {'type': 'string'}, 'default': []},
+                    'default_value': {}, 'required': {'type': 'boolean', 'default': False},
+                    'minimum': {'type': 'number'}, 'maximum': {'type': 'number'},
+                    'min_length': {'type': 'integer', 'minimum': 0}, 'max_length': {'type': 'integer', 'minimum': 0},
+                    'min_date': {'type': 'string'}, 'max_date': {'type': 'string'},
+                }}}
+        }})
+
+    def check_config(self, cfg):
+        names = [f['name'] for f in cfg['fields']]
+        if len(names) != len(set(names)):
+            raise ConfigError('JSON Schema field names must be unique')
+        for f in cfg['fields']:
+            if f['type'] == 'enum' and not f['enum_values']:
+                raise ConfigError(f"Enum field {f['name']!r} requires at least one enum value")
+            if f.get('minimum') is not None and f.get('maximum') is not None and f['minimum'] > f['maximum']:
+                raise ConfigError(f"Minimum exceeds maximum for {f['name']!r}")
+            if f.get('min_length') is not None and f.get('max_length') is not None and f['min_length'] > f['max_length']:
+                raise ConfigError(f"Minimum length exceeds maximum length for {f['name']!r}")
+            if f.get('min_date') and f.get('max_date') and f['min_date'] > f['max_date']:
+                raise ConfigError(f"Minimum date exceeds maximum date for {f['name']!r}")
+
+    def run(self, ctx, cfg, inputs):
+        schema = {'$schema': 'https://json-schema.org/draft/2020-12/schema', 'title': cfg['title'], 'type': 'object', 'properties': {}}
+        if cfg['description']:
+            schema['description'] = cfg['description']
+        required = []
+        for f in cfg['fields']:
+            kind = f['type']
+            prop = {'type': 'string' if kind in ('date', 'datetime', 'enum') else kind}
+            if f.get('description'):
+                prop['description'] = f['description']
+            if kind == 'enum':
+                prop['enum'] = f['enum_values']
+            if kind == 'date':
+                prop['format'] = 'date'
+            elif kind == 'datetime':
+                prop['format'] = 'date-time'
+            for source, dest in (('minimum', 'minimum'), ('maximum', 'maximum'),
+                                 ('min_length', 'minLength'), ('max_length', 'maxLength')):
+                if f.get(source) is not None:
+                    prop[dest] = f[source]
+            if f.get('min_date'):
+                prop['x-flowbench-min-date'] = f['min_date']
+            if f.get('max_date'):
+                prop['x-flowbench-max-date'] = f['max_date']
+            if 'default_value' in f:
+                prop['default'] = f['default_value']
+            if f.get('required'):
+                required.append(f['name'])
+            schema['properties'][f['name']] = prop
+        if required:
+            schema['required'] = required
+        serialized = json.dumps(schema, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+        field = Field(cfg['output_field'], FieldType.V_WSTRING, max(1, len(serialized)))
+        incoming = inputs.get('input')
+        if incoming is None:
+            return {'output': Table.from_rows([field], [[serialized]])}
+        if cfg['output_field'] in incoming.schema:
+            raise ConfigError(f"Output field {cfg['output_field']!r} already exists in the input")
+        return {'output': incoming.with_column(field, [serialized] * len(incoming))}
 
 def _flatten(value, prefix, out):
     # empty arrays/objects produce no record [ref:probe-json-false-null]
@@ -254,7 +331,327 @@ class DynamicSelect(Tool):
         return {'output': t.select(keep)}
 
 
+class DynamicReplace(Tool):
+    """Apply ordered, data-driven replacement rules to selected columns."""
+    manifest = ToolManifest(
+        tool_id='core.dynamic_replace', version='1.0.0', display_name='Dynamic Replace',
+        catalog_ids=('developer:dynamic-replace',),
+        inputs=(Anchor('data', 'D'), Anchor('replacements', 'R')),
+        outputs=(Anchor('output', 'O'), Anchor('summary', 'S', required=False)),
+        description='Apply replacement rules in input order. Each rule names a data field, a Boolean expression evaluated against the data row, and a static or formula replacement value. First matching rule wins.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'properties': {
+            'field_name_field': {'type': 'string', 'default': 'Field'},
+            'condition_field': {'type': 'string', 'default': 'Condition'},
+            'value_field': {'type': 'string', 'default': 'Value'},
+            'value_is_expression': {'type': 'boolean', 'default': False},
+            'type_mode': {'enum': ['keep_original', 'auto', 'explicit'], 'default': 'keep_original'},
+            'output_type': {'enum': TYPE_ENUM},
+            'output_size': {'type': 'integer', 'minimum': 1, 'maximum': TEXT},
+            'output_scale': {'type': 'integer', 'minimum': 0, 'maximum': 49},
+            'unmatched_behavior': {'enum': ['allow', 'warn', 'error'], 'default': 'error'},
+        }})
+
+    def check_config(self, cfg):
+        if cfg['type_mode'] == 'explicit' and not cfg.get('output_type'):
+            raise ConfigError('explicit type_mode requires output_type')
+        if cfg['type_mode'] == 'explicit' and cfg['output_type'] == 'fixed_decimal':
+            if cfg.get('output_size') is None or cfg.get('output_scale') is None or cfg['output_scale'] >= cfg['output_size']:
+                raise ConfigError('explicit fixed_decimal requires output_size > output_scale')
+
+    def infer(self, ctx, cfg, inputs):
+        # The replacement input is row-driven, so affected columns are not known at plan time.
+        return None
+
+    def run(self, ctx, cfg, inputs):
+        data, rules = inputs['data'], inputs['replacements']
+        names = (cfg['field_name_field'], cfg['condition_field'], cfg['value_field'])
+        require_fields(rules.schema, names)
+        fi, ci, vi = (rules.schema.index(n) for n in names)
+        parsed = []
+        selected = set()
+        for rule_no, rule in enumerate(rules.rows(), 1):
+            field_name, condition, value = rule[fi], rule[ci], rule[vi]
+            if field_name is None or str(field_name) not in data.schema.names:
+                msg = f'Replacement rule {rule_no} refers to an unknown data field'
+                if cfg['unmatched_behavior'] == 'error':
+                    raise ConfigError(msg)
+                if cfg['unmatched_behavior'] == 'warn':
+                    ctx.warn(msg)
+                continue
+            if condition is None or not str(condition).strip():
+                raise ConfigError(f'Replacement rule {rule_no} has an empty condition')
+            try:
+                predicate = compile_expression(str(condition), data.schema)
+                replacement = compile_expression(str(value), data.schema) if cfg['value_is_expression'] and value is not None else None
+            except Exception as e:
+                raise ConfigError(f'Replacement rule {rule_no} has an invalid expression: {e}') from None
+            parsed.append((str(field_name), predicate, value, replacement))
+            selected.add(str(field_name))
+
+        original = list(data.schema)
+        row_cache = list(data.rows())
+        ec = EvalContext(now=ctx.clock)
+        columns = [list(data.column(f.name)) for f in data.schema]
+        hit_counts = {}
+        matched_rows = {name: set() for name in selected}
+        truncations = {}
+        for field_name, predicate, static_value, replacement in parsed:
+            col_i = data.schema.index(field_name)
+            for row_i, row in enumerate(row_cache):
+                ctx.check_cancelled()
+                if row_i not in matched_rows[field_name] and predicate.evaluate(row, ec):
+                    raw = replacement.evaluate(row, ec) if replacement else static_value
+                    try:
+                        converted, warning = cast_value(raw, original[col_i])
+                        columns[col_i][row_i] = converted
+                        if warning:
+                            truncations[field_name] = truncations.get(field_name, 0) + 1
+                    except (CastFailure, ValueError, TypeError, OverflowError):
+                        raise DataError(f'Replacement rule for field {field_name!r} produced a value incompatible with its type') from None
+                    hit_counts[(field_name, str(raw) if raw is not None else None)] = hit_counts.get((field_name, str(raw) if raw is not None else None), 0) + 1
+                    matched_rows[field_name].add(row_i)
+        for field_name, count in truncations.items():
+            ctx.warn(f'{count} replacement value(s) truncated to the existing field size',
+                     field=field_name, count=count)
+        output_fields = original
+        if cfg['type_mode'] == 'explicit':
+            target_type = FieldType(cfg['output_type'])
+            target_size = cfg.get('output_size') if target_type.is_string or target_type is FieldType.FIXED_DECIMAL else None
+            target_scale = cfg.get('output_scale') if target_type is FieldType.FIXED_DECIMAL else None
+            output_fields = [Field(f.name, target_type, target_size, target_scale, f.description)
+                             if f.name in selected else f for f in original]
+            for col_i, f in enumerate(output_fields):
+                if f.name in selected:
+                    try:
+                        columns[col_i] = cast_column(columns[col_i], f, ctx)
+                    except (CastFailure, ValueError, TypeError, OverflowError):
+                        raise DataError(f'Result values for field {f.name!r} cannot be converted to {f.type.value}') from None
+        elif cfg['type_mode'] == 'auto':
+            # Infer from the complete post-replacement column and widen conservatively.
+            from ..types import infer_type, unify_fields
+            output_fields = list(original)
+            for col_i, f in enumerate(original):
+                if f.name not in selected:
+                    continue
+                kinds = [infer_type(v) for v in columns[col_i] if v is not None]
+                if not kinds:
+                    continue
+                target = Field(f.name, kinds[0])
+                if target.type.is_string:
+                    target = Field(f.name, target.type, max(1, max((len(format_value(v)) for v in columns[col_i] if v is not None), default=1)))
+                try:
+                    for kind in kinds[1:]:
+                        target = unify_fields(target, Field(f.name, kind))
+                    columns[col_i] = [cast_value(v, target)[0] for v in columns[col_i]]
+                except (SchemaError, CastFailure, ValueError, TypeError, OverflowError):
+                    # A mixed column that cannot be represented exactly remains text.
+                    target = Field(f.name, FieldType.V_WSTRING, max(1, max((len(format_value(v)) for v in columns[col_i] if v is not None), default=1)))
+                    columns[col_i] = [None if v is None else format_value(v) for v in columns[col_i]]
+                output_fields[col_i] = target
+        out = Table(Schema(output_fields), columns)
+        summary_schema = Schema([Field('Field', FieldType.V_WSTRING, TEXT), Field('ReplacementValue', FieldType.V_WSTRING, TEXT), Field('Count', FieldType.INT64)])
+        summary_rows = [(field, value, count) for (field, value), count in sorted(hit_counts.items(), key=lambda x: (x[0][0], x[0][1] or ''))]
+        return {'output': out, 'summary': Table.from_rows(summary_schema, summary_rows)}
+
+
 # =========================================================================== Blob Convert / Base64
+
+class BlobInput(Tool):
+    """Read binary files as typed BLOB records, optionally in bounded chunks."""
+
+    manifest = ToolManifest(
+        tool_id='core.blob_input', version='1.0.0', display_name='Blob Input',
+        catalog_ids=('developer:blob-input',),
+        inputs=(Anchor('input', 'Input', required=False),), outputs=(Anchor('output', 'Output'),),
+        side_effects='reads-files', deterministic=True,
+        description='Read one binary file, or read a file path from each input row. Optional chunking emits bounded binary rows.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['mode'], 'properties': {
+            'mode': {'enum': ['file', 'pass_through'], 'default': 'file'},
+            'path': {'type': ['string', 'null'], 'default': None},
+            'filename_field': {'type': ['string', 'null'], 'default': None},
+            'blob_field': {'type': 'string', 'minLength': 1, 'default': 'Blob'},
+            'split_blobs': {'type': 'boolean', 'default': False},
+            'chunk_size_kb': {'type': 'integer', 'minimum': 1, 'maximum': 102400, 'default': 1024},
+            'max_blob_size_mb': {'type': 'integer', 'minimum': 1, 'maximum': 4096, 'default': 512},
+        }})
+
+    def check_config(self, cfg):
+        if cfg['mode'] == 'file' and not cfg.get('path'):
+            raise ConfigError('Blob Input file mode requires path')
+        if cfg['mode'] == 'pass_through' and not cfg.get('filename_field'):
+            raise ConfigError('Blob Input pass-through mode requires filename_field')
+
+    def infer(self, ctx, cfg, inputs):
+        from ..types import Schema
+        source = inputs.get('input') if cfg['mode'] == 'pass_through' else None
+        if cfg['mode'] == 'pass_through' and source is None:
+            return None
+        fields = list(source) if source is not None else []
+        names = {f.name for f in fields}
+        if cfg['blob_field'] in names:
+            return None
+        fields.append(Field(cfg['blob_field'], FieldType.BLOB))
+        if cfg['split_blobs']:
+            if 'BlobNumber' in {f.name for f in fields}:
+                return None
+            fields.append(Field('BlobNumber', FieldType.INT64))
+        return {'output': Schema(fields)}
+
+    def run(self, ctx, cfg, inputs):
+        upstream = inputs.get('input') if cfg['mode'] == 'pass_through' else None
+        if cfg['mode'] == 'pass_through' and upstream is None:
+            raise ConfigError('Blob Input pass-through mode requires an incoming file list')
+        if upstream is not None:
+            require_fields(upstream.schema, [cfg['filename_field']])
+            if cfg['blob_field'] in upstream.schema.names or (cfg['split_blobs'] and 'BlobNumber' in upstream.schema.names):
+                raise ConfigError('Blob Input output field collides with an incoming field')
+            fields = list(upstream.schema)
+        else:
+            fields = []
+        fields.append(Field(cfg['blob_field'], FieldType.BLOB))
+        if cfg['split_blobs']:
+            fields.append(Field('BlobNumber', FieldType.INT64))
+        max_bytes = cfg['max_blob_size_mb'] * 1024 * 1024
+        chunk_bytes = cfg['chunk_size_kb'] * 1024
+        rows = []
+        inputs_iter = upstream.rows() if upstream is not None else [()]
+        for input_row in inputs_iter:
+            ctx.check_cancelled()
+            raw_path = input_row[upstream.schema.index(cfg['filename_field'])] if upstream is not None else cfg['path']
+            if not isinstance(raw_path, str) or not raw_path.strip():
+                raise DataError('Blob Input received an empty or non-text file path')
+            path = ctx.resolve_path(raw_path)
+            try:
+                if not path.is_file():
+                    raise FileNotFoundError
+                if cfg['split_blobs']:
+                    with path.open('rb') as stream:
+                        index = 0
+                        while True:
+                            ctx.check_cancelled()
+                            blob = stream.read(chunk_bytes)
+                            if not blob:
+                                break
+                            index += 1
+                            prefix = tuple(input_row)
+                            rows.append(prefix + (blob, index))
+                            if len(rows) > 1_000_000:
+                                raise DataError('Blob Input exceeded the one-million-chunk execution safety limit')
+                        if index == 0:
+                            rows.append(tuple(input_row) + (b'', 1))
+                else:
+                    if path.stat().st_size > max_bytes:
+                        raise DataError(f'Blob Input file exceeds configured maximum ({cfg["max_blob_size_mb"]} MB)')
+                    rows.append(tuple(input_row) + (path.read_bytes(),))
+            except FileNotFoundError:
+                raise DataError('Blob Input cannot access a configured file') from None
+        ctx.info(f'read {len(rows)} blob record(s)')
+        return {'output': Table.from_rows(fields, rows)}
+
+
+class BlobOutput(Tool):
+    """Write each BLOB row to its own file using safe filename-only substitutions."""
+
+    manifest = ToolManifest(
+        tool_id='core.blob_output', version='1.0.0', display_name='Blob Output',
+        catalog_ids=('developer:blob-output',), inputs=(Anchor('input', 'Input'),), outputs=(),
+        side_effects='writes-files', deterministic=True,
+        description='Write each binary field value to its own file. Dynamic filename operations affect only the filename component.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['path', 'blob_field'], 'properties': {
+            'path': {'type': 'string', 'minLength': 1}, 'blob_field': {'type': 'string', 'minLength': 1},
+            'modify_method': {'enum': ['none', 'append', 'prepend', 'replace_name'], 'default': 'none'},
+            'filename_field': {'type': ['string', 'null'], 'default': None},
+            'if_exists': {'enum': ['error', 'overwrite'], 'default': 'error'},
+        }})
+
+    def check_config(self, cfg):
+        if cfg['modify_method'] != 'none' and not cfg.get('filename_field'):
+            raise ConfigError('Blob Output filename_field is required for dynamic filename modification')
+
+    def infer(self, ctx, cfg, inputs):
+        return {}
+
+    def run(self, ctx, cfg, inputs):
+        if not ctx.limits.get('allow_file_writes'):
+            raise EngineError('Blob Output writes files and is disabled for this run. Allow file writes explicitly.',
+                              code='permission-denied', node_id=ctx.node_id)
+        table: Table = inputs['input']
+        fields = [cfg['blob_field']] + ([cfg['filename_field']] if cfg['modify_method'] != 'none' else [])
+        require_fields(table.schema, fields)
+        base = ctx.resolve_path(cfg['path'])
+        written = []
+        for row_number, record in enumerate(table.rows(), 1):
+            ctx.check_cancelled()
+            blob = record[table.schema.index(cfg['blob_field'])]
+            if blob is None:
+                raise DataError(f'Blob Output row {row_number} has a null binary value')
+            if not isinstance(blob, (bytes, bytearray, memoryview)):
+                raise DataError(f'Blob Output field {cfg["blob_field"]!r} is not binary')
+            destination = base
+            if cfg['modify_method'] != 'none':
+                value = record[table.schema.index(cfg['filename_field'])]
+                if not isinstance(value, str) or not value.strip() or value in ('.', '..') or '/' in value or '\\' in value or ':' in value:
+                    raise DataError(f'Blob Output row {row_number} has an unsafe filename value')
+                stem, suffix = base.stem, base.suffix
+                if cfg['modify_method'] == 'append': stem += value
+                elif cfg['modify_method'] == 'prepend': stem = value + stem
+                else: stem = value
+                destination = base.with_name(stem + suffix)
+            if destination in written:
+                raise DataError(f'Blob Output rows resolve to the same destination at row {row_number}')
+            if destination.exists() and cfg['if_exists'] == 'error':
+                raise DataError(f'Blob Output destination already exists for row {row_number}')
+            written.append(destination)
+        staged = []
+        backups = []
+        installed = []
+        remove_backups = True
+        try:
+            for row_number, (record, destination) in enumerate(zip(table.rows(), written), 1):
+                ctx.check_cancelled()
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                data = record[table.schema.index(cfg['blob_field'])]
+                handle, temp_path = tempfile.mkstemp(prefix='.flowbench-blob-', dir=destination.parent)
+                try:
+                    with os.fdopen(handle, 'wb') as stream:
+                        stream.write(bytes(data))
+                        stream.flush()
+                        os.fsync(stream.fileno())
+                    staged.append((Path(temp_path), destination))
+                finally:
+                    if os.path.exists(temp_path) and all(Path(temp_path) != item[0] for item in staged):
+                        os.unlink(temp_path)
+            for temp_path, destination in staged:
+                ctx.check_cancelled()
+                if destination.exists():
+                    if cfg['if_exists'] == 'error':
+                        raise DataError(f'Blob Output destination appeared during write at row {len(installed) + 1}')
+                    handle, backup_name = tempfile.mkstemp(prefix='.flowbench-blob-backup-', dir=destination.parent)
+                    os.close(handle)
+                    os.unlink(backup_name)
+                    backup = Path(backup_name)
+                    os.replace(destination, backup)
+                    backups.append((backup, destination))
+                os.replace(temp_path, destination)
+                installed.append(destination)
+        except BaseException:
+            for path in installed:
+                try: path.unlink(missing_ok=True)
+                except OSError: pass
+            for backup, destination in backups:
+                try: os.replace(backup, destination)
+                except OSError: remove_backups = False
+            raise
+        finally:
+            for temp_path, _ in staged:
+                try: temp_path.unlink(missing_ok=True)
+                except OSError: pass
+            if remove_backups:
+                for backup, _ in backups:
+                    try: backup.unlink(missing_ok=True)
+                    except OSError: pass
+        ctx.info(f'wrote {len(installed)} blob file(s)')
+        return {}
 
 class BlobConvert(Tool):
     streaming = 'row-local'
@@ -759,5 +1156,5 @@ class RunCommand(Tool):
         return {'output': Table.from_rows([Field(n, FieldType.V_WSTRING, TEXT) for n in names], rows[1:])}
 
 
-TOOLS = [FieldInfo, JSONParse, DynamicRename, DynamicSelect, BlobConvert, Base64Encoder, Message, TestTool,
+TOOLS = [FieldInfo, JSONSchemaTool, JSONParse, DynamicRename, DynamicSelect, DynamicReplace, BlobInput, BlobOutput, BlobConvert, Base64Encoder, Message, TestTool,
          BlockUntilDone, Detour, DetourEnd, ExpectEquals, Throttle, PythonTool, RTool, RunCommand]

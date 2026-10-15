@@ -110,9 +110,11 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
+    "count": 3,
+    "passing": 3,
     "tests": [
+      "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
+      "test_blob_tools.BlobToolsTests.test_blob_output_requires_consent_and_writes_per_record_files",
       "test_fe_tools_wave2.DeveloperWave2.test_blob_and_base64"
     ]
   },

@@ -1,37 +1,7 @@
 # JSON Schema
 
-> **Research record; NOT a working tool implementation or verified specification.**
+Independent Flowbench implementation: `core.json_schema` (`developer:json-schema`). Configure a title, optional description, output column and one or more properties with string, integer, number, boolean, date, datetime or enum types. Property configuration supports descriptions, defaults, required flags and applicable constraints. It emits a JSON Schema 2020-12 document; an optional incoming table receives the same schema string on each row.
 
-## Identity
+The schema builder behavior is described by the [official JSON Schema tool documentation](https://help.alteryx.com/current/en/designer/tools/developer/json-schema-tool.html). The kernel is exercised through the Flowbench workflow engine in `tests/test_json_schema_tool.py` and the generated output is checked by the Python `jsonschema` implementation.
 
-- Catalogue ID: `developer:json-schema`
-- Category: Developer
-- Published XML identifier: `JSONSchema_1_0` (manual transcription; verify against installed reference)
-- Published user role: Full
-- Reference build: Designer 2026.1.4.126 (installed-build comparison outstanding)
-- Official catalogue: https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html
-- Specific reference: **NOT YET VERIFIED** — run public catalogue sync
-- Implementation: **not-started**
-- Machine-readable contract: `json-schema.contract.json`
-- Conformance verification: **not-tested**
-
-## Research to complete (do not infer)
-
-- [ ] Pin per-tool public documentation and availability/version history
-- [ ] Define inputs, output anchors, schema and metadata rules
-- [ ] Define configuration fields, defaults, UI validation and errors
-- [ ] Define row order, null semantics, locale/timezone and deterministic behaviour
-- [ ] Identify add-ons, licences, external APIs, services and data-package prerequisites
-- [ ] Define concrete independent fixtures, edge cases and expected outputs
-- [ ] Implement real independently written kernel or adapter
-- [ ] Demonstrate end-to-end workflow execution and unit/integration tests
-- [ ] Where authorised, capture reference evidence and run differential tests
-- [ ] Record limitations, performance, security and version compatibility
-
-## Sources and observations
-
-No application behaviour or compatibility has been verified. Add specific links, observed facts, dates, permission scope and evidence references here. Keep assumptions explicitly labelled.
-
-## Conformance evidence
-
-Not tested. Do not mark verified without a report, input/config hashes and a reproducible comparison rule.
+**This tool is not reference verified.** Evidence limits: Alteryx XML import/export translation and differential output compatibility remain unverified. Flowbench's `x-flowbench-min-date` / `x-flowbench-max-date` keywords preserve configured date bounds as annotations because JSON Schema Draft 2020-12 has no standard string-date minimum/maximum assertion keywords.

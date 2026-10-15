@@ -6,37 +6,73 @@
   "xml_tool_name": "AlteryxBasePluginsGui.BlobOutput.BlobOutput",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/blob-output-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "BlobField",
-      "FileName",
-      "ModifyFilename_Field",
-      "ModifyMethod"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "path",
+      "blob_field"
     ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "properties": {
+      "path": {
+        "type": "string",
+        "minLength": 1
+      },
+      "blob_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "modify_method": {
+        "enum": [
+          "none",
+          "append",
+          "prepend",
+          "replace_name"
+        ],
+        "default": "none"
+      },
+      "filename_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "if_exists": {
+        "enum": [
+          "error",
+          "overwrite"
+        ],
+        "default": "error"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.blob_output",
+    "version": "1.0.0",
+    "module": "flowengine.tools.developer",
+    "side_effects": "writes-files"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -67,9 +103,15 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 5,
+    "passing": 5,
+    "tests": [
+      "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
+      "test_blob_tools.BlobToolsTests.test_blob_output_requires_consent_and_writes_per_record_files",
+      "test_workflow_effects.WorkflowEffectsTests.test_embedded_batch_and_iterative_macros_report_nested_blob_output",
+      "test_workflow_effects.WorkflowEffectsTests.test_file_backed_macro_effect_is_available_through_permission_rpc",
+      "test_workflow_effects.WorkflowEffectsTests.test_macro_cycles_terminate_without_hiding_writer"
+    ]
   },
   "sources": [
     {
@@ -90,6 +132,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

@@ -6,22 +6,116 @@
   "xml_tool_name": "JSONSchema_1_0",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/json-schema-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Configuration",
-      "JSON Schema Builder",
-      "Schema Creation",
-      "Tool Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "title",
+      "fields"
+    ],
+    "properties": {
+      "title": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": {
+        "type": "string",
+        "default": ""
+      },
+      "output_field": {
+        "type": "string",
+        "minLength": 1,
+        "default": "JSON Schema"
+      },
+      "fields": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "type"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": {
+              "enum": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "date",
+                "datetime",
+                "enum"
+              ]
+            },
+            "description": {
+              "type": "string",
+              "default": ""
+            },
+            "enum_values": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            },
+            "default_value": {},
+            "required": {
+              "type": "boolean",
+              "default": false
+            },
+            "minimum": {
+              "type": "number"
+            },
+            "maximum": {
+              "type": "number"
+            },
+            "min_length": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "max_length": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "min_date": {
+              "type": "string"
+            },
+            "max_date": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "licensed-dataset (public-doc keyword signal; unreviewed)",
     "llm-service (public-doc keyword signal; unreviewed)",
@@ -29,7 +123,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.json_schema",
+    "version": "1.0.0",
+    "module": "flowengine.tools.developer",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -46,9 +146,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_json_schema_tool.JSONSchemaToolTests.test_generates_valid_schema_and_appends_it_to_each_row",
+      "test_json_schema_tool.JSONSchemaToolTests.test_schema_only_mode_and_invalid_configuration"
+    ]
   },
   "sources": [
     {
@@ -64,7 +167,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet."
   ]
 }

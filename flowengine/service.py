@@ -81,7 +81,8 @@ class EngineService:
     def _run_kwargs(self, params):
         return dict(base_dir=self._base(params), clock=self._clock(params), profile=params.get('profile'),
                     limits={'allow_processes': bool(params.get('allow_processes')),
-                            'allow_database_writes': bool(params.get('allow_database_writes'))},
+                            'allow_database_writes': bool(params.get('allow_database_writes')),
+                            'allow_file_writes': bool(params.get('allow_file_writes'))},
                     workers=int(params.get('workers', 1)), batch_rows=params.get('batch_rows'),
                     memory_budget=params.get('memory_budget'), retain='preview', history=self.history)
 
@@ -93,6 +94,9 @@ class EngineService:
                     'python': sys.version.split()[0], 'history': bool(self.history), 'cwd': os.getcwd()}
         if method == 'tools.list':
             return [t.manifest.to_dict() for t in reg.tools()]
+        if method == 'workflow.permissions':
+            from .workflow_effects import workflow_effects
+            return workflow_effects(params['workflow'], self._base(params), registry=reg)
         if method == 'profiles.list':
             return [p.to_dict() for p in PROFILES.values()]
         if method.startswith('database.'):

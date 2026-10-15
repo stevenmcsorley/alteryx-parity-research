@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import type { FieldDef, JsonSchema } from '../engine/types';
 
 // Property names that hold a field name / list of field names / an expression (engine conventions).
-const FIELD_KEYS = /^(field|header_field|value_field|left|right|rename_from|record_id_field|source_id_field)$/;
+const FIELD_KEYS = /^(field|header_field|value_field|left|right|rename_from|record_id_field|source_id_field|blob_field|filename_field)$/;
 const FIELD_LIST_KEYS = /^(fields|group_by|key_fields|data_fields|right_fields|left_fields)$/;
 const EXPR_KEYS = /^(expression|init|condition|loop)$/;
 const LABELS: Record<string, string> = { group_by: 'Group by', on_conversion_error: 'On conversion error' };

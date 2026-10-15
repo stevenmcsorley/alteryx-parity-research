@@ -77,22 +77,43 @@ export async function validateNow(): Promise<ValidateResult | null> {
 export async function runWorkflow(options: { workers?: number; batch_rows?: number | null } = {}): Promise<void> {
   const s = useEditor.getState();
   if (s.run.status === 'running') return;
-  const codeTools = s.nodes.filter((n) => n.data.kind === 'tool' && CODE_TOOLS.has(n.data.tool));
+  const document = toDocument(graphOf(s));
+  const emptyEffects: WorkflowEffects = { complete: false, file_writes: [], database_writes: [], processes: [],
+    unresolved: [{ path: [], reason: 'permission scan failed' }] };
+  let effects: WorkflowEffects = emptyEffects;
+  try {
+    effects = await engine().request<WorkflowEffects>('workflow.permissions', { workflow: document, base_dir: s.baseDir });
+  } catch {
+    // Fail closed. A failed preflight cannot authorize any workflow-wide capability.
+  }
+  const codeTools = effects.processes;
   let allow = false;
   if (codeTools.length) {
     allow = window.confirm(`This workflow contains ${codeTools.length} tool(s) that run code or programs on this computer `
-      + `(${codeTools.map((n) => n.id).join(', ')}). Only allow this for workflows you trust. Allow for this run?`);
+      + `(${codeTools.map(effectLocation).join(', ')}). Only allow this for workflows you trust. Allow for this run?`)
+      && effects.complete;
     if (!allow) return;
   }
-  const dbWriters = s.nodes.filter((n) => n.data.kind === 'tool' && n.data.tool === 'core.db_output');
+  const dbWriters = effects.database_writes;
   let allowDatabaseWrites = false;
   if (dbWriters.length) {
-    allowDatabaseWrites = window.confirm(`This workflow can write to a database (${dbWriters.map((n) => n.id).join(', ')}). `
-      + 'Continue only if the selected connection is configured for writes and you trust the workflow. Allow database writes for this run?');
+    allowDatabaseWrites = window.confirm(`This workflow can write to a database (${dbWriters.map(effectLocation).join(', ')}). `
+      + 'Continue only if the selected connection is configured for writes and you trust the workflow. Allow database writes for this run?')
+      && effects.complete;
     if (!allowDatabaseWrites) return;
   }
+  const blobWriters = effects.file_writes;
+  let allowFileWrites = false;
+  if (blobWriters.length) {
+    allowFileWrites = window.confirm(`This workflow writes files (${blobWriters.map(effectLocation).join(', ')}). `
+      + 'Review the configured destination and file naming options. Allow these file writes for this run?')
+      && effects.complete;
+    if (!allowFileWrites) return;
+  }
+  if (!effects.complete && effects.unresolved.length) {
+    window.alert('Flowbench could not inspect every nested macro. File, database and process permissions remain disabled for this run.');
+  }
   try {
-    const document = toDocument(graphOf(s));
     const app = await engine().request<{ questions: import('../ui/dialogs').AppQuestion[] }>('workflow.application', { workflow: document });
     const applicationValues = app.questions.length ? await promptApplication(app.questions) : undefined;
     if (app.questions.length && applicationValues === null) return;
@@ -100,6 +121,7 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
       workflow: document, base_dir: s.baseDir, profile: s.profile, preview_rows: 500,
       workers: options.workers ?? 2, allow_processes: allow,
       allow_database_writes: allowDatabaseWrites,
+      allow_file_writes: allowFileWrites,
       ...(applicationValues ? { application_values: applicationValues } : {}),
       ...(options.batch_rows ? { batch_rows: options.batch_rows } : {}) });
     if (res.status === 'invalid') {
@@ -115,6 +137,18 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
   } catch (e) {
     useEditor.getState().runInvalid([{ code: 'engine-error', message: describe(e), node_id: null }]);
   }
+}
+
+type WorkflowEffects = {
+  complete: boolean;
+  file_writes: Array<{ node_id: string; tool_id: string; path: string[] }>;
+  database_writes: Array<{ node_id: string; tool_id: string; path: string[] }>;
+  processes: Array<{ node_id: string; tool_id: string; path: string[] }>;
+  unresolved: Array<{ path: string[]; reason: string }>;
+};
+
+function effectLocation(effect: { node_id: string; path: string[] }): string {
+  return effect.path.length > 1 ? `${effect.node_id} (through ${effect.path.slice(0, -1).join(' → ')})` : effect.node_id;
 }
 
 async function collectResult(runId: string, poll = false): Promise<void> {
@@ -155,8 +189,6 @@ export async function saveWorkflow(path: string): Promise<void> {
 }
 
 const IMPORTABLE = /\.(yxmd|yxmc|yxwz|yxzp)$/i;
-const CODE_TOOLS = new Set(['core.python', 'core.r', 'core.run_command']);
-
 export async function openWorkflow(path: string): Promise<void> {
   if (IMPORTABLE.test(path)) {
     const res = await engine().request<{ workflow: any; report: any; base_dir: string }>('workflow.import', { path });
