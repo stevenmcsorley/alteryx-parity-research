@@ -82,7 +82,8 @@ describe('Flowbench AI conversation', () => {
     expect(useEditor.getState().nodes).toHaveLength(0);
   });
 
-  it('applies a validated graph transaction in Full Control without a review card and keeps it undoable', async () => {
+  it('recovers an interrupted response after a Full Control edit without repeating the edit', async () => {
+    let interruptions = 0;
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
     const manifest = (tool_id: string, inputs: string[], outputs: string[]) => ({ tool_id, version: '1', display_name: tool_id,
       catalog_ids: [], inputs: inputs.map((name) => ({ name, label: name, required: name === 'input', multiple: false, description: '' })),
@@ -107,6 +108,10 @@ describe('Flowbench AI conversation', () => {
         if (!tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_submit_tool_result')) return { turn_id: args?.turnId, message_id: 'full_msg', cycle_id: args?.cycleId, text: '', calls: [
           { name: 'workflow.propose_patch', call_id: 'full_patch', arguments: JSON.stringify({ patch_json: patch, base_revision: workflowRevision(useEditor.getState()) }) },
         ] };
+        if (interruptions++ === 0) {
+          tauriMock.handler?.({ payload: { type: 'delta', turn_id: args?.turnId, message_id: 'full_msg', cycle_id: args?.cycleId, text: 'Partial discarded answer' } });
+          return { status: 'retryable_stream_interruption', turn_id: args?.turnId, message_id: 'full_msg', cycle_id: args?.cycleId };
+        }
         return { turn_id: args?.turnId, message_id: 'full_msg', cycle_id: args?.cycleId, text: 'Added the input node.', calls: [] };
       }
       return undefined;
@@ -117,6 +122,11 @@ describe('Flowbench AI conversation', () => {
     await waitFor(() => expect(useEditor.getState().nodes).toHaveLength(1));
     expect(screen.queryByRole('region', { name: 'Workflow change preview' })).toBeNull();
     expect(await screen.findByText('Added the input node.')).toBeTruthy();
+    expect(screen.queryByText(/Partial discarded answer/)).toBeNull();
+    expect(tauriMock.invoke.mock.calls.filter(([cmd]) => cmd === 'ai_begin')).toHaveLength(1);
+    expect(tauriMock.invoke.mock.calls.filter(([cmd]) => cmd === 'ai_submit_tool_result')).toHaveLength(1);
+    expect(tauriMock.invoke.mock.calls.filter(([cmd]) => cmd === 'ai_respond')).toHaveLength(3);
+    expect(tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_abort_turn')).toBe(false);
     useEditor.getState().undo();
     expect(useEditor.getState().nodes).toHaveLength(0);
     confirm.mockRestore();
@@ -277,6 +287,97 @@ describe('Flowbench AI conversation', () => {
     expect(await screen.findByText('Temporary response failure')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
     expect(await screen.findByText('Recovered.')).toBeTruthy();
+  });
+
+  it('bounds interrupted-stream retries and preserves history for a manual continuation', async () => {
+    let turn = 0;
+    await ready();
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_begin') { turn++; return { turn_id: `turn_${turn}`, assistant_message_id: `msg_${turn}` }; }
+      if (command === 'ai_respond') return { turn_id: args?.turnId, message_id: `msg_${turn}`, cycle_id: args?.cycleId,
+        ...(turn === 1 ? { status: 'retryable_stream_interruption', calls: [
+          { name: 'workflow.propose_patch', call_id: 'must_not_execute', arguments: '{}' },
+        ] } : { text: 'Remaining work verified.', calls: [] }) };
+      return undefined;
+    });
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'Build a difficult workflow.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(useAiConversation.getState().status).toBe('failed'), { timeout: 2500 });
+    expect(tauriMock.invoke.mock.calls.filter(([cmd]) => cmd === 'ai_respond')).toHaveLength(3);
+    expect(tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_abort_turn' || cmd === 'ai_submit_tool_result')).toBe(false);
+    expect(tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_finish_turn')).toBe(true);
+    expect(useAiConversation.getState().messages.slice(-1)[0]?.retryMode).toBe('continue');
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    await screen.findByText('Remaining work verified.');
+    const prompts = tauriMock.invoke.mock.calls.filter(([cmd]) => cmd === 'ai_begin').map(([, args]) => args.prompt);
+    expect(prompts).toHaveLength(2);
+    expect(prompts[1]).toContain('Continue my interrupted request');
+    expect(useAiConversation.getState().messages[0].text).toBe('Build a difficult workflow.');
+  });
+
+  it('lets the model correct rejected arguments before dispatching any calls', async () => {
+    let responses = 0;
+    await ready();
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_begin') return { turn_id: 'turn_correct', assistant_message_id: 'msg_correct' };
+      if (command === 'ai_respond') {
+        responses++;
+        const identity = { turn_id: args?.turnId, message_id: 'msg_correct', cycle_id: args?.cycleId };
+        if (responses === 1) {
+          tauriMock.handler?.({ payload: { type: 'delta', ...identity, text: 'Unvalidated claim' } });
+          return { ...identity, needs_tool_correction: true, calls: [
+            { name: 'workflow.request_run', call_id: 'withheld', arguments: '{}' },
+          ] };
+        }
+        if (responses === 2) return { ...identity, text: '', calls: [
+          { name: 'app.get_capabilities', call_id: 'corrected', arguments: '{}' },
+        ] };
+        return { ...identity, text: 'Available tools inspected.', calls: [] };
+      }
+      return undefined;
+    });
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'Build expense analysis.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    await screen.findByText('Available tools inspected.');
+    expect(screen.queryByText('Unvalidated claim')).toBeNull();
+    expect(tauriMock.invoke.mock.calls.filter(([cmd]) => cmd === 'ai_begin')).toHaveLength(1);
+    const submitted = tauriMock.invoke.mock.calls.filter(([cmd]) => cmd === 'ai_submit_tool_result');
+    expect(submitted).toHaveLength(1);
+    expect(submitted[0][1].callId).toBe('corrected');
+    expect(tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_abort_turn')).toBe(false);
+  });
+
+  it('stops repeated invalid tool arguments with completed conversation history intact', async () => {
+    await ready();
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_begin') return { turn_id: 'turn_bad_args', assistant_message_id: 'msg_bad_args' };
+      if (command === 'ai_respond') return { turn_id: args?.turnId, message_id: 'msg_bad_args',
+        cycle_id: args?.cycleId, needs_tool_correction: true, calls: [] };
+      return undefined;
+    });
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'Correct these arguments.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(useAiConversation.getState().status).toBe('failed'));
+    expect(tauriMock.invoke.mock.calls.filter(([cmd]) => cmd === 'ai_respond')).toHaveLength(3);
+    expect(tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_abort_turn' || cmd === 'ai_submit_tool_result')).toBe(false);
+    expect(tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_finish_turn')).toBe(true);
+    expect(useAiConversation.getState().messages.slice(-1)[0]?.retryMode).toBe('continue');
+  });
+
+  it('can stop during reconnect backoff without starting another response', async () => {
+    await ready();
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_begin') return { turn_id: 'turn_backoff', assistant_message_id: 'msg_backoff' };
+      if (command === 'ai_respond') return { status: 'retryable_stream_interruption', turn_id: args?.turnId,
+        message_id: 'msg_backoff', cycle_id: args?.cycleId };
+      return undefined;
+    });
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'Stop recovery.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(useAiConversation.getState().messages.slice(-1)[0]?.activity?.some((a) => a.includes('reconnecting'))).toBe(true));
+    fireEvent.click(screen.getByRole('button', { name: 'Stop response' }));
+    await waitFor(() => expect(useAiConversation.getState().status).toBe('cancelled'));
+    expect(tauriMock.invoke.mock.calls.filter(([cmd]) => cmd === 'ai_respond')).toHaveLength(1);
   });
 
   it('shows a native begin failure and preserves the unsent draft', async () => {

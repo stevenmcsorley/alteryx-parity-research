@@ -10,6 +10,17 @@ import { doSave } from '../panels/Toolbar';
 type Entry = { label: string; tool: AgentToolName; args?: Record<string, unknown> };
 type Model = { slug: string; display_name: string };
 type ValueItem = { type?: string; name?: string; arguments?: string; call_id?: string; [key: string]: unknown };
+type NativeResponse = { turn_id: string; message_id: string; cycle_id: string; status?: 'retryable_stream_interruption'; needs_tool_correction?: boolean; text?: string; text_source?: string; empty_reason?: string; calls?: ValueItem[] };
+class ToolCorrectionFailure extends Error {
+  constructor() {
+    super('ChatGPT could not correct its tool arguments after three attempts. Rejected actions were not executed; earlier completed actions were kept. Retry to continue.');
+  }
+}
+class StreamInterruption extends Error {
+  constructor() {
+    super('The ChatGPT connection was interrupted after two automatic retries. Completed workflow actions were kept. Retry to continue from the current state.');
+  }
+}
 const quickActions: Entry[] = [
   { label: 'Inspect this workflow', tool: 'workflow.get_snapshot' },
   { label: 'Check validation', tool: 'workflow.validate' },
@@ -273,6 +284,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     stickToBottom.current = true;
     setError(''); setDraft(''); cancelled.current = false;
     let turnId: string | undefined;
+    let correctionAttempts = 0;
     try {
       await ensureAiStreamListener();
       const started = await native<{ turn_id: string; assistant_message_id: string }>('ai_begin', { prompt: text });
@@ -282,10 +294,30 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         { id: started.assistant_message_id, turnId, role: 'assistant', text: '', state: 'streaming' },
       );
       for (let cycle = 0; !cancelled.current; cycle++) {
-        const cycleId = `cycle_${crypto.randomUUID().replaceAll('-', '')}`;
-        useAiConversation.getState().responseStart(turnId, cycleId);
-        const response: { turn_id: string; message_id: string; cycle_id: string; text: string; text_source?: string; empty_reason?: string; calls?: ValueItem[] } = await native('ai_respond', { model, turnId, cycleId, toolsEnabled });
-        if (response.turn_id !== turnId || response.message_id !== started.assistant_message_id || response.cycle_id !== cycleId) throw new Error('The response belonged to a different conversation turn.');
+        let response: NativeResponse | undefined;
+        let cycleId = '';
+        for (let attempt = 0; attempt < 3 && !cancelled.current; attempt++) {
+          cycleId = `cycle_${crypto.randomUUID().replaceAll('-', '')}`;
+          useAiConversation.getState().responseStart(turnId, cycleId);
+          response = await native<NativeResponse>('ai_respond', { model, turnId, cycleId, toolsEnabled });
+          if (response.turn_id !== turnId || response.message_id !== started.assistant_message_id || response.cycle_id !== cycleId) throw new Error('The response belonged to a different conversation turn.');
+          if (cancelled.current) break;
+          if (response.status !== 'retryable_stream_interruption') break;
+          useAiConversation.getState().discardResponse(turnId, cycleId);
+          if (attempt === 2) throw new StreamInterruption();
+          useAiConversation.getState().activity(turnId, `Connection interrupted; reconnecting (${attempt + 1}/2)…`);
+          await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+        }
+        if (cancelled.current) break;
+        if (!response) throw new Error('ChatGPT returned no response.');
+        if (response.needs_tool_correction) {
+          useAiConversation.getState().discardResponse(turnId, cycleId);
+          correctionAttempts++;
+          if (correctionAttempts >= 3) throw new ToolCorrectionFailure();
+          useAiConversation.getState().activity(turnId, `Correcting rejected tool arguments (${correctionAttempts}/3)…`);
+          continue;
+        }
+        correctionAttempts = 0;
         // Completed output is authoritative. This recovers text if event delivery was late or lost.
         useAiConversation.getState().authoritative(turnId, response.message_id, cycleId, response.text ?? '');
         const calls = response.calls ?? [];
@@ -315,8 +347,9 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     } catch (e) {
       const message = messageOf(e);
       if (turnId) {
-        await native('ai_abort_turn', { turnId }).catch(() => undefined);
-        useAiConversation.getState().finish(turnId, cancelled.current ? 'cancelled' : 'failed', cancelled.current ? undefined : message);
+        const canContinue = (e instanceof StreamInterruption || e instanceof ToolCorrectionFailure) && !cancelled.current;
+        await native(canContinue ? 'ai_finish_turn' : 'ai_abort_turn', { turnId }).catch(() => undefined);
+        useAiConversation.getState().finish(turnId, cancelled.current ? 'cancelled' : 'failed', cancelled.current ? undefined : message, canContinue ? 'continue' : undefined);
       } else if (!cancelled.current) {
         setDraft(text);
         setError(message);
@@ -333,6 +366,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     try { await native('ai_cancel'); } catch { /* request may already have ended */ }
   }
   async function retry(message: ChatMessage) {
+    if (message.retryMode === 'continue') {
+      await send('Continue my interrupted request from the current workflow and the completed tool results already in this conversation. Inspect the current state first and carry out only the remaining work; do not repeat successful changes or claim unverified results.');
+      return;
+    }
     const s = useAiConversation.getState();
     const index = s.messages.findIndex((m) => m.id === message.id);
     const userMessage = s.messages.slice(0, index).reverse().find((m) => m.role === 'user');
