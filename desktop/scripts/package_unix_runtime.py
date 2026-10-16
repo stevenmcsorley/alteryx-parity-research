@@ -50,7 +50,7 @@ def stage():
         moved = Path(relocated) / 'runtime'
         shutil.copytree(runtime, moved, symlinks=True)
         subprocess.run([str(moved / 'bin/python3'), '-c',
-            'import jsonschema, pyarrow, psycopg, pymssql, scipy.stats, yxdb, keyring, venv; '
+            'import jsonschema, pyarrow, psycopg, pymssql, scipy.stats, reportlab.platypus, PIL.Image, yxdb, keyring, venv; '
             'from metaphone import doublemetaphone; assert doublemetaphone("Smith")[0]'],
             cwd=relocated, check=True)
         subprocess.run([str(moved / 'bin/python3'), '-m', 'flowengine', 'run',

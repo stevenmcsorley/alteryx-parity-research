@@ -6,59 +6,83 @@
   "xml_tool_name": "PortfolioPluginsGui.ComposerImage.PortfolioComposerImage",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/reporting/image-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Action",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
-    },
-    {
-      "name": "Input",
-      "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "BlobField",
-      "EncodedImage",
-      "Filename",
-      "ImageMode",
-      "ImageStyle",
-      "ModifyField",
-      "ModifyFilename",
-      "ModifyMode",
-      "StaticImage",
-      "StaticMode",
-      "StopIfNotFound",
-      "Thumbnail"
-    ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "path": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "image_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Blob field with image bytes, or text field with an image path"
+      },
+      "alt": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "display_width": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "exclusiveMinimum": 0,
+        "default": null
+      },
+      "max_bytes": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 209715200,
+        "default": 26214400
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "report-renderer (layout/PDF/image)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.report_image",
+    "version": "1.0.0",
+    "module": "flowengine.tools.reporting",
+    "side_effects": "reads-files"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -100,9 +124,14 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 4,
+    "passing": 4,
+    "tests": [
+      "test_reporting.ElementTests.test_images_are_validated_and_normalised",
+      "test_reporting.RenderTests.test_fuel_report_example",
+      "test_reporting.RenderTests.test_html_document_contains_escaped_text_table_chart_and_image",
+      "test_reporting.RenderTests.test_pdf_document_has_pages_text_vector_chart_and_image"
+    ]
   },
   "sources": [
     {
@@ -123,6 +152,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

@@ -6,44 +6,136 @@
   "xml_tool_name": "PlotlyCharting",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/reporting/interactive-chart-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "ChartingFields",
-      "ChartingFields/Batch",
-      "ChartingFields/Layout",
-      "ChartingFields/Traces"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "chart_type",
+      "x_field"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Create Chart",
-      "Charting Options",
-      "Style Options",
-      "Additional Information",
-      "Save and Import Chart Template",
-      "Limitations"
-    ]
+    "properties": {
+      "chart_type": {
+        "enum": [
+          "bar",
+          "line",
+          "area",
+          "scatter",
+          "histogram",
+          "timeseries"
+        ]
+      },
+      "x_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "y_fields": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "default": []
+      },
+      "series_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "aggregation": {
+        "enum": [
+          "none",
+          "sum",
+          "mean",
+          "count",
+          "min",
+          "max"
+        ],
+        "default": "sum"
+      },
+      "stacked": {
+        "type": "boolean",
+        "default": false
+      },
+      "sort": {
+        "enum": [
+          "x",
+          "value_desc",
+          "none"
+        ],
+        "default": "x"
+      },
+      "bins": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 500,
+        "default": 20
+      },
+      "max_categories": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000,
+        "default": 100
+      },
+      "title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "x_label": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "y_label": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "width": {
+        "type": "integer",
+        "minimum": 240,
+        "maximum": 4000,
+        "default": 720
+      },
+      "height": {
+        "type": "integer",
+        "minimum": 180,
+        "maximum": 4000,
+        "default": 420
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "report-renderer (layout/PDF/image)",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -51,7 +143,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.interactive_chart",
+    "version": "1.0.0",
+    "module": "flowengine.tools.reporting",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -90,9 +188,14 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 4,
+    "passing": 4,
+    "tests": [
+      "test_reporting.ElementTests.test_interactive_chart_aggregates_engine_data",
+      "test_reporting.RenderTests.test_fuel_report_example",
+      "test_reporting.RenderTests.test_html_document_contains_escaped_text_table_chart_and_image",
+      "test_reporting.RenderTests.test_pdf_document_has_pages_text_vector_chart_and_image"
+    ]
   },
   "sources": [
     {
@@ -113,6 +216,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

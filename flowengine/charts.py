@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import math
-from xml.sax.saxutils import escape, quoteattr
+from xml.sax.saxutils import escape
 
 CATEGORICAL = ('#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#56B4E9', '#F0E442', '#000000')  # Okabe-Ito
 _VIRIDIS = ((68, 1, 84), (59, 82, 139), (33, 145, 140), (94, 201, 98), (253, 231, 37))
@@ -99,7 +99,8 @@ class Canvas:
         return ''.join(out)
 
 
-def draw_reportlab(canvas: Canvas, pdf, x0: float, y0: float, scale: float = 1.0):
+def draw_reportlab(canvas: Canvas, pdf, x0: float, y0: float, scale: float = 1.0,
+                   font: str = 'Helvetica', bold_font: str = 'Helvetica-Bold'):
     """Paint ``canvas`` onto a reportlab canvas with its top-left corner at (x0, y0) in PDF points."""
     from reportlab.lib.colors import HexColor
 
@@ -150,7 +151,7 @@ def draw_reportlab(canvas: Canvas, pdf, x0: float, y0: float, scale: float = 1.0
             pdf.circle(X(o['cx']), Y(o['cy']), o['r'] * scale, fill=1, stroke=1 if o.get('stroke') else 0)
         elif kind == 'text':
             pdf.setFillColor(color(o['fill']))
-            pdf.setFont('Helvetica-Bold' if o['weight'] == 'bold' else 'Helvetica', o['size'] * scale)
+            pdf.setFont(bold_font if o['weight'] == 'bold' else font, o['size'] * scale)
             pdf.translate(X(o['x']), Y(o['y']))
             if o['rotate']:
                 pdf.rotate(-o['rotate'])
@@ -200,13 +201,37 @@ class Linear:
         return self.a + (float(v) - self.lo) / (self.hi - self.lo) * (self.b - self.a)
 
     def ticks(self):
+        if getattr(self.formatter, 'time_ticks', None):
+            return [t for t in self.formatter.time_ticks(self.lo, self.hi) if self.lo <= t <= self.hi]
         return [t for t in nice_ticks(self.lo, self.hi, self.count) if self.lo <= t <= self.hi]
 
 
 def time_formatter(lo: float, hi: float):
+    """Label formatter for timestamp axes; its ``time_ticks`` puts ticks on calendar boundaries."""
     span = hi - lo
-    fmt = '%Y' if span > 3 * 365 * 86400 else '%Y-%m' if span > 60 * 86400 else '%Y-%m-%d' if span > 2 * 86400 else '%m-%d %H:%M'
-    return lambda v: _dt.datetime.fromtimestamp(v, _dt.timezone.utc).strftime(fmt)
+    day = 86400
+    fmt = '%Y' if span > 3 * 365 * day else '%Y-%m' if span > 60 * day else '%Y-%m-%d' if span > 2 * day else '%m-%d %H:%M'
+
+    def label(v):
+        return _dt.datetime.fromtimestamp(v, _dt.timezone.utc).strftime(fmt)
+
+    def ticks(a, b):
+        start = _dt.datetime.fromtimestamp(a, _dt.timezone.utc)
+        if span > 3 * 365 * day:  # whole years, at most about eight
+            step = max(1, math.ceil(span / (365.25 * day) / 8))
+            out = [_dt.datetime(y, 1, 1, tzinfo=_dt.timezone.utc) for y in range(start.year, start.year + 400, step)]
+        elif span > 60 * day:  # month starts
+            months = max(1, math.ceil(span / (30.44 * day) / 8))
+            out, y, m = [], start.year, start.month
+            while len(out) < 200:
+                out.append(_dt.datetime(y, m, 1, tzinfo=_dt.timezone.utc))
+                m += months
+                y, m = y + (m - 1) // 12, (m - 1) % 12 + 1
+        else:
+            return nice_ticks(a, b)
+        return [t.timestamp() for t in out if a <= t.timestamp() <= b]
+    label.time_ticks = ticks
+    return label
 
 
 def to_timestamp(v) -> float:
@@ -460,4 +485,4 @@ def chart_schema():
 
 
 __all__ = ['Canvas', 'draw_reportlab', 'bar_chart', 'line_chart', 'scatter_chart', 'histogram_chart', 'heatmap_chart',
-           'means_chart', 'violin_chart', 'chart_table', 'chart_schema', 'quoteattr', 'to_timestamp']
+           'means_chart', 'violin_chart', 'chart_table', 'chart_schema', 'to_timestamp']

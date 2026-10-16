@@ -6,60 +6,83 @@
   "xml_tool_name": "PortfolioPluginsGui.ComposerText.PortfolioComposerText",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/reporting/report-text-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Action",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
-    },
-    {
-      "name": "Input",
-      "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "HeaderField",
-      "HeaderMode",
-      "Images",
-      "Images/Image",
-      "Message",
-      "Output",
-      "Position",
-      "RawMode",
-      "RichTextMode",
-      "RichTextString",
-      "Styles",
-      "Styles/Style",
-      "ValidatePCXML"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "text"
     ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "properties": {
+      "text": {
+        "type": "string",
+        "maxLength": 100000
+      },
+      "mode": {
+        "enum": [
+          "static",
+          "first_record",
+          "per_record"
+        ],
+        "default": "static"
+      },
+      "style": {
+        "enum": [
+          "title",
+          "heading",
+          "body",
+          "caption"
+        ],
+        "default": "body"
+      },
+      "align": {
+        "enum": [
+          "left",
+          "center",
+          "right"
+        ],
+        "default": "left"
+      },
+      "null_text": {
+        "type": "string",
+        "default": ""
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "report-renderer (layout/PDF/image)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.report_text",
+    "version": "1.0.0",
+    "module": "flowengine.tools.reporting",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -102,9 +125,15 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 5,
+    "passing": 5,
+    "tests": [
+      "test_reporting.ElementTests.test_report_text_placeholders",
+      "test_reporting.RenderTests.test_fuel_report_example",
+      "test_reporting.RenderTests.test_html_document_contains_escaped_text_table_chart_and_image",
+      "test_reporting.RenderTests.test_long_tables_paginate_and_unicode_needs_a_font",
+      "test_reporting.RenderTests.test_pdf_document_has_pages_text_vector_chart_and_image"
+    ]
   },
   "sources": [
     {
@@ -125,6 +154,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }
