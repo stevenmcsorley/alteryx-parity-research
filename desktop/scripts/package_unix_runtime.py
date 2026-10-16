@@ -12,6 +12,21 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def link_wheel_libraries(runtime: Path):
+    """Let libraries vendored by manylinux wheels find each other.
+
+    auditwheel sets RPATH on the extension modules only. The vendored ``*.libs``
+    files depend on one another without a search path, which linuxdeploy (AppImage)
+    cannot resolve. ``$ORIGIN`` resolves them in place; libraries that already
+    declare a search path are left unchanged.
+    """
+    for library in sorted(runtime.glob('lib/python3.*/site-packages/*.libs/*.so*')):
+        if library.is_file() and not library.is_symlink():
+            current = subprocess.check_output(['patchelf', '--print-rpath', str(library)], text=True).strip()
+            if not current:
+                subprocess.run(['patchelf', '--set-rpath', '$ORIGIN', str(library)], check=True)
+
+
 def stage():
     if sys.platform not in ('linux', 'darwin'):
         raise SystemExit('Build Linux/macOS runtimes on their native operating system')
@@ -28,6 +43,8 @@ def stage():
     python = runtime / 'bin/python3'
     subprocess.run(['uv', 'pip', 'install', '--break-system-packages', '--python', str(python),
                     '-r', str(ROOT / 'requirements-unix-runtime.txt')], check=True)
+    if sys.platform == 'linux':
+        link_wheel_libraries(runtime)
     # Test after relocation, from outside the repo, to catch absolute runtime links.
     with tempfile.TemporaryDirectory(prefix='flowbench-relocated-') as relocated:
         moved = Path(relocated) / 'runtime'
