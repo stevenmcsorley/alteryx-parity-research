@@ -25,7 +25,9 @@ existing `branch` with `message`, keeping every other file in the branch unchang
   fails with GitHub's "not a fast forward" error and their commit is kept.
 - Paths must be relative, use `/` and contain no empty, `.` or `..` segments. Repeated paths and null
   content are errors. No input records means no commit.
-- Output is the input records plus `BlobSHA`, `CommitSHA` and `CommitURL`.
+- Output is the input records plus `BlobSHA`, `CommitSHA` and `CommitURL`. When the API response omits
+  `html_url`, CommitURL is derived from the API root (`api.github.com` or an Enterprise `/api/v3` root). It is
+  left null for any other layout rather than guessed.
 
 These are Flowbench semantics derived from the public tool descriptions. Deletions, file modes other
 than `100644`, branch creation, pull requests, author overrides, the vendor macros' other modes and
