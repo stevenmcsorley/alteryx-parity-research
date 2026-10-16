@@ -12,12 +12,30 @@ export const TOOL_MIME = 'application/x-flowbench-tool';
 
 export function Canvas() {
   const nodes = useEditor((s) => s.nodes);
+  const renderedNodes = useMemo(() => {
+    const byId = new Map(nodes.map((node) => [node.id, node]));
+    return nodes.map((node) => {
+      let parent = node.parentId ? byId.get(node.parentId) : undefined;
+      let hidden = false;
+      while (parent) {
+        if (parent.data.kind === 'container' && parent.data.collapsed) { hidden = true; break; }
+        parent = parent.parentId ? byId.get(parent.parentId) : undefined;
+      }
+      if (hidden) return { ...node, hidden: true };
+      if (node.data.kind === 'container' && node.data.collapsed)
+        return { ...node, style: { ...node.style, height: 48 } };
+      return node;
+    });
+  }, [nodes]);
   const edges = useEditor((s) => s.edges);
   const onNodesChange = useEditor((s) => s.onNodesChange);
   const onEdgesChange = useEditor((s) => s.onEdgesChange);
   const connect = useEditor((s) => s.connect);
   const addTool = useEditor((s) => s.addTool);
   const addApplicationAction = useEditor((s) => s.addApplicationAction);
+  const addApplicationCondition = useEditor((s) => s.addApplicationCondition);
+  const addApplicationError = useEditor((s) => s.addApplicationError);
+  const addComment = useEditor((s) => s.addComment);
   const nodeRows = useEditor((s) => s.run.nodeRows);
   const runStatus = useEditor((s) => s.run.status);
   const tools = useEditor((s) => s.tools);
@@ -36,7 +54,7 @@ export function Canvas() {
     return {
       ...e,
       animated: runStatus === 'running' && rows === undefined,
-      label: rows !== undefined ? rows.toLocaleString() : undefined,
+      label: e.data?.kind === 'application-condition' ? e.label : rows !== undefined ? rows.toLocaleString() : undefined,
       labelShowBg: true,
       labelBgPadding: [5, 1] as [number, number],
       labelBgBorderRadius: 8,
@@ -64,6 +82,21 @@ export function Canvas() {
     const toolId = e.dataTransfer.getData(TOOL_MIME);
     if (!toolId) return;
     e.preventDefault();
+    if (toolId === 'flowengine.application_condition') {
+      const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      addApplicationCondition({ x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
+      return;
+    }
+    if (toolId === 'flowengine.application_error') {
+      const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      addApplicationError({ x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
+      return;
+    }
+    if (toolId === 'flowengine.comment') {
+      const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      addComment({ x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
+      return;
+    }
     if (toolId === 'flowengine.application_action' || toolId.startsWith('flowengine.application_action:')) {
       const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
       const catalogId = toolId.slice('flowengine.application_action:'.length);
@@ -76,7 +109,7 @@ export function Canvas() {
     }
     const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
     addTool(toolId, { x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
-  }, [flow, tools, addTool, addApplicationAction]);
+  }, [flow, tools, addTool, addApplicationAction, addApplicationCondition, addApplicationError, addComment]);
 
   const minimapColor = useCallback((n: any) => {
     if (n.type !== 'tool') return 'transparent';
@@ -88,7 +121,7 @@ export function Canvas() {
   return (
     <div className="canvas" ref={wrapper} onDragOver={onDragOver} onDrop={onDrop} data-testid="canvas">
       <ReactFlow
-        nodes={nodes}
+        nodes={renderedNodes}
         edges={decoratedEdges}
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}

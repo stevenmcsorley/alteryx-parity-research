@@ -1,37 +1,36 @@
 # Control Parameter
 
-> **Research record; NOT a working tool implementation or verified specification.**
+> Flowbench-native partial implementation; **NOT a verified specification or Alteryx parity claim**.
 
-## Identity
+## Flowbench-native support
 
-- Catalogue ID: `interface:control-parameter`
-- Category: Interface
-- Published XML identifier: `AlteryxGuiToolkit.Questions.ControlParam.ControlParam` (manual transcription; verify against installed reference)
-- Published user role: Full
-- Reference build: Designer 2026.1.4.126 (installed-build comparison outstanding)
-- Official catalogue: https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html
-- Specific reference: **NOT YET VERIFIED** — run public catalogue sync
-- Implementation: **not-started**
-- Machine-readable contract: `control-parameter.contract.json`
-- Conformance verification: **not-tested**
+In a Batch Macro child workflow, a `control-parameter` question names the parent
+control-table column through `control_field`. Each row in the parent's control
+input runs the child once, in input order. The corresponding `metadata.application.actions`
+entry applies that value to an existing child tool configuration property before
+the child workflow is validated and executed. Array indexes in action paths are
+supported.
 
-## Research to complete (do not infer)
+The desktop exposes the native Control Parameter in the Interface palette and
+inspector. It is serialized as application metadata and is not shown in the
+standalone analytic-app form. Running a child document directly without a Batch
+Macro control context fails explicitly.
 
-- [ ] Pin per-tool public documentation and availability/version history
-- [ ] Define inputs, output anchors, schema and metadata rules
-- [ ] Define configuration fields, defaults, UI validation and errors
-- [ ] Define row order, null semantics, locale/timezone and deterministic behaviour
-- [ ] Identify add-ons, licences, external APIs, services and data-package prerequisites
-- [ ] Define concrete independent fixtures, edge cases and expected outputs
-- [ ] Implement real independently written kernel or adapter
-- [ ] Demonstrate end-to-end workflow execution and unit/integration tests
-- [ ] Where authorised, capture reference evidence and run differential tests
-- [ ] Record limitations, performance, security and version compatibility
+## Limits and compatibility
 
-## Sources and observations
+- This implementation reuses the existing Flowbench Batch Macro runtime; it is
+  not an Alteryx Control Parameter XML adapter.
+- Conditional control-parameter Actions, application Error Message nodes, and
+  ordinary analytic-app Actions inside the same batch child are rejected rather
+  than silently ignored.
+- A control parameter must map to at least one Action target.
+- Alteryx-specific XML configuration, source anchors and reference output
+  semantics remain unverified. Import retains unsupported vendor configuration
+  with diagnostics.
 
-No application behaviour or compatibility has been verified. Add specific links, observed facts, dates, permission scope and evidence references here. Keep assumptions explicitly labelled.
+## Evidence
 
-## Conformance evidence
-
-Not tested. Do not mark verified without a report, input/config hashes and a reproducible comparison rule.
+The executable Flowbench-native path is covered by
+`test_macros.BatchMacroTests.test_native_control_parameter_uses_each_parent_row_and_updates_child_configuration`.
+The generated contract and roadmap provide the current catalogue and reference
+status. No Alteryx differential claim is made.

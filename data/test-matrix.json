@@ -43,7 +43,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 23,
+      "independent_tests": 26,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:browse)"
@@ -187,7 +187,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 127,
+      "independent_tests": 130,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:text-input)"
@@ -307,7 +307,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 26,
+      "independent_tests": 28,
       "reference_cases": 5,
       "evidence_refs": [
         "tool-contracts (contract JSON for preparation:filter)"
@@ -331,7 +331,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 22,
+      "independent_tests": 23,
       "reference_cases": 13,
       "evidence_refs": [
         "tool-contracts (contract JSON for preparation:formula)"
@@ -1003,7 +1003,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 7,
+      "independent_tests": 8,
       "reference_cases": 1,
       "evidence_refs": [
         "tool-contracts (contract JSON for transform:count-records)"
@@ -1913,9 +1913,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for documentation:tool-container)"
@@ -2321,9 +2321,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:check-box)"
@@ -2369,9 +2369,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:control-parameter)"
@@ -2393,9 +2393,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:date)"
@@ -2441,9 +2441,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:drop-down)"
@@ -2465,9 +2465,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:error-message)"
@@ -2537,9 +2537,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:list-box)"
@@ -2563,7 +2563,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 13,
+      "independent_tests": 14,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:macro-input)"
@@ -2587,7 +2587,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 13,
+      "independent_tests": 14,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:macro-output)"
@@ -2633,9 +2633,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:numeric-up-down)"
@@ -2657,9 +2657,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:radio-button)"
@@ -2681,9 +2681,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:text-box)"
@@ -2705,9 +2705,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:tree)"

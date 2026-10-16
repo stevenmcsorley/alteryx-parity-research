@@ -53,10 +53,27 @@ runner differential result.
 The desktop palette also offers a **Flowbench Action** editor node. Its form
 question is configured in the inspector, and its `Action` output connects to a
 tool's separate `Action` target. That edge is saved under editor metadata and is
-never sent to the row-processing DAG. The inspector currently supports text,
-number and boolean answers and selects an existing target configuration value;
-execution uses the same private-copy, type-check and validation path described
-above. This is native Flowbench functionality, not a claim that every Alteryx
+never sent to the row-processing DAG. Native question controls include text,
+multiline text, number, boolean, choice, ISO date and hierarchical leaf-path answers; actions
+select an existing target configuration value and run through the same
+private-copy, type-check and validation path described above. This is native
+Flowbench functionality, not a claim that every Alteryx
 Interface connection or Action XML variant is interchangeable. Imported XML
 retention and the limited imported UpdateValue adapter remain tracked
 independently in the generated contract and roadmap.
+
+Choice and List Box answers have distinct types: a single choice is a string,
+while a List Box submits a list even when only one value is selected. Options
+must be unique strings; required multi-select questions cannot submit an empty
+list. Check Box answers remain booleans and Numeric Up Down values remain
+finite numbers subject to configured bounds.
+# Native Batch Macro Control Parameter
+
+Flowbench-native analytic-app metadata supports a `control-parameter` question
+inside a Batch Macro child definition. Its `control_field` names a column on the
+parent macro's `control` input. Each ordered control row supplies that value to
+the child workflow's connected configuration Action before the child executes.
+The parameter is omitted from the standalone application form and cannot be
+bound as an ordinary application answer. This adapter does not establish
+Alteryx Control Parameter XML compatibility; imported vendor configurations
+remain subject to their existing preservation and diagnostic behavior.

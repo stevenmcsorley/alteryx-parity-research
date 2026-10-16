@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 127,
-    "passing": 127,
+    "count": 130,
+    "passing": 130,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
@@ -162,6 +162,7 @@
       "test_dynamic_replace.DynamicReplaceTests.test_dynamic_replace_first_rule_wins_nulls_and_invalid_field",
       "test_dynamic_replace.DynamicReplaceTests.test_dynamic_replace_order_formula_and_summary",
       "test_fe_executor.ExecutionTests.test_cancellation",
+      "test_fe_executor.ExecutionTests.test_disabled_flowbench_tool_container_children_skip_execution",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",
       "test_fe_executor.ExecutionTests.test_failure_reports_node_and_skips_downstream",
       "test_fe_executor.ExecutionTests.test_fan_out_and_release",
@@ -173,6 +174,7 @@
       "test_fe_executor.ValidationTests.test_static_schema_errors_detected_before_running",
       "test_fe_executor.ValidationTests.test_static_schemas_propagate",
       "test_fe_executor.ValidationTests.test_tool_version_mismatch",
+      "test_fe_interop.ImportTests.test_condition_branches_execute_different_filter_configurations",
       "test_fe_interop.ImportTests.test_designer_action_acceptance_fixture_executes_on_a_private_copy",
       "test_fe_interop.ImportTests.test_export_round_trip",
       "test_fe_interop.ImportTests.test_imported_alteryx_update_value_action_binds_filter_and_executes",
@@ -266,6 +268,7 @@
       "test_macros.BatchMacroTests.test_batch_iteration_limit_and_bad_action_fail_explicitly",
       "test_macros.BatchMacroTests.test_control_records_reconfigure_and_run_in_input_order",
       "test_macros.BatchMacroTests.test_empty_control_table_returns_inferred_empty_schema",
+      "test_macros.BatchMacroTests.test_native_control_parameter_uses_each_parent_row_and_updates_child_configuration",
       "test_macros.IterativeMacroTests.test_macro_child_failure_reports_call_node_and_stack",
       "test_macros.IterativeMacroTests.test_recursive_macro_definition_is_rejected",
       "test_macros.IterativeMacroTests.test_state_is_fed_back_until_all_rows_meet_termination",

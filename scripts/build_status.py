@@ -11,8 +11,8 @@ Derives every status from evidence; nothing is hand-set:
 * conformance   - conformance/results/<build>/results.json (differential runs)
 
 Status rules (docs/TOOL_STATUS_RULES.md):
-  implementation_status = implemented  if a kernel is registered AND >=1 test exercises it AND all such tests pass
-                        = in-progress  if a kernel is registered but tests are missing or failing
+  implementation_status = implemented  if a kernel has passing tests, or a registered application adapter has passing tests and no known unsupported variants
+                        = in-progress  if a kernel or application adapter exists but has missing/failing tests or unsupported variants
                         = not-started  otherwise
   verification_status   = partial      if >=1 conformance case exists and all pass
                         = failed       if any conformance case fails
@@ -45,6 +45,109 @@ from catalog_lib import CATALOG, save_catalog  # noqa: E402
 
 TARGET = 'Designer 2026.1.4.126 (pinned public catalogue); reference observations from installed build 2026.2.0.8'
 APPLICATION_ADAPTERS = {
+    'documentation:tool-container': {
+        'module': 'desktop editor ContainerNode + desktop/src/model/workflow.ts',
+        'engine': 'Flowbench native editor container adapter',
+        'test_ids': [
+            'test_fe_executor.ExecutionTests.test_disabled_flowbench_tool_container_children_skip_execution',
+        ],
+        'supported': ['Group top-level canvas nodes; edit caption; collapse/expand child nodes; disable/enable contained tools; persist container metadata through workflow save/reopen; propose these edits through atomic AI workflow patches'],
+        'unsupported': ['Authentic Alteryx Tool Container XML configuration mapping and imported Style variants are not verified'],
+        'evidence': 'docs/TOOL_CONTAINERS.md',
+        'evidence_type': 'project-authored-ui-serialization-and-execution-evidence',
+    },
+    'interface:control-parameter': {
+        'module': 'flowengine.tools.macros.BatchMacro + flowengine.interface_app',
+        'engine': 'Flowbench batch-macro control parameter adapter',
+        'test_ids': [
+            'test_macros.BatchMacroTests.test_native_control_parameter_uses_each_parent_row_and_updates_child_configuration',
+        ],
+        'supported': ['Native control-parameter question maps a parent control-record field to connected child configuration actions for each ordered Batch Macro invocation'],
+        'unsupported': ['Authentic Alteryx Control Parameter XML/action connection mapping is not verified'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+    },
+    'interface:tree': {
+        'module': 'flowengine.interface_app + desktop/src/ui/dialogs.tsx',
+        'engine': 'Flowbench native analytic-app Tree question adapter',
+        'test_ids': ['test_fe_interop.ImportTests.test_native_tree_question_binds_a_defined_leaf_path_only'],
+        'supported': ['Single selected configured leaf path with hierarchical " > " labels; answer is bound as the normalized full path string and validated against the declared tree choices'],
+        'unsupported': ['Authentic Alteryx Tree XML mapping, Allocate Geography/Variables, filesystem tree browsing, and external custom data-source variants are not implemented'],
+        'evidence': 'docs/INTERFACE_TREE.md',
+        'evidence_type': 'project-authored-runtime-and-ui-evidence',
+    },
+    'interface:date': {
+        'module': 'flowengine.interface_app + desktop/src/ui/dialogs.tsx',
+        'engine': 'Flowbench native analytic-app ISO date question adapter',
+        'test_ids': ['test_fe_interop.ImportTests.test_native_date_question_binds_only_a_real_iso_calendar_date'],
+        'supported': ['Native date control accepts valid YYYY-MM-DD calendar dates and binds the selected ISO string through configured actions'],
+        'unsupported': ['Authentic Alteryx Date question XML configuration and locale-specific date parsing have not been verified'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+        'evidence_type': 'project-authored-runtime-and-ui-evidence',
+    },
+    'interface:text-box': {
+        'module': 'flowengine.interface_app + desktop/src/ui/dialogs.tsx',
+        'engine': 'Flowbench native multiline Text Box question adapter',
+        'test_ids': ['test_fe_interop.ImportTests.test_native_text_area_preserves_multiline_answer_through_action_binding'],
+        'supported': ['Native multiline string answer preserved exactly, including newline and Unicode characters, through validated application actions'],
+        'unsupported': ['Authentic Alteryx Text Box XML configuration and vendor-specific limits/formatting are not verified'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+        'evidence_type': 'project-authored-runtime-and-ui-evidence',
+    },
+    'interface:check-box': {
+        'module': 'flowengine.interface_app + desktop/src/ui/dialogs.tsx',
+        'engine': 'Flowbench native Boolean question adapter',
+        'test_ids': ['test_fe_interop.ImportTests.test_native_checkbox_binds_boolean_without_string_coercion'],
+        'supported': ['Boolean answer, default and Action binding preserve JSON booleans; strings are rejected'],
+        'unsupported': ['Authentic Alteryx Check Box XML and Action-connection parity are unverified'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+        'evidence_type': 'project-authored-runtime-and-ui-evidence',
+    },
+    'interface:numeric-up-down': {
+        'module': 'flowengine.interface_app + desktop/src/ui/dialogs.tsx',
+        'engine': 'Flowbench native bounded numeric question adapter',
+        'test_ids': ['test_fe_interop.ImportTests.test_application_answers_enforce_numeric_bounds_and_multiselect_options'],
+        'supported': ['Finite numeric answers with configured minimum/maximum bounds and typed Action binding'],
+        'unsupported': ['Alteryx numeric storage precision, step increment and XML settings are unverified'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+        'evidence_type': 'project-authored-runtime-and-ui-evidence',
+    },
+    'interface:drop-down': {
+        'module': 'flowengine.interface_app + desktop/src/ui/dialogs.tsx',
+        'engine': 'Flowbench native single-choice question adapter',
+        'test_ids': ['test_fe_interop.ImportTests.test_native_choice_controls_enforce_single_and_multi_select_shapes'],
+        'supported': ['Unique string options; exactly one declared option is bound as a string'],
+        'unsupported': ['Authentic Alteryx Drop Down XML sourcing and dynamic option refresh are unverified'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+        'evidence_type': 'project-authored-runtime-and-ui-evidence',
+    },
+    'interface:radio-button': {
+        'module': 'flowengine.interface_app + desktop/src/ui/dialogs.tsx',
+        'engine': 'Flowbench native single-choice question adapter',
+        'test_ids': ['test_fe_interop.ImportTests.test_native_choice_controls_enforce_single_and_multi_select_shapes'],
+        'supported': ['Unique string options; exactly one declared option is bound as a string'],
+        'unsupported': ['Authentic Alteryx Radio Button XML orientation and option-source settings are unverified'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+        'evidence_type': 'project-authored-runtime-and-ui-evidence',
+    },
+    'interface:list-box': {
+        'module': 'flowengine.interface_app + desktop/src/ui/dialogs.tsx',
+        'engine': 'Flowbench native multi-choice question adapter',
+        'test_ids': ['test_fe_interop.ImportTests.test_native_choice_controls_enforce_single_and_multi_select_shapes'],
+        'supported': ['Unique string options; answers must be lists of selected declared values, preserving multi-select shape'],
+        'unsupported': ['Authentic Alteryx List Box XML option-source and selection settings are unverified'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+        'evidence_type': 'project-authored-runtime-and-ui-evidence',
+    },
+    'interface:error-message': {
+        'module': 'flowengine.interface_app',
+        'test_ids': [
+            'test_fe_interop.ImportTests.test_native_error_message_stops_only_on_matching_application_condition',
+            'test_fe_interop.ImportTests.test_native_error_message_rejects_invalid_predicates_and_empty_messages',
+        ],
+        'supported': ['Native Flowbench application Error Message with optional typed Condition predicate; failure is raised before node execution'],
+        'unsupported': ['Alteryx Error Message XML-to-native mapping has not been established against an authorised reference fixture'],
+        'evidence': 'docs/INTERFACE_APPLICATIONS.md',
+    },
     'interface:action': {
         'module': 'flowengine.interop.yxmd',
         'test_ids': [
@@ -258,7 +361,7 @@ def build(check=False):
             # kernel registered in the data-processing plugin registry.
             impl_status = ('in-progress' if not tool_tests or not all(ok for _, ok in tool_tests) or adapter['unsupported']
                            else 'implemented')
-            implementation = {'engine': 'Alteryx workflow import/application adapter',
+            implementation = {'engine': adapter.get('engine', 'Alteryx workflow import/application adapter'),
                               'tool_id': cid, 'module': adapter['module'],
                               'supported_variants': adapter['supported'],
                               'unimplemented_variants': adapter['unsupported']}
@@ -284,7 +387,7 @@ def build(check=False):
             sources.append({'url': 'data/reference-observations.json', 'evidence_type': 'authorised-reference-structural-scan',
                             'accessed_utc': obs.get('scanned_utc')})
         if adapter:
-            sources.append({'url': adapter['evidence'], 'evidence_type': 'authorised-reference-observation-and-project-authored-execution',
+            sources.append({'url': adapter['evidence'], 'evidence_type': adapter.get('evidence_type', 'authorised-reference-observation-and-project-authored-execution'),
                             'accessed_utc': catalog_doc['metadata'].get('source_retrieved_at_utc')})
         contract = {
             'id': cid, 'target_version': TARGET, 'name': row['name'], 'category': row['category'],

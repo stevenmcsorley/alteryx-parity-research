@@ -38,14 +38,14 @@ export const AGENT_TOOLS: AgentToolDefinition[] = [
   { name: 'app.get_status', description: 'Read the current engine and workflow run status.', parameters: objectSchema() },
   { name: 'app.get_capabilities', description: 'List implemented Flowbench catalogue capabilities and their evidence status.', parameters: objectSchema() },
   { name: 'app.get_active_workflow', description: 'Read the open workflow name and basic graph counts.', parameters: objectSchema() },
-  { name: 'catalog.search_tools', description: 'Search the catalogue by tool name, category, kernel ID, or implementation status. The result maps catalogue IDs to executable kernel IDs where available.', parameters: objectSchema({ query: { type: 'string' } }, ['query']) },
+  { name: 'catalog.search_tools', description: 'Search the catalogue by tool name, category, kernel ID, or implementation status. Results map catalogue IDs to executable kernels where available. Tool Container is an editor operation (group/configure/ungroup via workflow.propose_patch), not a row-processing kernel.', parameters: objectSchema({ query: { type: 'string' } }, ['query']) },
   { name: 'catalog.get_tool_manifest', description: 'Read an installed tool manifest using its executable kernel ID (the kernel field from catalog.search_tools).', parameters: objectSchema({ tool_id: { type: 'string' } }, ['tool_id']) },
   { name: 'workflow.get_snapshot', description: 'Read the active workflow graph, connections, node names, and installed tool IDs. No row data or secrets are included.', parameters: objectSchema() },
   { name: 'workflow.get_schema', description: 'Read field names and effective types for an existing workflow node output. No records or configuration values are included.', parameters: objectSchema({ node_ref: { type: 'string' } }, ['node_ref']) },
   { name: 'workflow.validate', description: 'Run the existing Flowbench workflow validator and return its current diagnostics.', parameters: objectSchema() },
   { name: 'workflow.get_diagnostics', description: 'Read existing workflow validation problems and latest run messages.', parameters: objectSchema() },
   { name: 'workflow.get_node_config', description: 'Read the active workflow node configuration, including file locations and expressions. Credential fields and raw records are excluded.', parameters: objectSchema({ node_ref: { type: 'string' } }, ['node_ref']) },
-  { name: 'workflow.propose_patch', description: 'Prepare and validate a workflow graph change. In Review mode it is previewed for approval; in Full Control mode it is applied as one validated, undoable editor transaction.', parameters: objectSchema({ patch_json: { type: 'string', description: 'JSON object {"operations":[...]}. Operations: add {op,ref,tool_id,config,position}; configure {op,node_ref,config}; connect {op,source_ref,source_anchor,target_ref,target_anchor}; disconnect {op,source_ref,source_anchor,target_ref,target_anchor}; remove {op,node_ref}. Use node_N references from workflow.get_snapshot.' }, base_revision: { type: 'string', description: 'Opaque revision returned by workflow.get_snapshot.' } }, ['patch_json', 'base_revision']) },
+  { name: 'workflow.propose_patch', description: 'Prepare and validate a workflow graph change. In Review mode it is previewed for approval; in Full Control mode it is applied as one validated, undoable editor transaction.', parameters: objectSchema({ patch_json: { type: 'string', description: 'JSON object {"operations":[...]}. Operations: add {op,ref,tool_id,config,position}; configure {op,node_ref,config}; add_question {op,ref,question,config_path,position}; add_condition {op,ref,when,position}; configure_question {op,node_ref,question,config_path}; configure_condition {op,node_ref,when}; group {op,ref,node_refs,caption} groups existing top-level node_N or newly added refs in an editor Tool Container; configure_container {op,node_ref,caption,disabled,collapsed}; ungroup_container {op,node_ref}; connect {op,source_ref,source_anchor,target_ref,target_anchor}; connect_action {op,source_ref,target_ref}; connect_condition {op,source_ref,source_anchor,target_ref}; disconnect {op,source_ref,source_anchor,target_ref,target_anchor}; remove {op,node_ref}. Application question types include text-area for multiline answers and tree for configured leaf paths such as "Sales > Online". Existing refs are node_N from workflow.get_snapshot. Tool config must match installed manifests.' }, base_revision: { type: 'string', description: 'Opaque revision returned by workflow.get_snapshot.' } }, ['patch_json', 'base_revision']) },
   { name: 'workflow.request_run', description: 'Run the current workflow. Review mode requests confirmation; Full Control may run ordinary local processing immediately. File writes, scripts, database writes and other external effects retain their scoped permission checks.', parameters: objectSchema() },
   { name: 'workflow.request_save', description: 'Save the active workflow. Full Control saves to the current authorized workflow path; choosing a new destination still uses the native file picker.', parameters: objectSchema() },
   { name: 'run.get_results', description: 'Read bounded previews from the most recent completed run. Results are shared only under the active data-routing consent.', parameters: objectSchema() },
@@ -130,6 +130,14 @@ async function dispatchAgentToolUnchecked(
       const index = Number(String(input.node_ref).match(/^node_(\d+)$/)?.[1] ?? 0) - 1;
       const node = state.nodes[index];
       if (!node) throw new Error('Unknown workflow node reference');
+      if (node.data.kind === 'application-action') {
+        const { default: answerDefault, secret, ...publicQuestion } = node.data.question;
+        return { node_ref: `node_${index + 1}`, kind: 'application-action', config: {
+          question: { ...publicQuestion, ...(secret || answerDefault === undefined ? {} : { default: answerDefault }) },
+          config_path: [...node.data.config_path], condition: node.data.when ?? null,
+        } };
+      }
+      if (node.data.kind === 'application-condition') return { node_ref: `node_${index + 1}`, kind: 'application-condition', config: { condition: node.data.when } };
       if (node.data.kind !== 'tool') return { node_ref: `node_${index + 1}`, kind: node.data.kind, config: {} };
       return { node_ref: `node_${index + 1}`, kind: 'tool', tool_id: node.data.tool, config: safeConfigProjection(node.data.config) };
     }
@@ -202,7 +210,9 @@ function snapshot(state: AgentContext) {
       const manifest = node.data.kind === 'tool' ? state.tools[node.data.tool] : undefined;
       const kernel = node.data.kind === 'tool' ? node.data.tool : undefined;
       const catalogId = manifest?.catalog_ids.find((id) => state.catalog.some((entry) => entry.id === id))
-        ?? (kernel ? state.catalog.find((entry) => entry.kernel === kernel)?.id : undefined);
+        ?? (kernel ? state.catalog.find((entry) => entry.kernel === kernel)?.id
+          : node.data.kind === 'application-condition' ? 'interface:condition' : node.data.kind === 'application-action' ? 'interface:action'
+            : node.data.kind === 'container' ? 'documentation:tool-container' : node.data.kind === 'comment' ? 'documentation:comment' : undefined);
       return { ref: `node_${index + 1}`, kind: node.data.kind,
         ...(catalogId ? { tool_id: catalogId } : node.data.kind === 'tool' ? { tool_available: false } : {}) };
     }),
@@ -216,7 +226,12 @@ function snapshot(state: AgentContext) {
   };
 }
 function anchorRef(handle: string | null | undefined, node: CanvasNode | undefined, tools: AgentContext['tools'], direction: 'input' | 'output') {
-  if (!handle || !node || node.data.kind !== 'tool') return null;
+  if (!handle || !node) return null;
+  if (node.data.kind === 'application-action') return direction === 'output' && handle === 'Action' ? 'output_1'
+    : direction === 'input' && handle === 'Condition' ? 'input_1' : null;
+  if (node.data.kind === 'application-condition') return direction === 'output' && handle === 'True Condition' ? 'output_1'
+    : direction === 'output' && handle === 'False Condition' ? 'output_2' : null;
+  if (node.data.kind !== 'tool') return null;
   const manifest = tools[node.data.tool];
   const anchors = direction === 'input' ? manifest?.inputs : manifest?.outputs;
   const index = anchors?.findIndex((anchor) => anchor.name === handle) ?? -1;

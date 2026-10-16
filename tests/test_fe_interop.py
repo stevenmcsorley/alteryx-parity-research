@@ -250,6 +250,96 @@ class ImportTests(unittest.TestCase):
         bound = bind_application(doc, {'n': 4, 'colors': ['red', 'blue']})
         self.assertEqual(bound['nodes'][0]['config']['value'], 4)
 
+    def test_native_tree_question_binds_a_defined_leaf_path_only(self):
+        from flowengine.errors import EngineError
+        doc = {'nodes': [{'id': 'filter', 'config': {'expression': 'original'}}], 'metadata': {'application': {
+            'questions': [{'id': 'category', 'type': 'tree', 'options': ['Sales > Online', 'Sales > Retail', 'Returns'],
+                           'default': 'Sales > Online'}],
+            'actions': [{'question': 'category', 'node_id': 'filter', 'config_path': ['expression']}],
+        }}}
+        bound = bind_application(doc, {'category': 'Sales > Retail'})
+        self.assertEqual(bound['nodes'][0]['config']['expression'], 'Sales > Retail')
+        with self.assertRaises(EngineError) as caught:
+            bind_application(doc, {'category': 'Sales > Wholesale'})
+        self.assertEqual(caught.exception.code, 'application-input-invalid')
+        doc['metadata']['application']['questions'][0]['options'] = ['Sales', 'Sales > Online']
+        with self.assertRaisesRegex(EngineError, 'duplicate paths or a selectable parent'):
+            bind_application(doc, {})
+
+    def test_native_date_question_binds_only_a_real_iso_calendar_date(self):
+        from flowengine.errors import EngineError
+        doc = {'nodes': [{'id': 'input', 'config': {'date': '2000-01-01'}}], 'metadata': {'application': {
+            'questions': [{'id': 'as_of', 'type': 'date', 'default': '2026-01-02'}],
+            'actions': [{'question': 'as_of', 'node_id': 'input', 'config_path': ['date']}],
+        }}}
+        self.assertEqual(bind_application(doc, {'as_of': '2024-02-29'})['nodes'][0]['config']['date'], '2024-02-29')
+        with self.assertRaises(EngineError) as caught:
+            bind_application(doc, {'as_of': '2023-02-29'})
+        self.assertEqual(caught.exception.code, 'application-input-invalid')
+        with self.assertRaisesRegex(EngineError, 'ISO date'):
+            bind_application(doc, {'as_of': '02/03/2026'})
+
+    def test_native_choice_controls_enforce_single_and_multi_select_shapes(self):
+        from flowengine.errors import EngineError
+        doc = {'nodes': [{'id': 'target', 'config': {'choice': '', 'list': []}}], 'metadata': {'application': {
+            'questions': [
+                {'id': 'region', 'type': 'choice', 'options': ['North', 'South']},
+                {'id': 'channels', 'type': 'multi-choice', 'options': ['Web', 'Store'], 'required': True},
+            ],
+            'actions': [
+                {'question': 'region', 'node_id': 'target', 'config_path': ['choice']},
+                {'question': 'channels', 'node_id': 'target', 'config_path': ['list']},
+            ],
+        }}}
+        bound = bind_application(doc, {'region': 'South', 'channels': ['Web']})
+        self.assertEqual(bound['nodes'][0]['config'], {'choice': 'South', 'list': ['Web']})
+        with self.assertRaises(EngineError):
+            bind_application(doc, {'region': 'South', 'channels': 'Web'})
+        with self.assertRaisesRegex(EngineError, 'required'):
+            bind_application(doc, {'region': 'South', 'channels': []})
+
+    def test_native_checkbox_binds_boolean_without_string_coercion(self):
+        from flowengine.errors import EngineError
+        doc = {'nodes': [{'id': 'target', 'config': {'enabled': False}}], 'metadata': {'application': {
+            'questions': [{'id': 'enabled', 'type': 'boolean', 'default': False}],
+            'actions': [{'question': 'enabled', 'node_id': 'target', 'config_path': ['enabled']}],
+        }}}
+        self.assertIs(bind_application(doc, {'enabled': True})['nodes'][0]['config']['enabled'], True)
+        with self.assertRaises(EngineError):
+            bind_application(doc, {'enabled': 'true'})
+
+    def test_native_text_area_preserves_multiline_answer_through_action_binding(self):
+        doc = {'nodes': [{'id': 'input', 'config': {'text': ''}}], 'metadata': {'application': {
+            'questions': [{'id': 'notes', 'type': 'text-area', 'required': True}],
+            'actions': [{'question': 'notes', 'node_id': 'input', 'config_path': ['text']}],
+        }}}
+        answer = 'First line\nSecond line — café'
+        self.assertEqual(bind_application(doc, {'notes': answer})['nodes'][0]['config']['text'], answer)
+        with self.assertRaisesRegex(Exception, 'is required'):
+            bind_application(doc, {'notes': ''})
+
+    def test_native_error_message_stops_only_on_matching_application_condition(self):
+        from flowengine.errors import EngineError
+        doc = {'nodes': [], 'metadata': {'application': {
+            'questions': [{'id': 'continue', 'type': 'boolean'}], 'actions': [],
+            'errors': [{'id': 'error_message_1', 'message': 'Choose a valid region.',
+                        'when': {'question': 'continue', 'operator': 'falsy'}}]}}}
+        self.assertEqual(bind_application(doc, {'continue': True})['nodes'], [])
+        with self.assertRaises(EngineError) as caught:
+            bind_application(doc, {'continue': False})
+        self.assertEqual(caught.exception.code, 'application-error-message')
+        self.assertEqual(caught.exception.message, 'Choose a valid region.')
+        self.assertEqual(caught.exception.node_id, 'error_message_1')
+
+    def test_native_error_message_rejects_invalid_predicates_and_empty_messages(self):
+        doc = {'nodes': [], 'metadata': {'application': {'questions': [{'id': 'ok', 'type': 'boolean'}],
+            'actions': [], 'errors': [{'message': ' ', 'when': {'question': 'missing', 'operator': 'truthy'}}]}}}
+        with self.assertRaisesRegex(Exception, 'non-empty message'):
+            bind_application(doc, {})
+        doc['metadata']['application']['errors'][0] = {'message': 'Stop', 'when': {'question': 'missing', 'operator': 'truthy'}}
+        with self.assertRaisesRegex(Exception, 'invalid conditional predicate'):
+            bind_application(doc, {})
+
     def test_native_conditional_action_updates_only_when_activated(self):
         # Native Flowbench predicate, not a claim of Alteryx Condition XML parity.
         doc = {'nodes': [{'id': 'n', 'config': {'expression': 'original'}}],
@@ -272,6 +362,74 @@ class ImportTests(unittest.TestCase):
             'question': 'missing', 'operator': 'truthy'}
         with self.assertRaises(Exception):
             bind_application(doc, {})
+
+    def test_condition_branches_apply_only_active_updates_and_allow_exclusive_target_updates(self):
+        doc = {'nodes': [{'id': 'filter', 'config': {'expression': '1'}}], 'metadata': {'application': {
+            'questions': [{'id': 'enabled', 'type': 'boolean'},
+                          {'id': 'yes', 'type': 'text', 'default': '[amount] > 100'},
+                          {'id': 'no', 'type': 'text', 'default': '[amount] > 0'}],
+            'actions': [
+                {'question': 'yes', 'node_id': 'filter', 'config_path': ['expression'],
+                 'when': {'question': 'enabled', 'operator': 'truthy'}},
+                {'question': 'no', 'node_id': 'filter', 'config_path': ['expression'],
+                 'when': {'question': 'enabled', 'operator': 'falsy'}},
+            ]}}}
+        self.assertEqual(bind_application(doc, {'enabled': True})['nodes'][0]['config']['expression'], '[amount] > 100')
+        self.assertEqual(bind_application(doc, {'enabled': False})['nodes'][0]['config']['expression'], '[amount] > 0')
+        doc['metadata']['application']['actions'][1]['when'] = {'question': 'enabled', 'operator': 'truthy'}
+        with self.assertRaisesRegex(Exception, 'Conflicting active'):
+            bind_application(doc, {'enabled': True})
+
+    def test_condition_branches_execute_different_filter_configurations(self):
+        doc, report = import_document(ACTION_FIXTURE.read_text(encoding='utf-8'))
+        self.assertEqual(report['edge_warnings'], [])
+        app = doc['metadata']['application']
+        app['questions'].extend([
+            {'id': 'use-east', 'type': 'boolean'},
+            {'id': 'east-expression', 'type': 'text', 'default': '[region] = "East"'},
+            {'id': 'west-expression', 'type': 'text', 'default': '[region] = "West"'},
+        ])
+        node_id, config_path = app['actions'][0]['node_id'], app['actions'][0]['config_path']
+        app['actions'] = [
+            {'question': 'east-expression', 'node_id': node_id, 'config_path': config_path,
+             'when': {'question': 'use-east', 'operator': 'truthy'}},
+            {'question': 'west-expression', 'node_id': node_id, 'config_path': config_path,
+             'when': {'question': 'use-east', 'operator': 'falsy'}},
+        ]
+        east = run_workflow(bind_application(doc, {'use-east': True}), base_dir=ROOT)
+        west = run_workflow(bind_application(doc, {'use-east': False}), base_dir=ROOT)
+        self.assertTrue(east.ok, east.error)
+        self.assertTrue(west.ok, west.error)
+        self.assertEqual(rows(east.output(node_id, 'true')), [['East']])
+        self.assertEqual(rows(west.output(node_id, 'true')), [['West']])
+        self.assertEqual(doc['nodes'][1]['config']['expression'], '[region] = "East"')
+
+    def test_nested_application_condition_predicates(self):
+        doc = {'nodes': [{'id': 'n', 'config': {'value': 'old'}}], 'metadata': {'application': {
+            'questions': [{'id': 'enabled', 'type': 'boolean'}, {'id': 'name', 'type': 'text'}],
+            'actions': [{'question': 'name', 'node_id': 'n', 'config_path': ['value'], 'when': {
+                'operator': 'all', 'conditions': [
+                    {'question': 'enabled', 'operator': 'truthy'},
+                    {'operator': 'not', 'condition': {'question': 'name', 'operator': 'equals', 'value': ''}},
+                ]}}]}}}
+        self.assertEqual(bind_application(doc, {'enabled': True, 'name': 'ok'})['nodes'][0]['config']['value'], 'ok')
+        self.assertEqual(bind_application(doc, {'enabled': False, 'name': 'ok'})['nodes'][0]['config']['value'], 'old')
+
+    def test_condition_comparisons_are_typed_for_numeric_and_date_answers(self):
+        doc = {'nodes': [{'id': 'n', 'config': {'value': 0}}], 'metadata': {'application': {
+            'questions': [{'id': 'amount', 'type': 'number'}, {'id': 'day', 'type': 'date'}],
+            'actions': [{'question': 'amount', 'node_id': 'n', 'config_path': ['value'],
+                         'when': {'question': 'amount', 'operator': 'greater_than', 'value': 100}}]}}}
+        self.assertEqual(bind_application(doc, {'amount': 101, 'day': '2026-10-15'})['nodes'][0]['config']['value'], 101)
+        self.assertEqual(bind_application(doc, {'amount': 100, 'day': '2026-10-15'})['nodes'][0]['config']['value'], 0)
+        doc['metadata']['application']['actions'][0]['when'] = {
+            'question': 'amount', 'operator': 'equals', 'value': 100.0}
+        self.assertEqual(bind_application(doc, {'amount': 100, 'day': '2026-10-15'})['nodes'][0]['config']['value'], 100)
+        doc['metadata']['application']['actions'][0]['when'] = {
+            'question': 'day', 'operator': 'greater_than_or_equal', 'value': '2026-01-01'}
+        self.assertEqual(bind_application(doc, {'amount': 1, 'day': '2026-10-15'})['nodes'][0]['config']['value'], 1)
+        with self.assertRaisesRegex(Exception, 'ISO date'):
+            bind_application(doc, {'amount': 1, 'day': '15/10/2026'})
 
     def test_simple_action_updates_an_existing_text_input_cell(self):
         xml = '''<AlteryxDocument><Nodes>

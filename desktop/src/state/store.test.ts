@@ -34,6 +34,31 @@ describe('editor store', () => {
     expect(useEditor.getState().dirty).toBe(true);
   });
 
+  it('preserves Date and List Box application question types in workflow metadata', () => {
+    const date = useEditor.getState().addApplicationAction({ x: 0, y: 0 }, 'date', 'Start date');
+    const list = useEditor.getState().addApplicationAction({ x: 0, y: 160 }, 'list-box', 'Regions');
+    const graph = useEditor.getState();
+    expect((graph.nodes.find((n) => n.id === date)!.data as any).question.type).toBe('date');
+    expect((graph.nodes.find((n) => n.id === list)!.data as any).question).toMatchObject({ type: 'multi-choice', options: ['Option 1', 'Option 2'] });
+    const saved = toDocument({ ...graph, description: undefined } as any);
+    expect(saved.metadata?.application?.questions.map((q: any) => q.type)).toEqual(['date', 'multi-choice']);
+    expect(new Set(saved.metadata?.application?.questions.map((q: any) => q.id)).size).toBe(2);
+  });
+
+  it('serializes a batch Control Parameter as a control-row mapping and Action target', () => {
+    const target = useEditor.getState().addTool('core.filter', { x: 400, y: 100 });
+    const parameter = useEditor.getState().addApplicationAction({ x: 100, y: 100 }, 'control-parameter', 'Threshold');
+    const node = useEditor.getState().nodes.find((n) => n.id === parameter)!;
+    const question = (node.data as any).question;
+    useEditor.getState().updateNodeData(parameter, { question: { ...question, id: 'threshold', control_field: 'threshold' } }, false);
+    expect(useEditor.getState().connect({ source: parameter, sourceHandle: 'Action', target, targetHandle: '__action__' })).toBeNull();
+    const saved = toDocument({ ...useEditor.getState(), description: undefined } as any);
+    expect(saved.metadata?.application?.questions).toContainEqual({ id: 'threshold', label: 'Threshold', type: 'control-parameter', control_field: 'threshold' });
+    expect(saved.metadata?.application?.actions).toContainEqual({ question: 'threshold', node_id: target, config_path: ['expression'] });
+    const reopened = fromDocument(saved);
+    expect((reopened.nodes.find((n) => n.id === parameter)!.data as any).question).toMatchObject({ type: 'control-parameter', control_field: 'threshold' });
+  });
+
   it('enforces anchor cardinality, self-loops and cycles', () => {
     const st = useEditor.getState();
     const t1 = st.addTool('core.text_input', { x: 0, y: 0 });
@@ -69,6 +94,33 @@ describe('editor store', () => {
     expect(toDocument(reopened).edges).toEqual([]);
   });
 
+  it('connects Condition routes only to application control inputs', () => {
+    const st = useEditor.getState();
+    const questionAction = st.addApplicationAction({ x: 0, y: 0 });
+    const questionTarget = useEditor.getState().addTool('core.filter', { x: 300, y: 0 });
+    const yesAction = useEditor.getState().addApplicationAction({ x: 0, y: 200 });
+    const yesTarget = useEditor.getState().addTool('core.filter', { x: 300, y: 200 });
+    const noAction = useEditor.getState().addApplicationAction({ x: 0, y: 400 });
+    const noTarget = useEditor.getState().addTool('core.filter', { x: 300, y: 400 });
+    const condition = useEditor.getState().addApplicationCondition({ x: 150, y: 100 });
+    const error = useEditor.getState().addApplicationError({ x: 450, y: 400 });
+    const connect = useEditor.getState().connect;
+    expect(connect({ source: condition, sourceHandle: 'True Condition', target: yesAction, targetHandle: 'Condition' })).toBeNull();
+    expect(connect({ source: condition, sourceHandle: 'False Condition', target: noAction, targetHandle: 'Condition' })).toBeNull();
+    expect(connect({ source: condition, sourceHandle: 'False Condition', target: error, targetHandle: 'Condition' })).toBeNull();
+    expect(connect({ source: yesAction, sourceHandle: 'Action', target: yesTarget, targetHandle: '__action__' })).toBeNull();
+    expect(connect({ source: noAction, sourceHandle: 'Action', target: noTarget, targetHandle: '__action__' })).toBeNull();
+    expect(connect({ source: questionAction, sourceHandle: 'Action', target: questionTarget, targetHandle: '__action__' })).toBeNull();
+    expect(connect({ source: condition, sourceHandle: 'output', target: yesAction, targetHandle: 'Condition' })).toMatch(/Condition outputs/);
+    const doc = toDocument({ ...useEditor.getState(), description: undefined } as any);
+    const questionId = (useEditor.getState().nodes.find((n) => n.id === questionAction)!.data as any).question.id;
+    expect(doc.metadata?.application?.actions.find((a: any) => a.node_id === yesTarget)?.when.operator).toBe('truthy');
+    expect(doc.metadata?.application?.actions.find((a: any) => a.node_id === noTarget)?.when.operator).toBe('falsy');
+    expect(doc.metadata?.ui.applicationConditions).toHaveLength(1);
+    expect(doc.metadata?.application?.errors).toEqual([{ id: error, message: 'Please correct the application inputs before running.',
+      when: { question: questionId, operator: 'falsy' } }]);
+  });
+
   it('groups, ungroups, copies and pastes', () => {
     const a = useEditor.getState().addTool('core.text_input', { x: 100, y: 100 });
     useEditor.getState().addTool('core.filter', { x: 400, y: 100 });
@@ -81,6 +133,18 @@ describe('editor store', () => {
     useEditor.getState().selectAll();
     useEditor.getState().duplicateSelected();
     expect(useEditor.getState().nodes.map((n) => n.id).sort()).toEqual(['filter_1', 'filter_2', 'text_input_1', 'text_input_2']);
+  });
+
+  it('keeps nested children in their outer container when an inner container is ungrouped', () => {
+    useEditor.getState().loadGraph({ name: 'Nested containers', edges: [], nodes: [
+      { id: 'outer', type: 'container', position: { x: 100, y: 80 }, data: { kind: 'container', caption: 'Outer' } },
+      { id: 'inner', type: 'container', parentId: 'outer', position: { x: 20, y: 30 }, data: { kind: 'container', caption: 'Inner' } },
+      { id: 'child', type: 'comment', parentId: 'inner', position: { x: 15, y: 25 }, data: { kind: 'comment', text: 'Note' } },
+    ] } as any);
+    useEditor.getState().ungroup('inner');
+    const child = useEditor.getState().nodes.find((node) => node.id === 'child')!;
+    expect(child.parentId).toBe('outer');
+    expect(child.position).toEqual({ x: 35, y: 55 });
   });
 
   it('ignores run results that belong to another run', () => {
