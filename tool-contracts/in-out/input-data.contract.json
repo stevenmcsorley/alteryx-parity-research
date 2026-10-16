@@ -240,8 +240,8 @@
     ]
   },
   "independent_tests": {
-    "count": 24,
-    "passing": 24,
+    "count": 25,
+    "passing": 25,
     "tests": [
       "test_control_container.ControlContainerTests.test_chained_containers_run_in_sequence_through_a_file",
       "test_data_correctness.DataCorrectnessTests.test_csv_default_inference_types_quantities_and_keeps_codes_as_text",
@@ -266,7 +266,8 @@
       "test_macros.StandardMacroTests.test_macro_resolves_child_resources_relative_to_definition",
       "test_reporting.RenderTests.test_fuel_report_example",
       "test_runner.RunnerTests.test_routes_success_and_failure_logs_without_failing_the_parent",
-      "test_runner.RunnerTests.test_stop_on_failure_marks_remaining_workflows_not_run"
+      "test_runner.RunnerTests.test_stop_on_failure_marks_remaining_workflows_not_run",
+      "test_spatial.ExampleTests.test_uk_spatial_example"
     ]
   },
   "sources": [

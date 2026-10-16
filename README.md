@@ -11,7 +11,7 @@
   `.yxmd` import/export. See [docs/DESKTOP.md](docs/DESKTOP.md).
 - **flowengine**: typed columnar engine with Arrow/Parquet, streaming, spilling, parallel scheduling, run history,
   E1/E2 compatibility profiles, isolated Python/R/command runtimes and a JSON-RPC service.
-- **93 catalogue kernels implemented and passing independent tests** (including six Reporting tools, all 14 Data Investigation tools, GitHub Commit and Get Last Commit, Download, Runner, Dynamic Input, Control Container, Pearson correlation and sample covariance);
+- **100 catalogue kernels implemented and passing independent tests** (including seven Spatial tools, six Reporting tools, all 14 Data Investigation tools, GitHub Commit and Get Last Commit, Download, Runner, Dynamic Input, Control Container, Pearson correlation and sample covariance);
   every other entry fails validation with `tool-unavailable`, and nothing is stubbed.
 - **Conformance against Alteryx Designer 2026.2.0.8**: 74/75 differential cases in both E1 and E2; holdout runs
   of the install's shipped sample workflows match on 15–16 of 31 workflows (87–88 of 126 outputs). 32 entries

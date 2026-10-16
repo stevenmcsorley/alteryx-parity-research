@@ -1,0 +1,361 @@
+{
+  "format": "flowengine.workflow",
+  "formatVersion": 1,
+  "name": "UK cities and depots",
+  "description": "Create points from latitude/longitude, measure geodesic distances, buffer by 50 km, find nearest cities to each depot, match depots to city areas and grid the coverage.",
+  "nodes": [
+    {
+      "id": "cities",
+      "tool": "core.input_data",
+      "config": {
+        "path": "data/uk_cities.csv",
+        "type_inference": "flowbench"
+      },
+      "position": {
+        "x": 0,
+        "y": 100
+      }
+    },
+    {
+      "id": "depots",
+      "tool": "core.input_data",
+      "config": {
+        "path": "data/depots.csv",
+        "type_inference": "flowbench"
+      },
+      "position": {
+        "x": 0,
+        "y": 400
+      }
+    },
+    {
+      "id": "city_points",
+      "tool": "core.create_points",
+      "config": {
+        "x_field": "Longitude",
+        "y_field": "Latitude"
+      },
+      "position": {
+        "x": 200,
+        "y": 100
+      }
+    },
+    {
+      "id": "depot_points",
+      "tool": "core.create_points",
+      "config": {
+        "x_field": "Longitude",
+        "y_field": "Latitude"
+      },
+      "position": {
+        "x": 200,
+        "y": 400
+      }
+    },
+    {
+      "id": "london",
+      "tool": "core.formula",
+      "config": {
+        "formulas": [
+          {
+            "field": "London",
+            "expression": "\"POINT (-0.1276 51.5072)\"",
+            "type": "v_wstring",
+            "size": 40
+          }
+        ]
+      },
+      "position": {
+        "x": 400,
+        "y": 0
+      }
+    },
+    {
+      "id": "to_london",
+      "tool": "core.distance",
+      "config": {
+        "source_field": "Point",
+        "target_field": "London",
+        "units": "km"
+      },
+      "position": {
+        "x": 600,
+        "y": 0
+      }
+    },
+    {
+      "id": "city_areas",
+      "tool": "core.buffer",
+      "config": {
+        "geometry_field": "Point",
+        "distance": 50,
+        "units": "km",
+        "output_field": "Area50km"
+      },
+      "position": {
+        "x": 400,
+        "y": 200
+      }
+    },
+    {
+      "id": "area_info",
+      "tool": "core.spatial_info",
+      "config": {
+        "geometry_field": "Area50km",
+        "area_units": "km2"
+      },
+      "position": {
+        "x": 600,
+        "y": 200
+      }
+    },
+    {
+      "id": "nearest_cities",
+      "tool": "core.find_nearest",
+      "config": {
+        "target_geometry_field": "Point",
+        "universe_geometry_field": "Point",
+        "max_matches": 2,
+        "units": "km"
+      },
+      "position": {
+        "x": 600,
+        "y": 400
+      }
+    },
+    {
+      "id": "depots_in_areas",
+      "tool": "core.spatial_match",
+      "config": {
+        "target_geometry_field": "Point",
+        "universe_geometry_field": "Area50km",
+        "predicate": "within"
+      },
+      "position": {
+        "x": 800,
+        "y": 300
+      }
+    },
+    {
+      "id": "coverage_grid",
+      "tool": "core.make_grid",
+      "config": {
+        "cell_size": 100,
+        "units": "km",
+        "geometry_field": "Point",
+        "clip": true
+      },
+      "position": {
+        "x": 400,
+        "y": 550
+      }
+    },
+    {
+      "id": "view_to_london",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1000,
+        "y": 0
+      }
+    },
+    {
+      "id": "view_area_info",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1000,
+        "y": 0
+      }
+    },
+    {
+      "id": "view_nearest_cities",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1000,
+        "y": 0
+      }
+    },
+    {
+      "id": "view_depots_in_areas",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1000,
+        "y": 0
+      }
+    },
+    {
+      "id": "view_coverage_grid",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1000,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": {
+        "node": "cities",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "city_points",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "depots",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "depot_points",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "city_points",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "london",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "london",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "to_london",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "city_points",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "city_areas",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "city_areas",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "area_info",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "depot_points",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "nearest_cities",
+        "anchor": "targets"
+      }
+    },
+    {
+      "from": {
+        "node": "city_points",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "nearest_cities",
+        "anchor": "universe"
+      }
+    },
+    {
+      "from": {
+        "node": "depot_points",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "depots_in_areas",
+        "anchor": "targets"
+      }
+    },
+    {
+      "from": {
+        "node": "city_areas",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "depots_in_areas",
+        "anchor": "universe"
+      }
+    },
+    {
+      "from": {
+        "node": "city_points",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "coverage_grid",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "to_london",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "view_to_london",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "area_info",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "view_area_info",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "nearest_cities",
+        "anchor": "matched"
+      },
+      "to": {
+        "node": "view_nearest_cities",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "depots_in_areas",
+        "anchor": "matched"
+      },
+      "to": {
+        "node": "view_depots_in_areas",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "coverage_grid",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "view_coverage_grid",
+        "anchor": "input"
+      }
+    }
+  ]
+}

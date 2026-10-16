@@ -6,49 +6,77 @@
   "xml_tool_name": "AlteryxSpatialPluginsGui.Distance.Distance",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/distance-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "AllowReverseRoute",
-      "DistToInsideEdge",
-      "DriveDistanceOnly",
-      "DriveTimeDataSet",
-      "IsMetric",
-      "MaxDriveTime",
-      "OutputCardinalDirection",
-      "OutputDirectionDegrees",
-      "OutputDistance",
-      "OutputDriveTimeAndDistance",
-      "OutputUnits",
-      "ReturnNearest",
-      "SortForSpeed",
-      "SpatialObjDest",
-      "SpatialObjSource"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "source_field",
+      "target_field"
     ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "properties": {
+      "source_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "target_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "crs": {
+        "type": "string",
+        "minLength": 1,
+        "default": "EPSG:4326",
+        "description": "Coordinate reference system of the geometry, e.g. EPSG:4326 (lon/lat) or EPSG:27700"
+      },
+      "method": {
+        "enum": [
+          "geodesic",
+          "planar"
+        ],
+        "default": "geodesic"
+      },
+      "units": {
+        "enum": [
+          "m",
+          "km",
+          "mi",
+          "ft",
+          "nmi"
+        ],
+        "default": "km"
+      },
+      "on_invalid": {
+        "enum": [
+          "error",
+          "null"
+        ],
+        "default": "error",
+        "description": "Unparseable or invalid geometry: stop the run, or output null"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "spatial-geometry-library",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -56,7 +84,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.distance",
+    "version": "1.0.0",
+    "module": "flowengine.tools.spatial",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -100,9 +134,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_spatial.ExampleTests.test_uk_spatial_example",
+      "test_spatial.PointsDistanceTests.test_geodesic_and_planar_distance"
+    ]
   },
   "sources": [
     {
@@ -123,6 +160,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

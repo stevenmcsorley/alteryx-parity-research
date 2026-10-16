@@ -981,7 +981,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/buffer-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -993,7 +993,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/create-points-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1005,7 +1005,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/distance-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1017,7 +1017,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/find-nearest-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1053,7 +1053,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/make-grid-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1113,7 +1113,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/spatial-info-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1125,7 +1125,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/spatial-match-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
