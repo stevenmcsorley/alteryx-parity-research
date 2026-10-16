@@ -6,59 +6,135 @@
   "xml_tool_name": "AlteryxSpatialPluginsGui.ReportMap.ReportMap",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/reporting/report-map-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Action",
+      "name": "layers",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
-    },
-    {
-      "name": "Input",
-      "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "many",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "BackgroundColor",
-      "DataConnections",
-      "DataConnections/DataConnection",
-      "DropShadow",
-      "ExpandExtent",
-      "ImageHeight",
-      "ImageResolution",
-      "ImageWidth",
-      "IsMetric",
-      "Layers",
-      "Layers/Layer",
-      "Legend",
-      "Legend/LegendStyle",
-      "MinimumWidth",
-      "ReferenceMap",
-      "ScaleUnits",
-      "TemporaryFileLocationXML"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "layers"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Map Preview",
-      "Map Configuration"
-    ]
+    "properties": {
+      "layers": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "geometry_field"
+          ],
+          "properties": {
+            "geometry_field": {
+              "type": "string",
+              "minLength": 1
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": null
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#0072B2"
+            },
+            "label_field": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": null
+            },
+            "theme_field": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": null,
+              "description": "Numeric field coloured with palette"
+            },
+            "palette": {
+              "enum": [
+                "blues",
+                "diverging",
+                "reds",
+                "viridis"
+              ],
+              "default": "viridis"
+            },
+            "point_size": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 40,
+              "default": 5
+            },
+            "opacity": {
+              "type": "number",
+              "minimum": 0.05,
+              "maximum": 1,
+              "default": 0.8
+            }
+          }
+        }
+      },
+      "crs": {
+        "type": "string",
+        "default": "EPSG:4326"
+      },
+      "title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "legend": {
+        "type": "boolean",
+        "default": true
+      },
+      "max_features": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 200000,
+        "default": 20000
+      },
+      "width": {
+        "type": "integer",
+        "minimum": 240,
+        "maximum": 4000,
+        "default": 720
+      },
+      "height": {
+        "type": "integer",
+        "minimum": 180,
+        "maximum": 4000,
+        "default": 520
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "report-renderer (layout/PDF/image)",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -66,7 +142,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.report_map",
+    "version": "1.0.0",
+    "module": "flowengine.tools.reporting",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -115,9 +197,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch5.MapReportExampleTests.test_uk_map_report_example",
+      "test_batch5.ReportFurnitureTests.test_report_map_layers_theme_and_legend_round_trip"
+    ]
   },
   "sources": [
     {
@@ -138,6 +223,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

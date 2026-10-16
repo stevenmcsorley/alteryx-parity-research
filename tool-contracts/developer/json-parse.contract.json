@@ -100,9 +100,10 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
+    "count": 2,
+    "passing": 2,
     "tests": [
+      "test_batch5.JsonBuildTests.test_json_build_round_trips_json_parse",
       "test_fe_tools_wave2.DeveloperWave2.test_json_parse"
     ]
   },

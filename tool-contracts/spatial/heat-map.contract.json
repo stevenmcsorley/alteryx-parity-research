@@ -6,42 +6,120 @@
   "xml_tool_name": "HeatMap.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/heat-map-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output80",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Value"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "geometry_field"
     ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "properties": {
+      "geometry_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "crs": {
+        "type": "string",
+        "minLength": 1,
+        "default": "EPSG:4326",
+        "description": "Coordinate reference system of the geometry, e.g. EPSG:4326 (lon/lat) or EPSG:27700"
+      },
+      "weight_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "cell_size": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "default": 1.0
+      },
+      "bandwidth": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "default": 2.0
+      },
+      "units": {
+        "enum": [
+          "m",
+          "km",
+          "mi",
+          "ft",
+          "nmi"
+        ],
+        "default": "km"
+      },
+      "classes": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 20,
+        "default": 5
+      },
+      "min_fraction": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0.01
+      },
+      "max_cells": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 2000000,
+        "default": 250000
+      },
+      "format": {
+        "enum": [
+          "wkt",
+          "geojson"
+        ],
+        "default": "wkt"
+      },
+      "on_invalid": {
+        "enum": [
+          "error",
+          "null"
+        ],
+        "default": "error",
+        "description": "Unparseable or invalid geometry: stop the run, or output null"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "spatial-geometry-library",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.heat_map",
+    "version": "1.0.0",
+    "module": "flowengine.tools.spatial",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -71,9 +149,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_batch5.GeometryEditingTests.test_heat_map_density_integrates_to_point_count"
+    ]
   },
   "sources": [
     {
@@ -94,6 +174,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

@@ -30,6 +30,9 @@ from .errors import ConfigError, DataError
 FORMAT = 'flowbench.report.v1'
 PAGE_SIZES_MM = {'A4': (210, 297), 'A3': (297, 420), 'Letter': (215.9, 279.4), 'Legal': (215.9, 355.6)}
 TEXT_STYLES = ('title', 'heading', 'body', 'caption')
+KINDS = ('table', 'chart', 'text', 'image', 'layout', 'header', 'footer', 'overlay', 'legend')
+POSITIONS = ('top_left', 'top_center', 'top_right', 'middle_left', 'middle_center', 'middle_right',
+             'bottom_left', 'bottom_center', 'bottom_right')
 
 
 def element(kind: str, **content) -> str:
@@ -43,7 +46,7 @@ def parse(value) -> dict:
         doc = json.loads(value)
     except (TypeError, ValueError):
         raise DataError('Report field does not contain a Flowbench report element') from None
-    if not isinstance(doc, dict) or doc.get('format') != FORMAT or doc.get('kind') not in ('table', 'chart', 'text', 'image', 'layout'):
+    if not isinstance(doc, dict) or doc.get('format') != FORMAT or doc.get('kind') not in KINDS:
         raise DataError('Report field does not contain a Flowbench report element')
     return doc
 
@@ -66,6 +69,13 @@ def build_chart(spec: dict) -> charts.Canvas:
         return charts.scatter_chart({k: [tuple(p) for p in v] for k, v in spec['series'].items()}, spec.get('trends'), **common)
     if kind == 'histogram':
         return charts.histogram_chart(spec['edges'], spec['counts'], **common)
+    if kind == 'map':
+        import shapely
+        layers = [{**layer, 'features': [(shapely.from_wkt(w) if w else None, fill, label, tip)
+                                         for w, fill, label, tip in layer['features']]} for layer in spec['layers']]
+        return charts.map_chart(layers, [tuple(e) for e in spec.get('legend') or []] or None,
+                                geographic=spec.get('geographic', True), title=spec.get('title'),
+                                width=spec.get('width', 720), height=spec.get('height', 520))
     raise ConfigError(f'Unknown chart type {kind!r}')
 
 
@@ -105,6 +115,17 @@ table.fb th,table.fb td{border:1px solid #c9d1db;padding:4px 8px}table.fb td.num
 table.fb tr.total td{font-weight:bold;background:#f5f7fa}.fb-group{font-weight:bold;font-size:12px;margin-top:10px}
 .fb-row{display:flex;gap:16px;align-items:flex-start}.fb-col{display:flex;flex-direction:column;gap:8px}
 .fb-break{break-before:page}svg{max-width:100%;height:auto}img.fb{max-width:100%}
+.fb-legend{list-style:none;padding:0;margin:6px 0;font-size:11px}.fb-legend li{margin:3px 0}
+.fb-swatch{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:middle}
+.fb-swatch.fb-point{border-radius:50%}.fb-swatch.fb-line{height:3px}
+.fb-overlay{position:relative;display:inline-block}.fb-ov{position:absolute}
+.fb-ov-top_left{top:0;left:0}.fb-ov-top_center{top:0;left:50%;transform:translateX(-50%)}.fb-ov-top_right{top:0;right:0}
+.fb-ov-middle_left{top:50%;left:0;transform:translateY(-50%)}.fb-ov-middle_center{top:50%;left:50%;transform:translate(-50%,-50%)}
+.fb-ov-middle_right{top:50%;right:0;transform:translateY(-50%)}.fb-ov-bottom_left{bottom:0;left:0}
+.fb-ov-bottom_center{bottom:0;left:50%;transform:translateX(-50%)}.fb-ov-bottom_right{bottom:0;right:0}
+header.fb-page,footer.fb-page{display:flex;align-items:center;gap:12px;color:#444;font-size:11px;padding:8px 24px}
+header.fb-page{border-bottom:1px solid #d9dee5}footer.fb-page{border-top:1px solid #d9dee5;justify-content:space-between}
+header.fb-page .fb-htitle{font-size:18px;font-weight:bold;color:#222}
 """
 
 
@@ -136,6 +157,17 @@ def _html_element(doc, depth=0):
         width = f' style="width:{doc["display_width"]}pt"' if doc.get('display_width') else ''
         return (f'<img class="fb" alt="{html.escape(doc.get("alt") or "")}"{width} '
                 f'src="data:image/{doc["image_format"]};base64,{doc["data"]}">')
+    if kind == 'legend':
+        items = ''.join(f'<li><span class="fb-swatch fb-{html.escape(e["shape"])}" style="background:{_safe_colour(e["color"])}"></span>'
+                        f'{html.escape(e["label"])}</li>' for e in doc['entries'])
+        title = f'<div class="fb-heading">{html.escape(doc["title"])}</div>' if doc.get('title') else ''
+        return f'{title}<ul class="fb-legend">{items}</ul>'
+    if kind == 'overlay':
+        slots = ''.join(f'<div class="fb-ov fb-ov-{p}" style="padding:{int(doc.get("padding", 8))}px">{_html_element(child, depth + 1)}</div>'
+                        for p, child in doc['items'].items())
+        return f'<div class="fb-overlay">{_html_element(doc["base"], depth + 1)}{slots}</div>'
+    if kind in ('header', 'footer'):
+        return ''  # placed by render_html
     if kind == 'layout':
         cls = 'fb-row' if doc['direction'] == 'horizontal' else 'fb-col'
         title = f'<div class="fb-heading">{html.escape(doc["title"])}</div>' if doc.get('title') else ''
@@ -144,17 +176,59 @@ def _html_element(doc, depth=0):
     raise DataError(f'Unknown report element {kind!r}')
 
 
+def _safe_colour(value):
+    import re
+    return value if isinstance(value, str) and re.fullmatch(r'#[0-9A-Fa-f]{6}', value) else '#999999'
+
+
+def split_page_furniture(elements):
+    """(header, footer, body): the first header and footer, at any layout depth, decorate every page."""
+    found = {}
+
+    def strip(items):
+        kept = []
+        for e in items:
+            if e['kind'] in ('header', 'footer'):
+                found.setdefault(e['kind'], e)
+            elif e['kind'] == 'layout':
+                kept.append({**e, 'items': strip(e['items'])})
+            else:
+                kept.append(e)
+        return kept
+    body = strip(elements)
+    return found.get('header'), found.get('footer'), body
+
+
+def footer_text(template, page, pages, date):
+    return (template or '').replace('{page}', str(page)).replace('{pages}', str(pages)).replace('{date}', date)
+
+
 def render_html(elements, path: Path, *, title, page_size, orientation, margin_mm, page_breaks) -> dict:
     w, h = PAGE_SIZES_MM[page_size]
     if orientation == 'landscape':
         w, h = h, w
+    header, footer, elements = split_page_furniture(elements)
     body = []
+    if header:
+        image = (f'<img alt="" style="height:{int(header.get("image_height") or 40)}px" '
+                 f'src="data:image/{header["image"]["image_format"]};base64,{header["image"]["data"]}">') if header.get('image') else ''
+        lines = ''.join(f'<div>{html.escape(t)}</div>' for t in (header.get('subtitle'), header.get('date_text')) if t)
+        body.append(f'<header class="fb-page">{image}<div><div class="fb-htitle">{html.escape(header.get("title") or "")}</div>{lines}</div></header>')
     for i, doc in enumerate(elements):
         cls = ' class="fb-break"' if page_breaks and i else ''
         body.append(f'<section{cls}>{_html_element(doc)}</section>')
+    if footer:
+        date = footer.get('date_text') or ''
+        # A screen page has no page numbers: cells that use {page}/{pages} appear only in PDF output.
+        cells = ''.join(f'<span>{html.escape(footer_text(footer.get(k), 1, 1, date))}</span>'
+                        if footer.get(k) and '{page' not in footer[k] else '<span></span>' for k in ('left', 'center', 'right'))
+        foot = f'<footer class="fb-page">{cells}</footer>'
+    else:
+        foot = ''
+    head = body.pop(0) if header else ''
     text = (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>{html.escape(title)}</title>'
             f'<style>@page{{size:{w}mm {h}mm;margin:{margin_mm}mm}}{_CSS}</style></head>'
-            f'<body><main>{"".join(body)}</main></body></html>')
+            f'<body>{head}<main>{"".join(body)}</main>{foot}</body></html>')
     data = text.encode('utf-8')
     _write(path, data)
     return {'pages': None, 'bytes': len(data)}
@@ -287,6 +361,24 @@ def render_pdf(elements, path: Path, *, title, page_size, orientation, margin_mm
                 h_pt = frame_h * 0.95
                 w_pt = h_pt * doc['width'] / doc['height']
             return [Image(io.BytesIO(raw), width=w_pt, height=h_pt), Spacer(1, 6)]
+        if kind == 'legend':
+            out = [Paragraph(para_text(doc['title']), style('heading'))] if doc.get('title') else []
+            rows = [[_Swatch(e['color'], e['shape']), Paragraph(para_text(e['label']), style('body'))] for e in doc['entries']]
+            if rows:
+                grid = Table(rows, colWidths=[16, max_w - 16], hAlign='LEFT')
+                grid.setStyle(TableStyle([('VALIGN', (0, 0), (-1, -1), 'MIDDLE'), ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                                          ('TOPPADDING', (0, 0), (-1, -1), 1), ('BOTTOMPADDING', (0, 0), (-1, -1), 1)]))
+                out.append(grid)
+            return out
+        if kind == 'overlay':
+            base = flow(doc['base'], max_w)
+            base_flow = next((f for f in base if not isinstance(f, Spacer)), None)
+            if base_flow is None:
+                return base
+            items = {p: flow(child, max_w / 2) for p, child in doc['items'].items()}
+            return [_Overlay(base_flow, items, float(doc.get('padding', 8)) * 0.75), Spacer(1, 8)]
+        if kind in ('header', 'footer'):
+            return []
         if kind == 'layout':
             out = [Paragraph(para_text(doc['title']), style('heading'))] if doc.get('title') else []
             if doc['direction'] == 'horizontal' and doc['items']:
@@ -309,6 +401,48 @@ def render_pdf(elements, path: Path, *, title, page_size, orientation, margin_mm
             return out
         raise DataError(f'Unknown report element {kind!r}')
 
+    header, footer, elements = split_page_furniture(elements)
+    head_h = 0.0
+    if header:
+        head_h = max(float(header.get('image_height') or 0) * 0.75 if header.get('image') else 0, 34.0) + 10
+    foot_h = 22.0 if footer else 0.0
+
+    def decorate(canvas_, doc_, total):
+        canvas_.saveState()
+        top = page[1] - margin
+        if header:
+            x = margin
+            if header.get('image'):
+                ih = float(header.get('image_height') or 40) * 0.75
+                iw = ih * header['image']['width'] / header['image']['height']
+                from reportlab.lib.utils import ImageReader
+                canvas_.drawImage(ImageReader(io.BytesIO(base64.b64decode(header['image']['data']))), x, top - ih, iw, ih, mask='auto')
+                x += iw + 10
+            canvas_.setFont(bold, 15)
+            canvas_.setFillColor(colors.HexColor('#222222'))
+            canvas_.drawString(x, top - 15, safe(header.get('title') or ''))
+            canvas_.setFont(regular, 9)
+            line_y = top - 28
+            for t in (header.get('subtitle'), header.get('date_text')):
+                if t:
+                    canvas_.drawString(x, line_y, safe(t))
+                    line_y -= 11
+            canvas_.setStrokeColor(colors.HexColor('#d9dee5'))
+            canvas_.line(margin, top - head_h + 4, page[0] - margin, top - head_h + 4)
+        if footer:
+            date = footer.get('date_text') or ''
+            y = margin - 4
+            canvas_.setStrokeColor(colors.HexColor('#d9dee5'))
+            canvas_.line(margin, margin + foot_h - 8, page[0] - margin, margin + foot_h - 8)
+            canvas_.setFont(regular, 8)
+            canvas_.setFillColor(colors.HexColor('#444444'))
+            page_no = canvas_.getPageNumber()
+            for key, draw, x in (('left', canvas_.drawString, margin), ('center', canvas_.drawCentredString, page[0] / 2),
+                                 ('right', canvas_.drawRightString, page[0] - margin)):
+                if footer.get(key):
+                    draw(x, y + 6, safe(footer_text(footer[key], page_no, total, date)))
+        canvas_.restoreState()
+
     story = []
     for i, doc in enumerate(elements):
         if page_breaks and i:
@@ -316,15 +450,22 @@ def render_pdf(elements, path: Path, *, title, page_size, orientation, margin_mm
         story += flow(doc, frame_w)
     while story and isinstance(story[-1], Spacer):
         story.pop()  # a trailing spacer must not spill onto an empty page
-    buffer = io.BytesIO()
-    pdf = SimpleDocTemplate(buffer, pagesize=page, leftMargin=margin, rightMargin=margin, topMargin=margin,
-                            bottomMargin=margin, title=safe(title), author='Flowbench', creator='Flowbench')
+    import copy as _copy
     pages = [0]
 
-    def count(canvas_, _doc):
-        pages[0] = canvas_.getPageNumber()
+    def build(total):
+        buffer = io.BytesIO()
+        pdf = SimpleDocTemplate(buffer, pagesize=page, leftMargin=margin, rightMargin=margin, topMargin=margin + head_h,
+                                bottomMargin=margin + foot_h, title=safe(title), author='Flowbench', creator='Flowbench')
+
+        def on_page(canvas_, doc_):
+            pages[0] = canvas_.getPageNumber()
+            decorate(canvas_, doc_, total)
+        pdf.build(_copy.deepcopy(story) if total is None else story, onFirstPage=on_page, onLaterPages=on_page)
+        return buffer
     try:
-        pdf.build(story, onFirstPage=count, onLaterPages=count)
+        buffer = build(None) if not (footer and any('{pages}' in (footer.get(k) or '') for k in ('left', 'center', 'right'))) \
+            else (build(None), build(pages[0]))[1]  # two passes so "of {pages}" is known
     except Exception as e:  # e.g. a cell taller than a page
         raise DataError(f'PDF layout failed: {type(e).__name__}: {e}') from None
     if replaced[0]:
@@ -332,6 +473,46 @@ def render_pdf(elements, path: Path, *, title, page_size, orientation, margin_mm
     data = buffer.getvalue()
     _write(path, data)
     return {'pages': pages[0], 'bytes': len(data)}
+
+
+def _Swatch(colour, shape):
+    from reportlab.lib.colors import HexColor
+    from reportlab.platypus import Flowable
+
+    class Swatch(Flowable):
+        def wrap(self, *_):
+            return 12, 12
+
+        def draw(self):
+            self.canv.setFillColor(HexColor(_safe_colour(colour)))
+            if shape == 'point':
+                self.canv.circle(6, 6, 5, fill=1, stroke=0)
+            elif shape == 'line':
+                self.canv.rect(0, 5, 12, 3, fill=1, stroke=0)
+            else:
+                self.canv.rect(0, 0, 12, 12, fill=1, stroke=0)
+    return Swatch()
+
+
+def _Overlay(base, items, padding):
+    """Draw a base flowable with other flowables placed at nine anchor positions over it."""
+    from reportlab.platypus import Flowable
+
+    class Overlay(Flowable):
+        def wrap(self, aw, ah):
+            self.w, self.h = base.wrap(aw, ah)
+            return self.w, self.h
+
+        def draw(self):
+            base.drawOn(self.canv, 0, 0)
+            for position, flowables in items.items():
+                for f in flowables[:1]:
+                    fw, fh = f.wrap(self.w / 2, self.h / 2)
+                    vertical, horizontal = position.split('_')
+                    x = {'left': padding, 'center': (self.w - fw) / 2, 'right': self.w - fw - padding}[horizontal]
+                    y = {'top': self.h - fh - padding, 'middle': (self.h - fh) / 2, 'bottom': padding}[vertical]
+                    f.drawOn(self.canv, x, y)
+    return Overlay()
 
 
 def _column_widths(doc, max_w):

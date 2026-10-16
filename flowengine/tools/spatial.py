@@ -640,4 +640,441 @@ class MakeGrid(Tool):
         return {'output': Table.from_rows(self.SCHEMA, out)}
 
 
-TOOLS = [CreatePoints, Distance, Buffer, FindNearest, SpatialMatch, SpatialInfo, MakeGrid]
+
+# =========================================================================== geometry editing
+
+def _local_metric(geom):
+    """(forward, back) transformers to a metre-based azimuthal equidistant projection centred on geom."""
+    from pyproj import CRS, Transformer
+    c = geom.centroid
+    local = CRS.from_proj4(f'+proj=aeqd +lat_0={c.y} +lon_0={c.x} +datum=WGS84 +units=m +no_defs')
+    wgs84 = CRS.from_epsg(4326)
+    return (Transformer.from_crs(wgs84, local, always_xy=True), Transformer.from_crs(local, wgs84, always_xy=True))
+
+
+def in_metres(geom, crs_text, operation):
+    """Apply operation(geometry_in_metres, metres_per_unit=1) and return the result in the original CRS."""
+    _, geographic, factor = crs_info(crs_text)
+    if geographic:
+        check_lonlat(geom, '')
+        forward, back = _local_metric(geom)
+        return _transform(operation(_transform(geom, forward)), back)
+    if factor is None:
+        raise ConfigError(f"Cannot convert the axis unit of {crs_text!r} to metres")
+    from shapely import affinity
+    scaled = affinity.scale(geom, xfact=factor, yfact=factor, origin=(0, 0))
+    return affinity.scale(operation(scaled), xfact=1 / factor, yfact=1 / factor, origin=(0, 0))
+
+
+def _single_geometry_tool(tool_id, name, catalog, description, extra_props, default_output):
+    """Shared manifest pieces for tools that rewrite one geometry field per record."""
+    return ToolManifest(
+        tool_id=tool_id, version='1.0.0', display_name=name, catalog_ids=(catalog,),
+        inputs=(Anchor('input', 'Input'),), outputs=(Anchor('output', 'Output'),), description=description,
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['geometry_field'], 'properties': {
+            'geometry_field': {'type': 'string', 'minLength': 1}, 'crs': _CRS, **extra_props,
+            'output_field': {'type': 'string', 'minLength': 1, 'default': default_output}, 'format': _FORMAT,
+            'on_invalid': _ON_INVALID}})
+
+
+class _PerRecordGeometry(Tool):
+    def infer(self, ctx, cfg, inputs):
+        schema = inputs['input']
+        require_fields(schema, [cfg['geometry_field']])
+        crs_info(cfg['crs'])
+        if cfg['output_field'] in schema and cfg['output_field'] != cfg['geometry_field']:
+            raise SchemaError(f"Field {cfg['output_field']!r} already exists")
+        if cfg['output_field'] == cfg['geometry_field']:
+            return {'output': schema}
+        return {'output': Schema([*schema, _geom_field(cfg['output_field'])])}
+
+    def change(self, cfg, geom):
+        raise NotImplementedError
+
+    def run(self, ctx, cfg, inputs):
+        table = inputs['input']
+        schema = self.infer(ctx, cfg, {'input': table.schema})['output']
+        replace = cfg['output_field'] == cfg['geometry_field']
+        gi = table.schema.index(cfg['geometry_field'])
+        out = []
+        for number, row in enumerate(table.rows(), start=1):
+            ctx.check_cancelled()
+            geom = parse(row[gi], cfg['on_invalid'], f' in record {number}')
+            result = None if geom is None or geom.is_empty else dump(self.change(cfg, geom), cfg['format'])
+            out.append(tuple(result if replace and i == gi else v for i, v in enumerate(row)) if replace else (*row, result))
+        return {'output': Table.from_rows(schema, out)}
+
+
+class Generalize(_PerRecordGeometry):
+    manifest = _single_geometry_tool(
+        'core.generalize', 'Generalize', 'spatial:generalize',
+        'Simplify lines and polygons with the Douglas-Peucker algorithm. tolerance is a distance in m, km, mi, ft or '
+        'nmi, applied in metres (in a local projection for geographic data). With preserve_topology, polygons stay '
+        'valid and rings do not collapse. Points are unchanged.',
+        {'tolerance': {'type': 'number', 'exclusiveMinimum': 0, 'default': 1.0},
+         'units': {'enum': list(LENGTH_UNITS), 'default': 'km'},
+         'preserve_topology': {'type': 'boolean', 'default': True}}, 'Generalized')
+
+    def change(self, cfg, geom):
+        metres = cfg['tolerance'] * LENGTH_UNITS[cfg['units']]
+        return in_metres(geom, cfg['crs'], lambda g: g.simplify(metres, preserve_topology=cfg['preserve_topology']))
+
+
+def _chaikin(coords, closed, iterations):
+    """Chaikin corner cutting: each segment is replaced by points at 1/4 and 3/4. Open lines keep their ends."""
+    pts = [tuple(c[:2]) for c in coords]
+    if closed:
+        pts = pts[:-1]
+    if len(pts) < 3:
+        return coords
+    for _ in range(iterations):
+        segments = list(zip(pts, pts[1:] + [pts[0]])) if closed else list(zip(pts, pts[1:]))
+        cut = []
+        for (x0, y0), (x1, y1) in segments:
+            cut += [(0.75 * x0 + 0.25 * x1, 0.75 * y0 + 0.25 * y1), (0.25 * x0 + 0.75 * x1, 0.25 * y0 + 0.75 * y1)]
+        pts = cut if closed else [pts[0]] + cut[1:-1] + [pts[-1]]
+    return pts + [pts[0]] if closed else pts
+
+
+class Smooth(_PerRecordGeometry):
+    manifest = _single_geometry_tool(
+        'core.smooth', 'Smooth', 'spatial:smooth',
+        "Round the corners of lines and polygons with Chaikin's corner-cutting (each iteration roughly doubles the "
+        'vertices). Line end points are kept; polygon holes are smoothed too. A result that becomes invalid is '
+        'repaired with make_valid. Points are unchanged.',
+        {'iterations': {'type': 'integer', 'minimum': 1, 'maximum': 8, 'default': 2}}, 'Smoothed')
+
+    def change(self, cfg, geom):
+        import shapely
+        from shapely.geometry import LineString, MultiLineString, MultiPolygon, Polygon
+
+        def one(g):
+            n = cfg['iterations']
+            if isinstance(g, Polygon):
+                return Polygon(_chaikin(list(g.exterior.coords), True, n), [_chaikin(list(r.coords), True, n) for r in g.interiors])
+            if isinstance(g, LineString):
+                return LineString(_chaikin(list(g.coords), False, n))
+            if isinstance(g, (MultiPolygon, MultiLineString)):
+                return type(g)([one(part) for part in g.geoms])
+            return g
+        result = one(geom)
+        return result if result.is_valid else shapely.make_valid(result)
+
+
+class PolySplit(Tool):
+    manifest = ToolManifest(
+        tool_id='core.poly_split', version='1.0.0', display_name='Poly-Split', catalog_ids=('spatial:poly-split',),
+        inputs=(Anchor('input', 'Input'),), outputs=(Anchor('output', 'Output'),),
+        description='Split each geometry into one record per part (multi-part geometries), per ring or line '
+                    '(polylines: polygon boundaries and holes), or per vertex (points; a polygon\'s repeated closing '
+                    'vertex is omitted). Adds PartNumber and PointNumber (1-based) and keeps the input fields.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['geometry_field'], 'properties': {
+            'geometry_field': {'type': 'string', 'minLength': 1},
+            'split_to': {'enum': ['parts', 'polylines', 'points'], 'default': 'parts'},
+            'output_field': {'type': 'string', 'minLength': 1, 'default': 'Piece'}, 'format': _FORMAT,
+            'on_invalid': _ON_INVALID}})
+
+    def infer(self, ctx, cfg, inputs):
+        schema = inputs['input']
+        require_fields(schema, [cfg['geometry_field']])
+        clash = [n for n in (cfg['output_field'], 'PartNumber', 'PointNumber') if n in schema]
+        if clash:
+            raise SchemaError(f'Field(s) {clash} already exist')
+        return {'output': Schema([*schema, _geom_field(cfg['output_field']), Field('PartNumber', FieldType.INT32),
+                                  Field('PointNumber', FieldType.INT32)])}
+
+    def run(self, ctx, cfg, inputs):
+        from shapely.geometry import LineString, Point, Polygon
+        table = inputs['input']
+        schema = self.infer(ctx, cfg, {'input': table.schema})['output']
+        out = []
+        for number, (row, value) in enumerate(zip(table.rows(), table.column(cfg['geometry_field'])), start=1):
+            geom = parse(value, cfg['on_invalid'], f' in record {number}')
+            if geom is None or geom.is_empty:
+                continue
+            parts = list(getattr(geom, 'geoms', [geom]))
+            for p_index, part in enumerate(parts, start=1):
+                if cfg['split_to'] == 'parts':
+                    out.append((*row, dump(part, cfg['format']), p_index, None))
+                    continue
+                if isinstance(part, Polygon):
+                    lines = [LineString(part.exterior.coords)] + [LineString(r.coords) for r in part.interiors]
+                elif isinstance(part, LineString):
+                    lines = [part]
+                else:
+                    lines = [part]
+                if cfg['split_to'] == 'polylines':
+                    out.extend((*row, dump(line, cfg['format']), p_index, None) for line in lines if line.geom_type == 'LineString')
+                    continue
+                coords = []
+                for line in lines:
+                    c = list(line.coords)
+                    coords += c[:-1] if isinstance(part, Polygon) else c
+                for k, xy in enumerate(coords, start=1):
+                    out.append((*row, dump(Point(xy), cfg['format']), p_index, k))
+        return {'output': Table.from_rows(schema, out)}
+
+
+class PolyBuild(Tool):
+    manifest = ToolManifest(
+        tool_id='core.poly_build', version='1.0.0', display_name='Poly-Build', catalog_ids=('spatial:poly-build',),
+        inputs=(Anchor('input', 'Input', description='Point geometries'),), outputs=(Anchor('output', 'Output'),),
+        description='Build one geometry per group from point records: their convex hull, or a polygon or polyline '
+                    'through the points in sequence_field order (record order when blank). Sequence polygons '
+                    'are closed automatically and repaired if self-intersecting. Groups with too few points are '
+                    'reported as warnings and skipped.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['geometry_field'], 'properties': {
+            'geometry_field': {'type': 'string', 'minLength': 1},
+            'method': {'enum': ['convex_hull', 'sequence_polygon', 'sequence_polyline'], 'default': 'sequence_polygon'},
+            'group_by': {'type': 'array', 'uniqueItems': True, 'items': {'type': 'string'}, 'default': []},
+            'sequence_field': {'type': ['string', 'null'], 'default': None},
+            'output_field': {'type': 'string', 'minLength': 1, 'default': 'Built'}, 'format': _FORMAT,
+            'on_invalid': _ON_INVALID}})
+
+    def infer(self, ctx, cfg, inputs):
+        schema = inputs['input']
+        require_fields(schema, [cfg['geometry_field'], *cfg['group_by']] + ([cfg['sequence_field']] if cfg['sequence_field'] else []))
+        return {'output': Schema([*[schema.field(g) for g in cfg['group_by']], _geom_field(cfg['output_field']),
+                                  Field('PointCount', FieldType.INT32)])}
+
+    def run(self, ctx, cfg, inputs):
+        import shapely
+        from shapely.geometry import LineString, MultiPoint, Polygon
+        table = inputs['input']
+        schema = self.infer(ctx, cfg, {'input': table.schema})['output']
+        groups = {}
+        seq = table.column(cfg['sequence_field']) if cfg['sequence_field'] else range(len(table))
+        for number, (rec, order) in enumerate(zip(table.to_dicts(), seq), start=1):
+            geom = parse(rec[cfg['geometry_field']], cfg['on_invalid'], f' in record {number}')
+            if geom is None or geom.is_empty:
+                continue
+            if geom.geom_type != 'Point':
+                raise DataError(f'Poly-Build record {number} is a {geom.geom_type}; Poly-Build needs points')
+            groups.setdefault(tuple(rec[g] for g in cfg['group_by']), []).append((order, number, (geom.x, geom.y)))
+        out = []
+        need = {'convex_hull': 3, 'sequence_polygon': 3, 'sequence_polyline': 2}[cfg['method']]
+        for key, pts in groups.items():
+            pts.sort(key=lambda p: (p[0] is None, p[0], p[1]))
+            coords = [p[2] for p in pts]
+            if len(coords) < need:
+                ctx.warn(f'Poly-Build group {key!r} has {len(coords)} point(s); {need} are needed')
+                continue
+            if cfg['method'] == 'convex_hull':
+                built = MultiPoint(coords).convex_hull
+            elif cfg['method'] == 'sequence_polyline':
+                built = LineString(coords)
+            else:
+                built = Polygon(coords)
+                if not built.is_valid:
+                    built = shapely.make_valid(built)
+            out.append((*key, dump(built, cfg['format']), len(coords)))
+        return {'output': Table.from_rows(schema, out)}
+
+
+class TradeArea(Tool):
+    manifest = ToolManifest(
+        tool_id='core.trade_area', version='1.0.0', display_name='Trade Area', catalog_ids=('spatial:trade-area',),
+        inputs=(Anchor('input', 'Input'),), outputs=(Anchor('output', 'Output'),),
+        description='Radius trade areas around each geometry: one record per radius in radii (m, km, mi, ft or nmi), '
+                    'built as metric buffers, geodesically correct on geographic data. With donuts, each ring '
+                    'excludes the smaller radius so areas do not overlap. Drive-time areas need a road network and '
+                    'are not available.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['geometry_field', 'radii'], 'properties': {
+            'geometry_field': {'type': 'string', 'minLength': 1}, 'crs': _CRS,
+            'radii': {'type': 'array', 'minItems': 1, 'maxItems': 50, 'uniqueItems': True,
+                      'items': {'type': 'number', 'exclusiveMinimum': 0}},
+            'units': {'enum': list(LENGTH_UNITS), 'default': 'mi'}, 'donuts': {'type': 'boolean', 'default': False},
+            'resolution': {'type': 'integer', 'minimum': 1, 'maximum': 128, 'default': 16},
+            'output_field': {'type': 'string', 'minLength': 1, 'default': 'TradeArea'}, 'format': _FORMAT,
+            'on_invalid': _ON_INVALID}})
+
+    def infer(self, ctx, cfg, inputs):
+        schema = inputs['input']
+        require_fields(schema, [cfg['geometry_field']])
+        crs_info(cfg['crs'])
+        clash = [n for n in (cfg['output_field'], 'Radius', 'InnerRadius') if n in schema]
+        if clash:
+            raise SchemaError(f'Field(s) {clash} already exist')
+        return {'output': Schema([*schema, Field('Radius', FieldType.DOUBLE), Field('InnerRadius', FieldType.DOUBLE),
+                                  _geom_field(cfg['output_field'])])}
+
+    def run(self, ctx, cfg, inputs):
+        table = inputs['input']
+        schema = self.infer(ctx, cfg, {'input': table.schema})['output']
+        radii = sorted(cfg['radii'])
+        scale = LENGTH_UNITS[cfg['units']]
+        out = []
+        for number, (row, value) in enumerate(zip(table.rows(), table.column(cfg['geometry_field'])), start=1):
+            ctx.check_cancelled()
+            geom = parse(value, cfg['on_invalid'], f' in record {number}')
+            if geom is None or geom.is_empty:
+                continue
+            areas = [in_metres(geom, cfg['crs'], lambda g, r=r: g.buffer(r * scale, quad_segs=cfg['resolution'])) for r in radii]
+            for i, (r, area) in enumerate(zip(radii, areas)):
+                inner = radii[i - 1] if cfg['donuts'] and i else None
+                shape_ = area.difference(areas[i - 1]) if inner is not None else area
+                out.append((*row, r, inner, dump(shape_, cfg['format'])))
+        return {'output': Table.from_rows(schema, out)}
+
+
+class SpatialProcess(Tool):
+    manifest = ToolManifest(
+        tool_id='core.spatial_process', version='1.0.0', display_name='Spatial Process', catalog_ids=('spatial:spatial-process',),
+        inputs=(Anchor('input', 'Input'),), outputs=(Anchor('output', 'Output'),),
+        description='Overlay geometries. Per record, combine two or more geometry fields with union, intersection, '
+                    'difference (first minus the rest) or symmetric difference. Or dissolve all records, per '
+                    'group_by group, into one union. Coordinates stay in their CRS (GEOS planar overlay). An empty '
+                    'result is written as an empty geometry.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['action'], 'properties': {
+            'action': {'enum': ['union', 'intersection', 'difference', 'symmetric_difference', 'dissolve']},
+            'fields': {'type': 'array', 'uniqueItems': True, 'items': {'type': 'string'}, 'default': []},
+            'geometry_field': {'type': ['string', 'null'], 'default': None, 'description': 'Field to dissolve'},
+            'group_by': {'type': 'array', 'uniqueItems': True, 'items': {'type': 'string'}, 'default': []},
+            'output_field': {'type': 'string', 'minLength': 1, 'default': 'Result'}, 'format': _FORMAT,
+            'on_invalid': _ON_INVALID}})
+
+    def infer(self, ctx, cfg, inputs):
+        schema = inputs['input']
+        if cfg['action'] == 'dissolve':
+            if not cfg['geometry_field']:
+                raise ConfigError('Dissolve needs geometry_field')
+            require_fields(schema, [cfg['geometry_field'], *cfg['group_by']])
+            return {'output': Schema([*[schema.field(g) for g in cfg['group_by']], _geom_field(cfg['output_field']),
+                                      Field('RecordCount', FieldType.INT64)])}
+        if len(cfg['fields']) < 2:
+            raise ConfigError(f"Spatial Process {cfg['action']} needs at least two geometry fields")
+        require_fields(schema, cfg['fields'])
+        if cfg['output_field'] in schema:
+            raise SchemaError(f"Field {cfg['output_field']!r} already exists")
+        return {'output': Schema([*schema, _geom_field(cfg['output_field'])])}
+
+    def run(self, ctx, cfg, inputs):
+        import shapely
+        from functools import reduce
+        table = inputs['input']
+        schema = self.infer(ctx, cfg, {'input': table.schema})['output']
+        if cfg['action'] == 'dissolve':
+            groups = {}
+            for number, rec in enumerate(table.to_dicts(), start=1):
+                geom = parse(rec[cfg['geometry_field']], cfg['on_invalid'], f' in record {number}')
+                entry = groups.setdefault(tuple(rec[g] for g in cfg['group_by']), [[], 0])
+                entry[1] += 1
+                if geom is not None and not geom.is_empty:
+                    entry[0].append(geom)
+            rows = [(*key, dump(shapely.union_all(geoms), cfg['format']) if geoms else None, count)
+                    for key, (geoms, count) in groups.items()]
+            return {'output': Table.from_rows(schema, rows)}
+        op = {'union': shapely.union, 'intersection': shapely.intersection, 'difference': shapely.difference,
+              'symmetric_difference': shapely.symmetric_difference}[cfg['action']]
+        out = []
+        cols = [table.column(f) for f in cfg['fields']]
+        for number, row in enumerate(table.rows(), start=1):
+            ctx.check_cancelled()
+            geoms = [parse(c[number - 1], cfg['on_invalid'], f' in record {number}') for c in cols]
+            if any(g is None for g in geoms):
+                out.append((*row, None))
+                continue
+            out.append((*row, dump(reduce(op, geoms), cfg['format'])))
+        return {'output': Table.from_rows(schema, out)}
+
+
+class HeatMap(Tool):
+    manifest = ToolManifest(
+        tool_id='core.heat_map', version='1.0.0', display_name='Heat Map', catalog_ids=('spatial:heat-map',),
+        inputs=(Anchor('input', 'Input', description='Point geometries, optionally weighted'),),
+        outputs=(Anchor('output', 'Output', description='Grid cells with density and class'),),
+        description='Gaussian kernel density surface of points (optionally weighted), evaluated at the centre of '
+                    'square cells and returned as polygons with Density (weight per km²) and Class (1 = lowest to '
+                    'classes, equal-interval). Cell size and bandwidth are distances. Geographic data is gridded in '
+                    'the UTM zone of its centre. Cells below min_fraction of the peak are dropped.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['geometry_field'], 'properties': {
+            'geometry_field': {'type': 'string', 'minLength': 1}, 'crs': _CRS,
+            'weight_field': {'type': ['string', 'null'], 'default': None},
+            'cell_size': {'type': 'number', 'exclusiveMinimum': 0, 'default': 1.0},
+            'bandwidth': {'type': 'number', 'exclusiveMinimum': 0, 'default': 2.0},
+            'units': {'enum': list(LENGTH_UNITS), 'default': 'km'},
+            'classes': {'type': 'integer', 'minimum': 1, 'maximum': 20, 'default': 5},
+            'min_fraction': {'type': 'number', 'minimum': 0, 'maximum': 1, 'default': 0.01},
+            'max_cells': {'type': 'integer', 'minimum': 1, 'maximum': 2_000_000, 'default': 250_000},
+            'format': _FORMAT, 'on_invalid': _ON_INVALID}})
+    SCHEMA = Schema([Field('CellID', FieldType.INT64), _geom_field('Cell'), Field('Density', FieldType.DOUBLE),
+                     Field('Class', FieldType.INT32)])
+
+    def infer(self, ctx, cfg, inputs):
+        schema = inputs['input']
+        require_fields(schema, [cfg['geometry_field']] + ([cfg['weight_field']] if cfg['weight_field'] else []))
+        if cfg['weight_field'] and not schema.field(cfg['weight_field']).type.is_numeric:
+            raise SchemaError('Heat Map weight_field must be numeric')
+        crs_info(cfg['crs'])
+        return {'output': self.SCHEMA}
+
+    def run(self, ctx, cfg, inputs):
+        import numpy as np
+        from pyproj import CRS, Transformer
+        from pyproj.aoi import AreaOfInterest
+        from pyproj.database import query_utm_crs_info
+        from scipy.spatial import cKDTree
+        from shapely.geometry import box
+        table = inputs['input']
+        self.infer(ctx, cfg, {'input': table.schema})
+        crs, geographic, factor = crs_info(cfg['crs'])
+        weights = table.column(cfg['weight_field']) if cfg['weight_field'] else [1.0] * len(table)
+        xs, ys, ws = [], [], []
+        for number, (value, w) in enumerate(zip(table.column(cfg['geometry_field']), weights), start=1):
+            geom = parse(value, cfg['on_invalid'], f' in record {number}')
+            if geom is None or geom.is_empty or w is None:
+                continue
+            if geom.geom_type != 'Point':
+                geom = geom.centroid
+            if geographic:
+                check_lonlat(geom, f' in record {number}')
+            xs.append(geom.x), ys.append(geom.y), ws.append(float(w))
+        if not xs:
+            return {'output': Table.empty(self.SCHEMA)}
+        to_out = None
+        if geographic:
+            lon_c, lat_c = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+            utm = query_utm_crs_info(datum_name='WGS 84', area_of_interest=AreaOfInterest(lon_c, lat_c, lon_c, lat_c))
+            work = CRS.from_epsg(int(utm[0].code))
+            xs, ys = Transformer.from_crs(crs, work, always_xy=True).transform(xs, ys)
+            to_out = Transformer.from_crs(work, crs, always_xy=True)
+            unit = 1.0
+        else:
+            if factor is None:
+                raise ConfigError(f"Cannot convert the axis unit of {cfg['crs']!r} to metres")
+            unit = factor
+        pts = np.column_stack([np.asarray(xs) * unit, np.asarray(ys) * unit])
+        w = np.asarray(ws)
+        size, bw = cfg['cell_size'] * LENGTH_UNITS[cfg['units']], cfg['bandwidth'] * LENGTH_UNITS[cfg['units']]
+        pad = 3 * bw
+        minx, miny = pts.min(axis=0) - pad
+        maxx, maxy = pts.max(axis=0) + pad
+        cols, rows = int(math.ceil((maxx - minx) / size)), int(math.ceil((maxy - miny) / size))
+        if cols * rows > cfg['max_cells']:
+            raise DataError(f'Heat Map would evaluate {cols * rows:,} cells (max_cells {cfg["max_cells"]:,}); increase cell_size')
+        cx = minx + (np.arange(cols) + 0.5) * size
+        cy = miny + (np.arange(rows) + 0.5) * size
+        gx, gy = np.meshgrid(cx, cy)
+        centres = np.column_stack([gx.ravel(), gy.ravel()])
+        tree = cKDTree(pts)
+        density = np.zeros(len(centres))
+        for i, near in enumerate(tree.query_ball_point(centres, r=pad)):
+            if near:
+                d2 = ((pts[near] - centres[i]) ** 2).sum(axis=1)
+                density[i] = (w[near] * np.exp(-d2 / (2 * bw * bw))).sum()
+        density /= 2 * math.pi * bw * bw / 1e6  # Gaussian kernel normalised to weight per km²
+        peak = density.max()
+        out, cell_id = [], 0
+        for i in np.flatnonzero(density >= peak * cfg['min_fraction']) if peak > 0 else []:
+            x, y = centres[i]
+            cell = box((x - size / 2) / unit, (y - size / 2) / unit, (x + size / 2) / unit, (y + size / 2) / unit)
+            if to_out is not None:
+                cell = _transform(cell, to_out)
+            cls = min(cfg['classes'], int(density[i] / peak * cfg['classes']) + 1)
+            cell_id += 1
+            out.append((cell_id, dump(cell, cfg['format']), float(density[i]), cls))
+        return {'output': Table.from_rows(self.SCHEMA, out)}
+
+
+TOOLS = [CreatePoints, Distance, Buffer, FindNearest, SpatialMatch, SpatialInfo, MakeGrid, Generalize, Smooth,
+         PolySplit, PolyBuild, TradeArea, SpatialProcess, HeatMap]

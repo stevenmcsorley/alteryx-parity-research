@@ -56,6 +56,12 @@ class Canvas:
         if len(points) > 2:
             self.ops.append(('polygon', dict(points=list(points), fill=fill, stroke=stroke, opacity=opacity)))
 
+    def path(self, rings, fill, stroke=None, opacity=1.0, width=1.0, title=None):
+        """Closed rings filled with the even-odd rule, so polygon holes stay empty."""
+        rings = [list(r) for r in rings if len(r) > 2]
+        if rings:
+            self.ops.append(('path', dict(rings=rings, fill=fill, stroke=stroke, opacity=opacity, width=width, title=title)))
+
     def circle(self, cx, cy, r, fill, stroke=None, opacity=1.0, title=None):
         self.ops.append(('circle', dict(cx=cx, cy=cy, r=r, fill=fill, stroke=stroke, opacity=opacity, title=title)))
 
@@ -87,6 +93,11 @@ class Canvas:
                     out.append(f'<polyline points="{pts}" fill="none" stroke="{o["stroke"]}" stroke-width="{n(o["width"])}" stroke-linejoin="round"/>')
                 else:
                     out.append(f'<polygon points="{pts}" fill="{o["fill"]}"{stroke}{opacity}/>')
+            elif kind == 'path':
+                d = ' '.join('M' + ' L'.join(f'{n(x)},{n(y)}' for x, y in ring) + ' Z' for ring in o['rings'])
+                attrs = (f'd="{d}" fill="{o["fill"]}" fill-rule="evenodd" stroke-width="{n(o["width"])}"'
+                         f'{stroke}{opacity}')
+                out.append(f'<path {attrs}>{tip}</path>' if tip else f'<path {attrs}/>')
             elif kind == 'circle':
                 attrs = f'cx="{n(o["cx"])}" cy="{n(o["cy"])}" r="{n(o["r"])}" fill="{o["fill"]}"{stroke}{opacity}'
                 out.append(f'<circle {attrs}>{tip}</circle>' if tip else f'<circle {attrs}/>')
@@ -144,6 +155,18 @@ def draw_reportlab(canvas: Canvas, pdf, x0: float, y0: float, scale: float = 1.0
                 pdf.setStrokeColor(color(o['stroke']))
                 pdf.setLineWidth(o['width'] * scale)
                 pdf.drawPath(path, fill=0, stroke=1)
+        elif kind == 'path':
+            path = pdf.beginPath()
+            for ring in o['rings']:
+                path.moveTo(X(ring[0][0]), Y(ring[0][1]))
+                for px, py in ring[1:]:
+                    path.lineTo(X(px), Y(py))
+                path.close()
+            pdf.setFillColor(color(o['fill']), alpha=o['opacity'])
+            if o.get('stroke'):
+                pdf.setStrokeColor(color(o['stroke']))
+                pdf.setLineWidth(o['width'] * scale)
+            pdf.drawPath(path, fill=1, stroke=1 if o.get('stroke') else 0, fillMode=0)  # 0 = even-odd
         elif kind == 'circle':
             pdf.setFillColor(color(o['fill']), alpha=o['opacity'])
             if o.get('stroke'):
@@ -466,6 +489,69 @@ def violin_chart(groups, grids, densities, quartiles, title=None, x_label=None, 
         f.c.line(cx - 7, y(med), cx + 7, y(med), stroke=INK, width=2)
     f.x_categories([str(g) for g in groups], centres)
     return f.c
+
+
+def map_chart(layers, legend=None, geographic=True, title=None, width=720, height=520):
+    """Vector map of geometry layers.
+
+    layers: [{'name', 'color', 'opacity', 'point_size', 'features': [(geometry, fill, label, tooltip)]}]
+    Geographic coordinates use an equirectangular projection scaled by cos(latitude) at the map centre,
+    so shapes keep their proportions at regional scales. legend: [(label, color, shape)].
+    """
+    c = Canvas(width, height, title)
+    top = 40 if title else 14
+    if title:
+        c.text(width / 2, 24, title, size=15, anchor='middle', weight='bold')
+    right = width - (190 if legend else 14)
+    geoms = [f[0] for layer in layers for f in layer['features'] if f[0] is not None and not f[0].is_empty]
+    if not geoms:
+        c.text(width / 2, height / 2, 'No geometry to draw', size=12, anchor='middle', fill=AXIS)
+        return c
+    import shapely
+    minx, miny, maxx, maxy = shapely.bounds(shapely.GeometryCollection(geoms))
+    kx = math.cos(math.radians((miny + maxy) / 2)) if geographic else 1.0
+    span_x, span_y = max((maxx - minx) * kx, 1e-9), max(maxy - miny, 1e-9)
+    avail_w, avail_h = right - 14 - 10, height - top - 14
+    s = min(avail_w / span_x, avail_h / span_y) * 0.95
+    ox = 14 + (avail_w - span_x * s) / 2
+    oy = top + (avail_h - span_y * s) / 2
+
+    def P(x, y):
+        return ox + (x - minx) * kx * s, oy + (maxy - y) * s
+
+    c.rect(14, top, right - 24, height - top - 14, fill='#f7f9fb', stroke='#d9dee5')
+    for layer in layers:
+        for geom, fill, label, tip in layer['features']:
+            if geom is None or geom.is_empty:
+                continue
+            fill = fill or layer['color']
+            for part in getattr(geom, 'geoms', [geom]):
+                kind = part.geom_type
+                if kind == 'Polygon':
+                    rings = [[P(x, y) for x, y, *_ in part.exterior.coords]] + [[P(x, y) for x, y, *_ in r.coords] for r in part.interiors]
+                    c.path(rings, fill=fill, stroke='#ffffff', opacity=layer['opacity'], width=0.6, title=tip)
+                elif kind == 'LineString':
+                    c.polyline([P(x, y) for x, y, *_ in part.coords], stroke=fill, width=max(1.0, layer['point_size'] / 3))
+                elif kind == 'Point':
+                    px, py = P(part.x, part.y)
+                    c.circle(px, py, layer['point_size'], fill=fill, stroke='#ffffff', opacity=layer['opacity'], title=tip)
+            if label:
+                rp = geom.representative_point()
+                lx, ly = P(rp.x, rp.y)
+                c.text(lx, ly - (layer['point_size'] + 3 if geom.geom_type == 'Point' else -4), label, size=9,
+                       anchor='middle', fill=INK)
+    if legend:
+        lx, ly = right + 4, top + 6
+        for i, (label, colour, shape) in enumerate(legend[:30]):
+            y = ly + i * 18
+            if shape == 'point':
+                c.circle(lx + 6, y - 3, 5, fill=colour)
+            elif shape == 'line':
+                c.line(lx, y - 3, lx + 12, y - 3, stroke=colour, width=3)
+            else:
+                c.rect(lx, y - 9, 12, 12, fill=colour)
+            c.text(lx + 18, y + 1, label if len(label) <= 24 else label[:23] + '…', size=11)
+    return c
 
 
 CHART_FIELDS = ('Chart', 'Title')

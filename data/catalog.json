@@ -837,7 +837,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/reporting/map-legend-builder-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -849,7 +849,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/reporting/map-legend-splitter-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -861,7 +861,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/reporting/overlay-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -885,7 +885,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/reporting/report-footer-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -897,7 +897,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/reporting/report-header-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -909,7 +909,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/reporting/report-map-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1029,7 +1029,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/generalize-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1041,7 +1041,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/heat-map-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1077,7 +1077,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/poly-build-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1089,7 +1089,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/poly-split-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1101,7 +1101,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/smooth-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1137,7 +1137,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/spatial-process-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1149,7 +1149,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/trade-area-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3369,7 +3369,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/laboratory/json-build-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

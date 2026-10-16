@@ -27,13 +27,21 @@ Units are m, km, mi, ft and nmi for lengths, and m², km², ha, mi² and acres f
 | Spatial Info | `core.spatial_info` | Type, validity and GEOS reason, emptiness, point count, bounding box, centroid, area and length or perimeter, and CRS. Invalid geometries are reported, not rejected. |
 | Make Grid | `core.make_grid` | Square cells over input bounds or an explicit extent. Size is in CRS units or a metric length. On a geographic CRS, metric cells are built in the UTM zone of the extent centre and returned in `crs`. `clip` keeps cells that touch the input. `max_cells` guards size. |
 
+| Generalize | `core.generalize` | Douglas-Peucker simplification with a metric tolerance (applied in a local projection on geographic data), optionally preserving topology |
+| Smooth | `core.smooth` | Chaikin corner cutting (1–8 iterations), keeping line end points. Invalid results are repaired |
+| Poly-Split | `core.poly_split` | One record per part, per ring or line, or per vertex, with PartNumber and PointNumber |
+| Poly-Build | `core.poly_build` | Per group: convex hull, or a sequence polygon or polyline through points in `sequence_field` order |
+| Trade Area | `core.trade_area` | Metric radius rings per geometry (geodesic on geographic data), optionally as non-overlapping donuts. Drive-time areas need a road network and are not available |
+| Spatial Process | `core.spatial_process` | Per-record union, intersection, difference or symmetric difference of two or more fields, or dissolve by group |
+| Heat Map | `core.heat_map` | Gaussian kernel density of (weighted) points on square cells: density per km² that integrates to the total weight, equal-interval classes. Geographic data is gridded in UTM |
+
 Universe fields whose names clash with target fields get the prefix `U_`. Invalid geometry stops
 the run, naming the record, unless `on_invalid: null`.
 
-Example: `examples/spatial/uk_spatial.flow.json` (UK city coordinates and illustrative depots). Tests:
+Examples: `examples/spatial/uk_map_report.flow.json` (Trade Area → Report Map → PDF) and `examples/spatial/uk_spatial.flow.json` (UK city coordinates and illustrative depots). Tests:
 `tests/test_spatial.py`. They check against haversine distances, spherical cell areas, a
 brute-force geodesic nearest-neighbour search, British National Grid reprojection and exact
 regular-polygon buffer areas.
 
 Not implemented: Alteryx SpatialObj binary encoding, Spatial XML import (instances keep their XML),
-map rendering, and the other Spatial tools (Trade Area, Poly-Build, Generalize and others).
+drive-time trade areas, and Non-Overlap Drivetime.

@@ -6,42 +6,64 @@
   "xml_tool_name": "FooterMacro.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/reporting/report-footer-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [
-    {
-      "name": "Report Layout",
-      "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
-    }
-  ],
+  "inputs": [],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Value"
-    ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "left": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "center": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "right": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": "Page {page} of {pages}"
+      },
+      "date_format": {
+        "type": "string",
+        "default": "%d %B %Y"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "report-renderer (layout/PDF/image)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.report_footer",
+    "version": "1.0.0",
+    "module": "flowengine.tools.reporting",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -71,9 +93,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch5.MapReportExampleTests.test_uk_map_report_example",
+      "test_batch5.ReportFurnitureTests.test_header_and_footer_on_every_pdf_page"
+    ]
   },
   "sources": [
     {
@@ -94,6 +119,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

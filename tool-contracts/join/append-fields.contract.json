@@ -104,9 +104,10 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
+    "count": 2,
+    "passing": 2,
     "tests": [
+      "test_batch5.ReportFurnitureTests.test_overlay_places_elements_over_a_chart",
       "test_fe_tools.JoinTests.test_append_fields"
     ]
   },

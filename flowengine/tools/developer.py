@@ -12,6 +12,7 @@ import base64
 import csv
 import datetime as _dt
 import json
+import re
 import os
 import subprocess
 import sys
@@ -224,6 +225,82 @@ class JSONParse(Tool):
                                         float(v) if isinstance(v, float) else None,
                                         v if isinstance(v, bool) else None))
         return {'output': Table.from_rows(keep + new, rows)}
+
+
+_JSON_NUMBER = re.compile(r'-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?')
+
+
+class JSONBuild(Tool):
+    """Inverse of JSON Parse: JSON_Name paths and values back into JSON documents."""
+    manifest = ToolManifest(
+        tool_id='core.json_build', version='1.0.0', display_name='JSON Build', catalog_ids=('laboratory:json-build',),
+        inputs=(Anchor('input', 'Input', description='JSON_Name / value records, e.g. from JSON Parse'),),
+        outputs=(Anchor('output', 'Output', description='One JSON document per group'),),
+        description='Rebuild JSON from name/value records. Dotted names (a.b.c) make objects and numeric segments '
+                    '(items.0) make arrays, in record order. Values come from JSON_ValueInt/Float/Bool when present, '
+                    'otherwise JSON_ValueString, which is typed as number/true/false/null when value_types is infer. '
+                    'group_by builds one document per group. A path used as both a value and a container is an error.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'properties': {
+            'name_field': {'type': 'string', 'default': 'JSON_Name'},
+            'value_field': {'type': 'string', 'default': 'JSON_ValueString'},
+            'group_by': {'type': 'array', 'uniqueItems': True, 'items': {'type': 'string'}, 'default': []},
+            'value_types': {'enum': ['infer', 'string'], 'default': 'infer'},
+            'pretty': {'type': 'boolean', 'default': False}}})
+
+    def infer(self, ctx, cfg, inputs):
+        schema = inputs['input']
+        require_fields(schema, [cfg['name_field'], cfg['value_field'], *cfg['group_by']])
+        return {'output': Schema([*[schema.field(g) for g in cfg['group_by']], Field('JSON', FieldType.V_WSTRING, TEXT)])}
+
+    @staticmethod
+    def _typed(text, mode):
+        """Strict JSON literals only: numbers (no leading zeros, so 007 stays text), true, false, null."""
+        if text is None or mode == 'string':
+            return text
+        if text in ('true', 'false'):
+            return text == 'true'
+        if text == 'null':
+            return None
+        if _JSON_NUMBER.fullmatch(text):
+            return json.loads(text)
+        return text
+
+    @staticmethod
+    def _arrays(node):
+        """Turn objects whose keys are exactly 0..n-1 into lists, recursively."""
+        if isinstance(node, dict):
+            node = {k: JSONBuild._arrays(v) for k, v in node.items()}
+            if node and all(k.isdigit() for k in node) and sorted(int(k) for k in node) == list(range(len(node))):
+                return [node[str(i)] for i in range(len(node))]
+        return node
+
+    def run(self, ctx, cfg, inputs):
+        table = inputs['input']
+        schema = self.infer(ctx, cfg, {'input': table.schema})['output']
+        names = set(table.schema.names)
+        typed = [n for n in ('JSON_ValueInt', 'JSON_ValueFloat', 'JSON_ValueBool') if n in names]
+        docs = {}
+        for number, rec in enumerate(table.to_dicts(), start=1):
+            path = rec[cfg['name_field']]
+            if path is None or path == '':
+                raise DataError(f'JSON Build record {number} has an empty name')
+            value = next((rec[n] for n in typed if rec[n] is not None), None)
+            if value is None:
+                value = self._typed(rec[cfg['value_field']], cfg['value_types'])
+            key = tuple(rec[g] for g in cfg['group_by'])
+            node = docs.setdefault(key, {})
+            parts = str(path).split('.')
+            for depth, part in enumerate(parts[:-1]):
+                child = node.setdefault(part, {})
+                if not isinstance(child, dict):
+                    raise DataError(f'JSON Build record {number}: {".".join(parts[:depth + 1])!r} is a value and a container')
+                node = child
+            if parts[-1] in node and isinstance(node[parts[-1]], dict):
+                raise DataError(f'JSON Build record {number}: {path!r} is a container and a value')
+            node[parts[-1]] = value
+        rows = [(*key, json.dumps(self._arrays(doc), ensure_ascii=False, indent=2 if cfg['pretty'] else None,
+                                  separators=None if cfg['pretty'] else (',', ':'))) for key, doc in docs.items()]
+        return {'output': Table.from_rows(schema, rows)}
 
 
 # =========================================================================== Dynamic Rename / Select
@@ -1272,5 +1349,5 @@ class RunCommand(Tool):
         return {'output': Table.from_rows([Field(n, FieldType.V_WSTRING, TEXT) for n in names], rows[1:])}
 
 
-TOOLS = [FieldInfo, JSONSchemaTool, JSONParse, DynamicRename, DynamicSelect, DynamicReplace, BlobInput, BlobOutput, BlobConvert, Base64Encoder, Message, TestTool,
+TOOLS = [FieldInfo, JSONSchemaTool, JSONParse, JSONBuild, DynamicRename, DynamicSelect, DynamicReplace, BlobInput, BlobOutput, BlobConvert, Base64Encoder, Message, TestTool,
          BlockUntilDone, ControlContainer, Runner, Detour, DetourEnd, ExpectEquals, Throttle, PythonTool, RTool, RunCommand]
