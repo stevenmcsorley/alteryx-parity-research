@@ -6,43 +6,74 @@
   "xml_tool_name": "CReW_Runner\\CReW_Runner.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/runner-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "outputs": [
     {
-      "name": "Success) output",
+      "name": "success",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "Failure) output",
+      "name": "failure",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Runner Support",
-      "Installation",
-      "Configure the Tool",
-      "Runner Output",
-      "Limitations"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "path_field"
+    ],
+    "properties": {
+      "path_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "on_failure": {
+        "enum": [
+          "continue",
+          "stop"
+        ],
+        "default": "continue"
+      },
+      "max_depth": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 64,
+        "default": 8
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "alteryx-server (public-doc keyword signal; unreviewed)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.runner",
+    "version": "1.0.0",
+    "module": "flowengine.tools.developer",
+    "side_effects": "process"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -71,9 +102,14 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 4,
+    "passing": 4,
+    "tests": [
+      "test_runner.RunnerTests.test_children_inherit_permissions_and_recursion_is_stopped",
+      "test_runner.RunnerTests.test_requires_process_permission_and_is_reported_by_preflight",
+      "test_runner.RunnerTests.test_routes_success_and_failure_logs_without_failing_the_parent",
+      "test_runner.RunnerTests.test_stop_on_failure_marks_remaining_workflows_not_run"
+    ]
   },
   "sources": [
     {
@@ -89,6 +125,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }
