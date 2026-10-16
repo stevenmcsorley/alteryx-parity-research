@@ -10,9 +10,9 @@
 | Distinct tool names | 321 |
 | Public help URL resolved (official tool list sync) | 323 |
 | Machine-readable contracts generated | 323 |
-| Entries with known anchors (manifest, reference-observed or public-doc) | 184 |
+| Entries with known anchors (manifest, reference-observed or public-doc) | 186 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 74 |
+| Independent kernels implemented and passing tests | 81 |
 | Independently implemented application adapters (in progress) | 14 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 285 run, 0 failed |
+| Unit/integration tests in last ledger build | 293 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -31,18 +31,18 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 
 | Catalogue id | Kernel | Tests | Reference cases (passed/run) | Verification |
 |---|---|---:|---:|---|
-| `in-out:browse` | `core.browse` | 27 | 0/0 | not-tested |
+| `in-out:browse` | `core.browse` | 28 | 0/0 | not-tested |
 | `in-out:date-time-now` | `core.date_time_now` | 1 | 0/0 | not-tested |
 | `in-out:directory` | `core.directory` | 3 | 0/0 | not-tested |
-| `in-out:input-data` | `core.input_data` | 21 | 0/0 | not-tested |
+| `in-out:input-data` | `core.input_data` | 22 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 12 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 160 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 167 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
 | `preparation:data-cleansing` | `core.data_cleansing` | 3 | 0/0 | not-tested |
 | `preparation:filter` | `core.filter` | 31 | 5/5 | partial |
-| `preparation:formula` | `core.formula` | 23 | 13/13 | partial |
+| `preparation:formula` | `core.formula` | 24 | 13/13 | partial |
 | `preparation:generate-rows` | `core.generate_rows` | 3 | 0/0 | not-tested |
 | `preparation:imputation` | `core.imputation` | 1 | 1/1 | partial |
 | `preparation:multi-field-binning` | `core.multi_field_binning` | 1 | 0/0 | not-tested |
@@ -79,7 +79,14 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `transform:weighted-average` | `core.weighted_average` | 1 | 1/1 | partial |
 | `interface:macro-input` | `flowengine.macro_input` | 14 | 0/0 | not-tested |
 | `interface:macro-output` | `flowengine.macro_output` | 14 | 0/0 | not-tested |
+| `data-investigation:basic-data-profile` | `core.basic_data_profile` | 2 | 0/0 | not-tested |
+| `data-investigation:contingency-table` | `core.contingency_table` | 2 | 0/0 | not-tested |
+| `data-investigation:distribution-analysis` | `core.distribution_analysis` | 2 | 0/0 | not-tested |
+| `data-investigation:field-summary` | `core.field_summary` | 2 | 0/0 | not-tested |
+| `data-investigation:frequency-table` | `core.frequency_table` | 2 | 0/0 | not-tested |
+| `data-investigation:histogram` | `core.histogram` | 2 | 0/0 | not-tested |
 | `data-investigation:pearson-correlation` | `core.pearson_correlation` | 4 | 0/0 | not-tested |
+| `data-investigation:spearman-correlation` | `core.spearman_correlation` | 2 | 0/0 | not-tested |
 | `developer:base64-encoder` | `core.base64_encoder` | 1 | 0/0 | not-tested |
 | `developer:blob-convert` | `core.blob_convert` | 3 | 0/0 | not-tested |
 | `developer:blob-input` | `core.blob_input` | 2 | 0/0 | not-tested |
@@ -119,7 +126,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Computer Vision | 9 | 0 | 0 | 9 | 0 |
 | Connect | 3 | 0 | 0 | 0 | 3 |
 | Connectors | 44 | 0 | 0 | 1 | 44 |
-| Data Investigation | 14 | 1 | 0 | 7 | 0 |
+| Data Investigation | 14 | 8 | 0 | 9 | 0 |
 | Demographic Analysis | 4 | 0 | 0 | 0 | 4 |
 | Developer | 30 | 26 | 4 | 29 | 0 |
 | Documentation | 3 | 0 | 0 | 1 | 0 |

@@ -1,0 +1,356 @@
+{
+  "format": "flowengine.workflow",
+  "formatVersion": 1,
+  "name": "UK fuel prices investigation",
+  "description": "Profiles UK weekly road fuel prices (DESNZ, Open Government Licence v3.0) and runs every core Data Investigation tool. Each result is shown by a Browse node.",
+  "nodes": [
+    {
+      "id": "fuel",
+      "tool": "core.input_data",
+      "config": {
+        "path": "data/weekly_fuel_prices.csv",
+        "type_inference": "flowbench"
+      },
+      "position": {
+        "x": 0,
+        "y": 240
+      }
+    },
+    {
+      "id": "derive",
+      "tool": "core.formula",
+      "config": {
+        "formulas": [
+          {
+            "field": "Year",
+            "expression": "Right([Week], 4)",
+            "type": "v_string",
+            "size": 4
+          },
+          {
+            "field": "PriceBand",
+            "expression": "IF [PetrolPencePerLitre] >= 150 THEN \"High (150p+)\" ELSEIF [PetrolPencePerLitre] >= 130 THEN \"Medium (130-150p)\" ELSE \"Low (<130p)\" ENDIF",
+            "type": "v_string",
+            "size": 20
+          },
+          {
+            "field": "DutyPeriod",
+            "expression": "IIF([PetrolDutyPencePerLitre] < 57.95, \"Reduced duty\", \"Standard duty\")",
+            "type": "v_string",
+            "size": 20
+          }
+        ]
+      },
+      "position": {
+        "x": 220,
+        "y": 240
+      }
+    },
+    {
+      "id": "profile",
+      "tool": "core.basic_data_profile",
+      "config": {},
+      "position": {
+        "x": 480,
+        "y": 0
+      }
+    },
+    {
+      "id": "view_profile",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 0
+      }
+    },
+    {
+      "id": "summary",
+      "tool": "core.field_summary",
+      "config": {
+        "fields": [
+          "PetrolPencePerLitre",
+          "DieselPencePerLitre",
+          "PetrolDutyPencePerLitre",
+          "Year",
+          "PriceBand"
+        ]
+      },
+      "position": {
+        "x": 480,
+        "y": 90
+      }
+    },
+    {
+      "id": "view_summary",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 90
+      }
+    },
+    {
+      "id": "frequencies",
+      "tool": "core.frequency_table",
+      "config": {
+        "fields": [
+          "PriceBand",
+          "DutyPeriod"
+        ]
+      },
+      "position": {
+        "x": 480,
+        "y": 180
+      }
+    },
+    {
+      "id": "view_frequencies",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 180
+      }
+    },
+    {
+      "id": "petrol_histogram",
+      "tool": "core.histogram",
+      "config": {
+        "field": "PetrolPencePerLitre",
+        "binning": "fixed",
+        "bins": 12
+      },
+      "position": {
+        "x": 480,
+        "y": 270
+      }
+    },
+    {
+      "id": "view_petrol_histogram",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 270
+      }
+    },
+    {
+      "id": "rank_correlation",
+      "tool": "core.spearman_correlation",
+      "config": {
+        "fields": [
+          "PetrolPencePerLitre",
+          "DieselPencePerLitre",
+          "PetrolDutyPencePerLitre"
+        ]
+      },
+      "position": {
+        "x": 480,
+        "y": 360
+      }
+    },
+    {
+      "id": "view_rank_correlation",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 360
+      }
+    },
+    {
+      "id": "year_by_band",
+      "tool": "core.contingency_table",
+      "config": {
+        "row_field": "Year",
+        "column_field": "PriceBand"
+      },
+      "position": {
+        "x": 480,
+        "y": 450
+      }
+    },
+    {
+      "id": "view_year_by_band",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 450
+      }
+    },
+    {
+      "id": "diesel_distribution",
+      "tool": "core.distribution_analysis",
+      "config": {
+        "field": "DieselPencePerLitre"
+      },
+      "position": {
+        "x": 480,
+        "y": 540
+      }
+    },
+    {
+      "id": "view_diesel_distribution",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 540
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": {
+        "node": "fuel",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "derive",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "profile",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "profile",
+        "anchor": "profile"
+      },
+      "to": {
+        "node": "view_profile",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "summary",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "summary",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "view_summary",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "frequencies",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "frequencies",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "view_frequencies",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "petrol_histogram",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "petrol_histogram",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "view_petrol_histogram",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "rank_correlation",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "rank_correlation",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "view_rank_correlation",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "year_by_band",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "year_by_band",
+        "anchor": "statistics"
+      },
+      "to": {
+        "node": "view_year_by_band",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "diesel_distribution",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "diesel_distribution",
+        "anchor": "fits"
+      },
+      "to": {
+        "node": "view_diesel_distribution",
+        "anchor": "input"
+      }
+    }
+  ]
+}
