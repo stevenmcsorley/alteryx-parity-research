@@ -91,7 +91,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 1,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:directory)"
@@ -115,7 +115,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 17,
+      "independent_tests": 18,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:input-data)"
@@ -163,7 +163,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 9,
+      "independent_tests": 10,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:output-data)"
@@ -2489,9 +2489,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:file-browse)"
@@ -2513,9 +2513,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "in-progress",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for interface:folder-browse)"

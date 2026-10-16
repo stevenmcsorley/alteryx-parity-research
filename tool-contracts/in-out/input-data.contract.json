@@ -240,8 +240,8 @@
     ]
   },
   "independent_tests": {
-    "count": 17,
-    "passing": 17,
+    "count": 18,
+    "passing": 18,
     "tests": [
       "test_data_correctness.DataCorrectnessTests.test_csv_default_inference_types_quantities_and_keeps_codes_as_text",
       "test_data_correctness.DataCorrectnessTests.test_csv_inference_preserves_subunit_and_exponent_decimals",
@@ -254,6 +254,7 @@
       "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
       "test_fe_scale.StreamingTests.test_streamed_equals_batch",
       "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",
+      "test_fe_service.ServiceTests.test_browse_answers_choose_input_output_and_folder_for_real_execution",
       "test_fe_tools.InOutTests.test_csv_errors",
       "test_fe_tools.InOutTests.test_csv_typed_conversion_error_policy",
       "test_fe_tools.InOutTests.test_csv_untyped_reads_text_and_preserves_unicode",
