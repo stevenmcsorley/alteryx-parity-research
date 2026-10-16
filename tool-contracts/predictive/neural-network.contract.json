@@ -6,30 +6,124 @@
   "xml_tool_name": "Predictive Tools\\Neural_Network.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive/neural-network-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "model",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "fit",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Required Parameters",
-      "Model Customization",
-      "Graphics Options",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "target_field",
+      "predictors"
+    ],
+    "properties": {
+      "target_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "predictors": {
+        "type": "array",
+        "uniqueItems": true,
+        "minItems": 1,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "model_name": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "task": {
+        "enum": [
+          "auto",
+          "classification",
+          "regression"
+        ],
+        "default": "auto"
+      },
+      "seed": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 1
+      },
+      "hidden_layers": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 5,
+        "items": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "default": [
+          10
+        ]
+      },
+      "activation": {
+        "enum": [
+          "relu",
+          "tanh",
+          "logistic"
+        ],
+        "default": "relu"
+      },
+      "max_iterations": {
+        "type": "integer",
+        "minimum": 10,
+        "maximum": 10000,
+        "default": 500
+      },
+      "alpha": {
+        "type": "number",
+        "minimum": 0,
+        "default": 0.0001,
+        "description": "L2 penalty"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime (statistical models; vendor ships R-based macros)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.neural_network",
+    "version": "1.0.0",
+    "module": "flowengine.tools.predictive",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -58,9 +152,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_predictive.LearnerAndScoreTests.test_every_classifier_scores_probabilities_that_sum_to_one"
+    ]
   },
   "sources": [
     {
@@ -76,7 +172,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet."
   ]
 }

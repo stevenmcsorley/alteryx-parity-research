@@ -6,41 +6,69 @@
   "xml_tool_name": "Predictive Tools\\Test_of_Means.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive/test-of-means-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "outputs": [
     {
-      "name": "D",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
-    },
-    {
-      "name": "R",
-      "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Connect an Input",
-      "Configure the Tool",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "value_field",
+      "group_field"
+    ],
+    "properties": {
+      "value_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "group_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "equal_variance": {
+        "type": "boolean",
+        "default": false
+      },
+      "confidence": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "exclusiveMaximum": 1,
+        "default": 0.95
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime (statistical models; vendor ships R-based macros)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.test_of_means",
+    "version": "1.0.0",
+    "module": "flowengine.tools.predictive",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -67,9 +95,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_predictive.StatisticsTests.test_test_of_means_and_vif"
+    ]
   },
   "sources": [
     {
@@ -85,6 +115,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

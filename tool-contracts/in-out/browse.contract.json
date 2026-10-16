@@ -87,8 +87,8 @@
     ]
   },
   "independent_tests": {
-    "count": 30,
-    "passing": 30,
+    "count": 31,
+    "passing": 31,
     "tests": [
       "test_control_container.ControlContainerTests.test_empty_control_input_skips_contents_and_their_downstream",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
@@ -119,6 +119,7 @@
       "test_macros.StandardMacroTests.test_macro_binds_multiple_parent_connections_to_distinct_child_inputs",
       "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
       "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level",
+      "test_predictive.ExampleTests.test_fuel_models_example",
       "test_spatial.ExampleTests.test_uk_spatial_example"
     ]
   },

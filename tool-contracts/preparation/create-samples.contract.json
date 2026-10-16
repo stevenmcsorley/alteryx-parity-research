@@ -124,10 +124,11 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
+    "count": 2,
+    "passing": 2,
     "tests": [
-      "test_fe_tools_wave2.PreparationWave2.test_random_samples_are_seeded_and_reproducible"
+      "test_fe_tools_wave2.PreparationWave2.test_random_samples_are_seeded_and_reproducible",
+      "test_predictive.ExampleTests.test_fuel_models_example"
     ]
   },
   "sources": [
