@@ -6,44 +6,93 @@
   "xml_tool_name": "GitHubCommit.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/github-commit-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Mode",
-      "Configure",
-      "Authentication"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "connection_id",
+      "owner",
+      "repo",
+      "branch",
+      "path_field",
+      "content_field",
+      "message"
+    ],
+    "properties": {
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "github",
+        "description": "Saved GitHub connection (Web & API in the toolbar)"
+      },
+      "owner": {
+        "type": "string",
+        "minLength": 1
+      },
+      "repo": {
+        "type": "string",
+        "minLength": 1
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 300,
+        "default": 30
+      },
+      "branch": {
+        "type": "string",
+        "minLength": 1
+      },
+      "path_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "content_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "message": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 10000
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "credentials (public-doc keyword signal; unreviewed)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.github_commit",
+    "version": "1.0.0",
+    "module": "flowengine.tools.github",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -72,9 +121,13 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 3,
+    "passing": 3,
+    "tests": [
+      "test_github_tools.GitHubToolTests.test_commit_pushes_one_atomic_commit",
+      "test_github_tools.GitHubToolTests.test_commit_refuses_to_overwrite_a_concurrent_push",
+      "test_github_tools.GitHubToolTests.test_permissions_paths_and_connection_kind"
+    ]
   },
   "sources": [
     {
@@ -90,6 +143,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

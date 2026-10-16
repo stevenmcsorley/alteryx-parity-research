@@ -2,8 +2,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { runWorkflow, setTransport } from './engineActions';
 import { useEditor } from './store';
 
-const effects = (network: number, complete = true) => ({ complete, file_writes: [], database_writes: [], processes: [],
+const effects = (network: number, complete = true, remote = 0) => ({ complete, file_writes: [], database_writes: [], processes: [],
   network_requests: Array.from({ length: network }, (_, i) => ({ node_id: `dl${i}`, tool_id: 'core.download', path: [`dl${i}`] })),
+  remote_writes: Array.from({ length: remote }, (_, i) => ({ node_id: `gh${i}`, tool_id: 'core.github_commit', path: [`gh${i}`] })),
   unresolved: complete ? [] : [{ path: ['m'], reason: 'x' }] });
 
 function stubEngine(scan: unknown) {
@@ -33,6 +34,21 @@ describe('run permissions', () => {
       if (answer) expect(start?.params.allow_network).toBe(true);
       else expect(start).toBeUndefined();
     }
+  });
+
+  it('asks separately before remote writes and sends both grants', async () => {
+    const confirm = vi.fn(() => true);
+    vi.stubGlobal('window', { ...window, confirm, alert: vi.fn() });
+    const calls = stubEngine(effects(1, true, 1));
+    await runWorkflow();
+    expect(confirm).toHaveBeenCalledWith(expect.stringContaining('pushes changes to a remote service (gh0)'));
+    expect(calls.find((c) => c.method === 'run.start')?.params).toMatchObject({ allow_network: true, allow_remote_writes: true });
+    useEditor.getState().newWorkflow();
+    const declineRemote = vi.fn((text: string) => !text.includes('remote service'));
+    vi.stubGlobal('window', { ...window, confirm: declineRemote, alert: vi.fn() });
+    const declined = stubEngine(effects(1, true, 1));
+    await runWorkflow();
+    expect(declined.find((c) => c.method === 'run.start')).toBeUndefined();
   });
 
   it('never grants network access when the scan is incomplete or there is nothing to ask', async () => {
