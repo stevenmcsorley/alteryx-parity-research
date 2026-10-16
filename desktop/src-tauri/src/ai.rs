@@ -84,7 +84,7 @@ pub struct AiService {
     provider_consent: AtomicBool,
     running: AtomicBool,
     session_recovery_required: AtomicBool,
-    model_slugs: Mutex<HashSet<String>>,
+    model_slugs: Mutex<HashMap<String, Vec<String>>>,
     conversation: Mutex<Vec<Value>>,
     pending_calls: Mutex<HashMap<String, (String, Value)>>,
     active_turn: Mutex<Option<AiTurn>>,
@@ -111,7 +111,7 @@ impl AiService {
             provider_consent: AtomicBool::new(false),
             running: AtomicBool::new(false),
             session_recovery_required: AtomicBool::new(session_recovery_required),
-            model_slugs: Mutex::new(HashSet::new()),
+            model_slugs: Mutex::new(HashMap::new()),
             conversation: Mutex::new(Vec::new()),
             pending_calls: Mutex::new(HashMap::new()),
             active_turn: Mutex::new(None),
@@ -517,8 +517,12 @@ fn parse_scopes(scope: Option<&str>) -> Vec<String> {
 fn has_plan_scope(scopes: &[String]) -> bool {
     scopes.iter().any(|s| s == REQUIRED_SCOPE)
 }
-fn response_body(model: &str, input: Vec<Value>, tools_enabled: bool) -> Value {
+const REASONING_EFFORTS: [&str; 6] = ["none", "minimal", "low", "medium", "high", "xhigh"];
+fn response_body(model: &str, input: Vec<Value>, tools_enabled: bool, effort: Option<&str>) -> Value {
     let mut body = json!({"model":model,"input":input,"store":false,"stream":true});
+    if let Some(effort) = effort {
+        body["reasoning"] = json!({"effort": effort});
+    }
     if tools_enabled {
         body["tools"] = native_tool_definitions();
     }
@@ -1250,7 +1254,23 @@ fn safe_schema(v: &Value, depth: usize) -> bool {
 fn visible_models(value: Value) -> Vec<Value> {
     value.get("models").and_then(Value::as_array).into_iter().flatten()
         .filter(|m|m.get("visibility").and_then(Value::as_str)==Some("list"))
-        .filter_map(|m|Some(json!({"slug":m.get("slug")?.as_str()?,"display_name":m.get("display_name")?.as_str()?}))).collect()
+        .filter_map(|m|{
+            let efforts: Vec<&str> = m.get("supported_reasoning_levels").and_then(Value::as_array).into_iter().flatten()
+                .filter_map(|level| level.get("effort").and_then(Value::as_str))
+                .filter(|effort| REASONING_EFFORTS.contains(effort)).collect();
+            let default = m.get("default_reasoning_level").and_then(Value::as_str).filter(|d| efforts.contains(d));
+            Some(json!({"slug":m.get("slug")?.as_str()?,"display_name":m.get("display_name")?.as_str()?,
+                "supported_efforts":efforts,"default_effort":default}))
+        }).collect()
+}
+/// An effort is sent only when it is a known level the selected model advertises
+/// (or any known level when the catalogue lists none for that model).
+fn validate_effort(effort: Option<&str>, supported: &[String]) -> Result<(), String> {
+    match effort {
+        None => Ok(()),
+        Some(e) if REASONING_EFFORTS.contains(&e) && (supported.is_empty() || supported.iter().any(|s| s == e)) => Ok(()),
+        Some(_) => Err("Select a reasoning effort supported by the active model".into()),
+    }
 }
 #[derive(Default)]
 struct SseParser {
@@ -1779,7 +1799,11 @@ pub async fn ai_models(state: tauri::State<'_, AiService>) -> Result<Vec<Value>,
     let models = visible_models(value);
     let slugs = models
         .iter()
-        .filter_map(|m| m.get("slug").and_then(Value::as_str).map(str::to_owned))
+        .filter_map(|m| {
+            let efforts = m["supported_efforts"].as_array().into_iter().flatten()
+                .filter_map(|e| e.as_str().map(str::to_owned)).collect();
+            Some((m.get("slug")?.as_str()?.to_owned(), efforts))
+        })
         .collect();
     *state.model_slugs.lock().await = slugs;
     Ok(models)
@@ -1967,13 +1991,15 @@ pub async fn ai_respond(
     app: tauri::AppHandle,
     state: tauri::State<'_, AiService>,
     model: String,
+    effort: Option<String>,
     turn_id: String,
     cycle_id: String,
     tools_enabled: bool,
 ) -> Result<Value, String> {
     require_consent(&state.provider_consent)?;
-    if !state.model_slugs.lock().await.contains(&model) {
-        return Err("Select a model returned by the signed-in account's model list".into());
+    match state.model_slugs.lock().await.get(&model) {
+        None => return Err("Select a model returned by the signed-in account's model list".into()),
+        Some(supported) => validate_effort(effort.as_deref(), supported)?,
     }
     if state
         .running
@@ -2009,7 +2035,7 @@ pub async fn ai_respond(
     } else {
         0
     };
-    let body = response_body(&model, request_input, tools_enabled);
+    let body = response_body(&model, request_input, tools_enabled, effort.as_deref());
     let response = match send_cancellable(
         http_client()
             .post(format!("{API}/responses"))
@@ -2640,7 +2666,9 @@ mod tests {
             "visible-account-model",
             vec![json!({"role":"user","content":[{"type":"input_text","text":"hello"}]})],
             true,
+            Some("low"),
         );
+        assert_eq!(body["reasoning"]["effort"], "low");
         assert_eq!(body["model"], "visible-account-model");
         assert_eq!(body["store"], false);
         assert_eq!(body["stream"], true);
@@ -2653,8 +2681,10 @@ mod tests {
             "visible-account-model",
             vec![json!({"role":"user","content":[{"type":"input_text","text":"hello"}]})],
             false,
+            None,
         );
         assert!(no_tools.get("tools").is_none());
+        assert!(no_tools.get("reasoning").is_none());
         assert_eq!(no_tools["store"], false);
         assert_eq!(no_tools["stream"], true);
     }
@@ -2863,7 +2893,7 @@ mod tests {
         ]}));
         assert_eq!(
             models,
-            vec![json!({"slug":"allowed","display_name":"Available"})]
+            vec![json!({"slug":"allowed","display_name":"Available","supported_efforts":[],"default_effort":null})]
         );
         let allowed: HashSet<String> = models
             .iter()
@@ -2871,6 +2901,20 @@ mod tests {
             .collect();
         assert!(allowed.contains("allowed"));
         assert!(!allowed.contains("hidden"));
+    }
+    #[test]
+    fn model_efforts_are_advertised_and_validated() {
+        let models = visible_models(json!({"models":[{"slug":"m","display_name":"M","visibility":"list",
+            "default_reasoning_level":"medium",
+            "supported_reasoning_levels":[{"effort":"low","description":"x"},{"effort":"medium"},{"effort":"turbo"}]}]}));
+        assert_eq!(models[0]["supported_efforts"], json!(["low","medium"]));
+        assert_eq!(models[0]["default_effort"], "medium");
+        let supported = vec!["low".to_string(), "medium".to_string()];
+        assert!(validate_effort(Some("low"), &supported).is_ok());
+        assert!(validate_effort(None, &supported).is_ok());
+        assert!(validate_effort(Some("high"), &supported).is_err());
+        assert!(validate_effort(Some("high"), &[]).is_ok());
+        assert!(validate_effort(Some("turbo"), &[]).is_err());
     }
     #[test]
     fn sse_parser_handles_incremental_chunks_and_crlf() {
