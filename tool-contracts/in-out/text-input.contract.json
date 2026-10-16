@@ -147,12 +147,16 @@
     ]
   },
   "independent_tests": {
-    "count": 127,
-    "passing": 127,
+    "count": 131,
+    "passing": 131,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
       "test_blob_tools.BlobToolsTests.test_blob_output_requires_consent_and_writes_per_record_files",
+      "test_correlation.CorrelationTests.test_positive_negative_and_constant_matrix",
+      "test_correlation.CorrelationTests.test_rejects_nulls_nonfinite_and_insufficient_rows",
+      "test_correlation.CorrelationTests.test_rejects_text_and_missing_fields",
+      "test_correlation.CorrelationTests.test_sample_covariance",
       "test_data_correctness.DataCorrectnessTests.test_basic_filter_temporal_literals_are_typed",
       "test_data_correctness.DataCorrectnessTests.test_filter_numeric_literal_int64_precision",
       "test_data_correctness.DataCorrectnessTests.test_sort_nan_and_join_key_types",
