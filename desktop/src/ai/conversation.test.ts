@@ -52,4 +52,21 @@ describe('conversation turn state', () => {
     useAiConversation.getState().finish('turn_1', 'completed');
     expect(useAiConversation.getState().messages.some((message) => message.role === 'assistant')).toBe(false);
   });
+
+  it('discards only interrupted-cycle text and ignores its late events during recovery', () => {
+    begin();
+    const state = () => useAiConversation.getState();
+    state().responseStart('turn_1', 'completed_cycle');
+    state().authoritative('turn_1', 'assistant_turn_1', 'completed_cycle', 'Changes applied.');
+    state().responseStart('turn_1', 'broken_cycle');
+    state().delta('turn_1', 'assistant_turn_1', 'broken_cycle', 'Unfinished');
+    state().discardResponse('turn_other', 'broken_cycle');
+    expect(last(state().messages)?.text).toBe('Changes applied.Unfinished');
+    state().discardResponse('turn_1', 'broken_cycle');
+    state().delta('turn_1', 'assistant_turn_1', 'broken_cycle', 'late');
+    state().responseStart('turn_1', 'retry_cycle');
+    state().delta('turn_1', 'assistant_turn_1', 'broken_cycle', 'late again');
+    state().authoritative('turn_1', 'assistant_turn_1', 'retry_cycle', 'Verified.');
+    expect(last(state().messages)?.text).toBe('Changes applied.Verified.');
+  });
 });

@@ -8,6 +8,7 @@ export type ChatMessage = {
   text: string;
   state: 'streaming' | 'completed' | 'failed' | 'cancelled';
   error?: string;
+  retryMode?: 'continue';
   activity?: string[];
 };
 export type TurnState = 'idle' | 'submitting' | 'streaming' | 'tool-running' | 'completed' | 'failed' | 'cancelled';
@@ -28,8 +29,9 @@ type ConversationState = {
   responseStart(turnId: string, cycleId: string): void;
   delta(turnId: string, messageId: string, cycleId: string, text: string): void;
   authoritative(turnId: string, messageId: string, cycleId: string, text: string): void;
+  discardResponse(turnId: string, cycleId: string): void;
   activity(turnId: string, label: string): void;
-  finish(turnId: string, status: 'completed' | 'failed' | 'cancelled', error?: string): void;
+  finish(turnId: string, status: 'completed' | 'failed' | 'cancelled', error?: string, retryMode?: 'continue'): void;
   reset(): void;
   setProposal(proposal: WorkflowProposal | null): void;
   requestRunApproval(): void;
@@ -49,15 +51,20 @@ export const useAiConversation = create<ConversationState>((set) => ({
     if (s.turnId !== turnId || s.assistantMessageId !== messageId || s.cycleId !== cycleId) return s;
     return { cycleId: null, messages: s.messages.map((m) => m.id === messageId ? { ...m, text: s.roundPrefix + text, state: 'streaming' } : m) };
   }),
+  discardResponse: (turnId, cycleId) => set((s) => {
+    if (s.turnId !== turnId || s.cycleId !== cycleId) return s;
+    return { cycleId: null, messages: s.messages.map((m) => m.id === s.assistantMessageId
+      ? { ...m, text: s.roundPrefix } : m) };
+  }),
   activity: (turnId, label) => set((s) => {
     if (s.turnId !== turnId || !s.assistantMessageId) return s;
     return { status: 'tool-running', messages: s.messages.map((m) => m.id === s.assistantMessageId ? { ...m, activity: [...(m.activity ?? []), label] } : m) };
   }),
-  finish: (turnId, status, error) => set((s) => {
+  finish: (turnId, status, error, retryMode) => set((s) => {
     if (s.turnId !== turnId || !s.assistantMessageId) return s;
     // Do not retain empty assistant bubbles when a failed/cancelled turn had no text.
     const messages = s.messages.flatMap((m) => m.id === s.assistantMessageId
-      ? (status === 'completed' && !m.text.trim() ? [] : [{ ...m, state: status, ...(error ? { error } : {}) }])
+      ? (status === 'completed' && !m.text.trim() ? [] : [{ ...m, state: status, ...(error ? { error } : {}), ...(retryMode ? { retryMode } : {}) }])
       : [m]);
     return { messages, status, turnId: null, assistantMessageId: null, cycleId: null, roundPrefix: '' };
   }),
