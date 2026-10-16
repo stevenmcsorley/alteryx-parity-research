@@ -102,6 +102,8 @@ class EngineService:
             return [p.to_dict() for p in PROFILES.values()]
         if method.startswith('database.'):
             return self._database(method, params)
+        if method.startswith('credentials.'):
+            return self._credentials(method, params)
         if method == 'catalog.list':
             cmap = reg.catalog_map()
             status = _load_status()
@@ -241,6 +243,21 @@ class EngineService:
                 return d.tables(q.conn, params['schema'])
             if method == 'database.columns':
                 return [f.to_dict() for f in d.columns(q.conn, params.get('schema'), params['table'])]
+        raise KeyError(method)
+
+    def _credentials(self, method, params):
+        """Web/API and GitHub connections. Secrets are accepted on save and never returned."""
+        from .service_connections import ServiceConnectionStore
+        store = ServiceConnectionStore()
+        if method == 'credentials.list':
+            return [c.public() for c in store.list(params.get('kind'))]
+        if method == 'credentials.save':
+            secret = params.get('secret') or None
+            c = store.save(dict(params.get('connection') or {}), secret=secret)
+            return {'connection': c.public(), 'credential_saved': secret is not None}
+        if method == 'credentials.delete':
+            store.delete(params['connection_id'])
+            return {'deleted': True}
         raise KeyError(method)
 
     def _start(self, params):

@@ -1,4 +1,6 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { engine } from '../state/engineActions';
+import type { ServiceConnection } from './ServiceConnections';
 import type { FieldDef, JsonSchema } from '../engine/types';
 
 // Property names that hold a field name / list of field names / an expression (engine conventions).
@@ -86,6 +88,9 @@ function Field({ name, schema, required, value, fields, id, onChange, onBeginEdi
   const help = schema.description ? <div className="help">{schema.description}</div> : null;
   const anchorFields = fields.byAnchor[name] ?? fields.byAnchor[name.replace(/_fields$/, '')] ?? fields.all;
 
+  if (name === 'connection_id' && types(schema).includes('string')) {
+    return <ServiceConnectionField id={id} label={label} help={help} value={(value as string | null) ?? null} onBeginEdit={onBeginEdit} onChange={onChange} />;
+  }
   if (nullable && value === null) {
     return (
       <div className="form-field">{label}
@@ -280,4 +285,19 @@ function JsonEditor({ id, label, help, value, onChange, onBeginEdit }: {
       <div className="help">JSON value; applied when the editor loses focus.</div>{help}
     </div>
   );
+}
+
+function ServiceConnectionField({ id, label, help, value, onChange, onBeginEdit }: { id: string; label: ReactNode; help: ReactNode; value: string | null; onChange: (v: unknown) => void; onBeginEdit: () => void }) {
+  const [items, setItems] = useState<ServiceConnection[] | null>(null);
+  useEffect(() => { void engine().request<ServiceConnection[]>('credentials.list').then(setItems).catch(() => setItems([])); }, []);
+  const known = items ?? [];
+  return <div className="form-field">{label}
+    <select id={id} value={value ?? ''} onFocus={onBeginEdit} onChange={(e) => onChange(e.target.value || null)}
+      style={value && items && !known.some((c) => c.id === value) ? { borderColor: 'var(--err)' } : undefined}>
+      <option value="">No authentication</option>
+      {value && items && !known.some((c) => c.id === value) && <option value={value}>{value} (missing)</option>}
+      {known.map((c) => <option key={c.id} value={c.id}>{c.name} — {c.base_url}</option>)}
+    </select>
+    {help}<small className="help">Add credentials under Web &amp; API in the toolbar.</small>
+  </div>;
 }

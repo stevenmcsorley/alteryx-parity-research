@@ -38,6 +38,14 @@
         "type": "string",
         "minLength": 1
       },
+      "connection_id": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Saved Web/API or GitHub connection that authenticates requests under its base URL"
+      },
       "method": {
         "enum": [
           "GET",
@@ -234,15 +242,17 @@
     ]
   },
   "independent_tests": {
-    "count": 6,
-    "passing": 6,
+    "count": 8,
+    "passing": 8,
     "tests": [
       "test_download.DownloadTests.test_binary_charset_and_size_limit",
       "test_download.DownloadTests.test_configuration_and_schema_are_validated",
       "test_download.DownloadTests.test_failures_stop_or_are_recorded",
       "test_download.DownloadTests.test_get_with_query_and_header_fields_keeps_record_order",
       "test_download.DownloadTests.test_post_bodies_from_fields",
-      "test_download.DownloadTests.test_requires_network_permission_and_is_reported_by_preflight"
+      "test_download.DownloadTests.test_requires_network_permission_and_is_reported_by_preflight",
+      "test_service_connections.DownloadAuthTests.test_header_auth_and_conflicting_headers",
+      "test_service_connections.DownloadAuthTests.test_token_is_sent_only_inside_the_base_url"
     ]
   },
   "sources": [

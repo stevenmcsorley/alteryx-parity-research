@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 155,
-    "passing": 155,
+    "count": 157,
+    "passing": 157,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
@@ -304,7 +304,9 @@
       "test_runner.RunnerTests.test_children_inherit_permissions_and_recursion_is_stopped",
       "test_runner.RunnerTests.test_requires_process_permission_and_is_reported_by_preflight",
       "test_runner.RunnerTests.test_routes_success_and_failure_logs_without_failing_the_parent",
-      "test_runner.RunnerTests.test_stop_on_failure_marks_remaining_workflows_not_run"
+      "test_runner.RunnerTests.test_stop_on_failure_marks_remaining_workflows_not_run",
+      "test_service_connections.DownloadAuthTests.test_header_auth_and_conflicting_headers",
+      "test_service_connections.DownloadAuthTests.test_token_is_sent_only_inside_the_base_url"
     ]
   },
   "sources": [

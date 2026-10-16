@@ -4,6 +4,7 @@ import { cancelRun, exportYxmd, openWorkflow, runWorkflow, saveWorkflow, describ
 import { promptPath } from '../ui/dialogs';
 import { notify } from '../ui/toast';
 import { DatabaseConnections } from './DatabaseConnections';
+import { ServiceConnections } from './ServiceConnections';
 
 export async function doSave(forceAs = false): Promise<'saved' | 'cancelled' | 'failed'> {
   const s = useEditor.getState();
@@ -54,6 +55,7 @@ export function doNew() {
 
 export function Toolbar({ onToggleAi, aiOpen }: { onToggleAi: () => void; aiOpen: boolean }) {
   const [dbOpen, setDbOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
   const name = useEditor((s) => s.name);
   const dirty = useEditor((s) => s.dirty);
   const canUndo = useEditor((s) => s.past.length > 0);
@@ -76,6 +78,7 @@ export function Toolbar({ onToggleAi, aiOpen }: { onToggleAi: () => void; aiOpen
       <button onClick={() => doSave()} title="Save (Ctrl+S)" data-testid="save">Save</button>
       <button onClick={() => doExport()} title="Export supported tools as .yxmd">Export</button>
       <button onClick={() => setDbOpen(true)} title="Manage PostgreSQL and SQL Server connections">Databases</button>
+      <button onClick={() => setServicesOpen(true)} title="Manage Web/API and GitHub credentials">Web &amp; API</button>
       <button aria-pressed={aiOpen} onClick={onToggleAi} title="Open the Flowbench AI workspace">Flowbench AI</button>
       <span className="sep" />
       <button className="icon" onClick={() => useEditor.getState().undo()} disabled={!canUndo} title="Undo (Ctrl+Z)" aria-label="Undo">↶</button>
@@ -98,6 +101,7 @@ export function Toolbar({ onToggleAi, aiOpen }: { onToggleAi: () => void; aiOpen
       {running && <span className="status-pill run">running</span>}
       {info && <span style={{ color: 'var(--text-3)', fontSize: 11 }} title={`Python ${info.python}`}>engine {info.version}</span>}
       {dbOpen && <DatabaseConnections close={() => setDbOpen(false)} />}
+      {servicesOpen && <ServiceConnections close={() => setServicesOpen(false)} />}
     </header>
   );
 }
