@@ -240,8 +240,8 @@
     ]
   },
   "independent_tests": {
-    "count": 22,
-    "passing": 22,
+    "count": 23,
+    "passing": 23,
     "tests": [
       "test_control_container.ControlContainerTests.test_chained_containers_run_in_sequence_through_a_file",
       "test_data_correctness.DataCorrectnessTests.test_csv_default_inference_types_quantities_and_keeps_codes_as_text",
@@ -262,6 +262,7 @@
       "test_fe_tools.InOutTests.test_json_input_types_and_nested",
       "test_fe_tools.InOutTests.test_ragged_pad_and_no_header_and_limits",
       "test_investigation.ExampleWorkflowTests.test_fuel_investigation_example_runs_every_tool",
+      "test_investigation_plots.ChartExampleTests.test_fuel_charts_example_renders_every_chart",
       "test_macros.StandardMacroTests.test_macro_resolves_child_resources_relative_to_definition",
       "test_runner.RunnerTests.test_routes_success_and_failure_logs_without_failing_the_parent",
       "test_runner.RunnerTests.test_stop_on_failure_marks_remaining_workflows_not_run"

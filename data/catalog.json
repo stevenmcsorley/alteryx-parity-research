@@ -1377,7 +1377,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/association-analysis-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1449,7 +1449,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/heat-plot-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1473,7 +1473,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/importance-weights-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1497,7 +1497,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/plot-of-means-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1509,7 +1509,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/scatterplot-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1533,7 +1533,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/violin-plot-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

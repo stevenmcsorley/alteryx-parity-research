@@ -1,0 +1,370 @@
+{
+  "format": "flowengine.workflow",
+  "formatVersion": 1,
+  "name": "UK fuel prices: charts",
+  "description": "Graphical Data Investigation tools over UK weekly road fuel prices (DESNZ, Open Government Licence v3.0). Each Browse node shows a rendered chart.",
+  "nodes": [
+    {
+      "id": "fuel",
+      "tool": "core.input_data",
+      "config": {
+        "path": "data/weekly_fuel_prices.csv",
+        "type_inference": "flowbench"
+      },
+      "position": {
+        "x": 0,
+        "y": 240
+      }
+    },
+    {
+      "id": "derive",
+      "tool": "core.formula",
+      "config": {
+        "formulas": [
+          {
+            "field": "Year",
+            "expression": "Right([Week], 4)",
+            "type": "v_string",
+            "size": 4
+          },
+          {
+            "field": "PriceBand",
+            "expression": "IF [PetrolPencePerLitre] >= 150 THEN \"High (150p+)\" ELSEIF [PetrolPencePerLitre] >= 130 THEN \"Medium (130-150p)\" ELSE \"Low (<130p)\" ENDIF",
+            "type": "v_string",
+            "size": 20
+          },
+          {
+            "field": "DutyPeriod",
+            "expression": "IIF([PetrolDutyPencePerLitre] < 57.95, \"Reduced duty\", \"Standard duty\")",
+            "type": "v_string",
+            "size": 20
+          },
+          {
+            "field": "Month",
+            "expression": "Substring([Week], 3, 2)",
+            "type": "v_string",
+            "size": 2
+          }
+        ]
+      },
+      "position": {
+        "x": 220,
+        "y": 240
+      }
+    },
+    {
+      "id": "associations",
+      "tool": "core.association_analysis",
+      "config": {
+        "fields": [
+          "PetrolPencePerLitre",
+          "DieselPencePerLitre",
+          "PetrolDutyPencePerLitre",
+          "Year",
+          "PriceBand",
+          "DutyPeriod"
+        ]
+      },
+      "position": {
+        "x": 480,
+        "y": 0
+      }
+    },
+    {
+      "id": "chart_associations",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 0
+      }
+    },
+    {
+      "id": "price_heat",
+      "tool": "core.heat_plot",
+      "config": {
+        "x_field": "Year",
+        "y_field": "DieselPencePerLitre",
+        "y_bins": 8,
+        "palette": "viridis"
+      },
+      "position": {
+        "x": 480,
+        "y": 90
+      }
+    },
+    {
+      "id": "chart_price_heat",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 90
+      }
+    },
+    {
+      "id": "price_drivers",
+      "tool": "core.importance_weights",
+      "config": {
+        "target_field": "PriceBand",
+        "fields": [
+          "Year",
+          "Month",
+          "DutyPeriod",
+          "DieselPencePerLitre"
+        ],
+        "method": "symmetrical_uncertainty"
+      },
+      "position": {
+        "x": 480,
+        "y": 180
+      }
+    },
+    {
+      "id": "chart_price_drivers",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 180
+      }
+    },
+    {
+      "id": "means_by_year",
+      "tool": "core.plot_of_means",
+      "config": {
+        "value_field": "PetrolPencePerLitre",
+        "group_field": "Year"
+      },
+      "position": {
+        "x": 480,
+        "y": 270
+      }
+    },
+    {
+      "id": "chart_means_by_year",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 270
+      }
+    },
+    {
+      "id": "petrol_vs_diesel",
+      "tool": "core.scatterplot",
+      "config": {
+        "x_field": "PetrolPencePerLitre",
+        "y_field": "DieselPencePerLitre",
+        "group_field": "DutyPeriod"
+      },
+      "position": {
+        "x": 480,
+        "y": 360
+      }
+    },
+    {
+      "id": "chart_petrol_vs_diesel",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 360
+      }
+    },
+    {
+      "id": "diesel_by_period",
+      "tool": "core.violin_plot",
+      "config": {
+        "value_field": "DieselPencePerLitre",
+        "group_field": "DutyPeriod"
+      },
+      "position": {
+        "x": 480,
+        "y": 450
+      }
+    },
+    {
+      "id": "chart_diesel_by_period",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 450
+      }
+    },
+    {
+      "id": "petrol_histogram",
+      "tool": "core.histogram",
+      "config": {
+        "field": "PetrolPencePerLitre",
+        "binning": "fd"
+      },
+      "position": {
+        "x": 480,
+        "y": 540
+      }
+    },
+    {
+      "id": "chart_petrol_histogram",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 720,
+        "y": 540
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": {
+        "node": "fuel",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "derive",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "associations",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "associations",
+        "anchor": "chart"
+      },
+      "to": {
+        "node": "chart_associations",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "price_heat",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "price_heat",
+        "anchor": "chart"
+      },
+      "to": {
+        "node": "chart_price_heat",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "price_drivers",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "price_drivers",
+        "anchor": "chart"
+      },
+      "to": {
+        "node": "chart_price_drivers",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "means_by_year",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "means_by_year",
+        "anchor": "chart"
+      },
+      "to": {
+        "node": "chart_means_by_year",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "petrol_vs_diesel",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "petrol_vs_diesel",
+        "anchor": "chart"
+      },
+      "to": {
+        "node": "chart_petrol_vs_diesel",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "diesel_by_period",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "diesel_by_period",
+        "anchor": "chart"
+      },
+      "to": {
+        "node": "chart_diesel_by_period",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "petrol_histogram",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "petrol_histogram",
+        "anchor": "chart"
+      },
+      "to": {
+        "node": "chart_petrol_histogram",
+        "anchor": "input"
+      }
+    }
+  ]
+}

@@ -16,6 +16,19 @@ inspection. The vendor's report and interactive (I/R) outputs are not reproduced
 | Contingency Table | `core.contingency_table` | `table`: observed and expected counts, row, column and total percentages, `(Total)` margins. `statistics`: Pearson chi-square, degrees of freedom, p-value, Cramér's V, minimum expected count (warns below 5), optional Yates correction for 2×2. |
 | Distribution Analysis | `core.distribution_analysis` | `fits`: maximum-likelihood fits (normal, lognormal, exponential, gamma, Weibull, uniform) ranked by AIC, with parameters, log-likelihood, BIC, Kolmogorov-Smirnov statistic and approximate p-value, and Anderson-Darling for normal and exponential. Positive-only families use location 0 and are reported as not applicable for data ≤ 0. `moments`: N, mean, standard deviation, skewness, excess kurtosis, min and max. |
 
+| Association Analysis | `core.association_analysis` | Pairwise measure suited to the field types: Pearson r for numeric pairs, Cramér's V (chi-square p-value) for categorical pairs, and correlation ratio η (one-way ANOVA p-value) for mixed pairs. Includes strength (0 to 1) and N, an optional target field, and a strength heat-map chart. |
+| Heat Plot | `core.heat_plot` | Cells over equal-width numeric bins or categories: count, sum, mean or median of a value field, with empty cells left null. Palettes are viridis, blues, reds and diverging. Outputs the grid table and a chart. |
+| Importance Weights | `core.importance_weights` | Mutual information (bits), gain ratio or symmetrical uncertainty of each predictor for a target. Numeric fields are cut into equal-frequency bins. Weights are ranked and normalised, with a bar chart. This is a documented information-theory method, not the vendor macro algorithm. |
+| Plot of Means | `core.plot_of_means` | Per group: N, mean, standard deviation, standard error and a Student-t confidence interval. Also a one-way ANOVA (F, degrees of freedom, p) and a chart of means with interval bars. |
+| Scatterplot | `core.scatterplot` | Chart of y against x with optional colour groups and per-group least-squares trend (slope, intercept, R², p). Above `max_points`, the chart is evenly thinned, but trends use every record. |
+| Violin Plot | `core.violin_plot` | Gaussian KDE per group (Scott, Silverman or fixed bandwidth). Outputs a summary (N, min, quartiles, max, bandwidth), the density table and violins with quartile boxes. |
+| Histogram (chart) | `core.histogram` | Also emits a rendered histogram on its `chart` anchor. |
+
+**Charts.** Graphical tools return their numbers as tables plus a `chart` anchor holding a rendered SVG
+(`flowengine/charts.py`). The desktop results panel shows the chart as an image, through a data URL,
+so it never runs script. It can be downloaded as SVG, and Reporting reuses the same drawing
+operations for PDF. All chart text is XML-escaped.
+
 The desktop configures these through the standard Inspector, with field pickers for `field`, `fields`,
 `row_field` and `column_field`. Flowbench AI discovers them through the tool catalogue.
 
@@ -25,5 +38,6 @@ diagnostics. Entries that Alteryx implements as R macros (for example `Predictiv
 import as references to the vendor macro file. Flowbench does not ship that file, so such a node fails
 validation until it is replaced by the native tool. In both cases the original XML is kept for export.
 
-Worked example: `examples/investigation/fuel_investigation.flow.json` (UK weekly road fuel prices,
-Open Government Licence). Tests: `tests/test_investigation.py`.
+Worked examples (UK weekly road fuel prices, Open Government Licence):
+`examples/investigation/fuel_investigation.flow.json` (tables) and `examples/investigation/fuel_charts.flow.json`
+(every graphical tool, one Browse per chart). Tests: `tests/test_investigation.py`, `tests/test_investigation_plots.py`.

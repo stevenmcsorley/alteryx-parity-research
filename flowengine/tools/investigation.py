@@ -250,7 +250,8 @@ class Histogram(Tool):
     manifest = ToolManifest(
         tool_id='core.histogram', version='1.0.0', display_name='Histogram',
         catalog_ids=('data-investigation:histogram',),
-        inputs=(Anchor('input', 'Input'),), outputs=(Anchor('output', 'Bins'),),
+        inputs=(Anchor('input', 'Input'),),
+        outputs=(Anchor('output', 'Bins'), Anchor('chart', 'Chart', description='Rendered SVG histogram')),
         description='Bin one numeric field into equal-width intervals: a fixed bin count or automatic rules '
                     '(Sturges, Freedman-Diaconis, square root). Bins are [lower, upper) except the last, which '
                     'includes its upper bound. Nulls, non-finite values and values outside range_min/range_max are '
@@ -260,7 +261,8 @@ class Histogram(Tool):
             'binning': {'enum': ['auto', 'sturges', 'fd', 'sqrt', 'fixed'], 'default': 'auto'},
             'bins': {'type': 'integer', 'minimum': 1, 'maximum': 10000, 'default': 10},
             'range_min': {'type': ['number', 'null'], 'default': None},
-            'range_max': {'type': ['number', 'null'], 'default': None}}})
+            'range_max': {'type': ['number', 'null'], 'default': None},
+            'title': {'type': ['string', 'null'], 'default': None}}})
 
     def infer(self, ctx, cfg, inputs):
         schema = inputs['input']
@@ -269,7 +271,8 @@ class Histogram(Tool):
             raise SchemaError(f"Histogram field {cfg['field']!r} must be numeric")
         if cfg['range_min'] is not None and cfg['range_max'] is not None and cfg['range_min'] >= cfg['range_max']:
             raise ConfigError('Histogram range_min must be less than range_max')
-        return {'output': self.SCHEMA}
+        from .. import charts
+        return {'output': self.SCHEMA, 'chart': charts.chart_schema()}
 
     def run(self, ctx, cfg, inputs):
         np = _np()
@@ -282,9 +285,11 @@ class Histogram(Tool):
         hi = cfg['range_max'] if cfg['range_max'] is not None else (float(arr.max()) if arr.size else None)
         inside = arr[(arr >= lo) & (arr <= hi)] if arr.size else arr
         outside = int(arr.size - inside.size)
+        from .. import charts
+        title = cfg['title'] or f"Distribution of {cfg['field']}"
         if inside.size == 0:
             ctx.warn('Histogram has no values to bin', nulls=nulls)
-            return {'output': Table.empty(self.SCHEMA)}
+            return {'output': Table.empty(self.SCHEMA), 'chart': charts.chart_table(charts.histogram_chart([0, 1], [0], title=title), title)}
         if lo == hi:  # a single distinct value: one unit-width bin centred on it
             lo, hi = lo - 0.5, hi + 0.5
         method = {'auto': 'auto', 'sturges': 'sturges', 'fd': 'fd', 'sqrt': 'sqrt'}.get(cfg['binning'])
@@ -298,7 +303,8 @@ class Histogram(Tool):
                 for i, c in enumerate(counts)]
         if nulls or nonfinite or outside:
             ctx.info(f'Histogram excluded {nulls} null, {nonfinite} non-finite and {outside} out-of-range value(s)')
-        return {'output': Table.from_rows(self.SCHEMA, rows)}
+        canvas = charts.histogram_chart([float(e) for e in edges], [int(c) for c in counts], title=title, x_label=cfg['field'])
+        return {'output': Table.from_rows(self.SCHEMA, rows), 'chart': charts.chart_table(canvas, title)}
 
 
 class SpearmanCorrelation(Tool):

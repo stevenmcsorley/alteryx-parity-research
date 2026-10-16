@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 167,
-    "passing": 167,
+    "count": 174,
+    "passing": 174,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
@@ -294,6 +294,13 @@
       "test_investigation.FrequencyHistogramTests.test_histogram_bins_and_density",
       "test_investigation.ProfileTests.test_basic_data_profile",
       "test_investigation.ProfileTests.test_field_summary_quartiles_and_mode",
+      "test_investigation_plots.AssociationAndHeatTests.test_association_measures_by_type_pair",
+      "test_investigation_plots.AssociationAndHeatTests.test_heat_plot_bins_and_aggregation",
+      "test_investigation_plots.ImportanceMeansTests.test_importance_ranks_informative_field_first",
+      "test_investigation_plots.ImportanceMeansTests.test_plot_of_means_confidence_intervals_and_anova",
+      "test_investigation_plots.ScatterViolinTests.test_chart_text_is_escaped",
+      "test_investigation_plots.ScatterViolinTests.test_scatter_trend_per_group_and_point_cap",
+      "test_investigation_plots.ScatterViolinTests.test_violin_density_integrates_to_one",
       "test_json_schema_tool.JSONSchemaToolTests.test_generates_valid_schema_and_appends_it_to_each_row",
       "test_macros.BatchMacroTests.test_batch_child_validation_failure_reports_iteration_and_call_node",
       "test_macros.BatchMacroTests.test_batch_iteration_limit_and_bad_action_fail_explicitly",
