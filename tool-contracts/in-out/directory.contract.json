@@ -89,9 +89,10 @@
     ]
   },
   "independent_tests": {
-    "count": 2,
-    "passing": 2,
+    "count": 3,
+    "passing": 3,
     "tests": [
+      "test_dynamic_input.DynamicInputTests.test_directory_listing_drives_dynamic_input",
       "test_fe_service.ServiceTests.test_browse_answers_choose_input_output_and_folder_for_real_execution",
       "test_fe_tools.InOutTests.test_directory_listing_sorted_and_filtered"
     ]

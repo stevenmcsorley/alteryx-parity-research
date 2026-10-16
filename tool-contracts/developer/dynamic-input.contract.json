@@ -6,47 +6,188 @@
   "xml_tool_name": "AlteryxBasePluginsGui.DynamicInput.DynamicInput",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/dynamic-input-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "InputConfiguration",
-      "InputConfiguration/Configuration",
-      "Mode",
-      "Modifications",
-      "Modifications/Modify",
-      "ReadList_Field",
-      "ReadList_Type"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "path_field"
     ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "properties": {
+      "path_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "schema_mode": {
+        "enum": [
+          "identical",
+          "union"
+        ],
+        "default": "identical"
+      },
+      "format": {
+        "enum": [
+          "auto",
+          "csv",
+          "tsv",
+          "delimited",
+          "json",
+          "jsonl",
+          "parquet",
+          "arrow",
+          "yxdb"
+        ],
+        "default": "auto"
+      },
+      "delimiter": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1,
+        "default": ","
+      },
+      "quote_char": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1,
+        "default": "\""
+      },
+      "has_header": {
+        "type": "boolean",
+        "default": true
+      },
+      "encoding": {
+        "type": "string",
+        "default": "utf-8-sig"
+      },
+      "skip_rows": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 0
+      },
+      "max_records": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 0,
+        "default": null
+      },
+      "type_inference": {
+        "enum": [
+          "flowbench",
+          "alteryx-compat"
+        ],
+        "default": "alteryx-compat",
+        "description": "Infer conservative column types, or preserve Alteryx delimited-text compatibility (all text)."
+      },
+      "fields": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "type"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": {
+              "enum": [
+                "bool",
+                "byte",
+                "int16",
+                "int32",
+                "int64",
+                "fixed_decimal",
+                "float",
+                "double",
+                "string",
+                "wstring",
+                "v_string",
+                "v_wstring",
+                "date",
+                "time",
+                "datetime",
+                "blob"
+              ]
+            },
+            "size": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "scale": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "description": "Optional declared schema; values are converted to these types."
+      },
+      "on_conversion_error": {
+        "enum": [
+          "error",
+          "null"
+        ],
+        "default": "error",
+        "description": "Conversion failure policy: fail the node, or emit null and a warning"
+      },
+      "ragged_rows": {
+        "enum": [
+          "error",
+          "pad"
+        ],
+        "default": "error"
+      },
+      "empty_as_null": {
+        "type": "boolean",
+        "default": false,
+        "description": "Treat empty delimited values as null instead of empty string"
+      },
+      "add_file_name_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.dynamic_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.inout",
+    "side_effects": "reads-files"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -82,9 +223,16 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 6,
+    "passing": 6,
+    "tests": [
+      "test_dynamic_input.DynamicInputTests.test_bad_paths_fail_with_the_record_number",
+      "test_dynamic_input.DynamicInputTests.test_declared_fields_give_a_static_schema_and_an_empty_result",
+      "test_dynamic_input.DynamicInputTests.test_directory_listing_drives_dynamic_input",
+      "test_dynamic_input.DynamicInputTests.test_path_field_must_exist_and_be_text",
+      "test_dynamic_input.DynamicInputTests.test_reads_each_named_file_in_record_order",
+      "test_dynamic_input.DynamicInputTests.test_schema_mismatch_fails_unless_union_is_chosen"
+    ]
   },
   "sources": [
     {
@@ -105,6 +253,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }
