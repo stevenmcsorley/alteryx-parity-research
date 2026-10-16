@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 199,
-    "passing": 199,
+    "count": 208,
+    "passing": 208,
     "tests": [
       "test_batch5.GeometryEditingTests.test_generalize_uses_metric_tolerance",
       "test_batch5.GeometryEditingTests.test_heat_map_density_integrates_to_point_count",
@@ -297,6 +297,15 @@
       "test_github_tools.GitHubToolTests.test_commit_pushes_one_atomic_commit",
       "test_github_tools.GitHubToolTests.test_commit_refuses_to_overwrite_a_concurrent_push",
       "test_github_tools.GitHubToolTests.test_permissions_paths_and_connection_kind",
+      "test_indb.CompositionTests.test_join_union_and_sample",
+      "test_indb.CompositionTests.test_parameters_follow_their_markers_in_sql_order",
+      "test_indb.CompositionTests.test_pipeline_wraps_queries_and_keeps_parameters_in_order",
+      "test_indb.CompositionTests.test_sql_server_specifics",
+      "test_indb.CompositionTests.test_streams_from_different_connections_cannot_join",
+      "test_indb.CompositionTests.test_untranslatable_expressions_are_rejected_with_reason",
+      "test_indb.ExecutionTests.test_dynamic_input_checks_every_query",
+      "test_indb.ExecutionTests.test_in_db_macro_passes_streams",
+      "test_indb.ExecutionTests.test_writes_need_a_writable_connection_and_a_run_grant",
       "test_investigation.CorrelationTests.test_contingency_chi_square",
       "test_investigation.CorrelationTests.test_spearman_matches_pearson_of_average_ranks",
       "test_investigation.DistributionTests.test_fits_ranked_by_aic_and_positive_only_rules",

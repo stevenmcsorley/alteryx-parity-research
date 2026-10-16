@@ -597,7 +597,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/browse-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -609,7 +609,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/connect-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -621,7 +621,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/data-stream-in-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -633,7 +633,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/data-stream-out-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -645,7 +645,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/dynamic-input-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -657,7 +657,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/dynamic-output-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -669,7 +669,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/filter-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -681,7 +681,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/formula-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -693,7 +693,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/join-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -705,7 +705,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/macro-input-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -717,7 +717,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/macro-output-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -729,7 +729,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/sample-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -741,7 +741,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/select-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -753,7 +753,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/summarize-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -765,7 +765,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/union-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -777,7 +777,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/write-data-in-db-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

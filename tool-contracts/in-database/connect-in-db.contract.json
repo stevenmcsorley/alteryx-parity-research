@@ -6,22 +6,76 @@
   "xml_tool_name": "LockInGui.LockInInput.LockInInput",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/connect-in-db-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Add a New In-DB Connection",
-      "Use an Existing In-DB Connection",
-      "Connect In-DB and Advanced Query Options for Pre/Post-SQL"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "connection_id",
+      "mode"
+    ],
+    "properties": {
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Saved database connection (toolbar → Databases)"
+      },
+      "mode": {
+        "enum": [
+          "table",
+          "query"
+        ]
+      },
+      "schema": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "table": {
+        "type": "string"
+      },
+      "columns": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string"
+        },
+        "default": null
+      },
+      "query": {
+        "type": "string"
+      },
+      "params": {
+        "type": "array",
+        "items": {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "default": []
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "database-connection (SQL pushdown target)",
     "credentials (public-doc keyword signal; unreviewed)",
@@ -31,7 +85,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.connect_indb",
+    "version": "1.0.0",
+    "module": "flowengine.tools.indb",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -48,9 +108,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_indb.ExecutionTests.test_connect_stream_out_and_browse_execute_the_built_query"
+    ]
   },
   "sources": [
     {
@@ -66,7 +128,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet."
   ]
 }

@@ -78,7 +78,7 @@ class WorkflowMacro(Tool):
                                     'flowengine.iterative_macro') for node in child_nodes):
             return None
         input_names = [(node.get('config') or {}).get('name') for node in child_nodes
-                       if node.get('tool') == 'flowengine.macro_input']
+                       if node.get('tool') in ('flowengine.macro_input', 'core.macro_input_indb')]
         if len(set(input_names)) != len(input_names):
             raise ConfigError('Macro definition has duplicate Macro Input names', node_id=ctx.node_id)
         configured = dict(config['input_bindings'])
@@ -109,7 +109,7 @@ class WorkflowMacro(Tool):
                                              macro_input_schemas=schemas)
         if problems:
             return None
-        outputs = [node for node in child_nodes if node.get('tool') == 'flowengine.macro_output']
+        outputs = [node for node in child_nodes if node.get('tool') in ('flowengine.macro_output', 'core.macro_output_indb')]
         desired = config.get('output_name')
         matches = [node for node in outputs if (node.get('config') or {}).get('name', 'Output') == (desired or 'Output')]
         if not desired and len(outputs) == 1:
@@ -161,7 +161,7 @@ class WorkflowMacro(Tool):
 
         bindings = {}
         input_names = [(n.get('config') or {}).get('name') for n in doc.get('nodes', [])
-                       if n.get('tool') == 'flowengine.macro_input']
+                       if n.get('tool') in ('flowengine.macro_input', 'core.macro_input_indb')]
         if len(set(input_names)) != len(input_names):
             raise ConfigError('Macro definition has duplicate Macro Input names', node_id=ctx.node_id)
         configured = dict(config['input_bindings'])
@@ -195,7 +195,7 @@ class WorkflowMacro(Tool):
                 raise ConfigError(f"Parent anchor {anchor!r} must provide a table", node_id=ctx.node_id)
             bindings[macro_input] = value
 
-        outputs = [n for n in doc.get('nodes', []) if n.get('tool') == 'flowengine.macro_output']
+        outputs = [n for n in doc.get('nodes', []) if n.get('tool') in ('flowengine.macro_output', 'core.macro_output_indb')]
         desired = config.get('output_name')
         matches = [n for n in outputs if (n.get('config') or {}).get('name', 'Output') == (desired or 'Output')]
         if not desired and len(outputs) == 1:
@@ -346,10 +346,10 @@ class BatchMacro(Tool):
             if previous is not None and previous != action['parameter']:
                 raise ConfigError('Multiple parameters target the same child configuration value', node_id=ctx.node_id)
             configured_targets[target] = action['parameter']
-        child_inputs = [n for n in doc.get('nodes', []) if n.get('tool') == 'flowengine.macro_input']
+        child_inputs = [n for n in doc.get('nodes', []) if n.get('tool') in ('flowengine.macro_input', 'core.macro_input_indb')]
         if not any(n.get('config', {}).get('name') == config['input_name'] for n in child_inputs):
             raise ConfigError(f"Child macro has no Macro Input named {config['input_name']!r}", node_id=ctx.node_id)
-        output_nodes = [n for n in doc.get('nodes', []) if n.get('tool') == 'flowengine.macro_output'
+        output_nodes = [n for n in doc.get('nodes', []) if n.get('tool') in ('flowengine.macro_output', 'core.macro_output_indb')
                         and n.get('config', {}).get('name', 'Output') == config['output_name']]
         if len(output_nodes) != 1:
             raise ConfigError(f"Expected one child Macro Output named {config['output_name']!r}; "
@@ -456,10 +456,10 @@ class IterativeMacro(Tool):
         if len(ctx.macro_stack) >= config['max_depth']:
             raise ConfigError(f"Macro nesting exceeds configured limit {config['max_depth']}", node_id=ctx.node_id)
         input_name = config['input_name']
-        if not any(n.get('tool') == 'flowengine.macro_input' and n.get('config', {}).get('name') == input_name
+        if not any(n.get('tool') in ('flowengine.macro_input', 'core.macro_input_indb') and n.get('config', {}).get('name') == input_name
                    for n in doc.get('nodes', [])):
             raise ConfigError(f"Child macro has no Macro Input named {input_name!r}", node_id=ctx.node_id)
-        outputs = [n for n in doc.get('nodes', []) if n.get('tool') == 'flowengine.macro_output'
+        outputs = [n for n in doc.get('nodes', []) if n.get('tool') in ('flowengine.macro_output', 'core.macro_output_indb')
                    and n.get('config', {}).get('name', 'Output') == config['output_name']]
         if len(outputs) != 1:
             raise ConfigError(f"Expected one child Macro Output named {config['output_name']!r}; found {len(outputs)}",
