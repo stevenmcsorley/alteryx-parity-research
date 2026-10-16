@@ -6,28 +6,65 @@
   "xml_tool_name": "CrossValidation",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive/cross-validation-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
+  "inputs": [
+    {
+      "name": "models",
+      "direction": "input",
+      "cardinality": "many",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "outputs": [
     {
-      "name": "F",
+      "name": "folds",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "summary",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Connect Inputs",
-      "Configure the Tool",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "folds": {
+        "type": "integer",
+        "minimum": 2,
+        "maximum": 50,
+        "default": 5
+      },
+      "repeats": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 20,
+        "default": 1
+      },
+      "seed": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 1
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime (statistical models; vendor ships R-based macros)",
     "alteryx-server (public-doc keyword signal; unreviewed)",
@@ -36,7 +73,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.cross_validation",
+    "version": "1.0.0",
+    "module": "flowengine.tools.predictive",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -73,9 +116,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_predictive.EvaluationTests.test_comparison_cross_validation_and_lift"
+    ]
   },
   "sources": [
     {
@@ -91,6 +136,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

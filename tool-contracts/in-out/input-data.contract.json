@@ -240,8 +240,8 @@
     ]
   },
   "independent_tests": {
-    "count": 26,
-    "passing": 26,
+    "count": 27,
+    "passing": 27,
     "tests": [
       "test_batch5.MapReportExampleTests.test_uk_map_report_example",
       "test_control_container.ControlContainerTests.test_chained_containers_run_in_sequence_through_a_file",
@@ -265,6 +265,7 @@
       "test_investigation.ExampleWorkflowTests.test_fuel_investigation_example_runs_every_tool",
       "test_investigation_plots.ChartExampleTests.test_fuel_charts_example_renders_every_chart",
       "test_macros.StandardMacroTests.test_macro_resolves_child_resources_relative_to_definition",
+      "test_predictive.ExampleTests.test_fuel_models_example",
       "test_reporting.RenderTests.test_fuel_report_example",
       "test_runner.RunnerTests.test_routes_success_and_failure_logs_without_failing_the_parent",
       "test_runner.RunnerTests.test_stop_on_failure_marks_remaining_workflows_not_run",

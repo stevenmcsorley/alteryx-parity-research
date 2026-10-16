@@ -1,0 +1,344 @@
+{
+  "format": "flowengine.workflow",
+  "formatVersion": 1,
+  "name": "UK fuel price models",
+  "description": "Classify weeks with petrol at 140p or more (logistic regression vs random forest, compared on a held-out sample with a lift chart) and predict the petrol price with linear regression.",
+  "nodes": [
+    {
+      "id": "fuel",
+      "tool": "core.input_data",
+      "config": {
+        "path": "../investigation/data/weekly_fuel_prices.csv",
+        "type_inference": "flowbench"
+      },
+      "position": {
+        "x": 0,
+        "y": 200
+      }
+    },
+    {
+      "id": "derive",
+      "tool": "core.formula",
+      "config": {
+        "formulas": [
+          {
+            "field": "Year",
+            "expression": "Right([Week], 4)",
+            "type": "v_string",
+            "size": 4
+          },
+          {
+            "field": "HighPetrol",
+            "expression": "IIF([PetrolPencePerLitre] >= 140, \"high\", \"normal\")",
+            "type": "v_string",
+            "size": 8
+          }
+        ]
+      },
+      "position": {
+        "x": 200,
+        "y": 200
+      }
+    },
+    {
+      "id": "split",
+      "tool": "core.create_samples",
+      "config": {
+        "estimation_pct": 70,
+        "validation_pct": 30,
+        "seed": 42
+      },
+      "position": {
+        "x": 400,
+        "y": 200
+      }
+    },
+    {
+      "id": "logit",
+      "tool": "core.logistic_regression",
+      "config": {
+        "target_field": "HighPetrol",
+        "predictors": [
+          "DieselPencePerLitre",
+          "PetrolDutyPencePerLitre"
+        ],
+        "positive_class": "high",
+        "model_name": "Logistic"
+      },
+      "position": {
+        "x": 600,
+        "y": 100
+      }
+    },
+    {
+      "id": "forest",
+      "tool": "core.forest_model",
+      "config": {
+        "target_field": "HighPetrol",
+        "predictors": [
+          "DieselPencePerLitre",
+          "PetrolDutyPencePerLitre"
+        ],
+        "n_trees": 100,
+        "model_name": "Forest"
+      },
+      "position": {
+        "x": 600,
+        "y": 250
+      }
+    },
+    {
+      "id": "linear",
+      "tool": "core.linear_regression",
+      "config": {
+        "target_field": "PetrolPencePerLitre",
+        "predictors": [
+          "DieselPencePerLitre",
+          "PetrolDutyPencePerLitre"
+        ],
+        "model_name": "Petrol price"
+      },
+      "position": {
+        "x": 600,
+        "y": 400
+      }
+    },
+    {
+      "id": "compare",
+      "tool": "core.model_comparison",
+      "config": {},
+      "position": {
+        "x": 850,
+        "y": 100
+      }
+    },
+    {
+      "id": "lift",
+      "tool": "core.lift_chart",
+      "config": {
+        "positive_class": "high"
+      },
+      "position": {
+        "x": 850,
+        "y": 250
+      }
+    },
+    {
+      "id": "score",
+      "tool": "core.score",
+      "config": {},
+      "position": {
+        "x": 850,
+        "y": 400
+      }
+    },
+    {
+      "id": "view_compare",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1050,
+        "y": 0
+      }
+    },
+    {
+      "id": "view_lift",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1050,
+        "y": 0
+      }
+    },
+    {
+      "id": "view_score",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1050,
+        "y": 0
+      }
+    },
+    {
+      "id": "view_linear",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1050,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": {
+        "node": "fuel",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "derive",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "split",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "split",
+        "anchor": "estimation"
+      },
+      "to": {
+        "node": "logit",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "split",
+        "anchor": "estimation"
+      },
+      "to": {
+        "node": "forest",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "split",
+        "anchor": "estimation"
+      },
+      "to": {
+        "node": "linear",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "logit",
+        "anchor": "model"
+      },
+      "to": {
+        "node": "compare",
+        "anchor": "models"
+      }
+    },
+    {
+      "from": {
+        "node": "logit",
+        "anchor": "model"
+      },
+      "to": {
+        "node": "lift",
+        "anchor": "models"
+      }
+    },
+    {
+      "from": {
+        "node": "forest",
+        "anchor": "model"
+      },
+      "to": {
+        "node": "compare",
+        "anchor": "models"
+      }
+    },
+    {
+      "from": {
+        "node": "forest",
+        "anchor": "model"
+      },
+      "to": {
+        "node": "lift",
+        "anchor": "models"
+      }
+    },
+    {
+      "from": {
+        "node": "split",
+        "anchor": "validation"
+      },
+      "to": {
+        "node": "compare",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "split",
+        "anchor": "validation"
+      },
+      "to": {
+        "node": "lift",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "linear",
+        "anchor": "model"
+      },
+      "to": {
+        "node": "score",
+        "anchor": "model"
+      }
+    },
+    {
+      "from": {
+        "node": "split",
+        "anchor": "validation"
+      },
+      "to": {
+        "node": "score",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "compare",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "view_compare",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "lift",
+        "anchor": "chart"
+      },
+      "to": {
+        "node": "view_lift",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "score",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "view_score",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "linear",
+        "anchor": "coefficients"
+      },
+      "to": {
+        "node": "view_linear",
+        "anchor": "input"
+      }
+    }
+  ]
+}

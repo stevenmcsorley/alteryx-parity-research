@@ -144,8 +144,8 @@
     ]
   },
   "independent_tests": {
-    "count": 28,
-    "passing": 28,
+    "count": 29,
+    "passing": 29,
     "tests": [
       "test_batch5.MapReportExampleTests.test_uk_map_report_example",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
@@ -173,6 +173,7 @@
       "test_macros.IterativeMacroTests.test_zero_rows_terminate_and_iteration_limit_is_a_failure",
       "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
       "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level",
+      "test_predictive.ExampleTests.test_fuel_models_example",
       "test_reporting.RenderTests.test_fuel_report_example",
       "test_spatial.ExampleTests.test_uk_spatial_example"
     ]
