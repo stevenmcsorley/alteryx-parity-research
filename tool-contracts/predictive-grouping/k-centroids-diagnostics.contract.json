@@ -6,28 +6,92 @@
   "xml_tool_name": "Predictive Tools\\K-Centroids_Diagnostics.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/k-centroids-diagnostics-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "chart",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Configuration Tab",
-      "Graphic Options Tab"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "fields"
+    ],
+    "properties": {
+      "fields": {
+        "type": "array",
+        "uniqueItems": true,
+        "minItems": 1,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "k_min": {
+        "type": "integer",
+        "minimum": 2,
+        "default": 2
+      },
+      "k_max": {
+        "type": "integer",
+        "minimum": 2,
+        "maximum": 50,
+        "default": 8
+      },
+      "standardize": {
+        "type": "boolean",
+        "default": true
+      },
+      "bootstrap": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100,
+        "default": 10
+      },
+      "seed": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 1
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.k_centroids_diagnostics",
+    "version": "1.0.0",
+    "module": "flowengine.tools.grouping",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -43,9 +107,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_batch8.GroupingTests.test_diagnostics_prefer_the_true_k"
+    ]
   },
   "sources": [
     {
@@ -61,7 +127,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet."
   ]
 }

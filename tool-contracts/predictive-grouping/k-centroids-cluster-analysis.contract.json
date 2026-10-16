@@ -6,30 +6,95 @@
   "xml_tool_name": "Predictive Tools\\K-Centroids_Cluster_Analysis.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/k-centroids-cluster-analysis-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "model",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "summary",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Configuration Tab",
-      "Plot Options Tab",
-      "Graphic Options Tab",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "fields",
+      "k"
+    ],
+    "properties": {
+      "fields": {
+        "type": "array",
+        "uniqueItems": true,
+        "minItems": 1,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "k": {
+        "type": "integer",
+        "minimum": 2,
+        "maximum": 500
+      },
+      "method": {
+        "enum": [
+          "kmeans",
+          "kmedians"
+        ],
+        "default": "kmeans"
+      },
+      "standardize": {
+        "type": "boolean",
+        "default": true
+      },
+      "seed": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 1
+      },
+      "model_name": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.k_centroids_cluster_analysis",
+    "version": "1.0.0",
+    "module": "flowengine.tools.grouping",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -58,9 +123,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_batch8.GroupingTests.test_kcentroids_recovers_blobs_and_appends_clusters"
+    ]
   },
   "sources": [
     {
@@ -76,7 +143,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet."
   ]
 }

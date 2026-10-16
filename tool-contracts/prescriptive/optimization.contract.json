@@ -6,51 +6,109 @@
   "xml_tool_name": "Optimization",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/prescriptive/optimization-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "O",
+      "name": "variables",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "constraints",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "I",
+      "name": "solution",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "D",
+      "name": "constraint_report",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "S",
+      "name": "summary",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "What is Optimization?",
-      "Connect Inputs",
-      "Input Modes",
-      "Select the Model as Matrices",
-      "Enter the Model Manually",
-      "Specify the Model from a File",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "goal": {
+        "enum": [
+          "minimize",
+          "maximize"
+        ],
+        "default": "minimize"
+      },
+      "name_field": {
+        "type": "string",
+        "default": "Variable"
+      },
+      "objective_field": {
+        "type": "string",
+        "default": "Objective"
+      },
+      "lower_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": "Lower"
+      },
+      "upper_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": "Upper"
+      },
+      "type_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": "Type"
+      },
+      "constraint_field": {
+        "type": "string",
+        "default": "Constraint"
+      },
+      "sense_field": {
+        "type": "string",
+        "default": "Sense"
+      },
+      "rhs_field": {
+        "type": "string",
+        "default": "RHS"
+      },
+      "time_limit_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 3600,
+        "default": 60
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime",
     "optimisation-solver",
@@ -58,7 +116,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.optimization",
+    "version": "1.0.0",
+    "module": "flowengine.tools.prescriptive",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -99,9 +163,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch8.PrescriptiveTests.test_knapsack_and_infeasibility",
+      "test_batch8.PrescriptiveTests.test_textbook_linear_programme_with_shadow_prices"
+    ]
   },
   "sources": [
     {
@@ -117,6 +184,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

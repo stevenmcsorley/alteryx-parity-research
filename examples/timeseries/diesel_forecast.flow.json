@@ -1,0 +1,173 @@
+{
+  "format": "flowengine.workflow",
+  "formatVersion": 1,
+  "name": "UK diesel price forecast",
+  "description": "Plot weekly UK diesel prices and forecast the next 26 weeks with an automatically selected ETS model and prediction intervals.",
+  "nodes": [
+    {
+      "id": "fuel",
+      "tool": "core.input_data",
+      "config": {
+        "path": "../investigation/data/weekly_fuel_prices.csv",
+        "type_inference": "flowbench"
+      },
+      "position": {
+        "x": 0,
+        "y": 100
+      }
+    },
+    {
+      "id": "dates",
+      "tool": "core.formula",
+      "config": {
+        "formulas": [
+          {
+            "field": "WeekDate",
+            "expression": "DateTimeParse([Week], \"%d/%m/%Y\")",
+            "type": "date"
+          }
+        ]
+      },
+      "position": {
+        "x": 200,
+        "y": 100
+      }
+    },
+    {
+      "id": "plot",
+      "tool": "core.ts_plot",
+      "config": {
+        "date_field": "WeekDate",
+        "value_field": "DieselPencePerLitre",
+        "title": "UK diesel price (p/litre)"
+      },
+      "position": {
+        "x": 400,
+        "y": 0
+      }
+    },
+    {
+      "id": "ets",
+      "tool": "core.ets",
+      "config": {
+        "date_field": "WeekDate",
+        "value_field": "DieselPencePerLitre",
+        "model_name": "Diesel ETS"
+      },
+      "position": {
+        "x": 400,
+        "y": 150
+      }
+    },
+    {
+      "id": "forecast",
+      "tool": "core.ts_forecast",
+      "config": {
+        "periods": 26
+      },
+      "position": {
+        "x": 600,
+        "y": 150
+      }
+    },
+    {
+      "id": "view_plot",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 800,
+        "y": 0
+      }
+    },
+    {
+      "id": "view_forecast",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 800,
+        "y": 150
+      }
+    },
+    {
+      "id": "view_chart",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 800,
+        "y": 250
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": {
+        "node": "fuel",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "dates",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "dates",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "plot",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "dates",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "ets",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "ets",
+        "anchor": "model"
+      },
+      "to": {
+        "node": "forecast",
+        "anchor": "models"
+      }
+    },
+    {
+      "from": {
+        "node": "plot",
+        "anchor": "chart"
+      },
+      "to": {
+        "node": "view_plot",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "forecast",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "view_forecast",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "forecast",
+        "anchor": "chart"
+      },
+      "to": {
+        "node": "view_chart",
+        "anchor": "input"
+      }
+    }
+  ]
+}

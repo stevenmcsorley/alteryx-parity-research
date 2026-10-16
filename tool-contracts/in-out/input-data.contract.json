@@ -240,10 +240,11 @@
     ]
   },
   "independent_tests": {
-    "count": 27,
-    "passing": 27,
+    "count": 28,
+    "passing": 28,
     "tests": [
       "test_batch5.MapReportExampleTests.test_uk_map_report_example",
+      "test_batch8.ExampleTests.test_diesel_forecast_example",
       "test_control_container.ControlContainerTests.test_chained_containers_run_in_sequence_through_a_file",
       "test_data_correctness.DataCorrectnessTests.test_csv_default_inference_types_quantities_and_keeps_codes_as_text",
       "test_data_correctness.DataCorrectnessTests.test_csv_inference_preserves_subunit_and_exponent_decimals",

@@ -6,29 +6,83 @@
   "xml_tool_name": "Predictive Tools\\MB_Rules.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/mb-rules-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Input Data Structure",
-      "Method to Use",
-      "Control Parameters"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "transaction_field",
+      "item_field"
+    ],
+    "properties": {
+      "transaction_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "item_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "min_support": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 1,
+        "default": 0.01
+      },
+      "min_confidence": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0.2
+      },
+      "max_items": {
+        "type": "integer",
+        "minimum": 2,
+        "maximum": 6,
+        "default": 4
+      },
+      "max_rules": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000000,
+        "default": 100000
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.mb_rules",
+    "version": "1.0.0",
+    "module": "flowengine.tools.grouping",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -45,9 +99,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_batch8.GroupingTests.test_market_basket_rules_affinity_and_inspect"
+    ]
   },
   "sources": [
     {
@@ -63,7 +119,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet."
   ]
 }

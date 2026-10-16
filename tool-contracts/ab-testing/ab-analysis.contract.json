@@ -6,57 +6,111 @@
   "xml_tool_name": "Predictive Tools\\AB_Analysis.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/ab-testing/ab-analysis-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
+  "inputs": [
+    {
+      "name": "pairs",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "outputs": [
     {
-      "name": "O",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "E",
+      "name": "summary",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "G",
+      "name": "chart",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
-    },
-    {
-      "name": "I",
-      "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Connect Inputs",
-      "Configure the Tool",
-      "Input Data",
-      "Test Dates",
-      "Additional Information",
-      "Graphics Options",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "unit_field",
+      "date_field",
+      "value_field",
+      "comparison_start",
+      "comparison_end",
+      "test_start",
+      "test_end"
+    ],
+    "properties": {
+      "unit_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "date_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "value_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "comparison_start": {
+        "type": "string",
+        "minLength": 10
+      },
+      "comparison_end": {
+        "type": "string",
+        "minLength": 10
+      },
+      "test_start": {
+        "type": "string",
+        "minLength": 10
+      },
+      "test_end": {
+        "type": "string",
+        "minLength": 10
+      },
+      "confidence": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "exclusiveMaximum": 1,
+        "default": 0.95
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.ab_analysis",
+    "version": "1.0.0",
+    "module": "flowengine.tools.abtest",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -112,9 +166,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_batch8.ABTests.test_matched_controls_and_lift"
+    ]
   },
   "sources": [
     {
@@ -130,6 +186,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

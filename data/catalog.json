@@ -1845,7 +1845,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/ab-testing/ab-analysis-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1857,7 +1857,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/ab-testing/ab-controls-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1869,7 +1869,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/ab-testing/ab-treatments-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1881,7 +1881,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/ab-testing/ab-trend-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1893,7 +1893,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/time-series/arima-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1905,7 +1905,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/time-series/ets-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1917,7 +1917,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/time-series/ts-compare-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1929,7 +1929,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/time-series/ts-covariate-forecast-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1941,7 +1941,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/time-series/ts-filler-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1953,7 +1953,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/time-series/ts-forecast-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1965,7 +1965,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/time-series/ts-forecast-factory-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1977,7 +1977,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/time-series/ts-model-factory-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1989,7 +1989,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/time-series/ts-plot-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2001,7 +2001,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/append-cluster-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2013,7 +2013,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/find-nearest-neighbors-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2025,7 +2025,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/k-centroids-cluster-analysis-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2037,7 +2037,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/k-centroids-diagnostics-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2049,7 +2049,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/mb-affinity-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2061,7 +2061,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/mb-inspect-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2073,7 +2073,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/mb-rules-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2085,7 +2085,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/multidimensional-scaling-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2097,7 +2097,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/principal-components-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2109,7 +2109,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/prescriptive/optimization-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2121,7 +2121,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/prescriptive/simulation-sampling-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2133,7 +2133,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/prescriptive/simulation-scoring-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2145,7 +2145,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/prescriptive/simulation-summary-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
