@@ -1,0 +1,465 @@
+{
+  "format": "flowengine.workflow",
+  "formatVersion": 1,
+  "name": "UK fuel prices report",
+  "description": "Input Data \u2192 Summarize \u2192 Table / Interactive Chart / Report Text / Image \u2192 Layout \u2192 Render (PDF and HTML).",
+  "nodes": [
+    {
+      "id": "fuel",
+      "tool": "core.input_data",
+      "config": {
+        "path": "../investigation/data/weekly_fuel_prices.csv",
+        "type_inference": "flowbench"
+      },
+      "position": {
+        "x": 0,
+        "y": 200
+      }
+    },
+    {
+      "id": "derive",
+      "tool": "core.formula",
+      "config": {
+        "formulas": [
+          {
+            "field": "WeekDate",
+            "expression": "DateTimeParse([Week], \"%d/%m/%Y\")",
+            "type": "date"
+          },
+          {
+            "field": "Year",
+            "expression": "Right([Week], 4)",
+            "type": "v_string",
+            "size": 4
+          }
+        ]
+      },
+      "position": {
+        "x": 200,
+        "y": 200
+      }
+    },
+    {
+      "id": "yearly",
+      "tool": "core.summarize",
+      "config": {
+        "actions": [
+          {
+            "field": "Year",
+            "op": "group_by"
+          },
+          {
+            "field": "PetrolPencePerLitre",
+            "op": "avg",
+            "output": "AvgPetrol"
+          },
+          {
+            "field": "DieselPencePerLitre",
+            "op": "avg",
+            "output": "AvgDiesel"
+          },
+          {
+            "field": "PetrolPencePerLitre",
+            "op": "max",
+            "output": "PeakPetrol"
+          },
+          {
+            "field": "Week",
+            "op": "count",
+            "output": "Weeks"
+          }
+        ]
+      },
+      "position": {
+        "x": 400,
+        "y": 120
+      }
+    },
+    {
+      "id": "overall",
+      "tool": "core.summarize",
+      "config": {
+        "actions": [
+          {
+            "field": "PetrolPencePerLitre",
+            "op": "avg",
+            "output": "AvgPetrol"
+          },
+          {
+            "field": "PetrolPencePerLitre",
+            "op": "max",
+            "output": "PeakPetrol"
+          },
+          {
+            "field": "Week",
+            "op": "count",
+            "output": "Weeks"
+          }
+        ]
+      },
+      "position": {
+        "x": 400,
+        "y": 320
+      }
+    },
+    {
+      "id": "overall_text",
+      "tool": "core.formula",
+      "config": {
+        "formulas": [
+          {
+            "field": "AvgText",
+            "expression": "ToString([AvgPetrol], 1)",
+            "type": "v_string",
+            "size": 20
+          },
+          {
+            "field": "PeakText",
+            "expression": "ToString([PeakPetrol], 1)",
+            "type": "v_string",
+            "size": 20
+          }
+        ]
+      },
+      "position": {
+        "x": 600,
+        "y": 320
+      }
+    },
+    {
+      "id": "logo",
+      "tool": "core.report_image",
+      "config": {
+        "path": "assets/flowbench-logo.png",
+        "display_width": 48,
+        "alt": "Flowbench"
+      },
+      "position": {
+        "x": 600,
+        "y": 0
+      }
+    },
+    {
+      "id": "title",
+      "tool": "core.report_text",
+      "config": {
+        "text": "UK road fuel prices, 2018 to 2026",
+        "style": "title"
+      },
+      "position": {
+        "x": 600,
+        "y": 60
+      }
+    },
+    {
+      "id": "header",
+      "tool": "core.report_layout",
+      "config": {
+        "direction": "horizontal",
+        "gap": 12
+      },
+      "position": {
+        "x": 800,
+        "y": 30
+      }
+    },
+    {
+      "id": "intro",
+      "tool": "core.report_text",
+      "config": {
+        "text": "Across {{Weeks}} weekly observations, unleaded petrol averaged {{AvgText}}p per litre and peaked at {{PeakText}}p. Source: DESNZ weekly road fuel prices (Open Government Licence v3.0).",
+        "mode": "first_record"
+      },
+      "position": {
+        "x": 800,
+        "y": 320
+      }
+    },
+    {
+      "id": "weekly_chart",
+      "tool": "core.interactive_chart",
+      "config": {
+        "chart_type": "timeseries",
+        "x_field": "WeekDate",
+        "y_fields": [
+          "PetrolPencePerLitre",
+          "DieselPencePerLitre"
+        ],
+        "aggregation": "none",
+        "title": "Weekly pump prices",
+        "y_label": "Pence per litre",
+        "x_label": "Week"
+      },
+      "position": {
+        "x": 600,
+        "y": 200
+      }
+    },
+    {
+      "id": "yearly_chart",
+      "tool": "core.interactive_chart",
+      "config": {
+        "chart_type": "bar",
+        "x_field": "Year",
+        "y_fields": [
+          "AvgPetrol",
+          "AvgDiesel"
+        ],
+        "aggregation": "sum",
+        "title": "Average price by year",
+        "y_label": "Pence per litre"
+      },
+      "position": {
+        "x": 600,
+        "y": 120
+      }
+    },
+    {
+      "id": "yearly_table",
+      "tool": "core.report_table",
+      "config": {
+        "title": "Yearly summary",
+        "columns": [
+          {
+            "field": "Year"
+          },
+          {
+            "field": "Weeks",
+            "label": "Weeks",
+            "total": true
+          },
+          {
+            "field": "AvgPetrol",
+            "label": "Avg petrol (p/l)",
+            "format": "number",
+            "decimals": 1
+          },
+          {
+            "field": "AvgDiesel",
+            "label": "Avg diesel (p/l)",
+            "format": "number",
+            "decimals": 1
+          },
+          {
+            "field": "PeakPetrol",
+            "label": "Peak petrol (p/l)",
+            "format": "number",
+            "decimals": 1
+          }
+        ],
+        "total_label": "All years"
+      },
+      "position": {
+        "x": 600,
+        "y": 160
+      }
+    },
+    {
+      "id": "page",
+      "tool": "core.report_layout",
+      "config": {
+        "direction": "vertical"
+      },
+      "position": {
+        "x": 1000,
+        "y": 200
+      }
+    },
+    {
+      "id": "pdf",
+      "tool": "core.render",
+      "config": {
+        "path": "out/fuel_report.pdf",
+        "title": "UK road fuel prices"
+      },
+      "position": {
+        "x": 1200,
+        "y": 160
+      }
+    },
+    {
+      "id": "html",
+      "tool": "core.render",
+      "config": {
+        "path": "out/fuel_report.html",
+        "title": "UK road fuel prices"
+      },
+      "position": {
+        "x": 1200,
+        "y": 240
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": {
+        "node": "fuel",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "derive",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "yearly",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "overall",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "overall",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "overall_text",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "logo",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "header",
+        "anchor": "inputs"
+      }
+    },
+    {
+      "from": {
+        "node": "title",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "header",
+        "anchor": "inputs"
+      }
+    },
+    {
+      "from": {
+        "node": "overall_text",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "intro",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "derive",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "weekly_chart",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "yearly",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "yearly_chart",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "yearly",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "yearly_table",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "header",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "page",
+        "anchor": "inputs"
+      }
+    },
+    {
+      "from": {
+        "node": "intro",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "page",
+        "anchor": "inputs"
+      }
+    },
+    {
+      "from": {
+        "node": "weekly_chart",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "page",
+        "anchor": "inputs"
+      }
+    },
+    {
+      "from": {
+        "node": "yearly_table",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "page",
+        "anchor": "inputs"
+      }
+    },
+    {
+      "from": {
+        "node": "yearly_chart",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "page",
+        "anchor": "inputs"
+      }
+    },
+    {
+      "from": {
+        "node": "page",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "pdf",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "page",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "html",
+        "anchor": "input"
+      }
+    }
+  ]
+}

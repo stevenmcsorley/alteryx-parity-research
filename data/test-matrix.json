@@ -115,7 +115,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 23,
+      "independent_tests": 24,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:input-data)"
@@ -187,7 +187,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 174,
+      "independent_tests": 180,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:text-input)"
@@ -331,7 +331,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 25,
+      "independent_tests": 26,
       "reference_cases": 13,
       "evidence_refs": [
         "tool-contracts (contract JSON for preparation:formula)"
@@ -1099,7 +1099,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 10,
+      "independent_tests": 11,
       "reference_cases": 4,
       "evidence_refs": [
         "tool-contracts (contract JSON for transform:summarize)"
@@ -1577,9 +1577,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 4,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for reporting:image)"
@@ -1601,9 +1601,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 4,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for reporting:interactive-chart)"
@@ -1625,9 +1625,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 3,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for reporting:layout)"
@@ -1721,9 +1721,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 4,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for reporting:render)"
@@ -1817,9 +1817,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 5,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for reporting:report-text)"
@@ -1841,9 +1841,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 5,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for reporting:table)"

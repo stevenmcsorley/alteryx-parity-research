@@ -160,8 +160,8 @@
     ]
   },
   "independent_tests": {
-    "count": 10,
-    "passing": 10,
+    "count": 11,
+    "passing": 11,
     "tests": [
       "test_data_correctness.DataCorrectnessTests.test_full_typed_csv_pipeline_roundtrip",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
@@ -172,7 +172,8 @@
       "test_fe_interop.ImportTests.test_validation_reports_the_unsupported_catalogue_tool",
       "test_fe_scale.SpillAndParallelTests.test_spill_and_parallel_give_identical_results",
       "test_fe_tools.TransformTests.test_summarize",
-      "test_fe_tools.TransformTests.test_summarize_empty_and_errors"
+      "test_fe_tools.TransformTests.test_summarize_empty_and_errors",
+      "test_reporting.RenderTests.test_fuel_report_example"
     ]
   },
   "sources": [

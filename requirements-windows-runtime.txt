@@ -1,13 +1,16 @@
 attrs==25.4.0
+charset-normalizer==3.5.2
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
 Metaphone==0.6
 numpy==2.4.6
+pillow==12.3.0
 psycopg==3.2.3
 psycopg-binary==3.2.3
 pyarrow==16.1.0
 pymssql==2.4.4
 referencing==0.37.0
+reportlab==4.5.1
 rpds-py==0.30.0
 scipy==1.18.1
 typing-extensions==4.15.0
