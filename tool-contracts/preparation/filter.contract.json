@@ -163,8 +163,8 @@
     ]
   },
   "independent_tests": {
-    "count": 30,
-    "passing": 30,
+    "count": 31,
+    "passing": 31,
     "tests": [
       "test_control_container.ControlContainerTests.test_empty_control_input_skips_contents_and_their_downstream",
       "test_control_container.ControlContainerTests.test_inactive_container_stops_a_chain_and_nested_containers",
@@ -173,6 +173,7 @@
       "test_data_correctness.DataCorrectnessTests.test_csv_string_filter_and_declared_numeric_schema",
       "test_data_correctness.DataCorrectnessTests.test_filter_numeric_literal_int64_precision",
       "test_data_correctness.DataCorrectnessTests.test_full_typed_csv_pipeline_roundtrip",
+      "test_dynamic_input.DynamicInputTests.test_directory_listing_drives_dynamic_input",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.PropertyTests.test_invariants",

@@ -434,6 +434,80 @@ class InputData(Tool):
         return {'output': table}
 
 
+
+_INPUT_OPTIONS = {k: v for k, v in InputData.manifest.config_schema['properties'].items() if k != 'path'}
+
+
+class DynamicInput(Tool):
+    """Read the file named by each incoming record and stack the results in record order."""
+    manifest = ToolManifest(
+        tool_id='core.dynamic_input', version='1.0.0', display_name='Dynamic Input',
+        catalog_ids=('developer:dynamic-input',),
+        inputs=(Anchor('input', 'Input', description='Records whose path field names the files to read'),),
+        outputs=(Anchor('output', 'Output'),),
+        side_effects='reads-files', deterministic=True,
+        description='For each input record, read the file named in path_field with the Input Data options, '
+                    'in record order. Relative paths resolve against the workflow directory. Files must share '
+                    'one schema unless schema_mode is union (stack by field name, widening types, null-filling '
+                    'missing fields). max_records applies to each file. SQL query modification is not implemented.',
+        config_schema={
+            'type': 'object', 'additionalProperties': False, 'required': ['path_field'],
+            'properties': {
+                'path_field': {'type': 'string', 'minLength': 1},
+                'schema_mode': {'enum': ['identical', 'union'], 'default': 'identical'},
+                **_INPUT_OPTIONS,
+            },
+        })
+
+    def check_config(self, cfg):
+        for spec in cfg.get('fields', []):
+            field_from_spec(spec)
+
+    def _file_config(self, cfg, path):
+        return {**{k: v for k, v in cfg.items() if k not in ('path_field', 'schema_mode')}, 'path': path}
+
+    def infer(self, ctx, cfg, inputs):
+        schema = inputs['input']
+        if cfg['path_field'] not in schema.names:
+            raise SchemaError(f"Dynamic Input path field {cfg['path_field']!r} is not in the input")
+        if not schema.field(cfg['path_field']).type.is_string:
+            raise SchemaError(f"Dynamic Input path field {cfg['path_field']!r} must be a text field")
+        if not cfg.get('fields'):
+            return None  # depends on the files named at run time
+        fields = [field_from_spec(s) for s in cfg['fields']]
+        if cfg['add_file_name_field']:
+            fields.append(Field(cfg['add_file_name_field'], FieldType.V_WSTRING, UNBOUNDED_TEXT))
+        return {'output': Schema(fields)}
+
+    def run(self, ctx, cfg, inputs):
+        source: Table = inputs['input']
+        self.infer(ctx, cfg, {'input': source.schema})
+        reader, tables = InputData(), []
+        for number, path in enumerate(source.column(cfg['path_field']), start=1):
+            ctx.check_cancelled()
+            if path is None or not str(path).strip():
+                raise DataError(f'Dynamic Input record {number} has an empty path')
+            table = reader.run(ctx, self._file_config(cfg, str(path)), {})['output']
+            if tables and cfg['schema_mode'] == 'identical' and tuple(table.schema) != tuple(tables[0].schema):
+                raise SchemaError(f'Dynamic Input record {number}: {path!r} has fields {table.schema.names} '
+                                  f'with different names or types from the first file '
+                                  f'({tables[0].schema.names}); use schema_mode union to stack by name')
+            tables.append(table)
+        if not tables:
+            static = self.infer(ctx, cfg, {'input': source.schema})
+            if static is None:
+                raise DataError('Dynamic Input received no records; declare fields to output an empty table')
+            return {'output': Table.empty(static['output'])}
+        if len(tables) == 1:
+            return {'output': tables[0]}
+        if cfg['schema_mode'] == 'union':
+            from .join import Union
+            return Union().run(ctx, {'mode': 'name', 'missing_fields': 'include', 'case_insensitive_names': False},
+                               {'inputs': tables})
+        columns = [[v for t in tables for v in t.columns[i]] for i in range(len(tables[0].schema))]
+        return {'output': Table(tables[0].schema, columns)}
+
+
 def _read_yxdb(path, max_records, ctx):
     """Read a .yxdb data file with the MIT-licensed third-party 'yxdb' package (optional dependency).
     Its type model is coarse: text -> v_wstring, integers -> int64, decimals -> double; original sizes,
@@ -754,4 +828,4 @@ class Directory(Tool):
         return {'output': Table.from_rows(self.SCHEMA, rows)}
 
 
-TOOLS = [InputData, OutputData, TextInput, Browse, DateTimeNow, Directory]
+TOOLS = [InputData, DynamicInput, OutputData, TextInput, Browse, DateTimeNow, Directory]

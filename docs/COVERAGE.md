@@ -12,7 +12,7 @@
 | Machine-readable contracts generated | 323 |
 | Entries with known anchors (manifest, reference-observed or public-doc) | 184 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 69 |
+| Independent kernels implemented and passing tests | 70 |
 | Independently implemented application adapters (in progress) | 14 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 258 run, 0 failed |
+| Unit/integration tests in last ledger build | 264 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -33,15 +33,15 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 |---|---|---:|---:|---|
 | `in-out:browse` | `core.browse` | 27 | 0/0 | not-tested |
 | `in-out:date-time-now` | `core.date_time_now` | 1 | 0/0 | not-tested |
-| `in-out:directory` | `core.directory` | 2 | 0/0 | not-tested |
+| `in-out:directory` | `core.directory` | 3 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 19 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 11 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 140 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 145 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
 | `preparation:data-cleansing` | `core.data_cleansing` | 3 | 0/0 | not-tested |
-| `preparation:filter` | `core.filter` | 30 | 5/5 | partial |
+| `preparation:filter` | `core.filter` | 31 | 5/5 | partial |
 | `preparation:formula` | `core.formula` | 23 | 13/13 | partial |
 | `preparation:generate-rows` | `core.generate_rows` | 3 | 0/0 | not-tested |
 | `preparation:imputation` | `core.imputation` | 1 | 1/1 | partial |
@@ -88,6 +88,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `developer:control-container` | `core.control_container` | 6 | 0/0 | not-tested |
 | `developer:detour` | `core.detour` | 1 | 0/0 | not-tested |
 | `developer:detour-end` | `core.detour_end` | 1 | 0/0 | not-tested |
+| `developer:dynamic-input` | `core.dynamic_input` | 6 | 0/0 | not-tested |
 | `developer:dynamic-rename` | `core.dynamic_rename` | 1 | 1/1 | partial |
 | `developer:dynamic-replace` | `core.dynamic_replace` | 3 | 0/0 | not-tested |
 | `developer:dynamic-select` | `core.dynamic_select` | 1 | 1/1 | partial |
@@ -116,7 +117,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Connectors | 44 | 0 | 0 | 1 | 44 |
 | Data Investigation | 14 | 1 | 0 | 7 | 0 |
 | Demographic Analysis | 4 | 0 | 0 | 0 | 4 |
-| Developer | 30 | 21 | 4 | 29 | 0 |
+| Developer | 30 | 22 | 4 | 29 | 0 |
 | Documentation | 3 | 0 | 0 | 1 | 0 |
 | In-Database | 16 | 0 | 0 | 0 | 0 |
 | In/Out | 8 | 6 | 0 | 7 | 0 |
