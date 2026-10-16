@@ -1389,7 +1389,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/basic-data-profile-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1401,7 +1401,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/contingency-table-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1413,7 +1413,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/distribution-analysis-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1425,7 +1425,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/field-summary-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1437,7 +1437,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/frequency-table-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1461,7 +1461,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/histogram-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -1521,7 +1521,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/spearman-correlation-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

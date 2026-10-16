@@ -1,0 +1,18 @@
+{
+  "source_page": "https://www.gov.uk/government/statistics/weekly-road-fuel-prices",
+  "download_url": "https://assets.publishing.service.gov.uk/media/6acd0403ec9d3aba1e013c7b/CSV__2018_-__.csv",
+  "retrieved_utc": "2026-10-16T13:31:38.124164+00:00",
+  "licence": "Open Government Licence v3.0; Crown copyright",
+  "raw_sha256": "2d2842b91519a538051a1656e4a55897aa7fee7efcf5fb88ebbfa70c7520d766",
+  "records": 459,
+  "preparation": "Column names simplified only. All source row values and order preserved. Week remains DD/MM/YYYY.",
+  "column_mapping": {
+    "Date": "Week",
+    "ULSP (Ultra low sulphur unleaded petrol) Pump price in pence/litre": "PetrolPencePerLitre",
+    "ULSD (Ultra low sulphur diesel) Pump price in pence/litre": "DieselPencePerLitre",
+    "ULSP (Ultra low sulphur unleaded petrol) Duty rate in pence/litre": "PetrolDutyPencePerLitre",
+    "ULSD (Ultra low sulphur diesel) Duty rate in pence/litre": "DieselDutyPencePerLitre",
+    "ULSP (Ultra low sulphur unleaded petrol) VAT percentage rate": "PetrolVATPercent",
+    "ULSD (Ultra low sulphur diesel) VAT percentage rate": "DieselVATPercent"
+  }
+}

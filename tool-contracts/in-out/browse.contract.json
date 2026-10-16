@@ -87,8 +87,8 @@
     ]
   },
   "independent_tests": {
-    "count": 27,
-    "passing": 27,
+    "count": 28,
+    "passing": 28,
     "tests": [
       "test_control_container.ControlContainerTests.test_empty_control_input_skips_contents_and_their_downstream",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
@@ -104,6 +104,7 @@
       "test_fe_service.ServiceTests.test_run_previews_and_errors",
       "test_fe_tools.InOutTests.test_browse_captures",
       "test_fe_tools.InOutTests.test_text_input_validation",
+      "test_investigation.ExampleWorkflowTests.test_fuel_investigation_example_runs_every_tool",
       "test_macros.BatchMacroTests.test_batch_child_validation_failure_reports_iteration_and_call_node",
       "test_macros.BatchMacroTests.test_batch_iteration_limit_and_bad_action_fail_explicitly",
       "test_macros.BatchMacroTests.test_control_records_reconfigure_and_run_in_input_order",
