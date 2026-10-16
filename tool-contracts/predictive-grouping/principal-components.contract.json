@@ -6,36 +6,85 @@
   "xml_tool_name": "Predictive Tools\\Principal_Components.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/principal-components-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "O",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "variance",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "loadings",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Configuration Tab",
-      "Graphic Options Tab",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "fields"
+    ],
+    "properties": {
+      "fields": {
+        "type": "array",
+        "uniqueItems": true,
+        "minItems": 2,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "components": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 1,
+        "default": null
+      },
+      "standardize": {
+        "type": "boolean",
+        "default": true
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.principal_components",
+    "version": "1.0.0",
+    "module": "flowengine.tools.grouping",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -63,9 +112,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_batch8.GroupingTests.test_pca_matches_eigen_decomposition_and_mds_reproduces_distances"
+    ]
   },
   "sources": [
     {
@@ -81,6 +132,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

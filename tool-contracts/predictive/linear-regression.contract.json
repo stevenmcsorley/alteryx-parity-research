@@ -121,9 +121,10 @@
     ]
   },
   "independent_tests": {
-    "count": 5,
-    "passing": 5,
+    "count": 6,
+    "passing": 6,
     "tests": [
+      "test_batch8.PrescriptiveTests.test_sampling_scoring_and_summary",
       "test_predictive.EvaluationTests.test_stepwise_drops_noise_and_nested_test_matches_statsmodels",
       "test_predictive.ExampleTests.test_fuel_models_example",
       "test_predictive.LearnerAndScoreTests.test_regression_learners_and_spline_capture_curvature",

@@ -6,28 +6,95 @@
   "xml_tool_name": "SimSampling",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/prescriptive/simulation-sampling-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "outputs": [
     {
-      "name": "D",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Connect Inputs",
-      "Configure the Tool",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "variables"
+    ],
+    "properties": {
+      "variables": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "distribution"
+          ],
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1
+            },
+            "distribution": {
+              "enum": [
+                "normal",
+                "lognormal",
+                "uniform",
+                "triangular",
+                "exponential",
+                "gamma",
+                "beta",
+                "poisson",
+                "binomial",
+                "empirical"
+              ]
+            },
+            "params": {
+              "type": "object",
+              "default": {},
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "source_field": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": null,
+              "description": "Input field to resample (empirical)"
+            }
+          }
+        }
+      },
+      "iterations": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10000000,
+        "default": 10000
+      },
+      "seed": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 1
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime",
     "optimisation-solver",
@@ -36,7 +103,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.simulation_sampling",
+    "version": "1.0.0",
+    "module": "flowengine.tools.prescriptive",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -58,9 +131,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_batch8.PrescriptiveTests.test_sampling_scoring_and_summary"
+    ]
   },
   "sources": [
     {
@@ -76,6 +151,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

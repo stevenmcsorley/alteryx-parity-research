@@ -87,9 +87,10 @@
     ]
   },
   "independent_tests": {
-    "count": 31,
-    "passing": 31,
+    "count": 32,
+    "passing": 32,
     "tests": [
+      "test_batch8.ExampleTests.test_diesel_forecast_example",
       "test_control_container.ControlContainerTests.test_empty_control_input_skips_contents_and_their_downstream",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",

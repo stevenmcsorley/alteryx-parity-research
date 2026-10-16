@@ -144,10 +144,11 @@
     ]
   },
   "independent_tests": {
-    "count": 29,
-    "passing": 29,
+    "count": 30,
+    "passing": 30,
     "tests": [
       "test_batch5.MapReportExampleTests.test_uk_map_report_example",
+      "test_batch8.ExampleTests.test_diesel_forecast_example",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.ValidationTests.test_static_schemas_propagate",

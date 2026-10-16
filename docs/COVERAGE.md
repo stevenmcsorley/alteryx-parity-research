@@ -10,9 +10,9 @@
 | Distinct tool names | 321 |
 | Public help URL resolved (official tool list sync) | 323 |
 | Machine-readable contracts generated | 323 |
-| Entries with known anchors (manifest, reference-observed or public-doc) | 224 |
+| Entries with known anchors (manifest, reference-observed or public-doc) | 239 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 153 |
+| Independent kernels implemented and passing tests | 179 |
 | Independently implemented application adapters (in progress) | 14 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 357 run, 0 failed |
+| Unit/integration tests in last ledger build | 371 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -31,18 +31,18 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 
 | Catalogue id | Kernel | Tests | Reference cases (passed/run) | Verification |
 |---|---|---:|---:|---|
-| `in-out:browse` | `core.browse` | 31 | 0/0 | not-tested |
+| `in-out:browse` | `core.browse` | 32 | 0/0 | not-tested |
 | `in-out:date-time-now` | `core.date_time_now` | 1 | 0/0 | not-tested |
 | `in-out:directory` | `core.directory` | 3 | 0/0 | not-tested |
-| `in-out:input-data` | `core.input_data` | 27 | 0/0 | not-tested |
+| `in-out:input-data` | `core.input_data` | 28 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 12 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 223 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 236 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 2 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
 | `preparation:data-cleansing` | `core.data_cleansing` | 3 | 0/0 | not-tested |
 | `preparation:filter` | `core.filter` | 31 | 5/5 | partial |
-| `preparation:formula` | `core.formula` | 29 | 13/13 | partial |
+| `preparation:formula` | `core.formula` | 30 | 13/13 | partial |
 | `preparation:generate-rows` | `core.generate_rows` | 3 | 0/0 | not-tested |
 | `preparation:imputation` | `core.imputation` | 1 | 1/1 | partial |
 | `preparation:multi-field-binning` | `core.multi_field_binning` | 1 | 0/0 | not-tested |
@@ -142,7 +142,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `predictive:forest-model` | `core.forest_model` | 2 | 0/0 | not-tested |
 | `predictive:gamma-regression` | `core.gamma_regression` | 1 | 0/0 | not-tested |
 | `predictive:lift-chart` | `core.lift_chart` | 3 | 0/0 | not-tested |
-| `predictive:linear-regression` | `core.linear_regression` | 5 | 0/0 | not-tested |
+| `predictive:linear-regression` | `core.linear_regression` | 6 | 0/0 | not-tested |
 | `predictive:logistic-regression` | `core.logistic_regression` | 4 | 0/0 | not-tested |
 | `predictive:model-coefficients` | `core.model_coefficients` | 1 | 0/0 | not-tested |
 | `predictive:model-comparison` | `core.model_comparison` | 2 | 0/0 | not-tested |
@@ -158,6 +158,32 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `predictive:survival-score` | `core.survival_score` | 1 | 0/0 | not-tested |
 | `predictive:test-of-means` | `core.test_of_means` | 1 | 0/0 | not-tested |
 | `predictive:variance-inflation-factors` | `core.variance_inflation_factors` | 1 | 0/0 | not-tested |
+| `ab-testing:ab-analysis` | `core.ab_analysis` | 1 | 0/0 | not-tested |
+| `ab-testing:ab-controls` | `core.ab_controls` | 1 | 0/0 | not-tested |
+| `ab-testing:ab-treatments` | `core.ab_treatments` | 1 | 0/0 | not-tested |
+| `ab-testing:ab-trend` | `core.ab_trend` | 1 | 0/0 | not-tested |
+| `time-series:arima` | `core.arima` | 2 | 0/0 | not-tested |
+| `time-series:ets` | `core.ets` | 2 | 0/0 | not-tested |
+| `time-series:ts-compare` | `core.ts_compare` | 1 | 0/0 | not-tested |
+| `time-series:ts-covariate-forecast` | `core.ts_covariate_forecast` | 1 | 0/0 | not-tested |
+| `time-series:ts-filler` | `core.ts_filler` | 1 | 0/0 | not-tested |
+| `time-series:ts-forecast` | `core.ts_forecast` | 2 | 0/0 | not-tested |
+| `time-series:ts-forecast-factory` | `core.ts_forecast_factory` | 1 | 0/0 | not-tested |
+| `time-series:ts-model-factory` | `core.ts_model_factory` | 1 | 0/0 | not-tested |
+| `time-series:ts-plot` | `core.ts_plot` | 2 | 0/0 | not-tested |
+| `predictive-grouping:append-cluster` | `core.append_cluster` | 1 | 0/0 | not-tested |
+| `predictive-grouping:find-nearest-neighbors` | `core.find_nearest_neighbors` | 1 | 0/0 | not-tested |
+| `predictive-grouping:k-centroids-cluster-analysis` | `core.k_centroids_cluster_analysis` | 1 | 0/0 | not-tested |
+| `predictive-grouping:k-centroids-diagnostics` | `core.k_centroids_diagnostics` | 1 | 0/0 | not-tested |
+| `predictive-grouping:mb-affinity` | `core.mb_affinity` | 1 | 0/0 | not-tested |
+| `predictive-grouping:mb-inspect` | `core.mb_inspect` | 1 | 0/0 | not-tested |
+| `predictive-grouping:mb-rules` | `core.mb_rules` | 1 | 0/0 | not-tested |
+| `predictive-grouping:multidimensional-scaling` | `core.multidimensional_scaling` | 1 | 0/0 | not-tested |
+| `predictive-grouping:principal-components` | `core.principal_components` | 1 | 0/0 | not-tested |
+| `prescriptive:optimization` | `core.optimization` | 2 | 0/0 | not-tested |
+| `prescriptive:simulation-sampling` | `core.simulation_sampling` | 1 | 0/0 | not-tested |
+| `prescriptive:simulation-scoring` | `core.simulation_scoring` | 1 | 0/0 | not-tested |
+| `prescriptive:simulation-summary` | `core.simulation_summary` | 1 | 0/0 | not-tested |
 | `developer:base64-encoder` | `core.base64_encoder` | 1 | 0/0 | not-tested |
 | `developer:blob-convert` | `core.blob_convert` | 3 | 0/0 | not-tested |
 | `developer:blob-input` | `core.blob_input` | 2 | 0/0 | not-tested |
@@ -190,7 +216,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 
 | Category | Entries | Registered kernels | Ref-partial | Anchors known | Blocked by external prerequisites |
 |---|---:|---:|---:|---:|---:|
-| AB Testing | 4 | 0 | 0 | 1 | 0 |
+| AB Testing | 4 | 4 | 0 | 4 | 0 |
 | AI Tools | 6 | 0 | 0 | 6 | 6 |
 | Address | 6 | 0 | 0 | 3 | 6 |
 | Behavior Analysis (Deprecated) | 10 | 0 | 0 | 0 | 10 |
@@ -210,14 +236,14 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Machine Learning | 11 | 0 | 0 | 3 | 0 |
 | Parse | 4 | 4 | 4 | 4 | 0 |
 | Predictive | 25 | 23 | 0 | 23 | 0 |
-| Predictive Grouping | 9 | 0 | 0 | 3 | 0 |
+| Predictive Grouping | 9 | 9 | 0 | 9 | 0 |
 | Preparation | 21 | 21 | 12 | 21 | 0 |
-| Prescriptive | 4 | 0 | 0 | 3 | 0 |
+| Prescriptive | 4 | 4 | 0 | 4 | 0 |
 | Reporting | 13 | 12 | 0 | 12 | 0 |
 | SDK Examples | 1 | 0 | 0 | 0 | 0 |
 | Spatial | 15 | 14 | 0 | 14 | 0 |
 | Text Mining | 9 | 0 | 0 | 9 | 0 |
-| Time Series | 9 | 0 | 0 | 4 | 0 |
+| Time Series | 9 | 9 | 0 | 9 | 0 |
 | Transform | 8 | 8 | 7 | 8 | 0 |
 
 ## Interpretation

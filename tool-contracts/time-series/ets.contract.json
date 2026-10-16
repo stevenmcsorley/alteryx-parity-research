@@ -6,38 +6,116 @@
   "xml_tool_name": "Predictive Tools\\ETS.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/time-series/ets-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "outputs": [
     {
-      "name": "O",
+      "name": "model",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "fit",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "fitted",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Required Parameters Tab",
-      "Model Type Tab",
-      "Other Options Tab",
-      "Graphic Options Tab",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "date_field",
+      "value_field"
+    ],
+    "properties": {
+      "date_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "value_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "seasonal_period": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 400,
+        "default": 1,
+        "description": "Observations per season (12 for monthly data with yearly seasonality; 1 = none)"
+      },
+      "model_name": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "error": {
+        "enum": [
+          "auto",
+          "add",
+          "mul"
+        ],
+        "default": "auto"
+      },
+      "trend": {
+        "enum": [
+          "auto",
+          "none",
+          "add"
+        ],
+        "default": "auto"
+      },
+      "damped": {
+        "type": "boolean",
+        "default": false
+      },
+      "seasonal": {
+        "enum": [
+          "auto",
+          "none",
+          "add",
+          "mul"
+        ],
+        "default": "auto"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.ets",
+    "version": "1.0.0",
+    "module": "flowengine.tools.timeseries",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -72,9 +150,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch8.ExampleTests.test_diesel_forecast_example",
+      "test_batch8.TimeSeriesTests.test_ets_and_compare_on_trend_with_seasonality"
+    ]
   },
   "sources": [
     {
@@ -90,6 +171,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

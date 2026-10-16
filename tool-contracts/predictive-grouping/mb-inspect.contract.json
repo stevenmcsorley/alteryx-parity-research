@@ -6,37 +6,99 @@
   "xml_tool_name": "Predictive Tools\\MB_Inspect.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive-grouping/mb-inspect-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "outputs": [
     {
-      "name": "O",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "chart",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Input",
-      "Configure the Tool",
-      "MB Inspect - Filter Configuration Tab",
-      "Graphic Options Tab",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "min_support": {
+        "type": "number",
+        "minimum": 0,
+        "default": 0
+      },
+      "min_confidence": {
+        "type": "number",
+        "minimum": 0,
+        "default": 0
+      },
+      "min_lift": {
+        "type": "number",
+        "minimum": 0,
+        "default": 0
+      },
+      "antecedent_contains": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "consequent_contains": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "sort_by": {
+        "enum": [
+          "Lift",
+          "Confidence",
+          "Support"
+        ],
+        "default": "Lift"
+      },
+      "top_n": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 1,
+        "default": null
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.mb_inspect",
+    "version": "1.0.0",
+    "module": "flowengine.tools.grouping",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -65,9 +127,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_batch8.GroupingTests.test_market_basket_rules_affinity_and_inspect"
+    ]
   },
   "sources": [
     {
@@ -83,6 +147,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }
