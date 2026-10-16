@@ -109,6 +109,8 @@ def geodesic_distance(a, b, crs_text):
     """Metres between two geometries on the ellipsoid; exact for points, nearest-point based otherwise."""
     from shapely.ops import nearest_points
     geod = _geod(crs_text)
+    if a.equals(b):
+        return 0.0  # exact on every platform (the ellipsoid solver can return ~1e-15 m)
     if a.geom_type != 'Point' or b.geom_type != 'Point':
         if a.intersects(b):
             return 0.0
@@ -229,7 +231,9 @@ class Distance(Tool):
                 check_lonlat(ga, f' in record {number}')
                 check_lonlat(gb, f' in record {number}')
             bearing = None
-            if cfg['method'] == 'geodesic' and geographic and ga.geom_type == gb.geom_type == 'Point':
+            if ga.equals(gb):
+                metres = 0.0
+            elif cfg['method'] == 'geodesic' and geographic and ga.geom_type == gb.geom_type == 'Point':
                 az, _, d = _geod(cfg['crs']).inv(ga.x, ga.y, gb.x, gb.y)
                 bearing = az % 360 if d else None
                 metres = float(d)
@@ -379,7 +383,9 @@ class FindNearest(Tool):
                 g = kept[p]
                 if cfg['ignore_identical'] and g.equals(geom):
                     continue
-                if all_points and geom.geom_type == 'Point':
+                if g.equals(geom):
+                    d = 0.0
+                elif all_points and geom.geom_type == 'Point':
                     d = float(geod.inv(geom.x, geom.y, g.x, g.y)[2])
                 else:
                     d = measure_distance(geom, g, cfg['crs'], 'geodesic' if geographic else 'planar')
