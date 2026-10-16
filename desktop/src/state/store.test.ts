@@ -22,6 +22,21 @@ beforeEach(() => {
 });
 
 describe('editor store', () => {
+  it('removes deleted nodes from Control Container children', () => {
+    useEditor.setState({ tools: { ...useEditor.getState().tools,
+      'core.control_container': { ...manifest('core.control_container', [], ['log']), config_schema: { type: 'object', properties: { children: { type: 'array', default: [] } } } } } });
+    const a = useEditor.getState().addTool('core.text_input', { x: 0, y: 0 });
+    const b = useEditor.getState().addTool('core.text_input', { x: 0, y: 100 });
+    const cc = useEditor.getState().addTool('core.control_container', { x: 300, y: 0 });
+    useEditor.getState().updateNodeData(cc, { config: { children: [a, b] } });
+    useEditor.setState({ nodes: useEditor.getState().nodes.map((n) => ({ ...n, selected: n.id === a })) });
+    useEditor.getState().deleteSelected();
+    const doc = toDocument({ nodes: useEditor.getState().nodes, edges: useEditor.getState().edges, name: 'x' } as any);
+    expect(doc.nodes.find((n) => n.id === cc)!.config.children).toEqual([b]);
+    useEditor.getState().undo();
+    expect((useEditor.getState().nodes.find((n) => n.id === cc)!.data as any).config.children).toEqual([a, b]);
+  });
+
   it('adds tools with unique ids and supports undo/redo', () => {
     const s = useEditor.getState();
     const a = s.addTool('core.text_input', { x: 0, y: 0 });

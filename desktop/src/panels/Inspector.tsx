@@ -262,6 +262,34 @@ function upstreamFields(node: CanvasNode): FieldContext {
   return { all, byAnchor };
 }
 
+function ControlContainerForm({ nodeId, value, onChange, onBeginEdit }: { nodeId: string; value: Record<string, unknown>; onChange: (v: Record<string, unknown>) => void; onBeginEdit: () => void }) {
+  const nodes = useEditor((s) => s.nodes);
+  const children = Array.isArray(value.children) ? (value.children as string[]) : [];
+  const picked = new Set(children);
+  // A node belongs to one container; offer nodes that are free or already ours, never our own ancestors.
+  const owner = new Map<string, string>();
+  for (const n of nodes) if (n.data.kind === 'tool' && n.data.tool === 'core.control_container' && n.id !== nodeId)
+    for (const child of (Array.isArray(n.data.config.children) ? n.data.config.children as string[] : [])) owner.set(child, n.id);
+  const ancestors = new Set<string>();
+  for (let cur = owner.get(nodeId); cur && !ancestors.has(cur); cur = owner.get(cur)) ancestors.add(cur);
+  const candidates = nodes.filter((n) => n.data.kind === 'tool' && n.id !== nodeId && !ancestors.has(n.id) && !owner.has(n.id));
+  const missing = children.filter((id) => !nodes.some((n) => n.id === id));
+  const toggle = (id: string) => { onBeginEdit(); onChange({ ...value, children: picked.has(id) ? children.filter((x) => x !== id) : [...children, id] }); };
+  return <div className="kv">
+    <label htmlFor={`cc-caption-${nodeId}`}>Caption</label>
+    <input id={`cc-caption-${nodeId}`} type="text" value={String(value.caption ?? 'Control Container')} onFocus={onBeginEdit}
+      onChange={(e) => onChange({ ...value, caption: e.target.value })} />
+    <label>Contained nodes</label>
+    <div className="chips" data-testid="control-container-children">
+      {candidates.map((n) => { const label = (n.data.kind === 'tool' && n.data.label) || n.id;
+        return <button type="button" key={n.id} className={`chip ${picked.has(n.id) ? 'on' : ''}`} aria-pressed={picked.has(n.id)} onClick={() => toggle(n.id)}>{label}</button>; })}
+      {missing.map((id) => <button type="button" key={id} className="chip on" style={{ borderColor: 'var(--err)' }} title="This node no longer exists" onClick={() => toggle(id)}>{id}</button>)}
+      {!candidates.length && !missing.length && <span style={{ color: 'var(--text-3)' }}>Add tools to the canvas to contain them</span>}
+    </div>
+    <p className="help" role="note" style={{ gridColumn: '1 / -1' }}>Contained nodes run only after the Control input finishes with at least one record (always, when Control is unconnected). Connect Log to another container's Control to run containers in sequence.</p>
+  </div>;
+}
+
 function ToolInspector({ node }: { node: CanvasNode }) {
   const d = node.data as ToolNodeData;
   const manifest = useEditor((s) => s.tools[d.tool]);
@@ -311,6 +339,8 @@ function ToolInspector({ node }: { node: CanvasNode }) {
             ? <DatabaseInputForm value={d.config} onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />
           : manifest.tool_id === 'core.db_output'
             ? <DatabaseOutputForm value={d.config} onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />
+          : manifest.tool_id === 'core.control_container'
+            ? <ControlContainerForm nodeId={node.id} value={d.config} onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />
           : <SchemaForm schema={manifest.config_schema} value={d.config} fields={fields} idPrefix={`cfg-${node.id}`}
             onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />}
         {manifest.tool_id === 'core.input_data' && ['csv', 'tsv', 'delimited', 'auto'].includes(String(d.config.format ?? 'auto')) &&

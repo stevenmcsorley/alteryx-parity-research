@@ -6,65 +6,63 @@
   "xml_tool_name": "AlteryxGuiToolkit.ControlContainer.ControlContainer",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/control-container-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Control",
+      "name": "control",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Log",
+      "name": "log",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Caption",
-      "Disabled",
-      "Folded",
-      "Style",
-      "SuppressErrorsDesignTime",
-      "SuppressErrorsRunTime"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "children"
     ],
-    "public_doc_sections": [
-      "Tool Components",
-      "Control Input (Optional)",
-      "Logging Output",
-      "How Do Control Containers Work?",
-      "Important Considerations about Execution Order",
-      "Execution Order Overview",
-      "Recommendations for Ensuring Execution Order",
-      "Group Tools in a Container",
-      "Modify Container Contents",
-      "Disable a Container",
-      "Enable a Container",
-      "Configure the Tool",
-      "Compatibility Notes and Limitations",
-      "In-Database Tools",
-      "Interface Tools",
-      "Block Until Done Tools",
-      "Detour Tools",
-      "Nested Control Containers",
-      "Control Containers and Macros",
-      "Control Containers and Run Until Selected Tool Setting"
-    ]
+    "properties": {
+      "caption": {
+        "type": "string",
+        "maxLength": 200,
+        "default": "Control Container"
+      },
+      "children": {
+        "type": "array",
+        "uniqueItems": true,
+        "maxItems": 10000,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.control_container",
+    "version": "1.0.0",
+    "module": "flowengine.tools.developer",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -118,9 +116,16 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 6,
+    "passing": 6,
+    "tests": [
+      "test_control_container.ControlContainerTests.test_chained_containers_run_in_sequence_through_a_file",
+      "test_control_container.ControlContainerTests.test_disabled_container_skips_contents",
+      "test_control_container.ControlContainerTests.test_empty_control_input_skips_contents_and_their_downstream",
+      "test_control_container.ControlContainerTests.test_inactive_container_stops_a_chain_and_nested_containers",
+      "test_control_container.ControlContainerTests.test_invalid_membership_and_control_are_reported",
+      "test_control_container.ControlContainerTests.test_unconnected_container_runs_children_then_logs_them"
+    ]
   },
   "sources": [
     {
@@ -141,6 +146,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

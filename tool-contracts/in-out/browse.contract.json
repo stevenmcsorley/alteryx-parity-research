@@ -87,9 +87,10 @@
     ]
   },
   "independent_tests": {
-    "count": 26,
-    "passing": 26,
+    "count": 27,
+    "passing": 27,
     "tests": [
+      "test_control_container.ControlContainerTests.test_empty_control_input_skips_contents_and_their_downstream",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.ExecutionTests.test_disabled_flowbench_tool_container_children_skip_execution",

@@ -103,6 +103,9 @@ class RunContext:
     macro_inputs: dict = field(default_factory=dict)
     macro_input_schemas: dict = field(default_factory=dict)
     macro_stack: tuple[str, ...] = ()
+    # Control Container only: (node_id, tool_id, event, message, records) rows for its
+    # descendants, supplied by the executor after they finish. None when inactive.
+    container_log: list | None = None
 
     def warn(self, message: str, **data):
         self.emit('warning', message=message, **data)

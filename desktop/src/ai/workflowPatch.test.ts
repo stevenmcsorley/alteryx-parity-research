@@ -39,6 +39,25 @@ describe('AI workflow patch staging', () => {
     expect(useEditor.getState().nodes).toHaveLength(0);
   });
 
+  it('keeps Control Container children valid when the agent removes a contained node', async () => {
+    useEditor.getState().setEngineMeta({ tools: {
+      'core.filter': manifest('core.filter', ['input'], ['true', 'false']) as any,
+      'core.control_container': { ...manifest('core.control_container', ['control'], ['log']),
+        config_schema: { type: 'object', required: ['children'], properties: { caption: { type: 'string' }, children: { type: 'array', items: { type: 'string' } } } } } as any,
+    } });
+    const tool = (id: string, toolId: string, config: Record<string, unknown>, y: number) => ({ id, type: 'tool', position: { x: 0, y }, data: { kind: 'tool', tool: toolId, config } });
+    useEditor.getState().loadGraph({ name: 'x', edges: [], nodes: [
+      tool('keep', 'core.filter', {}, 0), tool('drop', 'core.filter', {}, 100),
+      tool('cc', 'core.control_container', { children: ['keep', 'drop'] }, 200)] } as any);
+    let checked: any;
+    setTransport({ request: async (_method: string, params: any) => { checked = params.workflow; return { valid: true, problems: [], schemas: {} }; }, subscribe: () => () => {} } as any);
+    const state = useEditor.getState();
+    const proposal = await prepareWorkflowProposal(state, JSON.stringify({ operations: [{ op: 'remove', node_ref: 'node_2' }] }), workflowRevision(state));
+    expect(proposal.validation.valid).toBe(true);
+    expect(checked.nodes.map((n: any) => n.id)).toEqual(['keep', 'cc']);
+    expect(checked.nodes.find((n: any) => n.id === 'cc').config.children).toEqual(['keep']);
+  });
+
   it('rejects a stale workflow revision before candidate validation', async () => {
     useEditor.getState().loadGraph(emptyGraph as any);
     const state = useEditor.getState();
