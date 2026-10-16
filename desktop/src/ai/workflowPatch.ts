@@ -279,7 +279,7 @@ function requireRef(value: unknown, refs: Map<string, string>): string {
 }
 function validateQuestion(value: unknown): ApplicationActionNodeData['question'] {
   const q = requireObject(value, 'question');
-  const allowed = ['id', 'prompt', 'description', 'type', 'control_field', 'required', 'default', 'options', 'secret', 'minimum', 'maximum'];
+  const allowed = ['id', 'prompt', 'description', 'type', 'control_field', 'required', 'default', 'options', 'secret', 'minimum', 'maximum', 'mode', 'extensions'];
   if (Object.keys(q).some((k) => !allowed.includes(k))) throw new Error('Application question contains unsupported fields');
   const id = requireString(q.id, 'question.id', 80), prompt = requireString(q.prompt, 'question.prompt', 300);
   const types = ['text', 'text-area', 'number', 'boolean', 'choice', 'multi-choice', 'date', 'file', 'folder', 'control-parameter', 'tree'];
@@ -297,6 +297,12 @@ function validateQuestion(value: unknown): ApplicationActionNodeData['question']
     if (q.default !== undefined && (typeof q.default !== 'string' || !(normalized.some((parts) => parts.join(' > ') === q.default))))
       throw new Error('Tree question default must match one configured path');
   }
+  if ((q.mode !== undefined || q.extensions !== undefined) && q.type !== 'file') throw new Error('Only File Browse questions may set mode or extensions');
+  if (q.mode !== undefined && q.mode !== 'open' && q.mode !== 'save') throw new Error('File Browse mode must be open or save');
+  if (q.extensions !== undefined && (!Array.isArray(q.extensions) || q.extensions.length === 0 || q.extensions.length > 32 ||
+      q.extensions.some((x) => typeof x !== 'string' || !/^[a-z0-9][a-z0-9_+-]{0,15}$/.test(x)) || new Set(q.extensions).size !== q.extensions.length))
+    throw new Error('File Browse extensions must be unique lowercase names without dots');
+  if ((q.type === 'file' || q.type === 'folder') && q.default !== undefined && typeof q.default !== 'string') throw new Error('Browse question default must be a path string');
   if (q.type === 'number' && ((q.minimum !== undefined && !Number.isFinite(q.minimum)) || (q.maximum !== undefined && !Number.isFinite(q.maximum)))) throw new Error('Numeric question bounds must be finite');
   if (q.type === 'number' && q.minimum !== undefined && q.maximum !== undefined && Number(q.minimum) > Number(q.maximum)) throw new Error('Question minimum exceeds maximum');
   if (q.type === 'number' && q.default !== undefined && (typeof q.default !== 'number' || !Number.isFinite(q.default))) throw new Error('Numeric question default must be finite');

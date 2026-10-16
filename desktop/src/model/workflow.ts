@@ -19,7 +19,7 @@ export type CommentNodeData = { kind: 'comment'; text: string };
 export type ContainerNodeData = { kind: 'container'; caption: string; disabled?: boolean; collapsed?: boolean };
 export type ApplicationActionNodeData = {
   kind: 'application-action';
-  question: { id: string; prompt: string; label?: string; description?: string; type: 'text' | 'text-area' | 'number' | 'boolean' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder' | 'control-parameter' | 'tree'; control_field?: string; required?: boolean; default?: unknown; options?: unknown[]; secret?: boolean; minimum?: number; maximum?: number };
+  question: { id: string; prompt: string; label?: string; description?: string; type: 'text' | 'text-area' | 'number' | 'boolean' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder' | 'control-parameter' | 'tree'; control_field?: string; required?: boolean; default?: unknown; options?: unknown[]; secret?: boolean; minimum?: number; maximum?: number; mode?: 'open' | 'save'; extensions?: string[] };
   config_path: string[];
   when?: { question: string; operator: 'equals' | 'not_equals' | 'truthy' | 'falsy' | 'contains' | 'not_contains' | 'greater_than' | 'greater_than_or_equal' | 'less_than' | 'less_than_or_equal'; value?: unknown };
   source_action_index?: number;

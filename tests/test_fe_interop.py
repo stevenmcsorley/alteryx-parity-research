@@ -279,6 +279,40 @@ class ImportTests(unittest.TestCase):
         with self.assertRaisesRegex(EngineError, 'ISO date'):
             bind_application(doc, {'as_of': '02/03/2026'})
 
+    def test_native_browse_questions_check_extension_mode_and_existence(self):
+        from flowengine.errors import EngineError
+        with tempfile.TemporaryDirectory() as d:
+            base = Path(d)
+            (base / 'in.csv').write_text('a\n1\n', encoding='utf-8')
+            (base / 'notes.txt').write_text('x', encoding='utf-8')
+            (base / 'data').mkdir()
+            doc = {'nodes': [{'id': 'n', 'config': {'src': '', 'dst': '', 'dir': ''}}], 'metadata': {'application': {
+                'questions': [{'id': 'src', 'type': 'file', 'extensions': ['csv']},
+                              {'id': 'dst', 'type': 'file', 'mode': 'save'},
+                              {'id': 'dir', 'type': 'folder'}],
+                'actions': [{'question': q, 'node_id': 'n', 'config_path': [q]} for q in ('src', 'dst', 'dir')],
+            }}}
+            good = {'src': 'in.csv', 'dst': 'data/out.csv', 'dir': 'data'}
+            self.assertEqual(bind_application(doc, good, base)['nodes'][0]['config'], good)
+            # Without a base directory only format checks run (editor-side preflight).
+            self.assertEqual(bind_application(doc, {**good, 'src': 'missing.CSV'})['nodes'][0]['config']['src'], 'missing.CSV')
+            for bad, message in [({'src': 'notes.txt'}, r'\.csv file'), ({'src': 'missing.csv'}, 'existing file'),
+                                 ({'src': 'data'}, r'\.csv file'), ({'dst': 'nowhere/out.csv'}, 'existing folder'),
+                                 ({'dst': 'data'}, 'existing folder'), ({'dir': 'in.csv'}, 'existing folder'),
+                                 ({'dir': 'da\nta'}, 'control characters'), ({'dir': 3}, 'invalid value')]:
+                with self.subTest(bad=bad), self.assertRaisesRegex(EngineError, message) as caught:
+                    bind_application(doc, {**good, **bad}, base)
+                self.assertEqual(caught.exception.code, 'application-input-invalid')
+            # An empty optional answer is allowed and leaves no path to check.
+            self.assertEqual(bind_application(doc, {**good, 'dir': ''}, base)['nodes'][0]['config']['dir'], '')
+        for question in [{'id': 'q', 'type': 'file', 'mode': 'append'}, {'id': 'q', 'type': 'file', 'extensions': ['.csv']},
+                         {'id': 'q', 'type': 'file', 'extensions': ['csv', 'csv']}, {'id': 'q', 'type': 'file', 'extensions': []},
+                         {'id': 'q', 'type': 'folder', 'extensions': ['csv']}, {'id': 'q', 'type': 'text', 'mode': 'open'},
+                         {'id': 'q', 'type': 'folder', 'default': 5}]:
+            with self.subTest(question=question), self.assertRaises(EngineError) as caught:
+                bind_application({'nodes': [], 'metadata': {'application': {'questions': [question]}}}, {})
+            self.assertEqual(caught.exception.code, 'application-invalid')
+
     def test_native_choice_controls_enforce_single_and_multi_select_shapes(self):
         from flowengine.errors import EngineError
         doc = {'nodes': [{'id': 'target', 'config': {'choice': '', 'list': []}}], 'metadata': {'application': {

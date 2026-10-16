@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { isTauri } from '../engine/transport';
 
 type Request = { title: string; initial: string; ext: string; mode: 'save' | 'open'; resolve: (v: string | null) => void };
-export type AppQuestion = { id: string; label?: string; type: 'text' | 'text-area' | 'boolean' | 'number' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder' | 'tree'; default?: unknown; required?: boolean; options?: unknown[]; description?: string; secret?: boolean; minimum?: number; maximum?: number };
+export type AppQuestion = { id: string; label?: string; type: 'text' | 'text-area' | 'boolean' | 'number' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder' | 'tree'; default?: unknown; required?: boolean; options?: unknown[]; description?: string; secret?: boolean; minimum?: number; maximum?: number; mode?: 'open' | 'save'; extensions?: string[] };
 type AppRequest = { title: string; questions: AppQuestion[]; resolve: (v: Record<string, unknown> | null) => void };
 let host: ((r: Request) => void) | null = null;
 let appHost: ((r: AppRequest) => void) | null = null;
@@ -64,7 +64,10 @@ function ApplicationDialog({ request, close }: { request: AppRequest; close: (v:
       let selected: string | null = null;
       if (isTauri()) {
         const dlg = await import('@tauri-apps/plugin-dialog');
-        const result = await dlg.open({ title: q.label || q.id, directory: q.type === 'folder', multiple: false });
+        const filters = q.type === 'file' && q.extensions?.length ? [{ name: q.extensions.map((x) => `.${x}`).join(', '), extensions: q.extensions }] : undefined;
+        const result = q.type === 'file' && q.mode === 'save'
+          ? await dlg.save({ title: q.label || q.id, filters })
+          : await dlg.open({ title: q.label || q.id, directory: q.type === 'folder', multiple: false, filters });
         selected = typeof result === 'string' ? result : null;
       } else selected = window.prompt(q.type === 'folder' ? 'Choose a folder path' : 'Choose a file path', String(values[q.id] ?? ''));
       if (selected !== null) setValues((old) => ({ ...old, [q.id]: selected }));

@@ -213,6 +213,41 @@ describe('AI workflow patch staging', () => {
     ] }), baseRevision)).rejects.toThrow('unique leaves');
   });
 
+  it('lets the agent configure File and Folder Browse questions with mode and file types', async () => {
+    useEditor.getState().loadGraph(emptyGraph as any);
+    useEditor.getState().setEngineMeta({ tools: {
+      'core.input_data': { ...manifest('core.input_data', [], ['output']),
+        config_schema: { type: 'object', properties: { path: { type: 'string' } } } } as any,
+      'core.output_data': { ...manifest('core.output_data', ['input'], []),
+        config_schema: { type: 'object', properties: { path: { type: 'string' } } } } as any,
+    } });
+    let checked: any;
+    setTransport({ request: async (_method: string, params: any) => { checked = params.workflow; return { valid: true, problems: [], schemas: {} }; }, subscribe: () => () => {} } as any);
+    const state = useEditor.getState(), baseRevision = workflowRevision(state);
+    const proposal = await prepareWorkflowProposal(state, JSON.stringify({ operations: [
+      { op: 'add', ref: 'src', tool_id: 'core.input_data', config: { path: 'in.csv' }, position: { x: 300, y: 0 } },
+      { op: 'add', ref: 'dst', tool_id: 'core.output_data', config: { path: 'out.csv' }, position: { x: 600, y: 0 } },
+      { op: 'add_question', ref: 'pick_src', question: { id: 'source', prompt: 'Source file', type: 'file', extensions: ['csv', 'tsv'], required: true }, config_path: ['path'], position: { x: 0, y: 0 } },
+      { op: 'add_question', ref: 'pick_dst', question: { id: 'target', prompt: 'Save results as', type: 'file', mode: 'save', extensions: ['csv'] }, config_path: ['path'], position: { x: 0, y: 120 } },
+      { op: 'connect_action', source_ref: 'pick_src', target_ref: 'src' },
+      { op: 'connect_action', source_ref: 'pick_dst', target_ref: 'dst' },
+    ] }), baseRevision);
+    expect(proposal.validation.valid).toBe(true);
+    expect(checked.metadata.application.questions).toContainEqual(expect.objectContaining({ id: 'source', type: 'file', extensions: ['csv', 'tsv'] }));
+    expect(checked.metadata.application.questions).toContainEqual(expect.objectContaining({ id: 'target', type: 'file', mode: 'save' }));
+
+    for (const [question, message] of [
+      [{ id: 'f', prompt: 'F', type: 'folder', extensions: ['csv'] }, 'Only File Browse'],
+      [{ id: 'f', prompt: 'F', type: 'file', mode: 'append' }, 'open or save'],
+      [{ id: 'f', prompt: 'F', type: 'file', extensions: ['.csv'] }, 'without dots'],
+      [{ id: 'f', prompt: 'F', type: 'folder', default: 3 }, 'path string'],
+    ] as const) {
+      await expect(prepareWorkflowProposal(state, JSON.stringify({ operations: [
+        { op: 'add_question', ref: 'bad', question, config_path: ['path'], position: { x: 0, y: 0 } },
+      ] }), baseRevision)).rejects.toThrow(message);
+    }
+  });
+
   it('accepts a multiline Text Box question configuration', async () => {
     useEditor.getState().loadGraph(emptyGraph as any);
     useEditor.getState().setEngineMeta({ tools: {} });
