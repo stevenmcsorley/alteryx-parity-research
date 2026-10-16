@@ -240,9 +240,10 @@
     ]
   },
   "independent_tests": {
-    "count": 17,
-    "passing": 17,
+    "count": 18,
+    "passing": 18,
     "tests": [
+      "test_control_container.ControlContainerTests.test_chained_containers_run_in_sequence_through_a_file",
       "test_data_correctness.DataCorrectnessTests.test_csv_default_inference_types_quantities_and_keeps_codes_as_text",
       "test_data_correctness.DataCorrectnessTests.test_csv_inference_preserves_subunit_and_exponent_decimals",
       "test_data_correctness.DataCorrectnessTests.test_csv_string_filter_and_declared_numeric_schema",

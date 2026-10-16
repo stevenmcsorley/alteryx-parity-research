@@ -809,6 +809,39 @@ class BlockUntilDone(Tool):
         return {'output1': t, 'output2': t, 'output3': t}
 
 
+CONTROL_LOG_SCHEMA = Schema([Field('Container', FieldType.V_WSTRING), Field('NodeID', FieldType.V_WSTRING),
+                             Field('Tool', FieldType.V_WSTRING), Field('Event', FieldType.V_WSTRING),
+                             Field('Message', FieldType.V_WSTRING), Field('Records', FieldType.INT64)])
+
+
+class ControlContainer(Tool):
+    """Native execution gate for a group of nodes; the executor owns the scheduling.
+
+    Children wait for the optional control input to finish and run only if it
+    delivered at least one record. The log lists child events once they finish;
+    an inactive container emits no log records, so chained containers stop too.
+    """
+    container = True
+    manifest = ToolManifest(
+        tool_id='core.control_container', version='1.0.0', display_name='Control Container',
+        catalog_ids=('developer:control-container',),
+        inputs=(Anchor('control', 'Control', required=False),), outputs=(Anchor('log', 'Log'),),
+        description='Run the contained nodes only after the optional Control input completes with at least one '
+                    'record (always, when unconnected). Log lists contained node events; it is empty when the '
+                    'container did not run. Disabling the container skips all contained nodes.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['children'], 'properties': {
+            'caption': {'type': 'string', 'maxLength': 200, 'default': 'Control Container'},
+            'children': {'type': 'array', 'uniqueItems': True, 'maxItems': 10000,
+                         'items': {'type': 'string', 'minLength': 1}}}})
+
+    def infer(self, ctx, config, inputs):
+        return {'log': CONTROL_LOG_SCHEMA}
+
+    def run(self, ctx, cfg, inputs):
+        rows = [(ctx.node_id, *entry) for entry in (ctx.container_log or [])]
+        return {'log': Table.from_rows(CONTROL_LOG_SCHEMA, rows)}
+
+
 class Detour(Tool):
     manifest = ToolManifest(
         tool_id='core.detour', version='1.0.0', display_name='Detour', catalog_ids=('developer:detour',),
@@ -1157,4 +1190,4 @@ class RunCommand(Tool):
 
 
 TOOLS = [FieldInfo, JSONSchemaTool, JSONParse, DynamicRename, DynamicSelect, DynamicReplace, BlobInput, BlobOutput, BlobConvert, Base64Encoder, Message, TestTool,
-         BlockUntilDone, Detour, DetourEnd, ExpectEquals, Throttle, PythonTool, RTool, RunCommand]
+         BlockUntilDone, ControlContainer, Detour, DetourEnd, ExpectEquals, Throttle, PythonTool, RTool, RunCommand]

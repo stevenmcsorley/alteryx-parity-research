@@ -1,5 +1,5 @@
 import type { EditorState } from '../state/store';
-import { edgeId, nextNodeId, defaultConfig, type ApplicationActionNodeData, type ApplicationPredicate, type CanvasGraph, type CanvasNode } from '../model/workflow';
+import { edgeId, nextNodeId, defaultConfig, pruneContainerChildren, type ApplicationActionNodeData, type ApplicationPredicate, type CanvasGraph, type CanvasNode } from '../model/workflow';
 import { graphOf } from '../state/store';
 import { toDocument } from '../model/workflow';
 import { engine } from '../state/engineActions';
@@ -230,7 +230,7 @@ export async function prepareWorkflowProposal(state: EditorState, patchJson: str
       }
       if (removing.size > 1) consequences.push(`Removing ${ref} also removes ${removing.size - 1} contained node(s)`);
       consequences.push(`Removing ${ref} also removes its connected edges`);
-      graph.nodes = graph.nodes.filter((n) => !removing.has(n.id));
+      graph.nodes = pruneContainerChildren(graph.nodes.filter((n) => !removing.has(n.id)), removing);
       graph.edges = graph.edges.filter((e) => !removing.has(e.source) && !removing.has(e.target));
       for (const [nodeRef, nodeId] of refs) if (removing.has(nodeId)) refs.delete(nodeRef);
       changes.push(`Remove ${ref} and its connections`);

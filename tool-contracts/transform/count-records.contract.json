@@ -80,9 +80,15 @@
     ]
   },
   "independent_tests": {
-    "count": 8,
-    "passing": 8,
+    "count": 14,
+    "passing": 14,
     "tests": [
+      "test_control_container.ControlContainerTests.test_chained_containers_run_in_sequence_through_a_file",
+      "test_control_container.ControlContainerTests.test_disabled_container_skips_contents",
+      "test_control_container.ControlContainerTests.test_empty_control_input_skips_contents_and_their_downstream",
+      "test_control_container.ControlContainerTests.test_inactive_container_stops_a_chain_and_nested_containers",
+      "test_control_container.ControlContainerTests.test_invalid_membership_and_control_are_reported",
+      "test_control_container.ControlContainerTests.test_unconnected_container_runs_children_then_logs_them",
       "test_fe_executor.ExecutionTests.test_cancellation",
       "test_fe_executor.ExecutionTests.test_disabled_flowbench_tool_container_children_skip_execution",
       "test_fe_executor.ExecutionTests.test_disabled_nodes_skip_descendants",

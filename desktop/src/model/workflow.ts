@@ -312,6 +312,16 @@ export function autoLayout(nodes: CanvasNode[], doc: WorkflowDoc): void {
 }
 
 /** Next free id with a readable prefix derived from the tool id (e.g. "filter_3"). */
+/** Drop removed node ids from Control Container children so the document stays valid. */
+export function pruneContainerChildren(nodes: CanvasNode[], removed: Set<string>): CanvasNode[] {
+  return nodes.map((n) => {
+    if (n.data.kind !== 'tool' || n.data.tool !== 'core.control_container' || !Array.isArray(n.data.config.children)) return n;
+    const children = (n.data.config.children as string[]).filter((id) => !removed.has(id));
+    return children.length === (n.data.config.children as string[]).length ? n
+      : { ...n, data: { ...n.data, config: { ...n.data.config, children } } } as CanvasNode;
+  });
+}
+
 export function nextNodeId(prefix: string, existing: Iterable<string>): string {
   const base = prefix.replace(/^core\./, '').replace(/[^A-Za-z0-9_]/g, '_').slice(0, 40) || 'node';
   const taken = new Set(existing);

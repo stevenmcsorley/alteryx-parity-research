@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { applyEdgeChanges, applyNodeChanges, type Connection, type EdgeChange, type NodeChange } from '@xyflow/react';
 import type { CatalogEntry, EngineEvent, FieldDef, Problem, Profile, RunPayload, ToolManifest, HistoryEntry } from '../engine/types';
-import { defaultConfig, edgeId, nextNodeId, type CanvasEdge, type CanvasNode, type CanvasGraph } from '../model/workflow';
+import { defaultConfig, edgeId, nextNodeId, pruneContainerChildren, type CanvasEdge, type CanvasNode, type CanvasGraph } from '../model/workflow';
 
 type Snapshot = { nodes: CanvasNode[]; edges: CanvasEdge[]; name: string; description?: string; metadata?: Record<string, any> };
 
@@ -314,7 +314,7 @@ export const useEditor = create<EditorState>((set, get) => ({
       for (const n of s.nodes) if (n.parentId && sel.has(n.parentId) && !sel.has(n.id)) { sel.add(n.id); grew = true; }
     }
     get().checkpoint();
-    set({ nodes: s.nodes.filter((n) => !sel.has(n.id)),
+    set({ nodes: pruneContainerChildren(s.nodes.filter((n) => !sel.has(n.id)), sel),
       edges: s.edges.filter((e) => !selEdges.has(e.id) && !sel.has(e.source) && !sel.has(e.target)) });
   },
 

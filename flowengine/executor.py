@@ -88,6 +88,26 @@ class Plan:
     consumers: dict[tuple[str, str], int]  # (node, anchor) -> number of consuming edges
     skipped: set[str]
     schemas: dict[tuple[str, str], Any]
+    # Control Containers: id -> {'descendants': [...], 'control': [(node, anchor)]} in plan order
+    containers: dict[str, dict] = field(default_factory=dict)
+    # implicit scheduling dependencies (container gates/logs) not carried by edges
+    after: dict[str, set] = field(default_factory=dict)
+    # edge successors, used to propagate skips
+    edge_succ: dict[str, list] = field(default_factory=dict)
+
+
+def skip_closure(plan: 'Plan', seeds) -> set[str]:
+    """Nodes skipped when ``seeds`` are: their edge-downstream nodes and, for a
+    skipped Control Container, everything it contains."""
+    out, stack = set(), list(seeds)
+    while stack:
+        nid = stack.pop()
+        if nid in out:
+            continue
+        out.add(nid)
+        stack.extend(plan.edge_succ.get(nid, ()))
+        stack.extend(plan.containers.get(nid, {}).get('descendants', ()))
+    return out
 
 
 def plan_workflow(doc: dict, registry: Registry | None = None, *, base_dir: Path | None = None,
@@ -165,6 +185,13 @@ def plan_workflow(doc: dict, registry: Registry | None = None, *, base_dir: Path
             if anchor.required and not pn.inputs.get(anchor.name):
                 problem('anchor-unconnected', f'Required input anchor {anchor.name!r} is not connected', nid)
 
+    edge_succ = {nid: list(dict.fromkeys(v)) for nid, v in succ.items()}
+    containers, after = _plan_containers(nodes, known_ids, order_index, problem)
+    for nid, deps in after.items():
+        for dep in deps:
+            succ[dep].append(nid)
+            indeg[nid] += 1
+
     # Kahn topological sort; ties broken by document order for determinism
     import heapq
     ready = [(order_index[n], n) for n, d in indeg.items() if d == 0]
@@ -182,14 +209,9 @@ def plan_workflow(doc: dict, registry: Registry | None = None, *, base_dir: Path
         cyc = sorted(n for n in nodes if n not in order)
         problem('cycle', f'Cycle detected among nodes {cyc}')
 
-    # disabled nodes and everything downstream of them are skipped
-    skipped = set()
-    for nid in order:
-        pn = nodes[nid]
-        if pn.disabled or any(up in skipped for ups in pn.inputs.values() for up, _ in ups):
-            skipped.add(nid)
-
-    plan = Plan(order, nodes, dict(consumers), skipped, {})
+    plan = Plan(order, nodes, dict(consumers), set(), {}, containers, after, edge_succ)
+    # disabled nodes, everything downstream of them and the contents of disabled containers are skipped
+    plan.skipped = skip_closure(plan, [nid for nid in order if nodes[nid].disabled]) & set(order)
     if problems:
         return plan, problems
     if infer_schemas:
@@ -197,6 +219,51 @@ def plan_workflow(doc: dict, registry: Registry | None = None, *, base_dir: Path
         _infer(plan, base_dir or Path.cwd(), problems, profile or get_profile(doc.get('metadata', {}).get('profile')),
                macro_input_schemas or {})
     return plan, problems
+
+
+def _plan_containers(nodes, known_ids, order_index, problem):
+    """Resolve Control Container membership and the implicit scheduling it adds."""
+    parent = {}
+    ids = [nid for nid in sorted(nodes, key=order_index.__getitem__) if getattr(nodes[nid].tool, 'container', False)]
+    for cid in ids:
+        for child in nodes[cid].config.get('children', []):
+            if child not in known_ids or child == cid:
+                problem('container-child-invalid', f'Control Container child {child!r} is not another node in this workflow', cid)
+            elif child in parent:
+                problem('container-child-duplicate', f'Node {child!r} is already contained by {parent[child]!r}', cid)
+            else:
+                parent[child] = cid
+    for cid in ids:
+        seen, cur = {cid}, parent.get(cid)
+        while cur is not None:
+            if cur in seen:
+                problem('container-cycle', 'Control Containers contain each other', cid)
+                return {}, {}
+            seen.add(cur)
+            cur = parent.get(cur)
+    children = defaultdict(list)
+    for child, cid in parent.items():
+        children[cid].append(child)
+
+    def descendants(cid):
+        out = []
+        for child in sorted(children[cid], key=order_index.__getitem__):
+            out.append(child)
+            out.extend(descendants(child))
+        return out
+
+    containers, after = {}, defaultdict(set)
+    for cid in ids:
+        inner = [d for d in descendants(cid) if d in nodes]
+        control = list(nodes[cid].inputs.get('control', []))
+        if any(u == cid or u in inner for u, _ in control):
+            problem('container-control-inside', 'A Control Container cannot be controlled by a node it contains', cid)
+            continue
+        containers[cid] = {'descendants': inner, 'control': control}
+        for d in inner:
+            after[d].update(u for u, _ in control)   # gate: wait for the control input
+            after[cid].add(d)                         # log: container finishes after its contents
+    return containers, dict(after)
 
 
 def _infer(plan: Plan, base_dir: Path, problems: list, profile=None, macro_input_schemas=None):
@@ -335,12 +402,19 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
     push_segments = {}
     push_starts = {}
     push_disabled = set()
+    # Nodes scheduled by a Control Container are always executed one at a time by the main loop.
+    gated = set(plan.containers)
+    for info in plan.containers.values():
+        gated.update(info['descendants'])
+        gated.update(u for u, _ in info['control'])
     if db_plan:
         positions = {node: i for i, node in enumerate(plan.order)}
         for head, relation in db_plan.heads.items():
             if len(relation.nodes) < 2:
                 continue
             members = tuple(dict.fromkeys(relation.nodes))
+            if gated.intersection(members):
+                continue
             start = min(members, key=positions.__getitem__)
             push_segments[head] = (relation, members)
             push_starts[start] = head
@@ -351,8 +425,10 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
     node_stats: dict[str, dict] = {}
     status, error = 'succeeded', None
     wall_start = time.perf_counter()
-    upstream = {nid: {u for ups in plan.nodes[nid].inputs.values() for u, _ in ups} for nid in plan.order}
+    upstream = {nid: {u for ups in plan.nodes[nid].inputs.values() for u, _ in ups} | plan.after.get(nid, set())
+                for nid in plan.order}
     done: set[str] = set()
+    container_active: dict[str, bool] = {}
     seg_heads = {}
 
     def capture_browse(nid, table):
@@ -366,7 +442,7 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
         if batch_rows < 1:
             raise ValueError('batch_rows must be >= 1')
         from .streaming import find_segments, run_segment
-        seg_heads = {chain[0]: chain for chain in find_segments(plan)}
+        seg_heads = {chain[0]: chain for chain in find_segments(plan) if not gated.intersection(chain)}
 
     def make_ctx(nid):
         return RunContext(nid, base_dir, clock, lambda t, **d: elog.emit(t, nid, **d), cancel_token,
@@ -382,6 +458,45 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
 
     database_queries = []
 
+    def container_log(cid):
+        if not container_active.get(cid):
+            return None
+        inner = set(plan.containers[cid]['descendants'])
+        entries = []
+        for ev in elog.events:
+            if ev['node_id'] not in inner or ev['type'] not in ('node-completed', 'node-skipped', 'warning', 'info'):
+                continue
+            completed = ev['type'] == 'node-completed'
+            entries.append((ev['node_id'], plan.nodes[ev['node_id']].tool.manifest.tool_id,
+                            ev['type'].removeprefix('node-'), None if completed else ev.get('message'),
+                            sum(ev.get('output_rows', {}).values()) if completed else None))
+        return entries
+
+    def skip_dynamic(cid):
+        inner = set(plan.containers[cid]['descendants'])
+        for nid in [n for n in plan.order if n in skip_closure(plan, inner) and n not in done]:
+            elog.emit('node-skipped', nid, message=f'contained by Control Container {cid!r}, which did not run'
+                      if nid in inner else 'downstream of a node that did not run')
+            done.add(nid)
+            for ups in plan.nodes[nid].inputs.values():
+                for u in ups:
+                    if u[0] in node_stats and remaining.get(u):
+                        remaining[u] -= 1
+                        if remaining[u] == 0:
+                            store.pop(u)
+
+    def decide_containers():
+        for cid, info in plan.containers.items():
+            if cid in done or cid in container_active or not all(u in done for u, _ in info['control']):
+                continue
+            rows = sum(len(store.get(key)) for key in info['control'])
+            container_active[cid] = not info['control'] or rows > 0
+            if container_active[cid]:
+                elog.emit('info', cid, message=f'Control Container running {len(info["descendants"])} contained node(s)')
+            else:
+                elog.emit('info', cid, message='Control Container did not run: its control input had no records')
+                skip_dynamic(cid)
+
     def execute(nid, inputs):
         pn = plan.nodes[nid]
         buffered = []
@@ -389,7 +504,8 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                          limits=dict(limits or {}), browse_sink=capture_browse,
                          constants=dict(doc.get('constants', {})), profile=prof,
                          macro_inputs=dict(_macro_inputs or {}),
-                         macro_input_schemas=dict(_macro_input_schemas or {}), macro_stack=_macro_stack)
+                         macro_input_schemas=dict(_macro_input_schemas or {}), macro_stack=_macro_stack,
+                         container_log=container_log(nid) if nid in plan.containers else None)
         started = time.perf_counter()
         try:
             out = pn.tool.run(ctx, pn.config, inputs)
@@ -411,6 +527,9 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
                 elog.emit('node-skipped', nid, message='disabled or downstream of a disabled node')
                 done.add(nid)
         while len(done) < len(plan.order):
+            decide_containers()
+            if len(done) == len(plan.order):
+                break
             if cancel_token.cancelled:
                 nxt = next(n for n in plan.order if n not in done)
                 raise CancelledError('Run cancelled before node started', node_id=nxt)
