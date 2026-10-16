@@ -10,9 +10,9 @@
 | Distinct tool names | 321 |
 | Public help URL resolved (official tool list sync) | 323 |
 | Machine-readable contracts generated | 323 |
-| Entries with known anchors (manifest, reference-observed or public-doc) | 193 |
+| Entries with known anchors (manifest, reference-observed or public-doc) | 209 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 114 |
+| Independent kernels implemented and passing tests | 130 |
 | Independently implemented application adapters (in progress) | 14 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 330 run, 0 failed |
+| Unit/integration tests in last ledger build | 340 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -36,7 +36,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:directory` | `core.directory` | 3 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 26 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 12 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 199 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 208 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -77,6 +77,22 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `transform:summarize` | `core.summarize` | 11 | 4/4 | partial |
 | `transform:transpose` | `core.transpose` | 1 | 1/1 | partial |
 | `transform:weighted-average` | `core.weighted_average` | 1 | 1/1 | partial |
+| `in-database:browse-in-db` | `core.browse_indb` | 1 | 0/0 | not-tested |
+| `in-database:connect-in-db` | `core.connect_indb` | 1 | 0/0 | not-tested |
+| `in-database:data-stream-in` | `core.data_stream_in` | 8 | 0/0 | not-tested |
+| `in-database:data-stream-out` | `core.data_stream_out` | 1 | 0/0 | not-tested |
+| `in-database:dynamic-input-in-db` | `core.dynamic_input_indb` | 1 | 0/0 | not-tested |
+| `in-database:dynamic-output-in-db` | `core.dynamic_output_indb` | 2 | 0/0 | not-tested |
+| `in-database:filter-in-db` | `core.filter_indb` | 4 | 0/0 | not-tested |
+| `in-database:formula-in-db` | `core.formula_indb` | 3 | 0/0 | not-tested |
+| `in-database:join-in-db` | `core.join_indb` | 2 | 0/0 | not-tested |
+| `in-database:macro-input-in-db` | `core.macro_input_indb` | 1 | 0/0 | not-tested |
+| `in-database:macro-output-in-db` | `core.macro_output_indb` | 1 | 0/0 | not-tested |
+| `in-database:sample-in-db` | `core.sample_indb` | 2 | 0/0 | not-tested |
+| `in-database:select-in-db` | `core.select_indb` | 1 | 0/0 | not-tested |
+| `in-database:summarize-in-db` | `core.summarize_indb` | 1 | 0/0 | not-tested |
+| `in-database:union-in-db` | `core.union_indb` | 1 | 0/0 | not-tested |
+| `in-database:write-data-in-db` | `core.write_indb` | 1 | 0/0 | not-tested |
 | `reporting:image` | `core.report_image` | 4 | 0/0 | not-tested |
 | `reporting:interactive-chart` | `core.interactive_chart` | 5 | 0/0 | not-tested |
 | `reporting:layout` | `core.report_layout` | 5 | 0/0 | not-tested |
@@ -163,7 +179,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Demographic Analysis | 4 | 0 | 0 | 0 | 4 |
 | Developer | 30 | 26 | 4 | 29 | 0 |
 | Documentation | 3 | 0 | 0 | 1 | 0 |
-| In-Database | 16 | 0 | 0 | 0 | 0 |
+| In-Database | 16 | 16 | 0 | 16 | 0 |
 | In/Out | 8 | 6 | 0 | 7 | 0 |
 | Interface | 18 | 2 | 0 | 17 | 0 |
 | Join | 7 | 7 | 5 | 7 | 0 |

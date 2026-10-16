@@ -6,27 +6,61 @@
   "xml_tool_name": "LockInGui.LockInFilter.LockInFilter",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/in-database/filter-in-db-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "true",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "false",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "expression"
+    ],
+    "properties": {
+      "expression": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "database-connection (SQL pushdown target)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.filter_indb",
+    "version": "1.0.0",
+    "module": "flowengine.tools.indb",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -52,9 +86,14 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 4,
+    "passing": 4,
+    "tests": [
+      "test_indb.CompositionTests.test_parameters_follow_their_markers_in_sql_order",
+      "test_indb.CompositionTests.test_pipeline_wraps_queries_and_keeps_parameters_in_order",
+      "test_indb.ExecutionTests.test_connect_stream_out_and_browse_execute_the_built_query",
+      "test_indb.ExecutionTests.test_in_db_macro_passes_streams"
+    ]
   },
   "sources": [
     {
@@ -70,7 +109,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet."
   ]
 }

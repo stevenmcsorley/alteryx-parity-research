@@ -32,7 +32,7 @@ jobs:
       - name: Start isolated PostgreSQL and SQL Server fixtures
         run: python tests/integration/db_env.py up
       - name: Exercise real database connectivity and cross-engine workflows
-        run: python -m unittest discover -s tests/integration -p 'test_database_integration.py' -v
+        run: python -m unittest discover -s tests/integration -p 'test_*integration.py' -v
       - name: Remove database containers
         if: always()
         run: python tests/integration/db_env.py down
