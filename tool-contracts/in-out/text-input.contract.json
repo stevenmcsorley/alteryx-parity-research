@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 145,
-    "passing": 145,
+    "count": 149,
+    "passing": 149,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
@@ -294,7 +294,11 @@
       "test_macros.StandardMacroTests.test_macro_binds_multiple_parent_connections_to_distinct_child_inputs",
       "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
       "test_macros.StandardMacroTests.test_macro_resolves_child_resources_relative_to_definition",
-      "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level"
+      "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level",
+      "test_runner.RunnerTests.test_children_inherit_permissions_and_recursion_is_stopped",
+      "test_runner.RunnerTests.test_requires_process_permission_and_is_reported_by_preflight",
+      "test_runner.RunnerTests.test_routes_success_and_failure_logs_without_failing_the_parent",
+      "test_runner.RunnerTests.test_stop_on_failure_marks_remaining_workflows_not_run"
     ]
   },
   "sources": [

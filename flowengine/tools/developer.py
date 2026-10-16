@@ -842,6 +842,89 @@ class ControlContainer(Tool):
         return {'log': Table.from_rows(CONTROL_LOG_SCHEMA, rows)}
 
 
+RUNNER_LOG_SCHEMA = Schema([Field('Workflow', FieldType.V_WSTRING), Field('Status', FieldType.V_WSTRING),
+                            Field('Sequence', FieldType.INT64), Field('Event', FieldType.V_WSTRING),
+                            Field('NodeID', FieldType.V_WSTRING), Field('Message', FieldType.V_WSTRING)])
+RUNNER_EVENTS = ('node-completed', 'node-skipped', 'node-failed', 'warning', 'info', 'run-completed', 'run-cancelled')
+
+
+class Runner(Tool):
+    """Run the workflow file named by each record, in order, and route its log by outcome.
+
+    Child runs inherit this run's permission flags and cancellation; a failed child
+    is reported on Failure and does not fail the parent.
+    """
+    manifest = ToolManifest(
+        tool_id='core.runner', version='1.0.0', display_name='Runner', catalog_ids=('developer:runner',),
+        inputs=(Anchor('input', 'Input', description='Records whose path field names the workflows to run'),),
+        outputs=(Anchor('success', 'Success', description='Event log of workflows that succeeded'),
+                 Anchor('failure', 'Failure', description='Event log of workflows that failed, were invalid or were not run')),
+        side_effects='process', deterministic=True,
+        description='For each input record, run the Flowbench or Alteryx workflow file named in path_field, one '
+                    'at a time and in record order, with the same permissions as this run. Logs go to Success or '
+                    'Failure. on_failure stop skips the remaining workflows. Requires permission to run processes.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['path_field'], 'properties': {
+            'path_field': {'type': 'string', 'minLength': 1},
+            'on_failure': {'enum': ['continue', 'stop'], 'default': 'continue'},
+            'max_depth': {'type': 'integer', 'minimum': 1, 'maximum': 64, 'default': 8}}})
+
+    def infer(self, ctx, cfg, inputs):
+        schema = inputs['input']
+        if cfg['path_field'] not in schema.names or not schema.field(cfg['path_field']).type.is_string:
+            raise SchemaError(f"Runner path field {cfg['path_field']!r} must be a text field in the input")
+        return {'success': RUNNER_LOG_SCHEMA, 'failure': RUNNER_LOG_SCHEMA}
+
+    def _run_one(self, ctx, cfg, path):
+        """Return (status, [(event, node_id, message)]) for one child workflow."""
+        from ..errors import CancelledError
+        from ..executor import run_workflow, workflow_digest
+        from .macros import WorkflowMacro
+        try:
+            doc, child_base = WorkflowMacro()._definition(ctx, {'definition_path': path})
+        except EngineError as e:
+            return 'invalid', [('load-failed', None, e.message)]
+        identity = workflow_digest(doc)
+        if identity in ctx.macro_stack:
+            return 'invalid', [('recursion', None, 'Workflow is already running in this call stack')]
+        if len(ctx.macro_stack) >= cfg['max_depth']:
+            return 'invalid', [('depth-limit', None, f"Nested runs exceed max_depth {cfg['max_depth']}")]
+        try:
+            result = run_workflow(doc, base_dir=child_base, clock=ctx.clock, cancel_token=ctx.cancel_token,
+                                  limits=ctx.limits, profile=ctx.profile.name if ctx.profile else None,
+                                  retain='none', _macro_stack=(*ctx.macro_stack, identity))
+        except CancelledError:
+            raise
+        except EngineError as e:
+            problems = getattr(e, 'problems', None) or [{'node_id': e.node_id, 'message': e.message}]
+            return 'invalid', [('validation-failed', p.get('node_id'), p.get('message')) for p in problems]
+        if result.status == 'cancelled':
+            raise CancelledError('Run cancelled while running a child workflow', node_id=ctx.node_id)
+        return result.status, [(ev['type'], ev.get('node_id'), ev.get('message') or ev.get('status'))
+                               for ev in result.events if ev['type'] in RUNNER_EVENTS]
+
+    def run(self, ctx, cfg, inputs):
+        _require_processes(ctx, 'Runner')
+        source: Table = inputs['input']
+        self.infer(ctx, cfg, {'input': source.schema})
+        rows = {'success': [], 'failure': []}
+        stopped = False
+        for number, path in enumerate(source.column(cfg['path_field']), start=1):
+            ctx.check_cancelled()
+            if stopped:
+                rows['failure'].append((path, 'not-run', 1, 'not-run', None, 'An earlier workflow failed'))
+                continue
+            if path is None or not str(path).strip():
+                status, events = 'invalid', [('load-failed', None, f'Record {number} has an empty path')]
+            else:
+                status, events = self._run_one(ctx, cfg, str(path))
+            ctx.info(f'Runner: {path} {status}')
+            target = 'success' if status == 'succeeded' else 'failure'
+            rows[target].extend((path, status, i, event, node, message)
+                                for i, (event, node, message) in enumerate(events, start=1))
+            stopped = target == 'failure' and cfg['on_failure'] == 'stop'
+        return {k: Table.from_rows(RUNNER_LOG_SCHEMA, v) for k, v in rows.items()}
+
+
 class Detour(Tool):
     manifest = ToolManifest(
         tool_id='core.detour', version='1.0.0', display_name='Detour', catalog_ids=('developer:detour',),
@@ -1190,4 +1273,4 @@ class RunCommand(Tool):
 
 
 TOOLS = [FieldInfo, JSONSchemaTool, JSONParse, DynamicRename, DynamicSelect, DynamicReplace, BlobInput, BlobOutput, BlobConvert, Base64Encoder, Message, TestTool,
-         BlockUntilDone, ControlContainer, Detour, DetourEnd, ExpectEquals, Throttle, PythonTool, RTool, RunCommand]
+         BlockUntilDone, ControlContainer, Runner, Detour, DetourEnd, ExpectEquals, Throttle, PythonTool, RTool, RunCommand]

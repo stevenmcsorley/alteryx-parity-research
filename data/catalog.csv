@@ -272,7 +272,7 @@ developer:message,Developer,Message,AlteryxBasePluginsGui.Message.Message,"Basic
 developer:python,Developer,Python,JupyterCode,Full,https://help.alteryx.com/current/en/designer/tools/developer/python-tool.html,official-catalog-verified,implemented,not-tested
 developer:r,Developer,R,AlteryxRPluginGui.R,Full,https://help.alteryx.com/current/en/designer/tools/developer/r-tool.html,official-catalog-verified,in-progress,not-tested
 developer:run-command,Developer,Run Command,AlteryxBasePluginsGui.RunCommand.RunCommand,Full,https://help.alteryx.com/current/en/designer/tools/developer/run-command-tool.html,official-catalog-verified,implemented,not-tested
-developer:runner,Developer,Runner,CReW_Runner\CReW_Runner.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/developer/runner-tool.html,official-catalog-verified,not-started,not-tested
+developer:runner,Developer,Runner,CReW_Runner\CReW_Runner.yxmc,Full,https://help.alteryx.com/current/en/designer/tools/developer/runner-tool.html,official-catalog-verified,implemented,not-tested
 developer:server-api,Developer,Server API,ServerAPI_1_0,Full,https://help.alteryx.com/current/en/designer/tools/developer/server-api-tool.html,official-catalog-verified,not-started,not-tested
 developer:test,Developer,Test,AlteryxBasePluginsGui.Test.Test,Full,https://help.alteryx.com/current/en/designer/tools/developer/test-tool.html,official-catalog-verified,implemented,not-tested
 developer:throttle,Developer,Throttle,AlteryxBasePluginsGui.Throttle.Throttle,Full,https://help.alteryx.com/current/en/designer/tools/developer/throttle-tool.html,official-catalog-verified,implemented,not-tested
