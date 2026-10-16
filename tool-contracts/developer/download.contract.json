@@ -6,64 +6,183 @@
   "xml_tool_name": "AlteryxConnectorGui.Download.Download",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/download-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "CodePage",
-      "EncodeURLs",
-      "Headers",
-      "Headers/Fields",
-      "Headers/NameValues",
-      "OutputMode",
-      "Password",
-      "Payload",
-      "Payload/ComposeFields",
-      "Payload/ComposeNameValues",
-      "Payload/ContentType",
-      "Payload/HTTPAction",
-      "Payload/QueryStringBodyMode",
-      "Timeout",
-      "URLField",
-      "UserName",
-      "numConnections"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "url_field"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Basic Tab",
-      "Headers Tab",
-      "Payload Tab",
-      "Connections Tab",
-      "DCM Support",
-      "Other Considerations"
-    ]
+    "properties": {
+      "url_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "method": {
+        "enum": [
+          "GET",
+          "POST",
+          "PUT",
+          "PATCH",
+          "DELETE",
+          "HEAD"
+        ],
+        "default": "GET"
+      },
+      "headers": {
+        "type": "array",
+        "maxItems": 64,
+        "default": [],
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "value"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "header_fields": {
+        "type": "array",
+        "uniqueItems": true,
+        "maxItems": 256,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "default": [],
+        "description": "Fields sent as headers named after the field (null values are omitted)"
+      },
+      "query_fields": {
+        "type": "array",
+        "uniqueItems": true,
+        "maxItems": 256,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "default": [],
+        "description": "Fields appended to the URL query string (null values are omitted)"
+      },
+      "body": {
+        "enum": [
+          "none",
+          "field",
+          "form",
+          "json"
+        ],
+        "default": "none"
+      },
+      "body_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "body_fields": {
+        "type": "array",
+        "uniqueItems": true,
+        "maxItems": 256,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "default": []
+      },
+      "content_type": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "output": {
+        "enum": [
+          "text",
+          "blob"
+        ],
+        "default": "text"
+      },
+      "encoding": {
+        "type": "string",
+        "default": "utf-8",
+        "description": "Text decoding when the response declares no charset"
+      },
+      "follow_redirects": {
+        "type": "boolean",
+        "default": true
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 30
+      },
+      "max_response_bytes": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1073741824,
+        "default": 67108864
+      },
+      "connections": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 16,
+        "default": 1
+      },
+      "on_error": {
+        "enum": [
+          "error",
+          "record"
+        ],
+        "default": "error",
+        "description": "Network, size or decoding failures: stop the run, or record DownloadError"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "credentials (public-doc keyword signal; unreviewed)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.download",
+    "version": "1.0.0",
+    "module": "flowengine.tools.download",
+    "side_effects": "network"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -115,9 +234,16 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 6,
+    "passing": 6,
+    "tests": [
+      "test_download.DownloadTests.test_binary_charset_and_size_limit",
+      "test_download.DownloadTests.test_configuration_and_schema_are_validated",
+      "test_download.DownloadTests.test_failures_stop_or_are_recorded",
+      "test_download.DownloadTests.test_get_with_query_and_header_fields_keeps_record_order",
+      "test_download.DownloadTests.test_post_bodies_from_fields",
+      "test_download.DownloadTests.test_requires_network_permission_and_is_reported_by_preflight"
+    ]
   },
   "sources": [
     {
@@ -138,6 +264,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

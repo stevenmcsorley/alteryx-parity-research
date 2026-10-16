@@ -16,6 +16,8 @@ from .plugin import CancelToken, RunContext, default_registry
 MACRO_TOOLS = {'flowengine.macro', 'flowengine.batch_macro', 'flowengine.iterative_macro'}
 DB_WRITE_TOOLS = {'core.db_output'}
 FILE_WRITE_TOOLS = {'core.blob_output'}
+# Outbound requests that can carry record data; database tools keep their connection semantics.
+NETWORK_TOOLS = {'core.download'}
 
 
 def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dict:
@@ -23,7 +25,7 @@ def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dic
     from .tools.macros import WorkflowMacro
     import datetime as dt
 
-    found = {'file_writes': [], 'database_writes': [], 'processes': [], 'unresolved': []}
+    found = {'file_writes': [], 'database_writes': [], 'processes': [], 'network_requests': [], 'unresolved': []}
     visited: set[str] = set()
 
     def visit(doc, directory: Path, stack: tuple[str, ...], depth: int):
@@ -52,6 +54,8 @@ def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dic
                     found['processes'].append(record)
                 if tool_id in DB_WRITE_TOOLS:
                     found['database_writes'].append(record)
+                if tool_id in NETWORK_TOOLS:
+                    found['network_requests'].append(record)
             if tool_id not in MACRO_TOOLS:
                 continue
             cfg = node.get('config') or {}
@@ -74,7 +78,7 @@ def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dic
                 found['unresolved'].append({'path': list(path), 'reason': type(exc).__name__})
 
     visit(document, Path(base_dir).resolve(), (), 0)
-    for key in ('file_writes', 'database_writes', 'processes'):
+    for key in ('file_writes', 'database_writes', 'processes', 'network_requests'):
         unique = {}
         for item in found[key]:
             unique[tuple(item['path'])] = item

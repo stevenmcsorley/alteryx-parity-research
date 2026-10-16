@@ -46,7 +46,8 @@ def _cmd_run(args) -> int:
         result = run_file(args.workflow, log_path=args.log, clock=clock, retain='none', profile=args.profile,
                           workers=args.workers, batch_rows=args.batch_rows, memory_budget=args.memory_budget,
                           history=hist, limits={'allow_processes': args.allow_processes,
-                                                'allow_file_writes': args.allow_file_writes})
+                                                'allow_file_writes': args.allow_file_writes,
+                                                'allow_network': args.allow_network})
     except WorkflowValidationError as e:
         for p in e.problems:
             print(f"ERROR [{p.get('node_id') or '-'}] {p['code']}: {p['message']}", file=sys.stderr)
@@ -96,6 +97,8 @@ def main(argv=None) -> int:
                    help='Allow Python/R/Run Command tools to start processes for this run')
     r.add_argument('--allow-file-writes', action='store_true',
                    help='Allow Blob Output file writes for this run')
+    r.add_argument('--allow-network', action='store_true',
+                   help='Allow Download to send HTTP(S) requests for this run')
     v = sub.add_parser('validate')
     v.add_argument('workflow', type=Path)
     t = sub.add_parser('tools')
