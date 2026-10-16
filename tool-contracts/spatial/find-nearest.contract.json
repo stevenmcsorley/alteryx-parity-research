@@ -6,60 +6,103 @@
   "xml_tool_name": "AlteryxSpatialPluginsGui.FindNearest.FindNearest",
   "user_role": "Full (Data Packages Add-on)",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/find-nearest-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Targets",
+      "name": "targets",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "Universe",
+      "name": "universe",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Matched",
+      "name": "matched",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "unmatched",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "DriveTimeDataSet",
-      "HowMany",
-      "Ignore0",
-      "MaxDistance",
-      "MaxDistanceUnits",
-      "SelectConfiguration",
-      "SelectConfiguration/Configuration",
-      "Target",
-      "Universe",
-      "Universe/File",
-      "Universe/Passwords"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "target_geometry_field",
+      "universe_geometry_field"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Inputs",
-      "How Many Nearest Points to Find",
-      "Maximum Distance",
-      "Modify Incoming Data Stream",
-      "Search Columns",
-      "Select, Deselect, Sort, and Reorder Columns",
-      "Modify Data Type and Size",
-      "Rename a Column or Add a Description",
-      "View More Options"
-    ]
+    "properties": {
+      "target_geometry_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "universe_geometry_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "crs": {
+        "type": "string",
+        "minLength": 1,
+        "default": "EPSG:4326",
+        "description": "Coordinate reference system of the geometry, e.g. EPSG:4326 (lon/lat) or EPSG:27700"
+      },
+      "max_matches": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000,
+        "default": 1
+      },
+      "max_distance": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0,
+        "default": null
+      },
+      "units": {
+        "enum": [
+          "m",
+          "km",
+          "mi",
+          "ft",
+          "nmi"
+        ],
+        "default": "km"
+      },
+      "ignore_identical": {
+        "type": "boolean",
+        "default": false,
+        "description": "Skip universe geometries identical to the target (self-matches)"
+      },
+      "on_invalid": {
+        "enum": [
+          "error",
+          "null"
+        ],
+        "default": "error",
+        "description": "Unparseable or invalid geometry: stop the run, or output null"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "spatial-geometry-library",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -67,7 +110,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.find_nearest",
+    "version": "1.0.0",
+    "module": "flowengine.tools.spatial",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -117,9 +166,13 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 3,
+    "passing": 3,
+    "tests": [
+      "test_spatial.ExampleTests.test_uk_spatial_example",
+      "test_spatial.NearestMatchTests.test_find_nearest_order_limits_and_self_matches",
+      "test_spatial.NearestMatchTests.test_indexed_search_matches_brute_force"
+    ]
   },
   "sources": [
     {
@@ -140,6 +193,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

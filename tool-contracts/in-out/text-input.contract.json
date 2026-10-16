@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 180,
-    "passing": 180,
+    "count": 189,
+    "passing": 189,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
@@ -329,7 +329,16 @@
       "test_runner.RunnerTests.test_routes_success_and_failure_logs_without_failing_the_parent",
       "test_runner.RunnerTests.test_stop_on_failure_marks_remaining_workflows_not_run",
       "test_service_connections.DownloadAuthTests.test_header_auth_and_conflicting_headers",
-      "test_service_connections.DownloadAuthTests.test_token_is_sent_only_inside_the_base_url"
+      "test_service_connections.DownloadAuthTests.test_token_is_sent_only_inside_the_base_url",
+      "test_spatial.InfoGridTests.test_invalid_geometry_handling",
+      "test_spatial.InfoGridTests.test_make_grid_extent_metric_cells_and_clip",
+      "test_spatial.InfoGridTests.test_spatial_info_geodesic_and_planar_measures",
+      "test_spatial.NearestMatchTests.test_find_nearest_order_limits_and_self_matches",
+      "test_spatial.NearestMatchTests.test_indexed_search_matches_brute_force",
+      "test_spatial.NearestMatchTests.test_spatial_match_predicates",
+      "test_spatial.PointsDistanceTests.test_buffers_are_metric_not_degrees",
+      "test_spatial.PointsDistanceTests.test_create_points_validates_and_reprojects",
+      "test_spatial.PointsDistanceTests.test_geodesic_and_planar_distance"
     ]
   },
   "sources": [

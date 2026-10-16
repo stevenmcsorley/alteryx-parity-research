@@ -6,61 +6,88 @@
   "xml_tool_name": "AlteryxSpatialPluginsGui.SpatialMatch.SpatialMatch",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/spatial-match-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Targets",
+      "name": "targets",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "Universe",
+      "name": "universe",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Matched",
+      "name": "matched",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "Unmatched",
+      "name": "unmatched",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "IntersectPoly",
-      "Method",
-      "SelectConfiguration",
-      "SelectConfiguration/Configuration",
-      "Target",
-      "Universe",
-      "Universe/File",
-      "Universe/Passwords"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "target_geometry_field",
+      "universe_geometry_field"
     ],
-    "public_doc_sections": [
-      "Connect Inputs",
-      "Configure the Tool",
-      "Search Columns",
-      "Select, Deselect, Sort, and Reorder Columns",
-      "Modify Data Type and Size",
-      "Rename a Column or Add a Description",
-      "View More Options",
-      "View the Output"
-    ]
+    "properties": {
+      "target_geometry_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "universe_geometry_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "predicate": {
+        "enum": [
+          "intersects",
+          "contains",
+          "within",
+          "touches",
+          "overlaps",
+          "crosses",
+          "covers",
+          "covered_by",
+          "equals"
+        ],
+        "default": "intersects"
+      },
+      "crs": {
+        "type": "string",
+        "minLength": 1,
+        "default": "EPSG:4326",
+        "description": "Coordinate reference system of the geometry, e.g. EPSG:4326 (lon/lat) or EPSG:27700"
+      },
+      "on_invalid": {
+        "enum": [
+          "error",
+          "null"
+        ],
+        "default": "error",
+        "description": "Unparseable or invalid geometry: stop the run, or output null"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "spatial-geometry-library",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -68,7 +95,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.spatial_match",
+    "version": "1.0.0",
+    "module": "flowengine.tools.spatial",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -125,9 +158,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_spatial.ExampleTests.test_uk_spatial_example",
+      "test_spatial.NearestMatchTests.test_spatial_match_predicates"
+    ]
   },
   "sources": [
     {
@@ -148,6 +184,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

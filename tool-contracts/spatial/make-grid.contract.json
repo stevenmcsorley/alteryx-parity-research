@@ -6,46 +6,123 @@
   "xml_tool_name": "AlteryxSpatialPluginsGui.MakeGrid.MakeGrid",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/make-grid-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "ClipToPoly",
-      "GridPerObject",
-      "GridSize",
-      "SpatialObjIn",
-      "Units"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "cell_size"
     ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "properties": {
+      "cell_size": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "units": {
+        "enum": [
+          "crs",
+          "m",
+          "km",
+          "mi",
+          "ft",
+          "nmi"
+        ],
+        "default": "crs"
+      },
+      "crs": {
+        "type": "string",
+        "minLength": 1,
+        "default": "EPSG:4326",
+        "description": "Coordinate reference system of the geometry, e.g. EPSG:4326 (lon/lat) or EPSG:27700"
+      },
+      "geometry_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "min_x": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "default": null
+      },
+      "min_y": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "default": null
+      },
+      "max_x": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "default": null
+      },
+      "max_y": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "default": null
+      },
+      "clip": {
+        "type": "boolean",
+        "default": false
+      },
+      "format": {
+        "enum": [
+          "wkt",
+          "geojson"
+        ],
+        "default": "wkt"
+      },
+      "max_cells": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5000000,
+        "default": 1000000
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "spatial-geometry-library",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.make_grid",
+    "version": "1.0.0",
+    "module": "flowengine.tools.spatial",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -79,9 +156,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_spatial.ExampleTests.test_uk_spatial_example",
+      "test_spatial.InfoGridTests.test_make_grid_extent_metric_cells_and_clip"
+    ]
   },
   "sources": [
     {
@@ -102,6 +182,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

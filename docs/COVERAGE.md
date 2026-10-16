@@ -12,7 +12,7 @@
 | Machine-readable contracts generated | 323 |
 | Entries with known anchors (manifest, reference-observed or public-doc) | 191 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 93 |
+| Independent kernels implemented and passing tests | 100 |
 | Independently implemented application adapters (in progress) | 14 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 309 run, 0 failed |
+| Unit/integration tests in last ledger build | 319 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -31,18 +31,18 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 
 | Catalogue id | Kernel | Tests | Reference cases (passed/run) | Verification |
 |---|---|---:|---:|---|
-| `in-out:browse` | `core.browse` | 29 | 0/0 | not-tested |
+| `in-out:browse` | `core.browse` | 30 | 0/0 | not-tested |
 | `in-out:date-time-now` | `core.date_time_now` | 1 | 0/0 | not-tested |
 | `in-out:directory` | `core.directory` | 3 | 0/0 | not-tested |
-| `in-out:input-data` | `core.input_data` | 24 | 0/0 | not-tested |
+| `in-out:input-data` | `core.input_data` | 25 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 12 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 180 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 189 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
 | `preparation:data-cleansing` | `core.data_cleansing` | 3 | 0/0 | not-tested |
 | `preparation:filter` | `core.filter` | 31 | 5/5 | partial |
-| `preparation:formula` | `core.formula` | 26 | 13/13 | partial |
+| `preparation:formula` | `core.formula` | 27 | 13/13 | partial |
 | `preparation:generate-rows` | `core.generate_rows` | 3 | 0/0 | not-tested |
 | `preparation:imputation` | `core.imputation` | 1 | 1/1 | partial |
 | `preparation:multi-field-binning` | `core.multi_field_binning` | 1 | 0/0 | not-tested |
@@ -83,6 +83,13 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `reporting:render` | `core.render` | 4 | 0/0 | not-tested |
 | `reporting:report-text` | `core.report_text` | 5 | 0/0 | not-tested |
 | `reporting:table` | `core.report_table` | 5 | 0/0 | not-tested |
+| `spatial:buffer` | `core.buffer` | 3 | 0/0 | not-tested |
+| `spatial:create-points` | `core.create_points` | 2 | 0/0 | not-tested |
+| `spatial:distance` | `core.distance` | 2 | 0/0 | not-tested |
+| `spatial:find-nearest` | `core.find_nearest` | 3 | 0/0 | not-tested |
+| `spatial:make-grid` | `core.make_grid` | 2 | 0/0 | not-tested |
+| `spatial:spatial-info` | `core.spatial_info` | 2 | 0/0 | not-tested |
+| `spatial:spatial-match` | `core.spatial_match` | 2 | 0/0 | not-tested |
 | `interface:macro-input` | `flowengine.macro_input` | 14 | 0/0 | not-tested |
 | `interface:macro-output` | `flowengine.macro_output` | 14 | 0/0 | not-tested |
 | `data-investigation:association-analysis` | `core.association_analysis` | 2 | 0/0 | not-tested |
@@ -155,7 +162,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Prescriptive | 4 | 0 | 0 | 3 | 0 |
 | Reporting | 13 | 6 | 0 | 11 | 0 |
 | SDK Examples | 1 | 0 | 0 | 0 | 0 |
-| Spatial | 15 | 0 | 0 | 14 | 0 |
+| Spatial | 15 | 7 | 0 | 14 | 0 |
 | Text Mining | 9 | 0 | 0 | 9 | 0 |
 | Time Series | 9 | 0 | 0 | 4 | 0 |
 | Transform | 8 | 8 | 7 | 8 | 0 |
