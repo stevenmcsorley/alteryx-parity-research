@@ -36,6 +36,14 @@ describe('Web & API connections', () => {
     expect(JSON.stringify(save.params.connection)).not.toContain('ghp_secret');
   });
 
+  it('asks only for GitHub connections when a tool requires one', async () => {
+    const calls = stub();
+    render(<SchemaForm schema={{ type: 'object', required: ['connection_id'], properties: { connection_id: { type: 'string', 'x-flowbench-connection': 'github' } } } as any}
+      value={{ connection_id: '' }} fields={{ all: [], byAnchor: {} } as any} idPrefix="gh" onBeginEdit={vi.fn()} onChange={vi.fn()} />);
+    await screen.findByText('Choose a GitHub connection…');
+    expect(calls.find((c) => c.method === 'credentials.list')?.params).toEqual({ kind: 'github' });
+  });
+
   it('offers saved connections for a connection_id setting', async () => {
     stub();
     const onChange = vi.fn();

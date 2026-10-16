@@ -10,7 +10,7 @@ service never returns them.
 | Toolbar | Kinds | Used by |
 |---|---|---|
 | **Databases** | PostgreSQL, SQL Server (`connections.json`) | Database Input/Output |
-| **Web & API** | Web/API (bearer token, username and password, or API-key header) and GitHub (personal access token) (`service_connections.json`) | Download (`connection_id`) and GitHub tools |
+| **Web & API** | Web/API (bearer token, username and password, or API-key header) and GitHub (personal access token) (`service_connections.json`) | Download (`connection_id`), [GitHub Commit and Get Last Commit](GITHUB_TOOLS.md) |
 
 ## Scoping
 

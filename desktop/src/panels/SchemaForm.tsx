@@ -89,7 +89,8 @@ function Field({ name, schema, required, value, fields, id, onChange, onBeginEdi
   const anchorFields = fields.byAnchor[name] ?? fields.byAnchor[name.replace(/_fields$/, '')] ?? fields.all;
 
   if (name === 'connection_id' && types(schema).includes('string')) {
-    return <ServiceConnectionField id={id} label={label} help={help} value={(value as string | null) ?? null} onBeginEdit={onBeginEdit} onChange={onChange} />;
+    return <ServiceConnectionField id={id} label={label} help={help} value={(value as string | null) ?? null} onBeginEdit={onBeginEdit} onChange={onChange}
+      kind={(schema as Record<string, unknown>)['x-flowbench-connection'] as string | undefined} optional={nullable} />;
   }
   if (nullable && value === null) {
     return (
@@ -287,14 +288,14 @@ function JsonEditor({ id, label, help, value, onChange, onBeginEdit }: {
   );
 }
 
-function ServiceConnectionField({ id, label, help, value, onChange, onBeginEdit }: { id: string; label: ReactNode; help: ReactNode; value: string | null; onChange: (v: unknown) => void; onBeginEdit: () => void }) {
+function ServiceConnectionField({ id, label, help, value, onChange, onBeginEdit, kind, optional }: { id: string; label: ReactNode; help: ReactNode; value: string | null; onChange: (v: unknown) => void; onBeginEdit: () => void; kind?: string; optional: boolean }) {
   const [items, setItems] = useState<ServiceConnection[] | null>(null);
-  useEffect(() => { void engine().request<ServiceConnection[]>('credentials.list').then(setItems).catch(() => setItems([])); }, []);
+  useEffect(() => { void engine().request<ServiceConnection[]>('credentials.list', kind ? { kind } : {}).then(setItems).catch(() => setItems([])); }, [kind]);
   const known = items ?? [];
   return <div className="form-field">{label}
     <select id={id} value={value ?? ''} onFocus={onBeginEdit} onChange={(e) => onChange(e.target.value || null)}
       style={value && items && !known.some((c) => c.id === value) ? { borderColor: 'var(--err)' } : undefined}>
-      <option value="">No authentication</option>
+      <option value="">{optional ? 'No authentication' : `Choose a ${kind === 'github' ? 'GitHub ' : ''}connection…`}</option>
       {value && items && !known.some((c) => c.id === value) && <option value={value}>{value} (missing)</option>}
       {known.map((c) => <option key={c.id} value={c.id}>{c.name} — {c.base_url}</option>)}
     </select>

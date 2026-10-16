@@ -17,7 +17,9 @@ MACRO_TOOLS = {'flowengine.macro', 'flowengine.batch_macro', 'flowengine.iterati
 DB_WRITE_TOOLS = {'core.db_output'}
 FILE_WRITE_TOOLS = {'core.blob_output'}
 # Outbound requests that can carry record data; database tools keep their connection semantics.
-NETWORK_TOOLS = {'core.download'}
+NETWORK_TOOLS = {'core.download', 'core.github_last_commit', 'core.github_commit'}
+# Changes made outside this computer (in addition to the network request itself).
+REMOTE_WRITE_TOOLS = {'core.github_commit'}
 
 
 def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dict:
@@ -25,7 +27,7 @@ def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dic
     from .tools.macros import WorkflowMacro
     import datetime as dt
 
-    found = {'file_writes': [], 'database_writes': [], 'processes': [], 'network_requests': [], 'unresolved': []}
+    found = {'file_writes': [], 'database_writes': [], 'processes': [], 'network_requests': [], 'remote_writes': [], 'unresolved': []}
     visited: set[str] = set()
 
     def visit(doc, directory: Path, stack: tuple[str, ...], depth: int):
@@ -56,6 +58,8 @@ def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dic
                     found['database_writes'].append(record)
                 if tool_id in NETWORK_TOOLS:
                     found['network_requests'].append(record)
+                if tool_id in REMOTE_WRITE_TOOLS:
+                    found['remote_writes'].append(record)
             if tool_id not in MACRO_TOOLS:
                 continue
             cfg = node.get('config') or {}
@@ -78,7 +82,7 @@ def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dic
                 found['unresolved'].append({'path': list(path), 'reason': type(exc).__name__})
 
     visit(document, Path(base_dir).resolve(), (), 0)
-    for key in ('file_writes', 'database_writes', 'processes', 'network_requests'):
+    for key in ('file_writes', 'database_writes', 'processes', 'network_requests', 'remote_writes'):
         unique = {}
         for item in found[key]:
             unique[tuple(item['path'])] = item
