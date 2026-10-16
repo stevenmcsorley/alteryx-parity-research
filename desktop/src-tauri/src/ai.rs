@@ -30,7 +30,9 @@ const TOKEN: &str = "https://auth.openai.com/api/accounts/oauth/token";
 const API: &str = "https://api.openai.com/v1";
 const TOOL_RESULT_SPEC: &str = include_str!("../../agent-tool-results.v1.json");
 const REQUIRED_SCOPE: &str = "chatgpt.tokens.use.direct";
+#[cfg(windows)]
 const CREDENTIAL_FILE: &str = "chatgpt-session.dpapi";
+#[cfg(windows)]
 const DPAPI_ENTROPY: &[u8] = b"org.parityresearch.flowbench.siwc.v1";
 const API_TOOL_NAMES: &[(&str, &str)] = &[
     ("app.get_status", "app_get_status"),
@@ -118,6 +120,7 @@ impl AiService {
     }
 }
 
+#[cfg(windows)]
 fn credential_path(data_dir: &std::path::Path) -> std::path::PathBuf {
     data_dir.join(CREDENTIAL_FILE)
 }
@@ -139,8 +142,20 @@ fn load_credentials(data_dir: &std::path::Path) -> Result<Option<Credentials>, S
         .map_err(|_| "Stored ChatGPT session is unreadable; sign in again".into())
 }
 #[cfg(not(windows))]
-fn load_credentials(_: &std::path::Path) -> Result<Option<Credentials>, String> {
-    Ok(None)
+fn session_entry(data_dir: &std::path::Path) -> Result<keyring::Entry, String> {
+    // Separate profiles must not overwrite each other's refresh tokens.
+    let profile = format!("chatgpt-session:{}", data_dir.to_string_lossy());
+    keyring::Entry::new("org.parityresearch.flowbench", &profile)
+        .map_err(|_| "Could not access the operating system credential vault".into())
+}
+#[cfg(not(windows))]
+fn load_credentials(data_dir: &std::path::Path) -> Result<Option<Credentials>, String> {
+    match session_entry(data_dir)?.get_password() {
+        Ok(clear) => serde_json::from_str(&clear).map(Some)
+            .map_err(|_| "Stored ChatGPT session is unreadable; sign in again".into()),
+        Err(keyring::Error::NoEntry) => Ok(None),
+        Err(_) => Err("Could not unlock ChatGPT session; unlock your operating system credential vault".into()),
+    }
 }
 #[cfg(windows)]
 fn save_credentials(data_dir: &std::path::Path, value: &Credentials) -> Result<(), String> {
@@ -172,9 +187,20 @@ fn save_credentials(data_dir: &std::path::Path, value: &Credentials) -> Result<(
     Ok(())
 }
 #[cfg(not(windows))]
-fn save_credentials(_: &std::path::Path, _: &Credentials) -> Result<(), String> {
-    Err("ChatGPT sign-in is currently supported only in the Windows desktop build".into())
+fn save_credentials(data_dir: &std::path::Path, value: &Credentials) -> Result<(), String> {
+    let clear = serde_json::to_string(value)
+        .map_err(|_| "Could not encode credential record".to_string())?;
+    session_entry(data_dir)?.set_password(&clear)
+        .map_err(|_| "Could not protect ChatGPT session in the operating system credential vault".into())
 }
+#[cfg(not(windows))]
+fn clear_credentials(data_dir: &std::path::Path) -> Result<(), String> {
+    match session_entry(data_dir)?.delete_credential() {
+        Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
+        Err(_) => Err("Could not clear protected ChatGPT session".into()),
+    }
+}
+#[cfg(windows)]
 fn clear_credentials(data_dir: &std::path::Path) -> Result<(), String> {
     let path = credential_path(data_dir);
     if path.exists() {
@@ -2343,6 +2369,17 @@ pub async fn ai_submit_tool_result(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[cfg(not(windows))]
+    #[test]
+    fn native_session_entry_supports_store_read_and_delete() {
+        // Check identity without touching the developer's real Keychain/Secret Service.
+        keyring::set_default_credential_builder(keyring::mock::default_credential_builder());
+        let entry = session_entry(std::path::Path::new("/test/profile-a")).unwrap();
+        entry.set_password("synthetic-session").unwrap();
+        assert_eq!(entry.get_password().unwrap(), "synthetic-session");
+        entry.delete_credential().unwrap();
+        assert!(matches!(entry.get_password(), Err(keyring::Error::NoEntry)));
+    }
     #[test]
     fn pkce_challenge_is_s256_base64url_without_padding() {
         let verifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
@@ -2905,7 +2942,6 @@ mod tests {
         assert_eq!(diag["usage"]["total_tokens"], 19);
         assert_eq!(diag["usage"]["reasoning_tokens"], 3);
     }
-    #[cfg(windows)]
     #[test]
     fn redacts_sensitive_config_strings_inside_nested_arrays() {
         let raw = json!({"headers":["Authorization: Bearer account-secret","Accept: application/json"],"nested":[{"value":["api_key=nested-secret"]}]});
@@ -2916,6 +2952,7 @@ mod tests {
         assert!(!sanitized.to_string().contains("account-secret"));
         assert!(!sanitized.to_string().contains("nested-secret"));
     }
+    #[cfg(windows)]
     #[test]
     fn credential_payload_is_protected_for_current_windows_user() {
         let secret = br#"{"access_token":"private","refresh_token":"rotating"}"#;

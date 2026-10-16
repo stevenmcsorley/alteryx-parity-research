@@ -23,6 +23,8 @@ Reports: [docs/COVERAGE.md](docs/COVERAGE.md), [docs/MILESTONE_2_REPORT.md](docs
 [docs/ENGINE_SEMANTICS.md](docs/ENGINE_SEMANTICS.md), [docs/COMPATIBILITY_PROFILES.md](docs/COMPATIBILITY_PROFILES.md),
 [docs/INTEROP.md](docs/INTEROP.md), [docs/RUNTIMES.md](docs/RUNTIMES.md), [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
 
+Linux/macOS desktop packaging and native verification: [docs/CROSS_PLATFORM_UPDATE.md](docs/CROSS_PLATFORM_UPDATE.md).
+
 ## Decisions
 
 | Area | Decision |

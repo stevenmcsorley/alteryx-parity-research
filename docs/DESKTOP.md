@@ -1,5 +1,7 @@
 # Flowbench desktop application
 
+Linux/macOS packaging and platform-specific prerequisites: [cross-platform update](CROSS_PLATFORM_UPDATE.md).
+
 Tauri 2 (Rust) shell + React 18/TypeScript UI. The UI never imports engine code: it talks JSON-RPC 2.0 to
 `python -m flowengine serve` (stdio sidecar in the desktop build; loopback HTTP + Server-Sent Events in the
 browser build used for automated UI tests). Source: `desktop/`.
