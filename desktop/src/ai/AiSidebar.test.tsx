@@ -238,6 +238,26 @@ describe('Flowbench AI conversation', () => {
     expect(tauriMock.invoke.mock.calls.find(([command]) => command === 'ai_respond')?.[1]).toMatchObject({ toolsEnabled: false });
   });
 
+  it('defaults to low reasoning effort, sends the chosen level and remembers it', async () => {
+    localStorage.removeItem('flowbench.ai.effort');
+    await ready();
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_begin') return { turn_id: 'turn_effort', assistant_message_id: 'msg_effort' };
+      if (command === 'ai_respond') return { turn_id: args?.turnId, message_id: 'msg_effort', cycle_id: args?.cycleId, text: 'Effort answer', calls: [] };
+      return undefined;
+    });
+    const picker = screen.getByRole('combobox', { name: 'Reasoning effort' }) as HTMLSelectElement;
+    expect(picker.value).toBe('low');
+    expect([...picker.options].map((o) => o.value)).toEqual(['low', 'medium', 'high']);
+    fireEvent.change(picker, { target: { value: 'high' } });
+    expect(localStorage.getItem('flowbench.ai.effort')).toBe('high');
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'hello' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    expect(await screen.findByText('Effort answer')).toBeTruthy();
+    expect(tauriMock.invoke.mock.calls.find(([command]) => command === 'ai_respond')?.[1]).toMatchObject({ model: 'model-a', effort: 'high' });
+    localStorage.removeItem('flowbench.ai.effort');
+  });
+
   it('keeps three unrelated prompts in one native conversation with separate stable turns', async () => {
     let response = 0;
     await ready();

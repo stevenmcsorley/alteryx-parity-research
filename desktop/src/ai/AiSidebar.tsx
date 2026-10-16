@@ -8,7 +8,17 @@ import { runWorkflow } from '../state/engineActions';
 import { doSave } from '../panels/Toolbar';
 
 type Entry = { label: string; tool: AgentToolName; args?: Record<string, unknown> };
-type Model = { slug: string; display_name: string };
+type Model = { slug: string; display_name: string; supported_efforts?: string[]; default_effort?: string | null };
+const EFFORT_KEY = 'flowbench.ai.effort';
+const FALLBACK_EFFORTS = ['low', 'medium', 'high'];
+const effortLabel = (effort: string) => effort === 'xhigh' ? 'Extra high' : effort[0].toUpperCase() + effort.slice(1);
+function storedEffort() { try { return localStorage.getItem(EFFORT_KEY) || 'low'; } catch { return 'low'; } }
+/** The cheapest sensible level the model supports: the user's choice, else low, else the lowest offered. */
+function effortFor(model: Model | undefined, preferred: string) {
+  const choices = model?.supported_efforts?.length ? model.supported_efforts : FALLBACK_EFFORTS;
+  if (choices.includes(preferred)) return preferred;
+  return choices.includes('low') ? 'low' : choices[0];
+}
 type ValueItem = { type?: string; name?: string; arguments?: string; call_id?: string; [key: string]: unknown };
 type NativeResponse = { turn_id: string; message_id: string; cycle_id: string; status?: 'retryable_stream_interruption'; needs_tool_correction?: boolean; text?: string; text_source?: string; empty_reason?: string; calls?: ValueItem[] };
 class ToolCorrectionFailure extends Error {
@@ -46,12 +56,20 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   const [account, setAccount] = useState('');
   const [models, setModels] = useState<Model[]>([]);
   const [model, setModel] = useState('');
+  const [preferredEffort, setPreferredEffort] = useState(storedEffort);
   const [draft, setDraft] = useState('');
   const [routingConsent, setRoutingConsent] = useState(false);
   const [toolsEnabled, setToolsEnabled] = useState(true);
   const [consentUpdating, setConsentUpdating] = useState(false);
   const [error, setError] = useState('');
   const [responseDiagnostics, setResponseDiagnostics] = useState<unknown[]>([]);
+  const activeModel = models.find((choice) => choice.slug === model);
+  const effortChoices = activeModel?.supported_efforts?.length ? activeModel.supported_efforts : FALLBACK_EFFORTS;
+  const effort = effortFor(activeModel, preferredEffort);
+  function chooseEffort(value: string) {
+    setPreferredEffort(value);
+    try { localStorage.setItem(EFFORT_KEY, value); } catch { /* the choice still applies to this session */ }
+  }
   const messages = useAiConversation((s) => s.messages);
   const proposal = useAiConversation((s) => s.proposal);
   const runApprovalRequested = useAiConversation((s) => s.runApprovalRequested);
@@ -299,7 +317,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         for (let attempt = 0; attempt < 3 && !cancelled.current; attempt++) {
           cycleId = `cycle_${crypto.randomUUID().replaceAll('-', '')}`;
           useAiConversation.getState().responseStart(turnId, cycleId);
-          response = await native<NativeResponse>('ai_respond', { model, turnId, cycleId, toolsEnabled });
+          response = await native<NativeResponse>('ai_respond', { model, effort, turnId, cycleId, toolsEnabled });
           if (response.turn_id !== turnId || response.message_id !== started.assistant_message_id || response.cycle_id !== cycleId) throw new Error('The response belonged to a different conversation turn.');
           if (cancelled.current) break;
           if (response.status !== 'retryable_stream_interruption') break;
@@ -390,6 +408,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       <div className="ai-header-controls">
         {authorized && <select aria-label="Active model" value={model} onChange={(e) => setModel(e.target.value)} disabled={streaming || !models.length}>
           {models.map((choice) => <option key={choice.slug} value={choice.slug}>{choice.display_name}</option>)}
+        </select>}
+        {authorized && <select aria-label="Reasoning effort" title="Reasoning effort: higher levels think longer and use more of the plan's limits" value={effort}
+          onChange={(e) => chooseEffort(e.target.value)} disabled={streaming || !models.length}>
+          {effortChoices.map((choice) => <option key={choice} value={choice}>{effortLabel(choice)}</option>)}
         </select>}
         <button className="icon" aria-label="New conversation" title="New conversation" disabled={streaming} onClick={() => void newConversation()}>＋</button>
         <details className="ai-menu"><summary aria-label="AI settings" title="AI settings">•••</summary>
