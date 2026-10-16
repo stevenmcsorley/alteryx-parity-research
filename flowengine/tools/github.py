@@ -95,6 +95,20 @@ class _Client:
         return self.call('GET', '')['default_branch']
 
 
+def _commit_web_url(connection, cfg, sha):
+    """Browser URL of a commit, derived from the API root when the API response omits html_url."""
+    parts = urllib.parse.urlsplit(connection.base_url.rstrip('/'))
+    host, path = parts.netloc, parts.path
+    if host.lower() == 'api.github.com':
+        host, path = 'github.com', ''
+    elif path.endswith('/api/v3'):
+        path = path[:-len('/api/v3')]
+    else:
+        return None  # unknown API layout: do not guess a URL
+    owner, repo = (urllib.parse.quote(cfg[k], safe='') for k in ('owner', 'repo'))
+    return urllib.parse.urlunsplit((parts.scheme, host, f'{path}/{owner}/{repo}/commit/{sha}', '', ''))
+
+
 def _ref(branch):
     return '/git/ref/heads/' + urllib.parse.quote(branch, safe='/')
 
@@ -211,7 +225,7 @@ class GitHubCommit(Tool):
                     {'sha': commit['sha'], 'force': False})
         ctx.info(f"GitHub Commit pushed {len(files)} file(s) to {cfg['owner']}/{cfg['repo']}:{cfg['branch']}",
                  commit=commit['sha'])
-        url = commit.get('html_url')
+        url = commit.get('html_url') or _commit_web_url(client.connection, cfg, commit['sha'])
         return {'output': Table.from_rows(schema, [(*row, sha, commit['sha'], url)
                                                    for row, sha in zip(table.rows(), blobs)])}
 

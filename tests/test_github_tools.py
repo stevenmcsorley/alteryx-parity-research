@@ -115,7 +115,7 @@ class Handler(BaseHTTPRequestHandler):
             if self.command == 'POST' and route == '/git/commits':
                 key = gh.commit(body['message'], body['tree'], body['parents'],
                                 paths=[e for e in gh.trees[body['tree']]['files']])
-                return self.reply(201, {'sha': key, 'html_url': f'https://github.test/octo/data/commit/{key}'})
+                return self.reply(201, {'sha': key})  # like the real API, html_url may be absent
             if self.command == 'PATCH' and route.startswith('/git/refs/heads/'):
                 name = route[len('/git/refs/heads/'):]
                 if gh.commits[body['sha']]['parents'] != [gh.refs[name]] and not body.get('force'):
@@ -125,6 +125,17 @@ class Handler(BaseHTTPRequestHandler):
         return self.reply(404, {'message': 'Not Found'})
 
     do_GET = do_POST = do_PATCH = handle_api
+
+
+class CommitUrlTests(unittest.TestCase):
+    def test_web_url_is_derived_only_for_known_api_layouts(self):
+        from flowengine.service_connections import ServiceConnection
+        from flowengine.tools.github import _commit_web_url
+        cfg = {'owner': 'octo', 'repo': 'data'}
+        url = lambda base: _commit_web_url(ServiceConnection('svc_x', 'x', 'github', base), cfg, 'abc')
+        self.assertEqual(url('https://api.github.com'), 'https://github.com/octo/data/commit/abc')
+        self.assertEqual(url('https://git.example.com/api/v3/'), 'https://git.example.com/octo/data/commit/abc')
+        self.assertIsNone(url('https://proxy.example.com/github'))
 
 
 class GitHubToolTests(unittest.TestCase):
@@ -193,6 +204,8 @@ class GitHubToolTests(unittest.TestCase):
         self.assertEqual(self.gh.blobs[files['data/a.csv']], b'x,y\n1,2\n')
         self.assertIn('README.md', files)  # existing files are kept
         self.assertEqual(out.column('BlobSHA'), [files['data/a.csv'], files['data/b.txt']])
+        host = self.api.removesuffix('/api/v3')
+        self.assertEqual(set(out.column('CommitURL')), {f'{host}/octo/data/commit/{head}'})
         self.assertEqual(len(self.commit([]).output('gh')), 0)
         self.assertEqual(self.gh.refs['main'], head)  # no records -> no commit
 
