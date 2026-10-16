@@ -152,9 +152,10 @@
     ]
   },
   "independent_tests": {
-    "count": 9,
-    "passing": 9,
+    "count": 11,
+    "passing": 11,
     "tests": [
+      "test_control_container.ControlContainerTests.test_chained_containers_run_in_sequence_through_a_file",
       "test_data_correctness.DataCorrectnessTests.test_full_typed_csv_pipeline_roundtrip",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
@@ -163,6 +164,7 @@
       "test_fe_scale.StreamingTests.test_non_streamable_tool_breaks_segment",
       "test_fe_scale.StreamingTests.test_streamed_equals_batch",
       "test_fe_scale.StreamingTests.test_streaming_conversion_error_reports_absolute_row",
+      "test_fe_service.ServiceTests.test_browse_answers_choose_input_output_and_folder_for_real_execution",
       "test_fe_tools.InOutTests.test_output_roundtrip_csv_json_and_if_exists"
     ]
   },

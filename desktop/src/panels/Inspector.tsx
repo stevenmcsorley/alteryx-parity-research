@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useEditor } from '../state/store';
 import type { FieldDef } from '../engine/types';
-import type { ApplicationActionNodeData, CanvasNode, ToolNodeData } from '../model/workflow';
+import type { ApplicationActionNodeData, ApplicationConditionNodeData, ApplicationErrorNodeData, CanvasNode, ToolNodeData } from '../model/workflow';
 import { SchemaForm, type FieldContext } from './SchemaForm';
 import { categoryColor, glyph } from '../ui/categories';
 import { engine, describe } from '../state/engineActions';
@@ -14,9 +14,64 @@ export function Inspector({ embedded = false }: { embedded?: boolean } = {}) {
     <aside className={embedded ? 'inspector-content' : 'app-right'} aria-label="Configuration" data-testid="inspector">
       {!node ? <WorkflowProperties /> : node.data.kind === 'tool' ? <ToolInspector node={node} /> :
         node.data.kind === 'application-action' ? <ApplicationActionInspector node={node} /> :
+        node.data.kind === 'application-condition' ? <ApplicationConditionInspector node={node} /> :
+        node.data.kind === 'application-error' ? <ApplicationErrorInspector node={node} /> :
         node.data.kind === 'container' ? <ContainerInspector node={node} /> : <CommentInspector node={node} />}
     </aside>
   );
+}
+
+function ApplicationErrorInspector({ node }: { node: CanvasNode }) {
+  const d = node.data as ApplicationErrorNodeData;
+  const update = useEditor((s) => s.updateNodeData);
+  const checkpoint = useEditor((s) => s.checkpoint);
+  return <>
+    <div className="section"><h3>Interface</h3><h2>Error Message</h2>
+      <p className="help">When the connected Condition route is active, the analytic application stops before running its workflow and displays this message. Without a condition connection, it stops every run.</p>
+    </div>
+    <div className="section"><label htmlFor="application-error-message">Message</label>
+      <textarea id="application-error-message" aria-label="Error Message text" rows={4} value={d.message} onFocus={checkpoint}
+        onChange={(e) => update(node.id, { message: e.target.value }, false)} />
+    </div>
+  </>;
+}
+
+function ApplicationConditionInspector({ node }: { node: CanvasNode }) {
+  const d = node.data as ApplicationConditionNodeData;
+  const update = useEditor((s) => s.updateNodeData);
+  const checkpoint = useEditor((s) => s.checkpoint);
+  const questions = useEditor((s) => s.nodes.filter((n) => n.data.kind === 'application-action')
+    .map((n) => (n.data as ApplicationActionNodeData).question).filter((q) => q.type !== 'control-parameter'));
+  const question = questions.find((q) => q.id === d.when.question);
+  const updateWhen = (when: ApplicationConditionNodeData['when']) => update(node.id, { when }, false);
+  const operators: NonNullable<ApplicationConditionNodeData['when']>['operator'][] = ['truthy', 'falsy', 'equals', 'not_equals'];
+  if (question?.type === 'multi-choice') operators.push('contains', 'not_contains');
+  if (question?.type === 'number' || question?.type === 'date') operators.push('greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal');
+  const needsValue = ['equals', 'not_equals', 'contains', 'not_contains', 'greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal'].includes(d.when.operator);
+  return <>
+    <div className="section"><h3>Interface</h3><h2>Condition</h2>
+      <p className="help">Routes connected Actions according to an analytic-app answer. The predicate is evaluated for each run on that run’s private workflow copy.</p>
+    </div>
+    <div className="section kv">
+      <label>Question</label><select aria-label="Condition question" value={d.when.question} onFocus={checkpoint}
+        onChange={(e) => updateWhen({ ...d.when, question: e.target.value })}>
+        <option value="">Select a question</option>{questions.map((q) => <option key={q.id} value={q.id}>{q.prompt || q.id}</option>)}
+      </select>
+      <label>Operator</label><select aria-label="Condition operator" value={d.when.operator} onFocus={checkpoint}
+        onChange={(e) => { const operator = e.target.value as ApplicationConditionNodeData['when']['operator'];
+          updateWhen({ question: d.when.question, operator, ...(['equals', 'not_equals', 'contains', 'not_contains', 'greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal'].includes(operator)
+            ? { value: question?.type === 'number' ? 0 : '' } : {}) }); }}>
+        {operators.map((op) => <option key={op} value={op}>{op.replaceAll('_', ' ')}</option>)}
+      </select>
+      {needsValue && <><label>Compare to</label>
+        {question?.type === 'boolean' ? <select aria-label="Condition value" value={String(d.when.value ?? false)} onFocus={checkpoint}
+          onChange={(e) => updateWhen({ ...d.when, value: e.target.value === 'true' })}>
+          <option value="true">True</option><option value="false">False</option></select>
+          : <input aria-label="Condition value" type={question?.type === 'number' ? 'number' : question?.type === 'date' ? 'date' : 'text'} value={String(d.when.value ?? '')}
+            onFocus={checkpoint} onChange={(e) => updateWhen({ ...d.when, value: question?.type === 'number' ? Number(e.target.value) : e.target.value })} />}
+      </>}
+    </div>
+  </>;
 }
 
 function ApplicationActionInspector({ node }: { node: CanvasNode }) {
@@ -29,15 +84,21 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
   const target = nodes.find((n) => n.id === targetEdge?.target);
   const paths: string[][] = [];
   const walk = (value: unknown, prefix: string[] = []) => {
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
+    if (Array.isArray(value)) {
+      value.forEach((child, index) => walk(child, [...prefix, String(index)]));
+    } else if (value && typeof value === 'object') {
       for (const [key, child] of Object.entries(value)) walk(child, [...prefix, key]);
     } else if (prefix.length && (value === null || ['string', 'number', 'boolean'].includes(typeof value))) paths.push(prefix);
   };
   if (target?.data.kind === 'tool') walk(target.data.config);
   const pathKey = d.config_path.join('.');
   const knownQuestions = [...new Map(nodes.filter((n) => n.data.kind === 'application-action')
-    .map((n) => { const q = (n.data as ApplicationActionNodeData).question; return [q.id, q] as const; })).values()];
+    .map((n) => { const q = (n.data as ApplicationActionNodeData).question; return [q.id, q] as const; })).values()]
+    .filter((q) => q.type !== 'control-parameter');
   const conditionedQuestion = knownQuestions.find((q) => q.id === d.when?.question);
+  const actionOperators: NonNullable<ApplicationActionNodeData['when']>['operator'][] = ['truthy', 'falsy', 'equals', 'not_equals'];
+  if (conditionedQuestion?.type === 'multi-choice') actionOperators.push('contains', 'not_contains');
+  if (conditionedQuestion?.type === 'number' || conditionedQuestion?.type === 'date') actionOperators.push('greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal');
   const changeCondition = (when: ApplicationActionNodeData['when']) => {
     update(node.id, { when }, false);
   };
@@ -45,24 +106,36 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
     update(node.id, { question: { ...d.question, ...patch } }, false);
   };
   return <>
-    <div className="section"><h3>Flowbench Action</h3><h2>Configuration action</h2>
-      <p className="help">Native Flowbench analytic-app action. This editor representation is distinct from an Alteryx Action XML node; imported XML is retained separately.</p>
+    <div className="section"><h3>{d.question.type === 'control-parameter' ? 'Batch Macro' : 'Flowbench Action'}</h3><h2>{d.question.type === 'control-parameter' ? 'Control Parameter' : 'Configuration action'}</h2>
+      <p className="help">{d.question.type === 'control-parameter'
+        ? 'For each parent Batch Macro control record, read the mapped field and apply its value to the connected child tool configuration. This is native Flowbench behavior; imported Alteryx Control Parameter configurations remain separately identified.'
+        : 'Native Flowbench analytic-app action. This editor representation is distinct from an Alteryx Action XML node; imported XML is retained separately.'}</p>
     </div>
     <div className="section kv">
-      <label>Question ID</label><input aria-label="Action question ID" value={d.question.id} onFocus={checkpoint} onChange={(e) => changeQuestion({ id: e.target.value })} />
+      <label>{d.question.type === 'control-parameter' ? 'Parameter name' : 'Question ID'}</label><input aria-label={d.question.type === 'control-parameter' ? 'Control parameter name' : 'Action question ID'} value={d.question.id} onFocus={checkpoint} onChange={(e) => changeQuestion({ id: e.target.value })} />
+      {d.question.type === 'control-parameter' && <><label>Control input field</label><input aria-label="Control input field" value={d.question.control_field ?? ''} onFocus={checkpoint} onChange={(e) => changeQuestion({ control_field: e.target.value })} />
+        <label>Description</label><input aria-label="Control parameter description" value={d.question.prompt} onFocus={checkpoint} onChange={(e) => changeQuestion({ prompt: e.target.value })} />
+      </>}
+      {d.question.type !== 'control-parameter' && <>
       <label>Prompt</label><input aria-label="Action prompt" value={d.question.prompt} onFocus={checkpoint} onChange={(e) => changeQuestion({ prompt: e.target.value })} />
       <label>Answer type</label><select aria-label="Action answer type" value={d.question.type} onFocus={checkpoint} onChange={(e) => changeQuestion({ type: e.target.value as any,
-        default: e.target.value === 'text' || e.target.value === 'date' || e.target.value === 'file' || e.target.value === 'folder' ? '' : e.target.value === 'number' ? 0 : e.target.value === 'choice' ? d.question.options?.[0] ?? '' : e.target.value === 'multi-choice' ? [] : false })}>
-        <option value="text">Text Box</option><option value="number">Numeric Up Down</option><option value="boolean">Check Box</option><option value="choice">Drop Down / Radio Button</option><option value="multi-choice">Multi Select</option><option value="date">Date</option><option value="file">File Browse</option><option value="folder">Folder Browse</option>
+        ...(e.target.value === 'file' ? {} : { mode: undefined, extensions: undefined }),
+        default: e.target.value === 'text' || e.target.value === 'text-area' || e.target.value === 'date' || e.target.value === 'file' || e.target.value === 'folder' || e.target.value === 'tree' ? (e.target.value === 'tree' ? d.question.options?.[0] ?? '' : '') : e.target.value === 'number' ? 0 : e.target.value === 'choice' ? d.question.options?.[0] ?? '' : e.target.value === 'multi-choice' ? [] : false })}>
+        <option value="text">Single-line Text</option><option value="text-area">Text Box</option><option value="number">Numeric Up Down</option><option value="boolean">Check Box</option><option value="choice">Drop Down / Radio Button</option><option value="multi-choice">Multi Select</option><option value="tree">Tree</option><option value="date">Date</option><option value="file">File Browse</option><option value="folder">Folder Browse</option>
       </select>
       {(d.question.type === 'choice' || d.question.type === 'multi-choice') && <><label>Options</label><textarea aria-label="Action answer options" value={(d.question.options ?? []).map(String).join('\n')} rows={4} onFocus={checkpoint} onChange={(e) => changeQuestion({ options: e.target.value.split(/\r?\n/).filter((x) => x.length) })} /></>}
+      {d.question.type === 'tree' && <><label>Tree paths</label><textarea aria-label="Tree answer options" value={(d.question.options ?? []).map(String).join('\n')} rows={6} placeholder={'Sales > Online\nSales > Retail\nReturns'} onFocus={checkpoint} onChange={(e) => changeQuestion({ options: e.target.value.split(/\r?\n/).filter((x) => x.trim().length) })} /><small>One selectable path per line. Separate levels with &gt;.</small></>}
+      {d.question.type === 'file' && <><label>Browse mode</label><select aria-label="File browse mode" value={d.question.mode ?? 'open'} onFocus={checkpoint} onChange={(e) => changeQuestion({ mode: e.target.value as 'open' | 'save' })}><option value="open">Open existing file</option><option value="save">Save to file</option></select>
+        <label>File types</label><input key={`${node.id}:${(d.question.extensions ?? []).join(',')}`} aria-label="File browse extensions" placeholder="csv, xlsx (blank for any)" defaultValue={(d.question.extensions ?? []).join(', ')} onFocus={checkpoint}
+          onBlur={(e) => { const extensions = [...new Set(e.target.value.split(',').map((x) => x.trim().toLowerCase().replace(/^\./, '')).filter(Boolean))]; changeQuestion({ extensions: extensions.length ? extensions : undefined }); }} /></>}
       {d.question.type === 'number' && <><label>Minimum</label><input aria-label="Action minimum" type="number" value={d.question.minimum ?? ''} onFocus={checkpoint} onChange={(e) => changeQuestion({ minimum: e.target.value === '' ? undefined : Number(e.target.value) })} /><label>Maximum</label><input aria-label="Action maximum" type="number" value={d.question.maximum ?? ''} onFocus={checkpoint} onChange={(e) => changeQuestion({ maximum: e.target.value === '' ? undefined : Number(e.target.value) })} /></>}
       <label>Required</label><input aria-label="Action answer required" type="checkbox" checked={!!d.question.required} style={{ justifySelf: 'start' }}
         onFocus={checkpoint} onChange={(e) => changeQuestion({ required: e.target.checked })} />
       <label>Default answer</label>{d.question.type === 'boolean'
         ? <input aria-label="Action default answer" type="checkbox" checked={!!d.question.default} style={{ justifySelf: 'start' }} onFocus={checkpoint} onChange={(e) => changeQuestion({ default: e.target.checked })} />
-        : d.question.type === 'choice' ? <select aria-label="Action default answer" value={String(d.question.default ?? '')} onFocus={checkpoint} onChange={(e) => changeQuestion({ default: e.target.value })}><option value="">No default</option>{(d.question.options ?? []).map((o) => <option key={String(o)} value={String(o)}>{String(o)}</option>)}</select>
+        : d.question.type === 'choice' || d.question.type === 'tree' ? <select aria-label="Action default answer" value={String(d.question.default ?? '')} onFocus={checkpoint} onChange={(e) => changeQuestion({ default: e.target.value })}><option value="">No default</option>{(d.question.options ?? []).map((o) => <option key={String(o)} value={String(o)}>{String(o)}</option>)}</select>
         : d.question.type === 'multi-choice' ? <textarea aria-label="Action default answer" rows={2} placeholder="One selected value per line" value={Array.isArray(d.question.default) ? d.question.default.join('\n') : ''} onFocus={checkpoint} onChange={(e) => changeQuestion({ default: e.target.value.split(/\r?\n/).filter(Boolean) })} />
+        : d.question.type === 'text-area' ? <textarea aria-label="Action default answer" rows={3} value={d.question.default == null ? '' : String(d.question.default)} onFocus={checkpoint} onChange={(e) => changeQuestion({ default: e.target.value })} />
         : <input aria-label="Action default answer" type={d.question.type === 'number' ? 'number' : 'text'} value={d.question.default == null ? '' : String(d.question.default)}
           onFocus={checkpoint} onChange={(e) => changeQuestion({ default: d.question.type === 'number' ? Number(e.target.value) : e.target.value })} />}
       <label>Condition question</label>
@@ -76,25 +149,22 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
           onChange={(e) => {
             const operator = e.target.value as NonNullable<ApplicationActionNodeData['when']>['operator'];
             changeCondition({ question: d.when!.question, operator,
-              ...(['equals', 'not_equals', 'contains', 'not_contains'].includes(operator)
+              ...(['equals', 'not_equals', 'contains', 'not_contains', 'greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal'].includes(operator)
                 ? { value: conditionedQuestion?.type === 'number' ? 0 : '' } : {}) });
           }}>
-          <option value="truthy">Answer is true / nonempty</option>
-          <option value="falsy">Answer is false / empty</option>
-          <option value="equals">Answer equals</option>
-          <option value="not_equals">Answer does not equal</option>
-          {conditionedQuestion?.type === 'multi-choice' && <><option value="contains">Selection includes</option><option value="not_contains">Selection excludes</option></>}
+          {actionOperators.map((operator) => <option key={operator} value={operator}>{operator.replaceAll('_', ' ')}</option>)}
         </select>
-        {['equals', 'not_equals', 'contains', 'not_contains'].includes(d.when.operator) &&
+        {['equals', 'not_equals', 'contains', 'not_contains', 'greater_than', 'greater_than_or_equal', 'less_than', 'less_than_or_equal'].includes(d.when.operator) &&
           <><label>Compare to</label>
             {conditionedQuestion?.type === 'boolean'
               ? <select aria-label="Action condition value" value={String(d.when.value ?? false)} onFocus={checkpoint}
                   onChange={(e) => changeCondition({ ...d.when!, value: e.target.value === 'true' })}>
                   <option value="true">True</option><option value="false">False</option></select>
-              : <input aria-label="Action condition value" type={conditionedQuestion?.type === 'number' ? 'number' : 'text'}
+              : <input aria-label="Action condition value" type={conditionedQuestion?.type === 'number' ? 'number' : conditionedQuestion?.type === 'date' ? 'date' : 'text'}
                   value={String(d.when.value ?? '')} onFocus={checkpoint}
                   onChange={(e) => changeCondition({ ...d.when!, value: conditionedQuestion?.type === 'number' ? Number(e.target.value) : e.target.value })} />}
           </>}
+      </>}
       </>}
       <label>Target</label><span>{target?.data.kind === 'tool' ? target.id : 'Connect Action to a tool’s Action anchor'}</span>
       <label>Configuration field</label><select aria-label="Action configuration field" value={pathKey} disabled={!target} onFocus={checkpoint}
@@ -103,7 +173,9 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
         {paths.map((p) => <option key={p.join('.')} value={p.join('.')}>{p.join('.')}</option>)}
       </select>
     </div>
-    <div className="section"><p className="help">Run prompts for the question, applies the answer to the selected target field on a private workflow copy, validates, then executes. Action links are configuration dependencies and are not row-data connections.</p></div>
+    <div className="section"><p className="help">{d.question.type === 'control-parameter'
+      ? 'The Action connection updates this target for each batch record. It is a configuration dependency, not a row-data connection.'
+      : 'Run prompts for the question, applies the answer to the selected target field on a private workflow copy, validates, then executes. Action links are configuration dependencies and are not row-data connections.'}</p></div>
   </>;
 }
 
@@ -190,6 +262,34 @@ function upstreamFields(node: CanvasNode): FieldContext {
   return { all, byAnchor };
 }
 
+function ControlContainerForm({ nodeId, value, onChange, onBeginEdit }: { nodeId: string; value: Record<string, unknown>; onChange: (v: Record<string, unknown>) => void; onBeginEdit: () => void }) {
+  const nodes = useEditor((s) => s.nodes);
+  const children = Array.isArray(value.children) ? (value.children as string[]) : [];
+  const picked = new Set(children);
+  // A node belongs to one container; offer nodes that are free or already ours, never our own ancestors.
+  const owner = new Map<string, string>();
+  for (const n of nodes) if (n.data.kind === 'tool' && n.data.tool === 'core.control_container' && n.id !== nodeId)
+    for (const child of (Array.isArray(n.data.config.children) ? n.data.config.children as string[] : [])) owner.set(child, n.id);
+  const ancestors = new Set<string>();
+  for (let cur = owner.get(nodeId); cur && !ancestors.has(cur); cur = owner.get(cur)) ancestors.add(cur);
+  const candidates = nodes.filter((n) => n.data.kind === 'tool' && n.id !== nodeId && !ancestors.has(n.id) && !owner.has(n.id));
+  const missing = children.filter((id) => !nodes.some((n) => n.id === id));
+  const toggle = (id: string) => { onBeginEdit(); onChange({ ...value, children: picked.has(id) ? children.filter((x) => x !== id) : [...children, id] }); };
+  return <div className="kv">
+    <label htmlFor={`cc-caption-${nodeId}`}>Caption</label>
+    <input id={`cc-caption-${nodeId}`} type="text" value={String(value.caption ?? 'Control Container')} onFocus={onBeginEdit}
+      onChange={(e) => onChange({ ...value, caption: e.target.value })} />
+    <label>Contained nodes</label>
+    <div className="chips" data-testid="control-container-children">
+      {candidates.map((n) => { const label = (n.data.kind === 'tool' && n.data.label) || n.id;
+        return <button type="button" key={n.id} className={`chip ${picked.has(n.id) ? 'on' : ''}`} aria-pressed={picked.has(n.id)} onClick={() => toggle(n.id)}>{label}</button>; })}
+      {missing.map((id) => <button type="button" key={id} className="chip on" style={{ borderColor: 'var(--err)' }} title="This node no longer exists" onClick={() => toggle(id)}>{id}</button>)}
+      {!candidates.length && !missing.length && <span style={{ color: 'var(--text-3)' }}>Add tools to the canvas to contain them</span>}
+    </div>
+    <p className="help" role="note" style={{ gridColumn: '1 / -1' }}>Contained nodes run only after the Control input finishes with at least one record (always, when Control is unconnected). Connect Log to another container's Control to run containers in sequence.</p>
+  </div>;
+}
+
 function ToolInspector({ node }: { node: CanvasNode }) {
   const d = node.data as ToolNodeData;
   const manifest = useEditor((s) => s.tools[d.tool]);
@@ -239,6 +339,8 @@ function ToolInspector({ node }: { node: CanvasNode }) {
             ? <DatabaseInputForm value={d.config} onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />
           : manifest.tool_id === 'core.db_output'
             ? <DatabaseOutputForm value={d.config} onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />
+          : manifest.tool_id === 'core.control_container'
+            ? <ControlContainerForm nodeId={node.id} value={d.config} onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />
           : <SchemaForm schema={manifest.config_schema} value={d.config} fields={fields} idPrefix={`cfg-${node.id}`}
             onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />}
         {manifest.tool_id === 'core.input_data' && ['csv', 'tsv', 'delimited', 'auto'].includes(String(d.config.format ?? 'auto')) &&
@@ -422,7 +524,7 @@ function TextInputEditor({ value, onChange, onBeginEdit }: { value: Record<strin
 }
 
 function ContainerInspector({ node }: { node: CanvasNode }) {
-  const d = node.data as { caption: string; disabled?: boolean };
+  const d = node.data as { caption: string; disabled?: boolean; collapsed?: boolean };
   const update = useEditor((s) => s.updateNodeData);
   const ungroup = useEditor((s) => s.ungroup);
   const count = useEditor((s) => s.nodes.filter((n) => n.parentId === node.id).length);
@@ -434,6 +536,8 @@ function ContainerInspector({ node }: { node: CanvasNode }) {
         <input id="cap" type="text" value={d.caption} onChange={(e) => update(node.id, { caption: e.target.value }, false)} />
         <label htmlFor="cdis">Disabled</label>
         <input id="cdis" type="checkbox" style={{ justifySelf: 'start' }} checked={!!d.disabled} onChange={(e) => update(node.id, { disabled: e.target.checked })} />
+        <label htmlFor="ccol">Collapsed</label>
+        <input id="ccol" type="checkbox" style={{ justifySelf: 'start' }} checked={!!d.collapsed} onChange={(e) => update(node.id, { collapsed: e.target.checked })} />
         <label>Contents</label><span>{count} item(s)</span>
       </div>
       <div className="section"><p style={{ color: 'var(--text-2)', fontSize: 12 }}>Disabling a container disables every tool inside it and everything downstream of them.</p>

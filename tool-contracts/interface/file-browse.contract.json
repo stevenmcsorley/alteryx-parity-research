@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.FileBrowse.FileBrowse",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/file-browse-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "in-progress",
+  "implementation_status": "in-progress",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [
@@ -19,12 +19,16 @@
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Allowed File Types for Upload"
-    ]
+    "status": "partially-specified",
+    "source": "docs/INTERFACE_APPLICATIONS.md",
+    "supported_variants": [
+      "Native open-mode answer must be an existing file and save-mode answer a file path in an existing folder, resolved against the workflow directory",
+      "Optional extension filter applied in the native picker and enforced by the engine; selected path bound through configured actions"
+    ],
+    "unsupported_variants": [
+      "Authentic Alteryx File Browse XML configuration, file-type filter syntax and Gallery/Server upload behaviour are not verified"
+    ],
+    "preserved_runtime_xml": true
   },
   "deterministic": null,
   "external_dependencies": [
@@ -34,7 +38,18 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "Flowbench native analytic-app File Browse question adapter",
+    "tool_id": "interface:file-browse",
+    "module": "flowengine.interface_app + desktop/src/ui/dialogs.tsx",
+    "supported_variants": [
+      "Native open-mode answer must be an existing file and save-mode answer a file path in an existing folder, resolved against the workflow directory",
+      "Optional extension filter applied in the native picker and enforced by the engine; selected path bound through configured actions"
+    ],
+    "unimplemented_variants": [
+      "Authentic Alteryx File Browse XML configuration, file-type filter syntax and Gallery/Server upload behaviour are not verified"
+    ]
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -61,9 +76,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_fe_interop.ImportTests.test_native_browse_questions_check_extension_mode_and_existence",
+      "test_fe_service.ServiceTests.test_browse_answers_choose_input_output_and_folder_for_real_execution"
+    ]
   },
   "sources": [
     {
@@ -80,10 +98,15 @@
       "url": "data/reference-observations.json",
       "evidence_type": "authorised-reference-structural-scan",
       "accessed_utc": "2026-10-13T09:34:26+00:00"
+    },
+    {
+      "url": "docs/INTERFACE_APPLICATIONS.md",
+      "evidence_type": "project-authored-runtime-and-ui-evidence",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
     }
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No independent row-processing kernel; this entry is implemented as a workflow application adapter."
   ]
 }

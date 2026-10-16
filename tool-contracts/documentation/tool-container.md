@@ -1,6 +1,6 @@
 # Tool Container
 
-> **Research record; NOT a working tool implementation or verified specification.**
+> **Native Flowbench editor adapter; NOT a working tool implementation for Alteryx and NOT a verified specification.**
 
 ## Identity
 
@@ -11,27 +11,23 @@
 - Reference build: Designer 2026.1.4.126 (installed-build comparison outstanding)
 - Official catalogue: https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html
 - Specific reference: **NOT YET VERIFIED** — run public catalogue sync
-- Implementation: **not-started**
+- Implementation: **in-progress** — native canvas grouping, collapse, disable and AI patch operations are implemented; no row kernel is applicable.
 - Machine-readable contract: `tool-container.contract.json`
 - Conformance verification: **not-tested**
 
-## Research to complete (do not infer)
+## Flowbench-native behavior
 
-- [ ] Pin per-tool public documentation and availability/version history
-- [ ] Define inputs, output anchors, schema and metadata rules
-- [ ] Define configuration fields, defaults, UI validation and errors
-- [ ] Define row order, null semantics, locale/timezone and deterministic behaviour
-- [ ] Identify add-ons, licences, external APIs, services and data-package prerequisites
-- [ ] Define concrete independent fixtures, edge cases and expected outputs
-- [ ] Implement real independently written kernel or adapter
-- [ ] Demonstrate end-to-end workflow execution and unit/integration tests
-- [ ] Where authorised, capture reference evidence and run differential tests
-- [ ] Record limitations, performance, security and version compatibility
+- Select top-level canvas nodes and group them under a caption.
+- Rename, collapse/expand, disable/enable, and ungroup from the Inspector.
+- Persist native container structure in `metadata.ui.containers` when saving a Flowbench workflow.
+- AI graph patches can group top-level nodes, configure the group, and ungroup it as part of the same validated undoable edit.
+- Disabling a container disables its child tools at execution time.
+- Nested container ungroup preserves child coordinates relative to the outer parent.
 
 ## Sources and observations
 
-No application behaviour or compatibility has been verified. Add specific links, observed facts, dates, permission scope and evidence references here. Keep assumptions explicitly labelled.
+The native editor behavior is documented with implementation evidence in [TOOL_CONTAINERS.md](../../docs/TOOL_CONTAINERS.md). It is covered by a desktop Playwright acceptance and focused TypeScript state/AI-patch tests. This does not verify Alteryx runtime compatibility.
 
 ## Conformance evidence
 
-Not tested. Do not mark verified without a report, input/config hashes and a reproducible comparison rule.
+Alteryx reference comparison has not been performed. XML `Folded` and `Style` mapping remain unsupported/unverified; do not claim parity.

@@ -203,6 +203,7 @@ label { color: var(--text-2); font-size: 12px; }
 .badge { font-size: 10.5px; padding: 1px 6px; border-radius: 8px; white-space: nowrap; font-weight: 600; }
 .badge.ready { background: var(--ok-soft); color: var(--ok); }
 .badge.tested { background: var(--accent-soft); color: var(--accent); }
+.badge.native { background: var(--blue-soft, #e6f1fb); color: var(--blue, #2463a0); }
 .badge.unavailable { background: var(--muted-soft); color: var(--text-3); }
 .badge.blocked { background: var(--warn-soft); color: var(--warn); }
 .badge.refdiff { background: var(--err-soft); color: var(--err); }
@@ -263,7 +264,15 @@ label { color: var(--text-2); font-size: 12px; }
 .comment-node textarea { width: 100%; height: 100%; background: transparent; border: 0; resize: none; font-family: var(--sans); color: inherit; padding: 0; }
 .container-node { width: 100%; height: 100%; border: 1.5px solid var(--border-strong); border-radius: 10px; background: color-mix(in srgb, var(--accent-soft) 35%, transparent); }
 .container-node.disabled { border-style: dashed; opacity: 0.6; }
-.container-node .cap { display: flex; align-items: center; gap: 6px; padding: 4px 8px; font-weight: 600; font-size: 12px; color: var(--text-2); border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--panel) 70%, transparent); border-radius: 10px 10px 0 0; }
+.container-node .cap { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 8px; font-weight: 600; font-size: 12px; color: var(--text-2); border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--panel) 70%, transparent); border-radius: 10px 10px 0 0; }
+.container-collapse { border: 0; background: transparent; color: var(--text-2); cursor: pointer; font-size: 16px; line-height: 18px; padding: 0 4px; }
+.application-tree { display: grid; gap: 3px; margin-top: 4px; padding: 6px; border: 1px solid var(--border); border-radius: 6px; max-height: 240px; overflow: auto; }
+.application-tree-branch { padding-left: 8px; }
+.application-tree-branch summary { cursor: pointer; padding: 3px; }
+.application-tree-group { display: grid; gap: 3px; padding-left: 12px; }
+.application-tree-leaf { border: 1px solid transparent; border-radius: 4px; background: transparent; color: var(--text); cursor: pointer; padding: 4px 7px; text-align: left; }
+.application-tree-leaf:hover { background: var(--accent-soft); }
+.application-tree-leaf[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
 .edge-label { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 0 5px; font-family: var(--mono); font-size: 10.5px; color: var(--accent); }
 
 /* inspector */
