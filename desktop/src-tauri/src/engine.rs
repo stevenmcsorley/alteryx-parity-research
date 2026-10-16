@@ -47,16 +47,15 @@ pub fn python_command(root: &Path) -> PathBuf {
         return PathBuf::from(p);
     }
     if let Some(resources) = root.parent() {
-        for bundled in [
-            resources.join("runtime").join("python.exe"),
-            resources.join("resources").join("runtime").join("python.exe"),
-        ] {
+        for runtime in [resources.join("runtime"), resources.join("resources/runtime")] {
+            let executable = if cfg!(windows) { "python.exe" } else { "bin/python3" };
+            let bundled = runtime.join(executable);
             if bundled.is_file() {
                 return bundled;
             }
         }
     }
-    PathBuf::from("python")
+    PathBuf::from(if cfg!(windows) { "python" } else { "python3" })
 }
 
 /// Parse one stdout line. Returns Some((id, value)) for responses, None + notification otherwise.
@@ -307,12 +306,13 @@ mod tests {
         let resources = dir.join("resources");
         std::fs::create_dir_all(resources.join("engine/flowengine")).unwrap();
         std::fs::write(resources.join("engine/flowengine/__init__.py"), "").unwrap();
-        std::fs::create_dir_all(resources.join("runtime")).unwrap();
-        std::fs::write(resources.join("runtime/python.exe"), "").unwrap();
+        let executable = if cfg!(windows) { "runtime/python.exe" } else { "runtime/bin/python3" };
+        std::fs::create_dir_all(resources.join(executable).parent().unwrap()).unwrap();
+        std::fs::write(resources.join(executable), "").unwrap();
 
         let root = engine_root(Some(dir.clone()));
         assert_eq!(root, resources.join("engine"));
-        assert_eq!(python_command(&root), resources.join("runtime/python.exe"));
+        assert_eq!(python_command(&root), resources.join(executable));
         let _ = std::fs::remove_dir_all(dir);
     }
 

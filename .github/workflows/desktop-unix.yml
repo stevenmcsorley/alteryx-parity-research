@@ -1,0 +1,62 @@
+name: Linux and macOS desktop packages
+on:
+  push:
+  pull_request:
+jobs:
+  native-desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.10'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: astral-sh/setup-uv@v6
+      - name: Linux native libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libdbus-1-dev libayatana-appindicator3-dev librsvg2-dev patchelf xvfb
+      - run: python -m pip install -r requirements-dev.txt -r requirements-unix-runtime.txt
+      - run: npm ci
+        working-directory: desktop
+      - name: Stage and relocate-test managed runtime
+        run: python desktop/scripts/package_unix_runtime.py
+      - name: Shared engine tests
+        run: python -m unittest discover -s tests -v
+      - name: Build shared frontend and test it
+        working-directory: desktop
+        run: |
+          npm run build
+          npm test
+      - name: Native shell tests
+        working-directory: desktop/src-tauri
+        run: cargo test --locked
+      - name: Build native packages
+        working-directory: desktop
+        run: npm run tauri -- build
+      - name: Launch packaged Linux app and run a real workflow
+        if: runner.os == 'Linux'
+        run: xvfb-run -a python desktop/scripts/linux_package_smoke.py desktop/src-tauri/target/release/bundle/deb/*.deb --evidence artifacts/linux-desktop-smoke
+      - uses: actions/upload-artifact@v4
+        if: always() && runner.os == 'Linux'
+        with:
+          name: linux-desktop-smoke
+          path: artifacts/linux-desktop-smoke
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flowbench-${{ matrix.os }}
+          path: |
+            desktop/src-tauri/target/release/bundle/deb/*.deb
+            desktop/src-tauri/target/release/bundle/appimage/*.AppImage
+            desktop/src-tauri/target/release/bundle/dmg/*.dmg
+          if-no-files-found: error

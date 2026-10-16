@@ -1,0 +1,3 @@
+# Same engine dependencies as Windows, with the native credential vault adapter.
+-r requirements-windows-runtime.txt
+keyring==25.6.0

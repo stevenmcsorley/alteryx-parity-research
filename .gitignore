@@ -38,3 +38,6 @@ artifacts/full-acceptance/
 artifacts/acceptance-benchmarks.md
 !tests/fixtures/yxmd/*.yxmd
 tests/integration/.db_env.json
+desktop/src-tauri/runtime/*
+!desktop/src-tauri/runtime/.gitkeep
+artifacts/linux-desktop-smoke/
