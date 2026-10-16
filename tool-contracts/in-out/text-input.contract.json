@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 149,
-    "passing": 149,
+    "count": 155,
+    "passing": 155,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
@@ -168,6 +168,12 @@
       "test_data_correctness.DataCorrectnessTests.test_sort_nan_and_join_key_types",
       "test_data_correctness.DataCorrectnessTests.test_union_decimal_integer_exact",
       "test_data_correctness.DataCorrectnessTests.test_union_rejects_lossy_numeric_promotions",
+      "test_download.DownloadTests.test_binary_charset_and_size_limit",
+      "test_download.DownloadTests.test_configuration_and_schema_are_validated",
+      "test_download.DownloadTests.test_failures_stop_or_are_recorded",
+      "test_download.DownloadTests.test_get_with_query_and_header_fields_keeps_record_order",
+      "test_download.DownloadTests.test_post_bodies_from_fields",
+      "test_download.DownloadTests.test_requires_network_permission_and_is_reported_by_preflight",
       "test_dynamic_input.DynamicInputTests.test_bad_paths_fail_with_the_record_number",
       "test_dynamic_input.DynamicInputTests.test_declared_fields_give_a_static_schema_and_an_empty_result",
       "test_dynamic_input.DynamicInputTests.test_path_field_must_exist_and_be_text",

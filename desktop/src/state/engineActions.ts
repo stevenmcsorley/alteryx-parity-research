@@ -78,7 +78,7 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
   const s = useEditor.getState();
   if (s.run.status === 'running') return;
   const document = toDocument(graphOf(s));
-  const emptyEffects: WorkflowEffects = { complete: false, file_writes: [], database_writes: [], processes: [],
+  const emptyEffects: WorkflowEffects = { complete: false, file_writes: [], database_writes: [], processes: [], network_requests: [],
     unresolved: [{ path: [], reason: 'permission scan failed' }] };
   let effects: WorkflowEffects = emptyEffects;
   try {
@@ -110,8 +110,16 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
       && effects.complete;
     if (!allowFileWrites) return;
   }
+  const networkTools = effects.network_requests ?? [];
+  let allowNetwork = false;
+  if (networkTools.length) {
+    allowNetwork = window.confirm(`This workflow sends web requests (${networkTools.map(effectLocation).join(', ')}). `
+      + 'Requests can include record data and reach any address in the workflow. Allow network requests for this run?')
+      && effects.complete;
+    if (!allowNetwork) return;
+  }
   if (!effects.complete && effects.unresolved.length) {
-    window.alert('Flowbench could not inspect every nested macro. File, database and process permissions remain disabled for this run.');
+    window.alert('Flowbench could not inspect every nested macro. File, database, process and network permissions remain disabled for this run.');
   }
   try {
     const app = await engine().request<{ questions: import('../ui/dialogs').AppQuestion[] }>('workflow.application', { workflow: document });
@@ -122,6 +130,7 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
       workers: options.workers ?? 2, allow_processes: allow,
       allow_database_writes: allowDatabaseWrites,
       allow_file_writes: allowFileWrites,
+      allow_network: allowNetwork,
       ...(applicationValues ? { application_values: applicationValues } : {}),
       ...(options.batch_rows ? { batch_rows: options.batch_rows } : {}) });
     if (res.status === 'invalid') {
@@ -144,6 +153,7 @@ type WorkflowEffects = {
   file_writes: Array<{ node_id: string; tool_id: string; path: string[] }>;
   database_writes: Array<{ node_id: string; tool_id: string; path: string[] }>;
   processes: Array<{ node_id: string; tool_id: string; path: string[] }>;
+  network_requests?: Array<{ node_id: string; tool_id: string; path: string[] }>;
   unresolved: Array<{ path: string[]; reason: string }>;
 };
 
