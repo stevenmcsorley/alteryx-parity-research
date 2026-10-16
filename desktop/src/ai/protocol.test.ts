@@ -33,12 +33,46 @@ describe('flowbench.agent.v1 application tools', () => {
     expect(output).not.toContain('test-profile');
   });
 
+  it('identifies editor containers and comments as catalogue entries in the safe graph snapshot', async () => {
+    const state = context();
+    state.nodes = [...state.nodes,
+      { id: 'container_1', type: 'container', position: { x: 0, y: 120 }, data: { kind: 'container', caption: 'Private label' } } as CanvasNode,
+      { id: 'comment_1', type: 'comment', position: { x: 0, y: 240 }, data: { kind: 'comment', text: 'Private annotation' } } as CanvasNode,
+    ];
+    const result: any = await dispatchAgentTool({ ...env, getState: () => state }, 'workflow.get_snapshot');
+    expect(result.nodes).toContainEqual({ ref: 'node_2', kind: 'container', tool_id: 'documentation:tool-container' });
+    expect(result.nodes).toContainEqual({ ref: 'node_3', kind: 'comment', tool_id: 'documentation:comment' });
+    expect(JSON.stringify(result)).not.toContain('Private label');
+    expect(JSON.stringify(result)).not.toContain('Private annotation');
+  });
+
   it('exposes actionable node configuration while excluding credentials and raw row data', async () => {
     const result: any = await dispatchAgentTool(env, 'workflow.get_node_config', { node_ref: 'node_1' });
     expect(result).toMatchObject({ node_ref: 'node_1', kind: 'tool', tool_id: 'core.text_input', config: { file_path: 'C:/private/data.csv' } });
     expect(JSON.stringify(result)).not.toContain('private-secret');
     expect(JSON.stringify(result)).not.toContain('Sensitive customer value');
     expect(JSON.stringify(result)).toContain('C:/private/data.csv');
+  });
+
+  it('exposes safe Interface question and Condition configuration with stable control-anchor aliases', async () => {
+    const question = { id: 'enabled', prompt: 'Run the optional filter?', type: 'boolean', default: true };
+    const action = { id: 'question_1', type: 'applicationAction', position: { x: 0, y: 0 }, data: {
+      kind: 'application-action', question, config_path: ['expression'] } } as CanvasNode;
+    const condition = { id: 'condition_1', type: 'applicationCondition', position: { x: 100, y: 0 }, data: {
+      kind: 'application-condition', when: { question: 'enabled', operator: 'truthy' } } } as CanvasNode;
+    const state = { ...context(), nodes: [action, condition], edges: [{ id: 'e', source: 'condition_1', sourceHandle: 'True Condition',
+      target: 'question_1', targetHandle: 'Condition' }] } as AgentContext;
+    const env = { ...({ getState: () => state, validate: async () => undefined }) };
+    expect(await dispatchAgentTool(env, 'workflow.get_node_config', { node_ref: 'node_1' })).toMatchObject({
+      kind: 'application-action', config: { question: { id: 'enabled', type: 'boolean', default: true }, config_path: ['expression'] },
+    });
+    expect(await dispatchAgentTool(env, 'workflow.get_node_config', { node_ref: 'node_2' })).toMatchObject({
+      kind: 'application-condition', config: { condition: { question: 'enabled', operator: 'truthy' } },
+    });
+    expect(await dispatchAgentTool(env, 'workflow.get_snapshot')).toMatchObject({
+      nodes: [{ tool_id: 'interface:action' }, { tool_id: 'interface:condition' }],
+      edges: [{ source_anchor: 'output_1', target_anchor: 'input_1' }],
+    });
   });
 
   it('strictly rejects unknown tools and unregistered write operations', async () => {

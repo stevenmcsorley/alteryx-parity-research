@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.Tree.Tree",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/tree-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "in-progress",
+  "implementation_status": "in-progress",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [
@@ -19,16 +19,15 @@
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Allocate Geography",
-      "Allocate Variables",
-      "File System Directory",
-      "Custom XML",
-      "Custom File/Database"
-    ]
+    "status": "partially-specified",
+    "source": "docs/INTERFACE_TREE.md",
+    "supported_variants": [
+      "Single selected configured leaf path with hierarchical \" > \" labels; answer is bound as the normalized full path string and validated against the declared tree choices"
+    ],
+    "unsupported_variants": [
+      "Authentic Alteryx Tree XML mapping, Allocate Geography/Variables, filesystem tree browsing, and external custom data-source variants are not implemented"
+    ],
+    "preserved_runtime_xml": true
   },
   "deterministic": null,
   "external_dependencies": [
@@ -38,7 +37,17 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "Flowbench native analytic-app Tree question adapter",
+    "tool_id": "interface:tree",
+    "module": "flowengine.interface_app + desktop/src/ui/dialogs.tsx",
+    "supported_variants": [
+      "Single selected configured leaf path with hierarchical \" > \" labels; answer is bound as the normalized full path string and validated against the declared tree choices"
+    ],
+    "unimplemented_variants": [
+      "Authentic Alteryx Tree XML mapping, Allocate Geography/Variables, filesystem tree browsing, and external custom data-source variants are not implemented"
+    ]
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -69,9 +78,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_interop.ImportTests.test_native_tree_question_binds_a_defined_leaf_path_only"
+    ]
   },
   "sources": [
     {
@@ -88,10 +99,15 @@
       "url": "data/reference-observations.json",
       "evidence_type": "authorised-reference-structural-scan",
       "accessed_utc": "2026-10-13T09:34:26+00:00"
+    },
+    {
+      "url": "docs/INTERFACE_TREE.md",
+      "evidence_type": "project-authored-runtime-and-ui-evidence",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
     }
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No independent row-processing kernel; this entry is implemented as a workflow application adapter."
   ]
 }

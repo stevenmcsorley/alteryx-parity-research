@@ -9,7 +9,7 @@ const doc: WorkflowDoc = {
     { id: 'b', tool: 'core.filter', config: { expression: '1' }, position: { x: 400, y: 120 }, label: 'Keep', disabled: true },
   ],
   edges: [{ from: { node: 'a', anchor: 'output' }, to: { node: 'b', anchor: 'input' } }],
-  metadata: { application: { questions: [{ id: 'q', type: 'text', default: 'x' }] }, ui: { containers: [{ id: 'c1', caption: 'Box', disabled: false, position: { x: 50, y: 50 }, size: { width: 600, height: 300 }, children: ['a', 'b'] }],
+  metadata: { application: { questions: [{ id: 'q', type: 'text', default: 'x' }] }, ui: { containers: [{ id: 'c1', caption: 'Box', disabled: false, collapsed: true, position: { x: 50, y: 50 }, size: { width: 600, height: 300 }, children: ['a', 'b'] }],
     comments: [{ id: 'n1', text: 'hello', position: { x: 10, y: 400 }, size: { width: 200, height: 80 } }], ownDisabled: { b: true } } },
 };
 
@@ -25,6 +25,7 @@ describe('workflow model', () => {
     expect(back.nodes[1].disabled).toBe(true);
     expect(back.edges).toEqual(doc.edges);
     expect(back.metadata!.ui.containers[0].children).toEqual(['a', 'b']);
+    expect(back.metadata!.ui.containers[0].collapsed).toBe(true);
     expect(back.metadata!.ui.comments[0].text).toBe('hello');
     expect(back.metadata!.application).toEqual(doc.metadata!.application);
   });
@@ -65,6 +66,54 @@ describe('workflow model', () => {
     expect((action.data as any).when).toEqual({ question: 'enabled', operator: 'equals', value: true });
     const roundtripped = toDocument(graph);
     expect(roundtripped.metadata?.application?.actions[0].when).toEqual({ question: 'enabled', operator: 'equals', value: true });
+  });
+
+  it('round-trips Condition nodes and translates both branches into executable action predicates', () => {
+    const graph: CanvasGraph = {
+      name: 'condition routes', nodes: [
+        { id: 'q', type: 'applicationAction', position: { x: 0, y: 0 }, data: { kind: 'application-action',
+          question: { id: 'enabled', prompt: 'Enabled?', type: 'boolean', default: false }, config_path: ['expression'] } },
+        { id: 'condition', type: 'applicationCondition', position: { x: 220, y: 0 }, data: { kind: 'application-condition',
+          when: { question: 'enabled', operator: 'equals', value: true } } },
+        { id: 'yes', type: 'applicationAction', position: { x: 440, y: 0 }, data: { kind: 'application-action',
+          question: { id: 'yes-expression', prompt: 'Yes expression', type: 'text', default: '1' }, config_path: ['expression'] } },
+        { id: 'no', type: 'applicationAction', position: { x: 440, y: 140 }, data: { kind: 'application-action',
+          question: { id: 'no-expression', prompt: 'No expression', type: 'text', default: '0' }, config_path: ['expression'] } },
+        { id: 'filter-yes', type: 'tool', position: { x: 700, y: 0 }, data: { kind: 'tool', tool: 'core.filter', config: { expression: '1' } } },
+        { id: 'filter-no', type: 'tool', position: { x: 700, y: 140 }, data: { kind: 'tool', tool: 'core.filter', config: { expression: '1' } } },
+      ], edges: [
+        { id: 'condition:True Condition->yes:Condition', source: 'condition', sourceHandle: 'True Condition', target: 'yes', targetHandle: 'Condition', data: { kind: 'application-condition' } },
+        { id: 'condition:False Condition->no:Condition', source: 'condition', sourceHandle: 'False Condition', target: 'no', targetHandle: 'Condition', data: { kind: 'application-condition' } },
+        { id: 'yes:Action->filter-yes:__action__', source: 'yes', sourceHandle: 'Action', target: 'filter-yes', targetHandle: '__action__', data: { kind: 'application-action' } },
+        { id: 'no:Action->filter-no:__action__', source: 'no', sourceHandle: 'Action', target: 'filter-no', targetHandle: '__action__', data: { kind: 'application-action' } },
+      ],
+    };
+    const saved = toDocument(graph);
+    expect(saved.metadata?.application?.actions.map((a: any) => a.when)).toEqual([
+      { question: 'enabled', operator: 'equals', value: true },
+      { question: 'enabled', operator: 'not_equals', value: true },
+    ]);
+    const loaded = fromDocument(saved);
+    expect(loaded.nodes.some((n) => n.data.kind === 'application-condition')).toBe(true);
+    expect(loaded.edges.filter((e) => e.data?.kind === 'application-condition')).toHaveLength(2);
+    expect(toDocument(loaded).metadata?.application?.actions.map((a: any) => a.when)).toEqual(saved.metadata?.application?.actions.map((a: any) => a.when));
+  });
+
+  it('round-trips a conditional native Error Message node without adding a row-data edge', () => {
+    const graph: CanvasGraph = { name: 'application error', nodes: [
+      { id: 'condition', type: 'applicationCondition', position: { x: 0, y: 0 }, data: { kind: 'application-condition',
+        when: { question: 'valid', operator: 'truthy' } } },
+      { id: 'error', type: 'applicationError', position: { x: 200, y: 0 }, data: { kind: 'application-error', message: 'Provide a valid value.' } },
+    ], edges: [{ id: 'condition:True Condition->error:Condition', source: 'condition', sourceHandle: 'True Condition',
+      target: 'error', targetHandle: 'Condition', data: { kind: 'application-condition' } }] };
+    const saved = toDocument(graph);
+    expect(saved.edges).toEqual([]);
+    expect(saved.metadata?.application?.errors).toEqual([{ id: 'error', message: 'Provide a valid value.',
+      when: { question: 'valid', operator: 'truthy' } }]);
+    const loaded = fromDocument(saved);
+    expect(loaded.nodes.find((n) => n.id === 'error')?.data).toEqual({ kind: 'application-error', message: 'Provide a valid value.', when: { question: 'valid', operator: 'truthy' } });
+    expect(loaded.edges).toHaveLength(1);
+    expect(toDocument(loaded).metadata?.application?.errors).toEqual(saved.metadata?.application?.errors);
   });
 
   it('auto-lays out documents without positions by dependency depth', () => {

@@ -1,6 +1,6 @@
 # Tree
 
-> **Research record; NOT a working tool implementation or verified specification.**
+> **Research record; NOT a working tool implementation or verified specification.** Flowbench provides the separate native leaf-path question described below; that does not establish Alteryx Tree interoperability.
 
 ## Identity
 
@@ -11,27 +11,21 @@
 - Reference build: Designer 2026.1.4.126 (installed-build comparison outstanding)
 - Official catalogue: https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html
 - Specific reference: **NOT YET VERIFIED** — run public catalogue sync
-- Implementation: **not-started**
+- Implementation: **in-progress** — native hierarchical leaf-path question, run validation and Action binding are implemented; imported Alteryx Tree variants remain unsupported.
 - Machine-readable contract: `tree.contract.json`
 - Conformance verification: **not-tested**
 
-## Research to complete (do not infer)
+## Flowbench-native behavior
 
-- [ ] Pin per-tool public documentation and availability/version history
-- [ ] Define inputs, output anchors, schema and metadata rules
-- [ ] Define configuration fields, defaults, UI validation and errors
-- [ ] Define row order, null semantics, locale/timezone and deterministic behaviour
-- [ ] Identify add-ons, licences, external APIs, services and data-package prerequisites
-- [ ] Define concrete independent fixtures, edge cases and expected outputs
-- [ ] Implement real independently written kernel or adapter
-- [ ] Demonstrate end-to-end workflow execution and unit/integration tests
-- [ ] Where authorised, capture reference evidence and run differential tests
-- [ ] Record limitations, performance, security and version compatibility
+- Configure hierarchical leaf choices as canonical `Parent > Child` paths.
+- Select one declared leaf in the analytic-app prompt; its full path string can update a connected Action target.
+- Reject duplicate paths, selectable parent paths, invalid defaults and undeclared answers.
+- Native behavior is described in [INTERFACE_TREE.md](../../docs/INTERFACE_TREE.md).
 
 ## Sources and observations
 
-No application behaviour or compatibility has been verified. Add specific links, observed facts, dates, permission scope and evidence references here. Keep assumptions explicitly labelled.
+The native engine adapter has a focused binding/validation regression and the desktop E2E runs the question form and workflow. These tests establish Flowbench behavior only. Alteryx Designer Tree source configuration and XML mapping are not verified.
 
 ## Conformance evidence
 
-Not tested. Do not mark verified without a report, input/config hashes and a reproducible comparison rule.
+No Alteryx differential cases exist. Do not claim compatibility for geography allocation, variable allocation, file-system browsing or custom XML/database tree sources.

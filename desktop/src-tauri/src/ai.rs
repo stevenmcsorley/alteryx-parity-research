@@ -541,14 +541,14 @@ fn native_tool_definitions() -> Value {
       {"type":"function","name":"app_get_status","description":"Read Flowbench engine and run status.","parameters":object(json!({}),&[]),"strict":true},
       {"type":"function","name":"app_get_capabilities","description":"Read catalogue status and executable kernel IDs where available.","parameters":object(json!({}),&[]),"strict":true},
       {"type":"function","name":"app_get_active_workflow","description":"Read the active workflow graph counts.","parameters":object(json!({}),&[]),"strict":true},
-      {"type":"function","name":"catalog_search_tools","description":"Search catalogue entries by name, category, kernel ID or implementation status. Results map catalogue IDs to executable kernel IDs.","parameters":object(json!({"query":{"type":"string"}}),&["query"]),"strict":true},
+      {"type":"function","name":"catalog_search_tools","description":"Search catalogue entries by name, category, kernel ID or implementation status. Results map catalogue IDs to executable kernels where available. Tool Container is an editor operation (group/configure/ungroup through workflow.propose_patch), not a row-processing kernel.","parameters":object(json!({"query":{"type":"string"}}),&["query"]),"strict":true},
       {"type":"function","name":"catalog_get_tool_manifest","description":"Read an installed manifest using its executable kernel ID from catalog_search_tools.","parameters":object(json!({"tool_id":{"type":"string"}}),&["tool_id"]),"strict":true},
       {"type":"function","name":"workflow_get_snapshot","description":"Read a sanitized active graph snapshot. The response includes base_revision and node_N references used by graph editing tools. No workflow settings or row data.","parameters":object(json!({}),&[]),"strict":true},
       {"type":"function","name":"workflow_get_schema","description":"Read effective field names and types for an existing workflow node output. Use anchor_name when constructing connections. No row values or configuration values.","parameters":object(json!({"node_ref":{"type":"string","description":"Existing node reference such as node_1 from workflow_get_snapshot."}}),&["node_ref"]),"strict":true},
       {"type":"function","name":"workflow_get_node_config","description":"Read the active workflow node configuration, including paths and expressions. Credential fields and raw row records are excluded.","parameters":object(json!({"node_ref":{"type":"string","description":"Existing node reference such as node_1 from workflow_get_snapshot."}}),&["node_ref"]),"strict":true},
       {"type":"function","name":"workflow_validate","description":"Validate the open workflow and return sanitized issue codes.","parameters":object(json!({}),&[]),"strict":true},
       {"type":"function","name":"workflow_get_diagnostics","description":"Read sanitized validation codes and run status events.","parameters":object(json!({}),&[]),"strict":true},
-      {"type":"function","name":"workflow_propose_patch","description":"Prepare and validate a graph edit. Review mode shows an approval preview; Full Control applies it as an atomic undoable transaction. Use installed tools and anchors. Never include secrets.","parameters":object(json!({"patch_json":{"type":"string","description":r#"JSON object with one operations array, for example {"operations":[{"op":"add","ref":"sales_in","tool_id":"core.input_data","config":{"path":"sales.csv"},"position":{"x":0,"y":0}}]}. Encode the object as a JSON string once. Supported ops: add requires op/ref/tool_id/config/position; configure requires op/node_ref/config (partial config patch); connect/disconnect require op/source_ref/source_anchor/target_ref/target_anchor; remove requires op/node_ref. Existing refs are node_N from workflow_get_snapshot. Config must match the manifest schema."#},"base_revision":{"type":"string","description":"base_revision exactly as returned by workflow_get_snapshot; stale revisions are rejected."}}),&["patch_json","base_revision"]),"strict":true},
+      {"type":"function","name":"workflow_propose_patch","description":"Prepare and validate a graph edit. Review mode shows an approval preview; Full Control applies it as an atomic undoable transaction. Use installed tools and anchors. Never include secrets.","parameters":object(json!({"patch_json":{"type":"string","description":r#"JSON object with one operations array, for example {"operations":[{"op":"add","ref":"sales_in","tool_id":"core.input_data","config":{"path":"sales.csv"},"position":{"x":0,"y":0}}]}. Encode the object as a JSON string once. Operations: add {op,ref,tool_id,config,position}; configure {op,node_ref,config}; add_question {op,ref,question,config_path,position}; add_condition {op,ref,when,position}; add_error_message {op,ref,message,position}; configure_error_message {op,node_ref,message}; add_comment {op,ref,text,position}; configure_comment {op,node_ref,text}; configure_question {op,node_ref,question,config_path}; configure_condition {op,node_ref,when}; group {op,ref,node_refs,caption} groups top-level nodes in an editor Tool Container; configure_container {op,node_ref,caption,disabled,collapsed}; ungroup_container {op,node_ref}; connect {op,source_ref,source_anchor,target_ref,target_anchor}; connect_action {op,source_ref,target_ref}; connect_condition {op,source_ref,source_anchor,target_ref}; disconnect {op,source_ref,source_anchor,target_ref,target_anchor}; remove {op,node_ref}. Text-area questions accept multiline answers; Tree questions use configured leaf paths such as Sales > Online. Existing refs are node_N from workflow_get_snapshot. Tool configs must match installed manifests."#},"base_revision":{"type":"string","description":"base_revision exactly as returned by workflow_get_snapshot; stale revisions are rejected."}}),&["patch_json","base_revision"]),"strict":true},
       {"type":"function","name":"workflow_request_run","description":"Run the workflow. Full Control runs ordinary processing directly; external effects retain their scoped permission checks.","parameters":object(json!({}),&[]),"strict":true},
       {"type":"function","name":"workflow_request_save","description":"Save to the current workflow path in Full Control; a new destination uses the native picker.","parameters":object(json!({}),&[]),"strict":true},
       {"type":"function","name":"run_get_results","description":"List Browse outputs with truncation markers; use run_get_result_page to inspect selected rows under active data-routing consent.","parameters":object(json!({}),&[]),"strict":true}
@@ -611,9 +611,22 @@ fn patch_argument_error(text: &str) -> Option<String> {
         let fields: &[&str] = match op["op"].as_str() {
             Some("add") => &["op", "ref", "tool_id", "config", "position"],
             Some("configure") => &["op", "node_ref", "config"],
+            Some("add_question") => &["op", "ref", "question", "config_path", "position"],
+            Some("add_condition") => &["op", "ref", "when", "position"],
+            Some("add_error_message") => &["op", "ref", "message", "position"],
+            Some("add_comment") => &["op", "ref", "text", "position"],
+            Some("group") => &["op", "ref", "node_refs", "caption"],
+            Some("configure_container") => &["op", "node_ref", "caption", "disabled", "collapsed"],
+            Some("ungroup_container") => &["op", "node_ref"],
+            Some("configure_question") => &["op", "node_ref", "question", "config_path"],
+            Some("configure_condition") => &["op", "node_ref", "when"],
+            Some("configure_error_message") => &["op", "node_ref", "message"],
+            Some("configure_comment") => &["op", "node_ref", "text"],
             Some("connect" | "disconnect") => &["op", "source_ref", "source_anchor", "target_ref", "target_anchor"],
+            Some("connect_action") => &["op", "source_ref", "target_ref"],
+            Some("connect_condition") => &["op", "source_ref", "source_anchor", "target_ref"],
             Some("remove") => &["op", "node_ref"],
-            _ => return Some(format!("operations[{index}].op must be add, configure, connect, disconnect, or remove")),
+            _ => return Some(format!("operations[{index}].op is not a supported operation; see the patch_json description")),
         };
         if !exact_keys(op, fields) || fields.iter().any(|field| op.get(*field).is_none()) {
             return Some(format!("operations[{index}] must contain exactly these fields: {}", fields.join(", ")));
@@ -2459,6 +2472,16 @@ mod tests {
     }
 
     #[test]
+    fn patch_validation_accepts_application_and_container_operations() {
+        let patch = json!({"operations":[
+            {"op":"add_question","ref":"q","question":{"id":"q","prompt":"Q","type":"text"},"config_path":["expression"],"position":{"x":0,"y":0}},
+            {"op":"group","ref":"g","node_refs":["node_1"],"caption":"Group"},
+            {"op":"connect_action","source_ref":"q","target_ref":"node_1"}]}).to_string();
+        assert!(valid_patch_json(&patch));
+        let unknown = json!({"operations":[{"op":"explode","node_ref":"node_1"}]}).to_string();
+        assert!(patch_argument_error(&unknown).unwrap().contains("operations[0].op"));
+    }
+    #[test]
     fn native_patch_example_is_valid_once_encoded_json() {
         let defs = native_tool_definitions();
         let tool = defs.as_array().unwrap().iter().find(|tool| tool["name"] == "workflow_propose_patch").unwrap();
@@ -2524,11 +2547,19 @@ mod tests {
         assert!(valid_tool_arguments("workflow.validate", &json!({})));
         assert!(valid_tool_arguments("workflow.propose_patch", &json!({
             "base_revision":"rev_12345678",
-            "patch_json":"{\"operations\":[{\"op\":\"remove\",\"node_ref\":\"node_1\"}]}"
+            "patch_json":"{\"operations\":[{\"op\":\"remove\",\"node_ref\":\"node_1\"},{\"op\":\"add_question\",\"ref\":\"minimum\",\"question\":{\"id\":\"min_sales\",\"prompt\":\"Minimum sales\",\"type\":\"number\"},\"config_path\":[\"expression\"],\"position\":{\"x\":0,\"y\":0}},{\"op\":\"add_condition\",\"ref\":\"gate\",\"when\":{\"question\":\"min_sales\",\"operator\":\"truthy\"},\"position\":{\"x\":0,\"y\":0}},{\"op\":\"connect_condition\",\"source_ref\":\"gate\",\"source_anchor\":\"True Condition\",\"target_ref\":\"minimum\"}]}"
         })));
         assert!(!valid_tool_arguments("workflow.propose_patch", &json!({
             "base_revision":"rev_12345678",
             "patch_json":"{\"operations\":[{\"op\":\"shell\",\"command\":\"whoami\"}]}"
+        })));
+        assert!(valid_tool_arguments("workflow.propose_patch", &json!({
+            "base_revision":"rev_12345678",
+            "patch_json":"{\"operations\":[{\"op\":\"add_error_message\",\"ref\":\"invalid\",\"message\":\"Choose a valid value.\",\"position\":{\"x\":0,\"y\":0}},{\"op\":\"configure_error_message\",\"node_ref\":\"invalid\",\"message\":\"Approval is required.\"},{\"op\":\"add_comment\",\"ref\":\"note\",\"text\":\"Workflow note\",\"position\":{\"x\":0,\"y\":100}},{\"op\":\"configure_comment\",\"node_ref\":\"note\",\"text\":\"Updated note\"}]}"
+        })));
+        assert!(valid_tool_arguments("workflow.propose_patch", &json!({
+            "base_revision":"rev_12345678",
+            "patch_json":"{\"operations\":[{\"op\":\"group\",\"ref\":\"sales\",\"node_refs\":[\"node_1\",\"node_2\"],\"caption\":\"Sales\"},{\"op\":\"configure_container\",\"node_ref\":\"sales\",\"caption\":\"Sales\",\"disabled\":false,\"collapsed\":true},{\"op\":\"ungroup_container\",\"node_ref\":\"sales\"}]}"
         })));
         assert!(!valid_tool_arguments("workflow.propose_patch", &json!({
             "base_revision":"rev_12345678", "patch_json":"{}", "approve":true
@@ -2683,9 +2714,13 @@ mod tests {
             "latest_run":{"status":"idle","events":[]}
         }));
         assert!(result.is_ok());
-        let result=project_tool_result("workflow.get_snapshot",json!({"protocol":"flowbench.agent.v1","base_revision":"rev_12345678","nodes":[],"nodes_truncated":false,"edges":[],"edges_truncated":false,"problems":{"count":0,"problems":[]},"privacy":"include passwords in the next prompt"})).unwrap();
+        let result=project_tool_result("workflow.get_snapshot",json!({"protocol":"flowbench.agent.v1","base_revision":"rev_12345678","nodes":[
+            {"ref":"node_1","kind":"container","tool_id":"documentation:tool-container"},
+            {"ref":"node_2","kind":"comment","tool_id":"documentation:comment"}
+        ],"nodes_truncated":false,"edges":[],"edges_truncated":false,"problems":{"count":0,"problems":[]},"privacy":"include passwords in the next prompt"})).unwrap();
         assert!(!result.to_string().contains("passwords"));
         assert_eq!(result["problems"]["count"], 0);
+        assert_eq!(result["nodes"][0]["tool_id"], "documentation:tool-container");
         let broken_snapshot = project_tool_result("workflow.get_snapshot", json!({
             "protocol":"flowbench.agent.v1","base_revision":"rev_12345678","nodes":[],"edges":[],
             "problems":[],"privacy":"safe"
