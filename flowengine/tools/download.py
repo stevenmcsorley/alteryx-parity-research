@@ -26,11 +26,19 @@ OUTPUT_FIELDS = ('DownloadData', 'DownloadHeaders', 'StatusCode', 'DownloadError
 
 
 class _HttpOnlyRedirects(urllib.request.HTTPRedirectHandler):
+    def __init__(self, connection=None):
+        super().__init__()
+        self.connection = connection
+
     def http_error_302(self, req, fp, code, msg, headers):
         target = urllib.parse.urljoin(req.full_url, headers.get('Location') or headers.get('URI') or '')
         if urllib.parse.urlsplit(target).scheme.lower() not in ('http', 'https'):
             fp.close()
             raise urllib.error.URLError('redirect to a non-HTTP(S) URL was refused')
+        if self.connection is not None and not self.connection.covers(target):
+            # urllib forwards Authorization on redirect; never let it leave the connection's scope.
+            fp.close()
+            raise urllib.error.URLError("redirect leaves the connection's base URL and was refused")
         return super().http_error_302(req, fp, code, msg, headers)
 
     http_error_301 = http_error_303 = http_error_307 = http_error_308 = http_error_302
@@ -54,6 +62,8 @@ class Download(Tool):
             'type': 'object', 'additionalProperties': False, 'required': ['url_field'],
             'properties': {
                 'url_field': {'type': 'string', 'minLength': 1},
+                'connection_id': {'type': ['string', 'null'], 'default': None,
+                                  'description': 'Saved Web/API or GitHub connection that authenticates requests under its base URL'},
                 'method': {'enum': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD'], 'default': 'GET'},
                 'headers': {'type': 'array', 'maxItems': 64, 'default': [], 'items': {
                     'type': 'object', 'additionalProperties': False, 'required': ['name', 'value'],
@@ -109,7 +119,7 @@ class Download(Tool):
                                   Field('StatusCode', FieldType.INT32),
                                   Field('DownloadError', FieldType.V_WSTRING, UNBOUNDED_TEXT)])}
 
-    def _request(self, cfg, record):
+    def _request(self, cfg, record, auth=None):
         url = record[cfg['url_field']]
         if url is None or not str(url).strip():
             raise ValueError('empty URL')
@@ -141,13 +151,20 @@ class Download(Tool):
             headers.setdefault('Content-Type', 'application/json')
         if cfg['content_type']:
             headers['Content-Type'] = cfg['content_type']
+        if auth is not None:
+            connection, secret = auth
+            try:
+                headers.update(connection.authorize(urllib.parse.urlunsplit(parts), secret))
+            except ConfigError as e:
+                raise ValueError(e.message) from None
         return urllib.request.Request(urllib.parse.urlunsplit(parts), data=body, headers=headers, method=cfg['method'])
 
-    def _fetch(self, cfg, record):
+    def _fetch(self, cfg, record, auth=None):
         """Return (data, headers, status, error) for one record."""
-        opener = urllib.request.build_opener(_HttpOnlyRedirects if cfg['follow_redirects'] else _NoRedirects)
+        redirects = _HttpOnlyRedirects(auth[0] if auth else None) if cfg['follow_redirects'] else _NoRedirects()
+        opener = urllib.request.build_opener(redirects)
         try:
-            request = self._request(cfg, record)
+            request = self._request(cfg, record, auth)
             try:
                 response = opener.open(request, timeout=cfg['timeout_seconds'])
             except urllib.error.HTTPError as e:
@@ -170,6 +187,16 @@ class Download(Tool):
             reason = getattr(e, 'reason', None) or e
             return None, None, None, f'{type(e).__name__}: {reason}'
 
+    def _connection(self, cfg):
+        from ..service_connections import ServiceConnectionStore
+        store = ServiceConnectionStore()
+        connection = store.get(cfg['connection_id'])
+        auth_names = {name.lower() for name in connection.authorize(connection.base_url, 'x')}
+        overlap = [n for n in [h['name'] for h in cfg['headers']] + cfg['header_fields'] if n.lower() in auth_names]
+        if overlap:
+            raise ConfigError(f'Header(s) {overlap} would replace the authentication from connection {connection.name!r}')
+        return connection, store.secret(connection)
+
     def run(self, ctx, cfg, inputs):
         if not ctx.limits.get('allow_network'):
             raise EngineError('Download sends network requests and is disabled for this run. '
@@ -177,15 +204,16 @@ class Download(Tool):
                               code='permission-denied', node_id=ctx.node_id)
         table: Table = inputs['input']
         schema = self.infer(ctx, cfg, {'input': table.schema})['output']
+        auth = self._connection(cfg) if cfg['connection_id'] else None
         records = table.to_dicts()
         if cfg['connections'] > 1 and len(records) > 1:
             with ThreadPoolExecutor(max_workers=cfg['connections']) as pool:
-                results = list(pool.map(lambda r: self._fetch(cfg, r), records))
+                results = list(pool.map(lambda r: self._fetch(cfg, r, auth), records))
         else:
             results = []
             for record in records:
                 ctx.check_cancelled()
-                results.append(self._fetch(cfg, record))
+                results.append(self._fetch(cfg, record, auth))
         ctx.check_cancelled()
         failures = [(i, r[3]) for i, r in enumerate(results, start=1) if r[3]]
         if failures and cfg['on_error'] == 'error':

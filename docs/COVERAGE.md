@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 274 run, 0 failed |
+| Unit/integration tests in last ledger build | 280 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -36,7 +36,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:directory` | `core.directory` | 3 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 21 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 12 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 155 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 157 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -88,7 +88,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `developer:control-container` | `core.control_container` | 6 | 0/0 | not-tested |
 | `developer:detour` | `core.detour` | 1 | 0/0 | not-tested |
 | `developer:detour-end` | `core.detour_end` | 1 | 0/0 | not-tested |
-| `developer:download` | `core.download` | 6 | 0/0 | not-tested |
+| `developer:download` | `core.download` | 8 | 0/0 | not-tested |
 | `developer:dynamic-input` | `core.dynamic_input` | 6 | 0/0 | not-tested |
 | `developer:dynamic-rename` | `core.dynamic_rename` | 1 | 1/1 | partial |
 | `developer:dynamic-replace` | `core.dynamic_replace` | 3 | 0/0 | not-tested |
