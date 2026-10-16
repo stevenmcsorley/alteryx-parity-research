@@ -12,7 +12,7 @@
 | Machine-readable contracts generated | 323 |
 | Entries with known anchors (manifest, reference-observed or public-doc) | 184 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 68 |
+| Independent kernels implemented and passing tests | 69 |
 | Independently implemented application adapters (in progress) | 14 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 254 run, 0 failed |
+| Unit/integration tests in last ledger build | 258 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -36,7 +36,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:directory` | `core.directory` | 2 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 19 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 11 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 136 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 140 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 1 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -79,6 +79,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `transform:weighted-average` | `core.weighted_average` | 1 | 1/1 | partial |
 | `interface:macro-input` | `flowengine.macro_input` | 14 | 0/0 | not-tested |
 | `interface:macro-output` | `flowengine.macro_output` | 14 | 0/0 | not-tested |
+| `data-investigation:pearson-correlation` | `core.pearson_correlation` | 4 | 0/0 | not-tested |
 | `developer:base64-encoder` | `core.base64_encoder` | 1 | 0/0 | not-tested |
 | `developer:blob-convert` | `core.blob_convert` | 3 | 0/0 | not-tested |
 | `developer:blob-input` | `core.blob_input` | 2 | 0/0 | not-tested |
@@ -113,7 +114,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Computer Vision | 9 | 0 | 0 | 9 | 0 |
 | Connect | 3 | 0 | 0 | 0 | 3 |
 | Connectors | 44 | 0 | 0 | 1 | 44 |
-| Data Investigation | 14 | 0 | 0 | 7 | 0 |
+| Data Investigation | 14 | 1 | 0 | 7 | 0 |
 | Demographic Analysis | 4 | 0 | 0 | 0 | 4 |
 | Developer | 30 | 21 | 4 | 29 | 0 |
 | Documentation | 3 | 0 | 0 | 1 | 0 |

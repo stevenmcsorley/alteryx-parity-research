@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 136,
-    "passing": 136,
+    "count": 140,
+    "passing": 140,
     "tests": [
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
@@ -159,6 +159,10 @@
       "test_control_container.ControlContainerTests.test_inactive_container_stops_a_chain_and_nested_containers",
       "test_control_container.ControlContainerTests.test_invalid_membership_and_control_are_reported",
       "test_control_container.ControlContainerTests.test_unconnected_container_runs_children_then_logs_them",
+      "test_correlation.CorrelationTests.test_positive_negative_and_constant_matrix",
+      "test_correlation.CorrelationTests.test_rejects_nulls_nonfinite_and_insufficient_rows",
+      "test_correlation.CorrelationTests.test_rejects_text_and_missing_fields",
+      "test_correlation.CorrelationTests.test_sample_covariance",
       "test_data_correctness.DataCorrectnessTests.test_basic_filter_temporal_literals_are_typed",
       "test_data_correctness.DataCorrectnessTests.test_filter_numeric_literal_int64_precision",
       "test_data_correctness.DataCorrectnessTests.test_sort_nan_and_join_key_types",
