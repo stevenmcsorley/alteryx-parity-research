@@ -67,6 +67,18 @@ while a List Box submits a list even when only one value is selected. Options
 must be unique strings; required multi-select questions cannot submit an empty
 list. Check Box answers remain booleans and Numeric Up Down values remain
 finite numbers subject to configured bounds.
+File Browse (`file`) and Folder Browse (`folder`) answers are path strings bound
+through the same actions. A File Browse question may set `mode` to `open`
+(default) or `save`, and `extensions` to unique lowercase names without dots,
+such as `["csv", "tsv"]`. The desktop picker applies those filters and opens a
+save dialog in save mode. At run time the engine resolves relative answers
+against the workflow directory: an open-mode file must exist, a save-mode file
+needs an existing parent folder and must not name a folder, and a folder answer
+must be an existing directory. A non-matching extension, missing path or control
+character stops the run with `application-input-invalid`. An empty optional
+answer is bound unchanged. These are native rules; Alteryx File/Folder Browse
+XML settings and Gallery upload behaviour are not mapped.
+
 # Native Batch Macro Control Parameter
 
 Flowbench-native analytic-app metadata supports a `control-parameter` question

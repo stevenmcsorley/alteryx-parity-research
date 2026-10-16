@@ -9,8 +9,12 @@ from __future__ import annotations
 import copy
 import datetime as dt
 import math
+import re
+from pathlib import Path
 
 from .errors import EngineError
+
+_EXTENSION = re.compile(r'^[a-z0-9][a-z0-9_+-]{0,15}$')
 
 
 def _spec(doc):
@@ -38,6 +42,20 @@ def _spec(doc):
             raise EngineError(f'Secret application question {qid!r} must not store a default value', code='application-invalid')
         if q.get('secret') and q['type'] != 'text':
             raise EngineError(f'Secret application question {qid!r} must be text', code='application-invalid')
+        if ('mode' in q or 'extensions' in q) and q['type'] != 'file':
+            raise EngineError(f'Only File Browse question {qid!r} may set mode or extensions', code='application-invalid')
+        if q['type'] == 'file':
+            if q.get('mode', 'open') not in ('open', 'save'):
+                raise EngineError(f'File Browse question {qid!r} mode must be open or save', code='application-invalid')
+            extensions = q.get('extensions')
+            if extensions is not None and (
+                    not isinstance(extensions, list) or not extensions or len(extensions) > 32
+                    or any(not isinstance(ext, str) or not _EXTENSION.match(ext) for ext in extensions)
+                    or len(set(extensions)) != len(extensions)):
+                raise EngineError(f'File Browse question {qid!r} extensions must be unique lowercase names without dots',
+                                  code='application-invalid')
+        if q['type'] in ('file', 'folder') and 'default' in q and not isinstance(q['default'], str):
+            raise EngineError(f'Browse question {qid!r} default must be a path string', code='application-invalid')
         if q['type'] in ('choice', 'multi-choice') and (
                 not isinstance(q.get('options'), list) or not q['options']
                 or any(not isinstance(option, str) for option in q['options'])
@@ -173,8 +191,34 @@ def describe_application(doc):
     return {'questions': public}
 
 
-def bind_application(doc, supplied):
-    """Return a modified document copy and normalized answers; never mutate input."""
+def _check_path_answer(qid, q, value, base_dir):
+    """Validate a File/Folder Browse answer; existence is checked only when base_dir is known."""
+    if any(ord(ch) < 32 for ch in value):
+        raise EngineError(f'Application input {qid!r} contains control characters', code='application-input-invalid')
+    extensions = q.get('extensions') if q['type'] == 'file' else None
+    if extensions and not any(value.lower().endswith('.' + ext) for ext in extensions):
+        raise EngineError(f'Application input {qid!r} must be a ' + ', '.join('.' + e for e in extensions) + ' file',
+                          code='application-input-invalid')
+    if base_dir is None:
+        return
+    path = Path(value)
+    path = path if path.is_absolute() else Path(base_dir) / path
+    if q['type'] == 'folder':
+        ok, expected = path.is_dir(), 'an existing folder'
+    elif q.get('mode', 'open') == 'save':
+        ok, expected = path.parent.is_dir() and not path.is_dir(), 'a file path in an existing folder'
+    else:
+        ok, expected = path.is_file(), 'an existing file'
+    if not ok:
+        raise EngineError(f'Application input {qid!r} must be {expected}', code='application-input-invalid')
+
+
+def bind_application(doc, supplied, base_dir=None):
+    """Return a modified document copy and normalized answers; never mutate input.
+
+    When ``base_dir`` is given, File/Folder Browse answers are resolved against it
+    and must exist (a save-mode file needs only an existing parent folder).
+    """
     spec = _spec(doc)
     if supplied is None:
         supplied = {}
@@ -207,7 +251,9 @@ def bind_application(doc, supplied):
             except ValueError as exc:
                 raise EngineError(f'Application input {qid!r} must be an ISO date (YYYY-MM-DD)', code='application-input-invalid') from exc
             values[qid] = value
-        elif q['type'] in ('text', 'file', 'folder') and isinstance(value, str):
+        elif q['type'] in ('file', 'folder') and isinstance(value, str):
+            if value:
+                _check_path_answer(qid, q, value, base_dir)
             values[qid] = value
         elif q['type'] == 'choice' and value in q['options']:
             values[qid] = value

@@ -114,7 +114,7 @@ class EngineService:
         if method == 'workflow.validate':
             from .interface_app import bind_application
             from .profiles import get_profile
-            document = bind_application(params['workflow'], params.get('application_values'))
+            document = bind_application(params['workflow'], params.get('application_values'), self._base(params))
             plan, problems = plan_workflow(document, reg, base_dir=self._base(params),
                                            profile=get_profile(params.get('profile')))
             schemas = {}
@@ -130,7 +130,7 @@ class EngineService:
             try:
                 from .interface_app import bind_application
                 original = params['workflow']
-                document = bind_application(original, params.get('application_values'))
+                document = bind_application(original, params.get('application_values'), self._base(params))
                 kwargs = self._run_kwargs(params)
                 if (original.get('metadata') or {}).get('application'):
                     kwargs['history_workflow'] = original
@@ -247,8 +247,9 @@ class EngineService:
         from .interface_app import bind_application
         params = dict(params)
         original = params['workflow']
+        base_dir = self._base(params)
         try:
-            params['workflow'] = bind_application(original, params.pop('application_values', None))
+            params['workflow'] = bind_application(original, params.pop('application_values', None), base_dir)
         except EngineError as e:
             return {'status': 'invalid', 'problems': [{'code': e.code, 'message': e.message, 'node_id': e.node_id}]}
         run_id = uuid.uuid4().hex

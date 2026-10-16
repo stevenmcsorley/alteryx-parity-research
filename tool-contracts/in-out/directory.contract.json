@@ -89,9 +89,10 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
+    "count": 2,
+    "passing": 2,
     "tests": [
+      "test_fe_service.ServiceTests.test_browse_answers_choose_input_output_and_folder_for_real_execution",
       "test_fe_tools.InOutTests.test_directory_listing_sorted_and_filtered"
     ]
   },

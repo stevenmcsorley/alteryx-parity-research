@@ -90,6 +90,40 @@ class ServiceTests(unittest.TestCase):
                                              'application_values': {'enabled': 'yes'}})
         self.assertEqual(invalid['error']['data']['code'], 'application-input-invalid')
 
+    def test_browse_answers_choose_input_output_and_folder_for_real_execution(self):
+        with tempfile.TemporaryDirectory() as d:
+            base = Path(d)
+            (base / 'jan.csv').write_text('amount\n1\n', encoding='utf-8')
+            (base / 'feb.csv').write_text('amount\n5\n6\n', encoding='utf-8')
+            (base / 'out').mkdir()
+            (base / 'archive').mkdir()
+            (base / 'archive' / 'dec.csv').write_text('amount\n9\n', encoding='utf-8')
+            wf = workflow([{'id': 'in', 'tool': 'core.input_data', 'config': {'path': 'jan.csv'}},
+                           {'id': 'out', 'tool': 'core.output_data', 'config': {'path': 'out/result.csv'}},
+                           {'id': 'dir', 'tool': 'core.directory', 'config': {'path': '.', 'pattern': '*.csv',
+                                                                              'recursive': False}}],
+                          [edge('in', 'output', 'out', 'input')])
+            wf['metadata'] = {'application': {
+                'questions': [{'id': 'source', 'type': 'file', 'extensions': ['csv'], 'required': True},
+                              {'id': 'target', 'type': 'file', 'mode': 'save', 'extensions': ['csv']},
+                              {'id': 'folder', 'type': 'folder', 'default': '.'}],
+                'actions': [{'question': 'source', 'node_id': 'in', 'config_path': ['path']},
+                            {'question': 'target', 'node_id': 'out', 'config_path': ['path']},
+                            {'question': 'folder', 'node_id': 'dir', 'config_path': ['path']}],
+            }}
+            service = EngineService()
+            form = service.handle('workflow.application', {'workflow': wf})
+            self.assertEqual(form['questions'][1]['mode'], 'save')
+            result = service.handle('workflow.run', {'workflow': wf, 'base_dir': d, 'application_values': {
+                'source': 'feb.csv', 'target': str(base / 'out' / 'feb_copy.csv'), 'folder': 'archive'}})
+            self.assertEqual(result['status'], 'succeeded')
+            self.assertEqual((base / 'out' / 'feb_copy.csv').read_text(encoding='utf-8').split(), ['amount', '5', '6'])
+            self.assertFalse((base / 'out' / 'result.csv').exists())
+            self.assertEqual([Path(row[0]).name for row in result['previews']['dir']['output']['rows']], ['dec.csv'])
+            missing = call('run.start', {'workflow': wf, 'base_dir': d, 'application_values': {'source': 'mar.csv'}})
+            self.assertEqual(missing['result']['problems'][0]['code'], 'application-input-invalid')
+            self.assertIn('existing file', missing['result']['problems'][0]['message'])
+
     def test_application_values_are_not_persisted_in_run_history(self):
         with tempfile.TemporaryDirectory() as d:
             service = EngineService(history_path=Path(d) / 'history.sqlite')
