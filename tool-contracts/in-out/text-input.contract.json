@@ -147,9 +147,19 @@
     ]
   },
   "independent_tests": {
-    "count": 189,
-    "passing": 189,
+    "count": 199,
+    "passing": 199,
     "tests": [
+      "test_batch5.GeometryEditingTests.test_generalize_uses_metric_tolerance",
+      "test_batch5.GeometryEditingTests.test_heat_map_density_integrates_to_point_count",
+      "test_batch5.GeometryEditingTests.test_poly_split_and_build",
+      "test_batch5.GeometryEditingTests.test_smooth_rounds_corners_and_keeps_line_ends",
+      "test_batch5.GeometryEditingTests.test_spatial_process_overlay_and_dissolve",
+      "test_batch5.GeometryEditingTests.test_trade_area_rings_are_geodesic",
+      "test_batch5.JsonBuildTests.test_json_build_round_trips_json_parse",
+      "test_batch5.ReportFurnitureTests.test_header_and_footer_on_every_pdf_page",
+      "test_batch5.ReportFurnitureTests.test_overlay_places_elements_over_a_chart",
+      "test_batch5.ReportFurnitureTests.test_report_map_layers_theme_and_legend_round_trip",
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
       "test_blob_tools.BlobToolsTests.test_blob_output_requires_consent_and_writes_per_record_files",

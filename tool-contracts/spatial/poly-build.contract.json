@@ -6,45 +6,97 @@
   "xml_tool_name": "AlteryxSpatialPluginsGui.PolyBuild.PolyBuild",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/poly-build-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "BuildType",
-      "GroupField",
-      "SequenceField",
-      "SpatialObj"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "geometry_field"
     ],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "properties": {
+      "geometry_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "method": {
+        "enum": [
+          "convex_hull",
+          "sequence_polygon",
+          "sequence_polyline"
+        ],
+        "default": "sequence_polygon"
+      },
+      "group_by": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      },
+      "sequence_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "output_field": {
+        "type": "string",
+        "minLength": 1,
+        "default": "Built"
+      },
+      "format": {
+        "enum": [
+          "wkt",
+          "geojson"
+        ],
+        "default": "wkt"
+      },
+      "on_invalid": {
+        "enum": [
+          "error",
+          "null"
+        ],
+        "default": "error",
+        "description": "Unparseable or invalid geometry: stop the run, or output null"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "spatial-geometry-library",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.poly_build",
+    "version": "1.0.0",
+    "module": "flowengine.tools.spatial",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -77,9 +129,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_batch5.GeometryEditingTests.test_poly_split_and_build"
+    ]
   },
   "sources": [
     {
@@ -100,6 +154,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

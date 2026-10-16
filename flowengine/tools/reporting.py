@@ -497,4 +497,248 @@ class Render(Tool):
         return {'output': Table.from_rows(self.SCHEMA, [(str(path), fmt, info['pages'], info['bytes'], len(elements))])}
 
 
-TOOLS = [ReportTable, InteractiveChart, ReportText, ReportImage, Layout, Render]
+
+class ReportHeader(Tool):
+    manifest = ToolManifest(
+        tool_id='core.report_header', version='1.0.0', display_name='Report Header', catalog_ids=('reporting:report-header',),
+        inputs=(), outputs=(Anchor('output', 'Report'),),
+        description='A page header (title, optional subtitle, optional run date, optional logo image) that Render '
+                    'draws at the top of every PDF page and at the top of the HTML document. Connect it to Layout '
+                    'or directly to Render together with the body elements.',
+        side_effects='reads-files',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['title'], 'properties': {
+            'title': {'type': 'string', 'maxLength': 500}, 'subtitle': {'type': ['string', 'null'], 'default': None},
+            'show_date': {'type': 'boolean', 'default': True},
+            'date_format': {'type': 'string', 'default': '%d %B %Y', 'description': 'strftime pattern for the run date'},
+            'image_path': {'type': ['string', 'null'], 'default': None},
+            'image_height': {'type': 'integer', 'minimum': 8, 'maximum': 200, 'default': 40}}})
+
+    def infer(self, ctx, cfg, inputs):
+        return {'output': Schema([REPORT])}
+
+    def run(self, ctx, cfg, inputs):
+        image = None
+        if cfg['image_path']:
+            p = ctx.resolve_path(cfg['image_path'])
+            if not p.is_file():
+                raise DataError(f'Header image not found: {p}')
+            image = reports.parse(_image_element(p.read_bytes(), None, None, 25 * 2**20))
+            image.pop('format', None)
+        try:
+            date_text = ctx.clock().strftime(cfg['date_format']) if cfg['show_date'] else None
+        except ValueError as e:
+            raise ConfigError(f'Invalid date_format: {e}') from None
+        doc = reports.element('header', title=cfg['title'], subtitle=cfg['subtitle'], date_text=date_text,
+                              image=image, image_height=cfg['image_height'])
+        return {'output': Table.from_rows(Schema([REPORT]), [(doc,)])}
+
+
+class ReportFooter(Tool):
+    manifest = ToolManifest(
+        tool_id='core.report_footer', version='1.0.0', display_name='Report Footer', catalog_ids=('reporting:report-footer',),
+        inputs=(), outputs=(Anchor('output', 'Report'),),
+        description='A page footer with left, centre and right text that Render draws at the bottom of every PDF '
+                    'page. {page}, {pages} and {date} are replaced with the page number, total pages and run date. '
+                    'In HTML, cells that use page numbers are omitted, because a screen page has none.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'properties': {
+            'left': {'type': ['string', 'null'], 'default': None},
+            'center': {'type': ['string', 'null'], 'default': None},
+            'right': {'type': ['string', 'null'], 'default': 'Page {page} of {pages}'},
+            'date_format': {'type': 'string', 'default': '%d %B %Y'}}})
+
+    def infer(self, ctx, cfg, inputs):
+        return {'output': Schema([REPORT])}
+
+    def run(self, ctx, cfg, inputs):
+        try:
+            date_text = ctx.clock().strftime(cfg['date_format'])
+        except ValueError as e:
+            raise ConfigError(f'Invalid date_format: {e}') from None
+        doc = reports.element('footer', left=cfg['left'], center=cfg['center'], right=cfg['right'], date_text=date_text)
+        return {'output': Table.from_rows(Schema([REPORT]), [(doc,)])}
+
+
+class Overlay(Tool):
+    manifest = ToolManifest(
+        tool_id='core.report_overlay', version='1.0.0', display_name='Overlay', catalog_ids=('reporting:overlay',),
+        inputs=(Anchor('input', 'Input', description='Records with a base element and elements to place over it'),),
+        outputs=(Anchor('output', 'Report'),),
+        description='Place report elements over a base element (for example a caption or logo over a chart or map) '
+                    'at nine positions: top, middle or bottom combined with left, centre or right. Each record '
+                    'produces one overlay, which replaces the base field.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['base_field'], 'properties': {
+            'base_field': {'type': 'string', 'minLength': 1},
+            'positions': {'type': 'object', 'additionalProperties': False, 'default': {},
+                          'properties': {p: {'type': 'string', 'minLength': 1} for p in reports.POSITIONS},
+                          'description': 'Field holding the element for each position'},
+            'padding': {'type': 'integer', 'minimum': 0, 'maximum': 100, 'default': 8}}})
+
+    def infer(self, ctx, cfg, inputs):
+        require_fields(inputs['input'], [cfg['base_field'], *cfg['positions'].values()])
+        if not cfg['positions']:
+            raise ConfigError('Overlay needs at least one positioned element')
+        return {'output': inputs['input']}
+
+    def run(self, ctx, cfg, inputs):
+        table = inputs['input']
+        self.infer(ctx, cfg, {'input': table.schema})
+        bi = table.schema.index(cfg['base_field'])
+        out = []
+        for rec, row in zip(table.to_dicts(), table.rows()):
+            base = reports.parse(rec[cfg['base_field']])
+            items = {}
+            for position, field in cfg['positions'].items():
+                if rec[field] is not None:
+                    child = reports.parse(rec[field])
+                    child.pop('format', None)
+                    items[position] = child
+            base.pop('format', None)
+            doc = reports.element('overlay', base=base, items=items, padding=cfg['padding'])
+            out.append(tuple(doc if i == bi else v for i, v in enumerate(row)))
+        return {'output': Table.from_rows(table.schema, out)}
+
+
+_LAYER = {'type': 'object', 'additionalProperties': False, 'required': ['geometry_field'], 'properties': {
+    'geometry_field': {'type': 'string', 'minLength': 1}, 'name': {'type': ['string', 'null'], 'default': None},
+    'color': {'type': 'string', 'pattern': '^#[0-9A-Fa-f]{6}$', 'default': '#0072B2'},
+    'label_field': {'type': ['string', 'null'], 'default': None},
+    'theme_field': {'type': ['string', 'null'], 'default': None, 'description': 'Numeric field coloured with palette'},
+    'palette': {'enum': sorted(charts.PALETTES), 'default': 'viridis'},
+    'point_size': {'type': 'number', 'minimum': 1, 'maximum': 40, 'default': 5},
+    'opacity': {'type': 'number', 'minimum': 0.05, 'maximum': 1, 'default': 0.8}}}
+
+
+class ReportMap(Tool):
+    manifest = ToolManifest(
+        tool_id='core.report_map', version='1.0.0', display_name='Report Map', catalog_ids=('reporting:report-map',),
+        inputs=(Anchor('layers', 'Layers', multiple=True, description='One connection per layer, bottom layer first'),),
+        outputs=(Anchor('output', 'Report', description='Map element plus a rendered preview'),),
+        description='Vector map of geometry layers (WKT or GeoJSON fields from the spatial tools), one layer per '
+                    'connection in order. Each layer has a colour, optional labels and optional thematic colouring '
+                    'of a numeric field, with an automatic legend. Geographic data uses an equirectangular '
+                    'projection corrected for latitude. No background tiles are drawn, so it works offline.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['layers'], 'properties': {
+            'layers': {'type': 'array', 'minItems': 1, 'items': _LAYER},
+            'crs': {'type': 'string', 'default': 'EPSG:4326'},
+            'title': {'type': ['string', 'null'], 'default': None}, 'legend': {'type': 'boolean', 'default': True},
+            'max_features': {'type': 'integer', 'minimum': 1, 'maximum': 200000, 'default': 20000},
+            'width': {'type': 'integer', 'minimum': 240, 'maximum': 4000, 'default': 720},
+            'height': {'type': 'integer', 'minimum': 180, 'maximum': 4000, 'default': 520}}})
+    SCHEMA = Schema([REPORT, Field('Chart', FieldType.V_WSTRING, TEXT)])
+
+    def infer(self, ctx, cfg, inputs):
+        schemas = inputs['layers']
+        if len(schemas) != len(cfg['layers']):
+            raise ConfigError(f"Report Map has {len(schemas)} connection(s) but {len(cfg['layers'])} layer setting(s)")
+        for schema, layer in zip(schemas, cfg['layers']):
+            require_fields(schema, [layer['geometry_field']] + [layer[k] for k in ('label_field', 'theme_field') if layer[k]])
+            if layer['theme_field'] and not schema.field(layer['theme_field']).type.is_numeric:
+                raise SchemaError(f"Report Map theme_field {layer['theme_field']!r} must be numeric")
+        from .spatial import crs_info
+        crs_info(cfg['crs'])
+        return {'output': self.SCHEMA}
+
+    def run(self, ctx, cfg, inputs):
+        from .spatial import crs_info, dump, parse
+        tables = inputs['layers']
+        self.infer(ctx, cfg, {'layers': [t.schema for t in tables]})
+        _, geographic, _ = crs_info(cfg['crs'])
+        layers, legend, total = [], [], 0
+        for index, (table, layer) in enumerate(zip(tables, cfg['layers'])):
+            name = layer['name'] or layer['geometry_field']
+            themes = table.column(layer['theme_field']) if layer['theme_field'] else None
+            finite = [float(v) for v in themes or [] if not _missing(v)]
+            lo, hi = (min(finite), max(finite)) if finite else (0.0, 1.0)
+            features, kinds = [], set()
+            for i, rec in enumerate(table.to_dicts()):
+                geom = parse(rec[layer['geometry_field']], 'error', f' in layer {name!r} record {i + 1}')
+                if geom is None or geom.is_empty:
+                    continue
+                total += 1
+                if total > cfg['max_features']:
+                    raise DataError(f"Report Map has more than max_features ({cfg['max_features']}) features")
+                kinds.add(geom.geom_type.replace('Multi', ''))
+                value = themes[i] if themes else None
+                fill = (charts.color_at(layer['palette'], (float(value) - lo) / (hi - lo) if hi > lo else 0.5)
+                        if themes and not _missing(value) else None)
+                label = format_value(rec[layer['label_field']]) if layer['label_field'] and rec[layer['label_field']] is not None else None
+                tip = ' · '.join(filter(None, [label, f"{layer['theme_field']}: {format_value(value)}" if themes and not _missing(value) else None]))
+                features.append((dump(geom, 'wkt'), fill, label, tip or None))
+            layers.append({'name': name, 'color': layer['color'], 'opacity': layer['opacity'],
+                           'point_size': layer['point_size'], 'features': features})
+            shape = 'point' if kinds == {'Point'} else 'line' if kinds == {'LineString'} else 'fill'
+            if themes and finite:
+                for k in range(5):
+                    t = k / 4
+                    legend.append((f"{layer['theme_field']} {charts.fmt_number(lo + (hi - lo) * t)}",
+                                   charts.color_at(layer['palette'], t), shape))
+            else:
+                legend.append((name, layer['color'], shape))
+        spec = {'type': 'map', 'title': cfg['title'], 'width': cfg['width'], 'height': cfg['height'],
+                'geographic': geographic, 'layers': layers, 'legend': legend if cfg['legend'] else []}
+        svg = reports.build_chart(spec).to_svg()
+        return {'output': Table.from_rows(self.SCHEMA, [(reports.element('chart', chart=spec), svg)])}
+
+
+class MapLegendBuilder(Tool):
+    manifest = ToolManifest(
+        tool_id='core.map_legend_builder', version='1.0.0', display_name='Map Legend Builder',
+        catalog_ids=('reporting:map-legend-builder',),
+        inputs=(Anchor('input', 'Input', description='One record per legend entry'),), outputs=(Anchor('output', 'Report'),),
+        description='Build a legend element from records with a label, a #RRGGBB colour and an optional shape '
+                    '(fill, line or point). The legend can be placed in a layout or overlaid on a map.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['label_field', 'color_field'], 'properties': {
+            'label_field': {'type': 'string', 'minLength': 1}, 'color_field': {'type': 'string', 'minLength': 1},
+            'shape_field': {'type': ['string', 'null'], 'default': None},
+            'title': {'type': ['string', 'null'], 'default': None}}})
+
+    def infer(self, ctx, cfg, inputs):
+        require_fields(inputs['input'], [cfg['label_field'], cfg['color_field']] + ([cfg['shape_field']] if cfg['shape_field'] else []))
+        return {'output': Schema([REPORT])}
+
+    def run(self, ctx, cfg, inputs):
+        table = inputs['input']
+        self.infer(ctx, cfg, {'input': table.schema})
+        entries = []
+        for number, rec in enumerate(table.to_dicts(), start=1):
+            colour, shape = rec[cfg['color_field']], (rec[cfg['shape_field']] if cfg['shape_field'] else None) or 'fill'
+            if not isinstance(colour, str) or not re.fullmatch(r'#[0-9A-Fa-f]{6}', colour):
+                raise DataError(f'Legend record {number} colour must be #RRGGBB')
+            if shape not in ('fill', 'line', 'point'):
+                raise DataError(f'Legend record {number} shape must be fill, line or point')
+            entries.append({'label': format_value(rec[cfg['label_field']]) or '', 'color': colour, 'shape': shape})
+        return {'output': Table.from_rows(Schema([REPORT]), [(reports.element('legend', title=cfg['title'], entries=entries),)])}
+
+
+class MapLegendSplitter(Tool):
+    SCHEMA = Schema([Field('Label', FieldType.V_WSTRING, TEXT), Field('Color', FieldType.V_WSTRING, 7),
+                     Field('Shape', FieldType.V_WSTRING, 8), Field('Position', FieldType.INT32)])
+    manifest = ToolManifest(
+        tool_id='core.map_legend_splitter', version='1.0.0', display_name='Map Legend Splitter',
+        catalog_ids=('reporting:map-legend-splitter',),
+        inputs=(Anchor('input', 'Input', description='Report Map or legend elements'),), outputs=(Anchor('output', 'Output'),),
+        description='Split the legend of a Report Map (or a legend element) into one record per entry, with Label, '
+                    'Color, Shape and Position, so it can be edited and rebuilt with Map Legend Builder.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'properties': {
+            'report_field': {'type': 'string', 'default': 'Report'}}})
+
+    def infer(self, ctx, cfg, inputs):
+        require_fields(inputs['input'], [cfg['report_field']], 'report field')
+        return {'output': self.SCHEMA}
+
+    def run(self, ctx, cfg, inputs):
+        rows = []
+        for value in inputs['input'].column(cfg['report_field']):
+            doc = reports.parse(value)
+            if doc['kind'] == 'legend':
+                entries = [(e['label'], e['color'], e['shape']) for e in doc['entries']]
+            elif doc['kind'] == 'chart' and doc['chart'].get('type') == 'map':
+                entries = [tuple(e) for e in doc['chart'].get('legend') or []]
+            else:
+                raise DataError(f"Map Legend Splitter needs a map or legend element, not {doc['kind']}")
+            rows += [(label, colour, shape, i) for i, (label, colour, shape) in enumerate(entries, start=1)]
+        return {'output': Table.from_rows(self.SCHEMA, rows)}
+
+
+TOOLS = [ReportTable, InteractiveChart, ReportText, ReportImage, Layout, Render, ReportHeader, ReportFooter, Overlay,
+         ReportMap, MapLegendBuilder, MapLegendSplitter]

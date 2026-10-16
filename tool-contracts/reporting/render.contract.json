@@ -172,9 +172,12 @@
     ]
   },
   "independent_tests": {
-    "count": 4,
-    "passing": 4,
+    "count": 7,
+    "passing": 7,
     "tests": [
+      "test_batch5.MapReportExampleTests.test_uk_map_report_example",
+      "test_batch5.ReportFurnitureTests.test_header_and_footer_on_every_pdf_page",
+      "test_batch5.ReportFurnitureTests.test_overlay_places_elements_over_a_chart",
       "test_reporting.RenderTests.test_fuel_report_example",
       "test_reporting.RenderTests.test_html_document_contains_escaped_text_table_chart_and_image",
       "test_reporting.RenderTests.test_long_tables_paginate_and_unicode_needs_a_font",

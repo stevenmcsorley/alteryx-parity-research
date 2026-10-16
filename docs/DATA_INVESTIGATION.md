@@ -41,3 +41,11 @@ validation until it is replaced by the native tool. In both cases the original X
 Worked examples (UK weekly road fuel prices, Open Government Licence):
 `examples/investigation/fuel_investigation.flow.json` (tables) and `examples/investigation/fuel_charts.flow.json`
 (every graphical tool, one Browse per chart). Tests: `tests/test_investigation.py`, `tests/test_investigation_plots.py`.
+
+## Laboratory: JSON Build
+
+`core.json_build` (`laboratory:json-build`) reverses JSON Parse. It rebuilds JSON documents from
+`JSON_Name` paths (dots make objects, numeric segments make arrays) and values. Typed
+`JSON_ValueInt`/`Float`/`Bool` columns are used when present. Otherwise `JSON_ValueString` is read as
+a strict JSON literal, so `007` stays text. `group_by` gives one document per group. A path used as
+both a value and a container is an error.

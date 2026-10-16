@@ -2,7 +2,6 @@
   "format": "flowengine.workflow",
   "formatVersion": 1,
   "name": "UK fuel prices report",
-  "description": "Input Data \u2192 Summarize \u2192 Table / Interactive Chart / Report Text / Image \u2192 Layout \u2192 Render (PDF and HTML).",
   "nodes": [
     {
       "id": "fuel",
@@ -461,5 +460,17 @@
         "anchor": "input"
       }
     }
-  ]
+  ],
+  "description": "Input Data → Summarize → Table / Interactive Chart / Report Text / Image → Layout → Render (PDF and HTML).",
+  "metadata": {
+    "ui": {
+      "containers": [],
+      "comments": [],
+      "ownDisabled": {},
+      "applicationActions": [],
+      "applicationConditions": [],
+      "applicationErrors": []
+    },
+    "profile": "ayx-2026.2-e1"
+  }
 }

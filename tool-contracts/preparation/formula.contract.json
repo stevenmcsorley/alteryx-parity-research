@@ -144,9 +144,10 @@
     ]
   },
   "independent_tests": {
-    "count": 27,
-    "passing": 27,
+    "count": 28,
+    "passing": 28,
     "tests": [
+      "test_batch5.MapReportExampleTests.test_uk_map_report_example",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.ValidationTests.test_static_schemas_propagate",

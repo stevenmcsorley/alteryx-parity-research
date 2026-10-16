@@ -13,6 +13,15 @@ and as vector graphics in PDF (`flowengine/reports.py`, `flowengine/charts.py`).
 | Layout | `core.report_layout` | Arranges elements from all connections (connection order, then record order) vertically or horizontally, with an optional heading. In horizontal rows, images keep their display width. Layouts nest. |
 | Render | `core.render` | Writes every input element in order to `.html` or `.pdf`, with page size (A4, A3, Letter, Legal), orientation, margins and an optional page break per record. PDF tables split across pages with repeated headers. Output: path, format, page count and bytes. |
 
+| Report Header | `core.report_header` | Title, subtitle, run date (strftime) and logo. Drawn at the top of every PDF page and at the top of the HTML page |
+| Report Footer | `core.report_footer` | Left, centre and right text with `{page}`, `{pages}` (two-pass layout) and `{date}`, on every PDF page. HTML omits page-number cells |
+| Overlay | `core.report_overlay` | Elements from fields placed over a base element at nine positions (top, middle or bottom × left, centre or right) |
+| Report Map | `core.report_map` | Offline vector map of geometry layers (one per connection), with colours, labels, numeric theming and an automatic legend. Latitude-corrected equirectangular projection on geographic data. Polygons with holes use even-odd paths in both SVG and PDF |
+| Map Legend Builder | `core.map_legend_builder` | Legend element from label, colour (#RRGGBB) and shape (fill, line or point) records |
+| Map Legend Splitter | `core.map_legend_splitter` | One record per entry of a map's or legend's key, for editing and rebuilding |
+
+Headers and footers can be connected anywhere, including inside layouts. The first of each decorates every page.
+
 **HTML** is a single self-contained file: print CSS sets the page size, charts are inline SVG and
 images are data URIs. All text is HTML-escaped.
 
@@ -27,5 +36,4 @@ Image, Table and Interactive Chart → Layout → Render, writing `out/fuel_repo
 real HTML content, and PDF page counts, text operators, embedded images and vector chart bars.
 
 Not implemented: the vendor report snippet format, Alteryx Reporting XML import (instances import as
-unsupported nodes with their XML kept), headers and footers, map elements, and DOCX, XLSX or image
-export formats.
+unsupported nodes with their XML kept), map background tiles, Email, and DOCX, XLSX or image export formats.

@@ -134,9 +134,10 @@
     ]
   },
   "independent_tests": {
-    "count": 2,
-    "passing": 2,
+    "count": 3,
+    "passing": 3,
     "tests": [
+      "test_batch5.MapReportExampleTests.test_uk_map_report_example",
       "test_spatial.ExampleTests.test_uk_spatial_example",
       "test_spatial.PointsDistanceTests.test_geodesic_and_planar_distance"
     ]

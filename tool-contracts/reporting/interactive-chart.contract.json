@@ -188,9 +188,10 @@
     ]
   },
   "independent_tests": {
-    "count": 4,
-    "passing": 4,
+    "count": 5,
+    "passing": 5,
     "tests": [
+      "test_batch5.ReportFurnitureTests.test_overlay_places_elements_over_a_chart",
       "test_reporting.ElementTests.test_interactive_chart_aggregates_engine_data",
       "test_reporting.RenderTests.test_fuel_report_example",
       "test_reporting.RenderTests.test_html_document_contains_escaped_text_table_chart_and_image",
