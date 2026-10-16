@@ -6,31 +6,105 @@
   "xml_tool_name": "Predictive Tools\\Scatterplot.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/data-investigation/scatterplot-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "chart",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "trend",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Configuration Tab",
-      "Plot Elements Tab",
-      "Style Options Tab",
-      "Graphics Options Tab",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "x_field",
+      "y_field"
+    ],
+    "properties": {
+      "x_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "y_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "group_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "trend": {
+        "enum": [
+          "none",
+          "linear"
+        ],
+        "default": "linear"
+      },
+      "max_points": {
+        "type": "integer",
+        "minimum": 10,
+        "maximum": 200000,
+        "default": 5000
+      },
+      "width": {
+        "type": "integer",
+        "minimum": 240,
+        "maximum": 4000,
+        "default": 720
+      },
+      "height": {
+        "type": "integer",
+        "minimum": 180,
+        "maximum": 4000,
+        "default": 420
+      },
+      "title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "r-runtime (public-doc keyword signal; unreviewed)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.scatterplot",
+    "version": "1.0.0",
+    "module": "flowengine.tools.investigation_plots",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -49,9 +123,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_investigation_plots.ChartExampleTests.test_fuel_charts_example_renders_every_chart",
+      "test_investigation_plots.ScatterViolinTests.test_scatter_trend_per_group_and_point_cap"
+    ]
   },
   "sources": [
     {
@@ -67,7 +144,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet."
   ]
 }

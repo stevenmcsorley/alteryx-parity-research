@@ -25,6 +25,13 @@
       "cardinality": "one",
       "provenance": "flowengine-manifest",
       "reference_name": null
+    },
+    {
+      "name": "chart",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
@@ -67,6 +74,13 @@
           "null"
         ],
         "default": null
+      },
+      "title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
       }
     }
   },
@@ -100,11 +114,12 @@
     ]
   },
   "independent_tests": {
-    "count": 2,
-    "passing": 2,
+    "count": 3,
+    "passing": 3,
     "tests": [
       "test_investigation.ExampleWorkflowTests.test_fuel_investigation_example_runs_every_tool",
-      "test_investigation.FrequencyHistogramTests.test_histogram_bins_and_density"
+      "test_investigation.FrequencyHistogramTests.test_histogram_bins_and_density",
+      "test_investigation_plots.ChartExampleTests.test_fuel_charts_example_renders_every_chart"
     ]
   },
   "sources": [

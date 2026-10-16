@@ -124,7 +124,8 @@ function ResultsGrid() {
           <thead><tr><th>#</th>{p.fields.map((f) => <th key={f.name}>{f.name}<span className="ftype">{f.type}</span></th>)}</tr></thead>
           <tbody>
             {rows.map((r, i) => (
-              <tr key={i}><td className="rownum">{i + 1}</td>{r.map((v, j) => v === null ? <td key={j} className="null">[Null]</td> : <td key={j} title={v}>{v}</td>)}</tr>
+              <tr key={i}><td className="rownum">{i + 1}</td>{r.map((v, j) => v === null ? <td key={j} className="null">[Null]</td>
+                : isChartSvg(v) ? <td key={j} className="chart-cell"><ChartImage svg={v} /></td> : <td key={j} title={v}>{v}</td>)}</tr>
             ))}
           </tbody>
         </table>
@@ -241,4 +242,17 @@ function HistoryTab() {
       ))}</tbody>
     </table>
   );
+}
+
+/** Engine chart tools emit standalone SVG documents. Show them as images: an <img> data URL never runs script. */
+export function isChartSvg(value: string): boolean {
+  return value.startsWith('<svg xmlns="http://www.w3.org/2000/svg"') && value.endsWith('</svg>');
+}
+
+export function ChartImage({ svg }: { svg: string }) {
+  const src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  const title = /<title>([^<]*)<\/title>/.exec(svg)?.[1] ?? 'Chart';
+  return <a href={src} download={`${title.replace(/[^A-Za-z0-9 _-]+/g, '').trim() || 'chart'}.svg`} title="Download SVG">
+    <img src={src} alt={title} style={{ maxWidth: '100%', maxHeight: 460, display: 'block', background: '#fff' }} />
+  </a>;
 }
