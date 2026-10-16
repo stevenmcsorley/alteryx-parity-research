@@ -135,6 +135,20 @@ class ExecutionTests(unittest.TestCase):
         self.assertTrue(r.ok)
         self.assertEqual(sorted(e['node_id'] for e in r.events if e['type'] == 'node-skipped'), ['c', 'd'])
 
+    def test_disabled_flowbench_tool_container_children_skip_execution(self):
+        doc = workflow([SRC, {'id': 'contained_count', 'tool': 'core.count_records', 'config': {}, 'disabled': True},
+                        {'id': 'after', 'tool': 'core.browse', 'config': {}}],
+                       [edge('src', 'output', 'contained_count', 'input'), edge('contained_count', 'output', 'after', 'input')])
+        doc['metadata'] = {'ui': {'containers': [{
+            'id': 'sales_group', 'caption': 'Sales group', 'disabled': True, 'collapsed': False,
+            'position': {'x': 0, 'y': 0}, 'size': {'width': 400, 'height': 200},
+            'children': ['contained_count'],
+        }]}}
+        result = run_workflow(doc, base_dir=ROOT)
+        self.assertTrue(result.ok)
+        self.assertEqual(sorted(event['node_id'] for event in result.events if event['type'] == 'node-skipped'),
+                         ['after', 'contained_count'])
+
     def test_cancellation(self):
         tok = CancelToken()
         seen = []

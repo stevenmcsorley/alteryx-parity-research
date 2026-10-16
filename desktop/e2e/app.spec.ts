@@ -36,8 +36,8 @@ test('palette lists every catalogue entry with an honest status', async ({ page 
   await ready(page);
   const items = page.locator('[data-testid^="palette-"].tool-item');
   await expect(items).toHaveCount(323);
-  const implemented = await page.locator('.tool-item .badge.ready, .tool-item .badge.tested, .tool-item .badge.refdiff').count();
-  expect(implemented).toBeGreaterThanOrEqual(26);
+  const available = await page.locator('.tool-item .badge.ready, .tool-item .badge.tested, .tool-item .badge.refdiff, .tool-item .badge.native').count();
+  expect(available).toBeGreaterThanOrEqual(26);
   await page.getByTestId('palette-address:us-geocoder').click();
   await expect(page.getByTestId('tool-detail')).toContainText('licensed data');
   await expect(page.getByTestId('palette-address:us-geocoder')).toHaveAttribute('draggable', 'false');
@@ -45,8 +45,151 @@ test('palette lists every catalogue entry with an honest status', async ({ page 
   await expect(page.getByTestId('palette-join:join')).toBeVisible();
   await expect(page.getByTestId('palette-preparation:filter')).toHaveCount(0);
   await page.getByLabel('Search tools').fill('');
-  await page.getByText(/Implemented only/).click();
-  await expect(items).toHaveCount(implemented);
+  await page.getByText(/Available only/).click();
+  await expect(items).toHaveCount(available);
+});
+
+test('native Condition can be added without inflating kernel implementation count', async ({ page }) => {
+  await ready(page);
+  const condition = page.getByTestId('palette-interface:condition');
+  await expect(condition).toContainText('Flowbench native');
+  await expect(condition).not.toHaveClass(/unavailable/);
+  await condition.dblclick();
+  await expect(page.locator('.react-flow__node-applicationCondition')).toHaveCount(1);
+});
+
+test('native Error Message is palette-accessible and configurable in the inspector', async ({ page }) => {
+  await ready(page);
+  const item = page.getByTestId('palette-interface:error-message');
+  await expect(item).toContainText('Flowbench native');
+  await expect(item).not.toHaveClass(/unavailable/);
+  await item.dblclick();
+  await expect(page.locator('.react-flow__node-applicationError')).toHaveCount(1);
+  await page.getByLabel('Error Message text').fill('Select a reporting period.');
+  await expect(page.getByTestId('node-error_message_1')).toContainText('Select a reporting period.');
+});
+
+test('Control Parameter exposes a batch control field in the editor', async ({ page }) => {
+  await ready(page);
+  const item = page.getByTestId('palette-interface:control-parameter');
+  await expect(item).toContainText('Flowbench native');
+  await item.dblclick();
+  await expect(page.locator('.react-flow__node-applicationAction')).toHaveCount(1);
+  await page.getByLabel('Control input field').fill('threshold');
+  await expect(page.locator('.application-action-node')).toContainText('Control Parameter');
+  await expect(page.locator('.application-action-node')).toContainText('threshold');
+});
+
+test('native Tree question selects a configured leaf and runs through the analytic-app prompt', async ({ page }) => {
+  await ready(page);
+  const tree = page.getByTestId('palette-interface:tree');
+  await expect(tree).toContainText('Flowbench native');
+  await tree.dblclick();
+  await page.getByLabel('Tree answer options').fill('Sales > Online\nSales > Retail\nReturns');
+  await addFromPalette(page, 'in-out:text-input');
+  const editor = page.getByTestId('text-input-editor');
+  await editor.getByRole('button', { name: '+ field' }).click();
+  await editor.getByLabel('Field 1 name').fill('category');
+  await editor.getByRole('button', { name: '+ row' }).click();
+  await editor.getByLabel('Row 1 field 1').fill('Online');
+  await page.getByTestId('run').click();
+  const app = page.getByRole('dialog', { name: 'Run analytic application' });
+  await expect(app.getByRole('tree', { name: 'Tree' })).toBeVisible();
+  await app.getByText('Sales', { exact: true }).click();
+  const selected = app.getByRole('treeitem', { name: 'Online' });
+  await selected.click();
+  await expect(selected).toHaveAttribute('aria-pressed', 'true');
+  await app.getByRole('button', { name: 'Run' }).click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+});
+
+test('native Date question accepts a calendar date in the analytic-app prompt', async ({ page }) => {
+  await ready(page);
+  await page.getByTestId('palette-interface:date').dblclick();
+  await addFromPalette(page, 'in-out:text-input');
+  const editor = page.getByTestId('text-input-editor');
+  await editor.getByRole('button', { name: '+ field' }).click();
+  await editor.getByLabel('Field 1 name').fill('category');
+  await editor.getByRole('button', { name: '+ row' }).click();
+  await editor.getByLabel('Row 1 field 1').fill('Online');
+  await page.getByTestId('run').click();
+  const app = page.getByRole('dialog', { name: 'Run analytic application' });
+  await app.getByLabel('Date').fill('2024-02-29');
+  await app.getByRole('button', { name: 'Run' }).click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+});
+
+test('native Text Box question accepts multiline text in the analytic-app prompt', async ({ page }) => {
+  await ready(page);
+  await page.getByTestId('palette-interface:text-box').dblclick();
+  await addFromPalette(page, 'in-out:text-input');
+  const editor = page.getByTestId('text-input-editor');
+  await editor.getByRole('button', { name: '+ field' }).click();
+  await editor.getByLabel('Field 1 name').fill('category');
+  await editor.getByRole('button', { name: '+ row' }).click();
+  await editor.getByLabel('Row 1 field 1').fill('Online');
+  await page.getByTestId('run').click();
+  const app = page.getByRole('dialog', { name: 'Run analytic application' });
+  await app.getByLabel('Text Box').fill('First line\nSecond line — café');
+  await expect(app.getByLabel('Text Box')).toHaveValue('First line\nSecond line — café');
+  await app.getByRole('button', { name: 'Run' }).click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+});
+
+test('native List Box question presents a multi-select control and runs', async ({ page }) => {
+  await ready(page);
+  await page.getByTestId('palette-interface:list-box').dblclick();
+  await addFromPalette(page, 'in-out:text-input');
+  const editor = page.getByTestId('text-input-editor');
+  await editor.getByRole('button', { name: '+ field' }).click();
+  await editor.getByLabel('Field 1 name').fill('category');
+  await editor.getByRole('button', { name: '+ row' }).click();
+  await editor.getByLabel('Row 1 field 1').fill('Online');
+  await page.getByTestId('run').click();
+  const app = page.getByRole('dialog', { name: 'Run analytic application' });
+  const choices = app.getByLabel('List Box');
+  await expect(choices).toHaveAttribute('multiple', '');
+  await choices.selectOption(['Option 1']);
+  await app.getByRole('button', { name: 'Run' }).click();
+  await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
+});
+
+test('catalogue Comment can be placed, edited and remains a canvas annotation', async ({ page }) => {
+  await ready(page);
+  const comment = page.getByTestId('palette-documentation:comment');
+  await expect(comment).toContainText('Flowbench native');
+  await comment.dblclick();
+  const editor = page.getByLabel('Comment text');
+  await expect(editor).toBeVisible();
+  await editor.fill('Monthly sales summary');
+  await editor.blur();
+  await expect(page.locator('.comment-node textarea')).toHaveValue('Monthly sales summary');
+});
+
+test('Tool Container groups selected editor nodes and exposes disable/collapse controls', async ({ page }) => {
+  await ready(page);
+  await addFromPalette(page, 'in-out:text-input');
+  await addFromPalette(page, 'in-out:text-input');
+  await page.locator('[data-testid="canvas"]').click();
+  await page.keyboard.press('Control+a');
+  const entry = page.getByTestId('palette-documentation:tool-container');
+  await expect(entry).toContainText('Flowbench native');
+  await entry.click();
+  const group = page.getByTestId('group-as-tool-container');
+  await expect(group).toBeEnabled();
+  await group.click();
+  const container = page.locator('.container-node').last();
+  await expect(container).toContainText('Tool Container');
+  await container.click();
+  await expect(page.getByLabel('Caption')).toHaveValue('Tool Container');
+  await expect(page.getByLabel('Disabled')).toBeVisible();
+  await expect(page.getByLabel('Collapsed')).toBeVisible();
+  const child = page.getByTestId('node-text_input_1');
+  await expect(child).toBeVisible();
+  await container.getByRole('button', { name: 'Collapse container' }).click();
+  await expect(child).toBeHidden();
+  await container.getByRole('button', { name: 'Expand container' }).click();
+  await expect(child).toBeVisible();
 });
 
 test('Inspector scrolls independently inside the right dock', async ({ page }) => {

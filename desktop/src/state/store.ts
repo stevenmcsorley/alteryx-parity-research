@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { applyEdgeChanges, applyNodeChanges, type Connection, type EdgeChange, type NodeChange } from '@xyflow/react';
 import type { CatalogEntry, EngineEvent, FieldDef, Problem, Profile, RunPayload, ToolManifest, HistoryEntry } from '../engine/types';
-import { defaultConfig, edgeId, nextNodeId, type CanvasEdge, type CanvasNode, type CanvasGraph } from '../model/workflow';
+import { defaultConfig, edgeId, nextNodeId, pruneContainerChildren, type CanvasEdge, type CanvasNode, type CanvasGraph } from '../model/workflow';
 
 type Snapshot = { nodes: CanvasNode[]; edges: CanvasEdge[]; name: string; description?: string; metadata?: Record<string, any> };
 
@@ -63,6 +63,8 @@ export type EditorState = {
   connect(c: Connection): string | null;
   addTool(toolId: string, position: { x: number; y: number }): string;
   addApplicationAction(position: { x: number; y: number }, questionType?: string, prompt?: string): string;
+  addApplicationCondition(position: { x: number; y: number }): string;
+  addApplicationError(position: { x: number; y: number }): string;
   addComment(position: { x: number; y: number }): string;
   updateNodeData(id: string, patch: Record<string, unknown>, record?: boolean): void;
   deleteSelected(): void;
@@ -70,7 +72,7 @@ export type EditorState = {
   copySelected(): void;
   paste(): void;
   duplicateSelected(): void;
-  groupSelected(): string | null;
+  groupSelected(caption?: string): string | null;
   ungroup(containerId: string): void;
   commitGraphTransaction(graph: CanvasGraph): void;
   setName(name: string): void;
@@ -180,6 +182,21 @@ export const useEditor = create<EditorState>((set, get) => ({
     if (c.source === c.target) return 'A tool cannot connect to itself';
     const target = s.nodes.find((n) => n.id === c.target);
     const source = s.nodes.find((n) => n.id === c.source);
+    if (source?.data.kind === 'application-condition') {
+      if (!['application-action', 'application-error'].includes(target?.data.kind ?? '') || !['True Condition', 'False Condition'].includes(c.sourceHandle ?? '') || c.targetHandle !== 'Condition')
+        return 'Condition outputs must connect to an Action or Error Message Condition input';
+      if (target?.data.kind === 'application-action' && target.data.question.type === 'control-parameter')
+        return 'Control Parameters cannot be conditionally routed; configure the parent control records instead';
+      const id = edgeId(c.source, c.sourceHandle!, c.target, 'Condition');
+      if (s.edges.some((e) => e.id === id)) return 'Already connected';
+      if (s.edges.some((e) => e.target === c.target && e.data?.kind === 'application-condition'))
+        return 'A target can have only one Condition route';
+      get().checkpoint();
+      set({ edges: [...s.edges, { id, source: c.source, sourceHandle: c.sourceHandle!, target: c.target,
+        targetHandle: 'Condition', data: { kind: 'application-condition' },
+        style: { stroke: '#dd8a36', strokeDasharray: '4 4' }, label: c.sourceHandle === 'True Condition' ? 'True' : 'False' }] });
+      return null;
+    }
     if (source?.data.kind === 'application-action') {
       if (target?.data.kind !== 'tool' || c.sourceHandle !== 'Action' || c.targetHandle !== '__action__')
         return 'Action connections must run from the Action anchor to a tool Action target';
@@ -193,7 +210,8 @@ export const useEditor = create<EditorState>((set, get) => ({
         style: { stroke: '#805ad5', strokeDasharray: '5 4' }, label: 'Action' }] });
       return null;
     }
-    if (target?.data.kind === 'application-action' || target?.data.kind !== 'tool' || source?.data.kind !== 'tool')
+    if (target?.data.kind === 'application-action' || target?.data.kind === 'application-condition' ||
+        source?.data.kind !== 'tool' || target?.data.kind !== 'tool')
       return 'Only data tools connect through row-data anchors';
     const manifest = s.tools[target.data.tool];
     const anchor = manifest?.inputs.find((a) => a.name === c.targetHandle);
@@ -234,15 +252,39 @@ export const useEditor = create<EditorState>((set, get) => ({
   addApplicationAction: (position, questionType = 'text', prompt = 'Enter a value') => {
     const s = get();
     const id = nextNodeId('application_action', s.nodes.map((n) => n.id));
-    const used = new Set<string>((s.metadata?.application?.questions ?? []).map((q: any) => String(q.id)));
+    const used = new Set<string>([
+      ...(s.metadata?.application?.questions ?? []).map((q: any) => String(q.id)),
+      ...s.nodes.filter((n) => n.data.kind === 'application-action').map((n) => (n.data as any).question.id as string),
+    ]);
     const questionId = nextNodeId('question', used);
     get().checkpoint();
     set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'applicationAction', position,
       selected: true, data: { kind: 'application-action', question: { id: questionId, prompt,
-        type: (questionType === 'check-box' ? 'boolean' : questionType === 'numeric-up-down' ? 'number' : questionType === 'drop-down' || questionType === 'radio-button' ? 'choice' : questionType === 'date' ? 'date' : questionType === 'file-browse' ? 'file' : questionType === 'folder-browse' ? 'folder' : questionType === 'list-box' || questionType === 'check-box' ? 'multi-choice' : 'text') as any,
-        ...(['drop-down', 'radio-button'].includes(questionType) ? { options: ['Option 1', 'Option 2'] } : questionType === 'list-box' ? { type: 'multi-choice' as const, options: ['Option 1', 'Option 2'] } : {}),
+        type: (questionType === 'control-parameter' ? 'control-parameter' : questionType === 'tree' ? 'tree' : questionType === 'text-box' ? 'text-area' : questionType === 'check-box' ? 'boolean' : questionType === 'numeric-up-down' ? 'number' : questionType === 'drop-down' || questionType === 'radio-button' ? 'choice' : questionType === 'date' ? 'date' : questionType === 'file-browse' ? 'file' : questionType === 'folder-browse' ? 'folder' : questionType === 'list-box' ? 'multi-choice' : 'text') as any,
+        ...(questionType === 'control-parameter' ? { control_field: '' } : {}),
+        ...(['drop-down', 'radio-button'].includes(questionType) ? { options: ['Option 1', 'Option 2'] } : questionType === 'tree' ? { options: ['Sales > Online', 'Sales > Retail', 'Returns'], default: 'Sales > Online' } : questionType === 'list-box' ? { type: 'multi-choice' as const, options: ['Option 1', 'Option 2'] } : {}),
         ...(questionType === 'numeric-up-down' ? { minimum: 0, maximum: 100, default: 0 } : questionType === 'check-box' ? { default: false } : {}) },
         config_path: ['expression'] } }] });
+    return id;
+  },
+
+  addApplicationCondition: (position) => {
+    const s = get();
+    const id = nextNodeId('condition', s.nodes.map((n) => n.id));
+    const firstQuestion = s.nodes.find((n) => n.data.kind === 'application-action')?.data;
+    const questionId = firstQuestion?.kind === 'application-action' ? firstQuestion.question.id : '';
+    get().checkpoint();
+    set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'applicationCondition', position,
+      selected: true, data: { kind: 'application-condition', when: { question: questionId, operator: 'truthy' } } }] });
+    return id;
+  },
+
+  addApplicationError: (position) => {
+    const s = get();
+    const id = nextNodeId('error_message', s.nodes.map((n) => n.id));
+    get().checkpoint();
+    set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'applicationError', position,
+      selected: true, data: { kind: 'application-error', message: 'Please correct the application inputs before running.' } }] });
     return id;
   },
 
@@ -272,7 +314,7 @@ export const useEditor = create<EditorState>((set, get) => ({
       for (const n of s.nodes) if (n.parentId && sel.has(n.parentId) && !sel.has(n.id)) { sel.add(n.id); grew = true; }
     }
     get().checkpoint();
-    set({ nodes: s.nodes.filter((n) => !sel.has(n.id)),
+    set({ nodes: pruneContainerChildren(s.nodes.filter((n) => !sel.has(n.id)), sel),
       edges: s.edges.filter((e) => !selEdges.has(e.id) && !sel.has(e.source) && !sel.has(e.target)) });
   },
 
@@ -315,7 +357,7 @@ export const useEditor = create<EditorState>((set, get) => ({
     get().paste();
   },
 
-  groupSelected: () => {
+  groupSelected: (caption = 'Container') => {
     const s = get();
     const sel = s.nodes.filter((n) => n.selected && !n.parentId);
     if (!sel.length) return null;
@@ -327,7 +369,7 @@ export const useEditor = create<EditorState>((set, get) => ({
     const maxY = Math.max(...sel.map((n) => n.position.y + h(n))) + 30;
     const id = nextNodeId('container', s.nodes.map((n) => n.id));
     const container: CanvasNode = { id, type: 'container', position: { x: minX, y: minY },
-      data: { kind: 'container', caption: 'Container' }, style: { width: maxX - minX, height: maxY - minY } };
+      data: { kind: 'container', caption }, style: { width: maxX - minX, height: maxY - minY } };
     const ids = new Set(sel.map((n) => n.id));
     get().checkpoint();
     set({ nodes: [container, ...s.nodes.map((n) => ids.has(n.id)
@@ -342,8 +384,9 @@ export const useEditor = create<EditorState>((set, get) => ({
     get().checkpoint();
     set({ nodes: s.nodes.filter((n) => n.id !== cid).map((n) => {
       if (n.parentId !== cid) return n;
-      const { parentId: _p, ...rest } = n;
-      return { ...rest, position: { x: n.position.x + c.position.x, y: n.position.y + c.position.y } } as CanvasNode;
+      const rest = { ...n, parentId: c.parentId, position: { x: n.position.x + c.position.x, y: n.position.y + c.position.y } };
+      if (!c.parentId) delete rest.parentId;
+      return rest as CanvasNode;
     }) });
   },
 

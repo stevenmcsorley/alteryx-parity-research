@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Handle, NodeResizer, Position, type NodeProps } from '@xyflow/react';
 import { useEditor } from '../state/store';
-import type { ApplicationActionNodeData, CanvasNode, CommentNodeData, ContainerNodeData, ToolNodeData } from '../model/workflow';
+import type { ApplicationActionNodeData, ApplicationConditionNodeData, ApplicationErrorNodeData, CanvasNode, CommentNodeData, ContainerNodeData, ToolNodeData } from '../model/workflow';
 import { categoryColor, glyph } from '../ui/categories';
 
 const PORT_H = 20;
@@ -69,18 +69,56 @@ export const ApplicationActionNode = memo(function ApplicationActionNode({ id, d
   const connected = useEditor((s) => s.edges.some((e) => e.source === id && e.data?.kind === 'application-action'));
   return <div className={`tool-node application-action-node ${selected ? 'selected' : ''}`} data-testid={`node-${id}`}>
     <div className="head" style={{ background: 'color-mix(in srgb, #805ad5 13%, transparent)' }}>
-      <div className="glyph" style={{ background: '#805ad5' }} aria-hidden>A</div>
-      <div className="names"><div className="tname">Flowbench Action</div><div className="nid">{id}</div></div>
+        <div className="glyph" style={{ background: '#805ad5' }} aria-hidden>{d.question.type === 'control-parameter' ? 'P' : 'A'}</div>
+        <div className="names"><div className="tname">{d.question.type === 'control-parameter' ? 'Control Parameter' : 'Flowbench Action'}</div><div className="nid">{id}</div></div>
     </div>
     <div className="ports" style={{ minHeight: 44 }}>
-      <div className="port in" title="Question is supplied by the analytic application form">
-        Question <span className="count">{d.question.type}</span>
+      <div>
+        <div className="port in" title={d.question.type === 'control-parameter' ? 'Value comes from this field on each parent Batch Macro control record' : 'Question is supplied by the analytic application form'}>{d.question.type === 'control-parameter' ? d.question.control_field || 'Control field required' : 'Question'} <span className="count">{d.question.type}</span></div>
+        {d.question.type !== 'control-parameter' && <div className="port in" title="Optional Condition routing input">Condition<Handle type="target" position={Position.Left} id="Condition" className="multiple" style={{ top: '50%' }} data-testid={`in-${id}-Condition`} /></div>}
       </div>
       <div className="port out">Action
         <Handle type="source" position={Position.Right} id="Action" style={{ top: '50%' }} data-testid={`out-${id}-Action`} />
       </div>
     </div>
     <div className="annot">{connected ? `Updates ${d.config_path.join('.')}` : 'Connect Action to a tool target'}</div>
+  </div>;
+});
+
+export const ApplicationConditionNode = memo(function ApplicationConditionNode({ id, data, selected }: NodeProps<CanvasNode>) {
+  const d = data as ApplicationConditionNodeData;
+  const connected = useEditor((s) => s.edges.filter((e) => e.source === id && e.data?.kind === 'application-condition'));
+  return <div className={`tool-node application-condition-node ${selected ? 'selected' : ''}`} data-testid={`node-${id}`}>
+    <div className="head" style={{ background: 'color-mix(in srgb, #dd8a36 13%, transparent)' }}>
+      <div className="glyph" style={{ background: '#dd8a36' }} aria-hidden>?</div>
+      <div className="names"><div className="tname">Condition</div><div className="nid">{id}</div></div>
+    </div>
+    <div className="ports" style={{ minHeight: 48 }}>
+      <div className="port in" title="Evaluated against an analytic application answer">Question</div>
+      <div>
+        {(['True Condition', 'False Condition'] as const).map((anchor) => <div className="port out" key={anchor}>{anchor}
+          <Handle type="source" position={Position.Right} id={anchor} style={{ top: '50%' }} data-testid={`out-${id}-${anchor}`} />
+        </div>)}
+      </div>
+    </div>
+    <div className="annot">{d.when.question || 'Select a question'} · {d.when.operator} · {connected.length} routes</div>
+  </div>;
+});
+
+export const ApplicationErrorNode = memo(function ApplicationErrorNode({ id, data, selected }: NodeProps<CanvasNode>) {
+  const d = data as ApplicationErrorNodeData;
+  const connected = useEditor((s) => s.edges.some((e) => e.target === id && e.data?.kind === 'application-condition'));
+  return <div className={`tool-node application-error-node ${selected ? 'selected' : ''}`} data-testid={`node-${id}`}>
+    <div className="head" style={{ background: 'color-mix(in srgb, #c53030 13%, transparent)' }}>
+      <div className="glyph" style={{ background: '#c53030' }} aria-hidden>!</div>
+      <div className="names"><div className="tname">Error Message</div><div className="nid">{id}</div></div>
+    </div>
+    <div className="ports" style={{ minHeight: 42 }}>
+      <div className="port in" title="Optional condition route">Condition<Handle type="target" position={Position.Left} id="Condition" className="multiple" style={{ top: '50%' }} data-testid={`in-${id}-Condition`} /></div>
+      <div className="port out" title="Stops analytic-app execution">Error</div>
+    </div>
+    <div className="annot">{connected ? 'Raises when the connected condition matches' : 'Stops every application run until connected to a Condition'}</div>
+    <div className="annot">{d.message}</div>
   </div>;
 });
 
@@ -98,12 +136,18 @@ export const CommentNode = memo(function CommentNode({ id, data, selected }: Nod
 
 export const ContainerNode = memo(function ContainerNode({ id, data, selected }: NodeProps<CanvasNode>) {
   const d = data as ContainerNodeData;
+  const update = useEditor((s) => s.updateNodeData);
   return (
     <div className={`container-node ${d.disabled ? 'disabled' : ''}`} data-testid={`container-${id}`}>
       <NodeResizer isVisible={!!selected} minWidth={160} minHeight={80} />
-      <div className="cap">{d.caption}{d.disabled && <span className="badge unavailable">disabled</span>}</div>
+      <div className="cap"><span>{d.caption}{d.disabled && <span className="badge unavailable">disabled</span>}</span>
+        <button type="button" className="container-collapse nodrag" aria-label={d.collapsed ? 'Expand container' : 'Collapse container'}
+          title={d.collapsed ? 'Expand container' : 'Collapse container'} onClick={(e) => { e.stopPropagation(); update(id, { collapsed: !d.collapsed }); }}>
+          {d.collapsed ? '▸' : '▾'}
+        </button>
+      </div>
     </div>
   );
 });
 
-export const nodeTypes = { tool: ToolNode, applicationAction: ApplicationActionNode, comment: CommentNode, container: ContainerNode };
+export const nodeTypes = { tool: ToolNode, applicationAction: ApplicationActionNode, applicationCondition: ApplicationConditionNode, applicationError: ApplicationErrorNode, comment: CommentNode, container: ContainerNode };

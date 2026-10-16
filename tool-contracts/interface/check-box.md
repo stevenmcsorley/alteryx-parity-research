@@ -11,7 +11,7 @@
 - Reference build: Designer 2026.1.4.126 (installed-build comparison outstanding)
 - Official catalogue: https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html
 - Specific reference: **NOT YET VERIFIED** — run public catalogue sync
-- Implementation: **not-started**
+- Implementation: **in-progress**
 - Machine-readable contract: `check-box.contract.json`
 - Conformance verification: **not-tested**
 

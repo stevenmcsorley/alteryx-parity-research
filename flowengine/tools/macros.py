@@ -289,15 +289,63 @@ class BatchMacro(Tool):
         parameters = {p['name']: p['field'] for p in config['parameters']}
         if len(parameters) != len(config['parameters']):
             raise ConfigError('Batch macro parameter names must be unique', node_id=ctx.node_id)
+        batch_actions = list(config['actions'])
+        from ..interface_app import _spec
+        try:
+            application = _spec(doc)
+        except EngineError as exc:
+            raise ConfigError(f'Batch child application metadata is invalid: {exc.message}', node_id=ctx.node_id) from None
+        if application.get('errors'):
+            raise ConfigError('Batch child Error Message actions are not supported by this runtime', node_id=ctx.node_id)
+        control_ids = set()
+        for question in application.get('questions', []):
+            if not isinstance(question, dict) or question.get('type') != 'control-parameter':
+                continue
+            name = question.get('id')
+            field_name = question.get('control_field')
+            if not isinstance(name, str) or not name or not isinstance(field_name, str) or not field_name:
+                raise ConfigError('Embedded control parameters require non-empty id and control_field values',
+                                  node_id=ctx.node_id)
+            if name in parameters:
+                raise ConfigError(f'Control parameter {name!r} is declared more than once', node_id=ctx.node_id)
+            parameters[name] = field_name
+            control_ids.add(name)
+        automatic_action_ids = set()
+        for action in application.get('actions', []):
+            if action.get('question') not in control_ids:
+                raise ConfigError('Batch child contains an ordinary application Action that cannot be bound per control row',
+                                  node_id=ctx.node_id)
+            if action.get('when') is not None:
+                raise ConfigError('Conditional Control Parameter Actions are not supported by this batch runtime',
+                                  node_id=ctx.node_id)
+            path = action.get('config_path')
+            if not isinstance(path, list) or not path or any(not isinstance(part, str) or not part for part in path):
+                raise ConfigError('Control parameter Action must target an existing child configuration path',
+                                  node_id=ctx.node_id)
+            pointer = '/config/' + '/'.join(part.replace('~', '~0').replace('/', '~1') for part in path)
+            batch_actions.append({'parameter': action['question'], 'target_node': action['node_id'],
+                                  'config_path': pointer})
+            automatic_action_ids.add(action['question'])
+        missing_actions = control_ids - automatic_action_ids
+        if missing_actions:
+            raise ConfigError('Control parameter(s) have no connected Action target: ' + ', '.join(sorted(missing_actions)),
+                              node_id=ctx.node_id)
         for field_name in parameters.values():
             if field_name not in controls.schema:
                 raise DataError(f'Control input has no parameter field {field_name!r}', node_id=ctx.node_id)
         if not parameters:
             raise ConfigError('At least one named control parameter is required', node_id=ctx.node_id)
-        for action in config['actions']:
+        for action in batch_actions:
             if action['parameter'] not in parameters:
                 raise ConfigError(f"Action refers to undefined control parameter {action['parameter']!r}",
                                   node_id=ctx.node_id)
+        configured_targets = {}
+        for action in batch_actions:
+            target = (action['target_node'], action['config_path'])
+            previous = configured_targets.get(target)
+            if previous is not None and previous != action['parameter']:
+                raise ConfigError('Multiple parameters target the same child configuration value', node_id=ctx.node_id)
+            configured_targets[target] = action['parameter']
         child_inputs = [n for n in doc.get('nodes', []) if n.get('tool') == 'flowengine.macro_input']
         if not any(n.get('config', {}).get('name') == config['input_name'] for n in child_inputs):
             raise ConfigError(f"Child macro has no Macro Input named {config['input_name']!r}", node_id=ctx.node_id)
@@ -333,7 +381,7 @@ class BatchMacro(Tool):
             iteration_values = {name: _control_json_value(row[controls.schema.index(field_name)], name)
                                 for name, field_name in parameters.items()}
             iteration_doc = copy.deepcopy(doc)
-            _apply_batch_actions(iteration_doc, config['actions'], iteration_values, ctx.node_id, index)
+            _apply_batch_actions(iteration_doc, batch_actions, iteration_values, ctx.node_id, index)
             ctx.emit('batch-iteration-started', definition=identity, iteration=index + 1,
                      parameter_names=sorted(iteration_values))
             try:
@@ -520,16 +568,26 @@ def _apply_batch_actions(doc, actions, values, node_id, iteration):
             segments = [part.replace('~1', '/').replace('~0', '~') for part in segments[1:]]
             cursor = nodes[target_id]
             for segment in segments[:-1]:
-                if not isinstance(cursor, dict) or segment not in cursor:
+                if isinstance(cursor, dict) and segment in cursor:
+                    cursor = cursor[segment]
+                elif isinstance(cursor, list) and segment.isdecimal() and int(segment) < len(cursor):
+                    cursor = cursor[int(segment)]
+                else:
                     raise KeyError(segment)
-                cursor = cursor[segment]
             leaf = segments[-1]
-            if not isinstance(cursor, dict) or leaf not in cursor:
+            if isinstance(cursor, dict) and leaf in cursor:
+                pass
+            elif isinstance(cursor, list) and leaf.isdecimal() and int(leaf) < len(cursor):
+                pass
+            else:
                 raise KeyError(leaf)
         except KeyError as exc:
             raise ConfigError(f"Action config path {action['config_path']!r} does not exist on node {target_id!r}",
                               node_id=node_id) from None
-        cursor[leaf] = values[action['parameter']]
+        if isinstance(cursor, list):
+            cursor[int(leaf)] = values[action['parameter']]
+        else:
+            cursor[leaf] = values[action['parameter']]
 
 
 def _macro_identity(doc):

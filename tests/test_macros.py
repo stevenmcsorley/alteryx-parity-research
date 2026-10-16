@@ -263,6 +263,44 @@ class BatchMacroTests(unittest.TestCase):
         self.assertEqual([event['rows'] for event in events], [1, 2])
         self.assertTrue(all(event['child_run_id'] for event in events))
 
+    def test_native_control_parameter_uses_each_parent_row_and_updates_child_configuration(self):
+        doc = batch_macro_workflow([[3], [2]])
+        child = doc['nodes'][2]['config']['workflow']
+        controls = doc['nodes'][1]['config']
+        controls['fields'].append({'name': 'formula_expr', 'type': 'v_wstring'})
+        controls['rows'] = [[3, '[value] + 10'], [2, '[value] * 3']]
+        formula = {'id': 'formula', 'tool': 'core.formula', 'config': {
+            'formulas': [{'field': 'adjusted', 'expression': '[value] + 0', 'type': 'int32'}]}}
+        child['nodes'].insert(1, formula)
+        child['edges'] = [edge('input', 'output', 'formula', 'input'),
+                          edge('formula', 'output', 'filter', 'input'),
+                          edge('filter', 'true', 'output', 'input')]
+        doc['nodes'][2]['config']['parameters'] = []
+        doc['nodes'][2]['config']['actions'] = []
+        child['metadata'] = {'application': {
+            'questions': [
+                {'id': 'threshold', 'type': 'control-parameter', 'control_field': 'threshold'},
+                {'id': 'formula_expr', 'type': 'control-parameter', 'control_field': 'formula_expr'},
+            ],
+            'actions': [
+                {'question': 'threshold', 'node_id': 'filter', 'config_path': ['value']},
+                {'question': 'formula_expr', 'node_id': 'formula', 'config_path': ['formulas', '0', 'expression']},
+            ],
+        }}
+        result = run_workflow(doc, base_dir=ROOT)
+        self.assertTrue(result.ok, result.error)
+        self.assertEqual(rows(result.output('batch', 'output')), [[3, 13], [2, 6], [3, 9]])
+        from flowengine.interface_app import bind_application, describe_application
+        self.assertEqual(describe_application(child)['questions'], [])
+        from flowengine.errors import EngineError
+        with self.assertRaisesRegex(EngineError, 'requires a Batch Macro control input'):
+            bind_application(child, {})
+        child['metadata']['application']['questions'].append({'id': 'enabled', 'type': 'boolean'})
+        child['metadata']['application']['actions'][0]['when'] = {'question': 'enabled', 'operator': 'truthy'}
+        conditional = run_workflow(doc, base_dir=ROOT)
+        self.assertFalse(conditional.ok)
+        self.assertIn('Conditional Control Parameter Actions are not supported', conditional.error['message'])
+
     def test_empty_control_table_returns_inferred_empty_schema(self):
         result = run_workflow(batch_macro_workflow([]), base_dir=ROOT)
         self.assertTrue(result.ok, result.error)
