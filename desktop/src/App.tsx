@@ -24,6 +24,15 @@ function RightDock({ aiOpen, selectAi, selectInspector, onResize, onResizeKey }:
   </section>;
 }
 
+const DOCK_KEY = 'flowbench.rightDockWidth';
+/** The right workspace can grow until the palette and a 320px canvas are left. */
+export function clampDock(width: number, viewport = window.innerWidth) {
+  return Math.round(Math.max(310, Math.min(Math.max(310, viewport - 260 - 320), width)));
+}
+function storedDockWidth() {
+  try { const saved = Number(localStorage.getItem(DOCK_KEY)); return saved ? clampDock(saved) : 400; } catch { return 400; }
+}
+
 function isTyping(e: KeyboardEvent) {
   const t = e.target as HTMLElement | null;
   return !!t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable);
@@ -86,13 +95,19 @@ function EngineOffline() {
 
 export default function App() {
   const [aiOpen, setAiOpen] = useState(false);
-  const [dockWidth, setDockWidth] = useState(400);
+  const [dockWidth, setDockWidth] = useState(storedDockWidth);
+  useEffect(() => { try { localStorage.setItem(DOCK_KEY, String(dockWidth)); } catch { /* the width still applies */ } }, [dockWidth]);
+  useEffect(() => {
+    const fit = () => setDockWidth((width) => clampDock(width));
+    window.addEventListener('resize', fit);
+    return () => window.removeEventListener('resize', fit);
+  }, []);
   const resizing = useRef(false);
   const startResize = (event: ReactPointerEvent) => {
     event.preventDefault();
     resizing.current = true;
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
-    const onMove = (move: PointerEvent) => { if (resizing.current) setDockWidth(Math.max(310, Math.min(600, window.innerWidth - move.clientX))); };
+    const onMove = (move: PointerEvent) => { if (resizing.current) setDockWidth(clampDock(window.innerWidth - move.clientX)); };
     const onUp = () => { resizing.current = false; window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
@@ -110,8 +125,8 @@ export default function App() {
           <EngineOffline />
         </div>
         <RightDock aiOpen={aiOpen} selectAi={() => setAiOpen(true)} selectInspector={() => setAiOpen(false)} onResize={startResize} onResizeKey={(event) => {
-          if (event.key === 'ArrowLeft') setDockWidth((width) => Math.min(600, width + 16));
-          if (event.key === 'ArrowRight') setDockWidth((width) => Math.max(310, width - 16));
+          if (event.key === 'ArrowLeft') setDockWidth((width) => clampDock(width + 16));
+          if (event.key === 'ArrowRight') setDockWidth((width) => clampDock(width - 16));
         }} />
         <ResultsPanel />
       </div>

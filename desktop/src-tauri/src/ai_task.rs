@@ -239,7 +239,8 @@ impl Task {
 
     fn missing(&self) -> Vec<String> {
         let mut out: Vec<String> = self.deliverables.iter().filter(|d| d.status != "verified")
-            .map(|d| format!("{} ({}){}", d.id, d.kind, d.problem.as_ref().map(|p| format!(": {p}")).unwrap_or_default())).collect();
+            .map(|d| format!("{} ({}){}", if d.description.is_empty() { &d.id } else { &d.description }, d.kind,
+                d.problem.as_ref().map(|p| format!(": {p}")).unwrap_or_default())).collect();
         for (kind, n) in &self.required {
             // A dataset with recorded provenance (kind source) also satisfies a requested dataset.
             let counts = |d: &&Deliverable| &d.kind == kind || (kind == "dataset" && d.kind == "source");

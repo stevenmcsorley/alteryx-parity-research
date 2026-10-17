@@ -4,7 +4,7 @@ import { useEditor } from '../state/store';
 import { cancelRun, validateNow } from '../state/engineActions';
 import { ensureAiStreamListener, useAiConversation, type ChatMessage, type Verification } from './conversation';
 import { prepareWorkflowProposal, workflowRevision } from './workflowPatch';
-import { engine, runWorkflow } from '../state/engineActions';
+import { engine, runWorkflow, saveWorkflow } from '../state/engineActions';
 import { doSave } from '../panels/Toolbar';
 import { activityLabel, addUsage, diagnosticSummary, NO_USAGE, tokens, type Usage } from './panelText';
 import { ProviderSettings, providerLabel, type LocalProvider } from './ProviderSettings';
@@ -26,7 +26,7 @@ function effortFor(model: Model | undefined, preferred: string) {
 type ValueItem = { type?: string; name?: string; arguments?: string; call_id?: string; [key: string]: unknown };
 type NativeResponse = { turn_id: string; message_id: string; cycle_id: string; status?: 'retryable_stream_interruption'; needs_tool_correction?: boolean;
   needs_execution?: boolean; continue?: boolean; text?: string; text_source?: string; empty_reason?: string; calls?: ValueItem[];
-  usage?: { input_tokens?: number | null; output_tokens?: number | null } };
+  usage?: { input_tokens?: number | null; output_tokens?: number | null; cached_tokens?: number | null } };
 type AuthStatus = { provider?: 'chatgpt' | 'local'; local?: LocalProvider; chatgpt_connected?: boolean; connected: boolean; plan_usage_authorized: boolean;
   subject_hint?: string; session_recovery_required?: boolean; data_routing_allowed?: boolean };
 /** A turn above this many tokens is flagged: it is using a large share of a plan's limits. */
@@ -51,6 +51,26 @@ let resolveRunApproval: ((value: unknown) => void) | null = null;
 let resolvePatchApproval: ((value: unknown) => void) | null = null;
 let resolveSaveApproval: ((value: unknown) => void) | null = null;
 let resolveActionApproval: ((approved: boolean) => void) | null = null;
+let pendingSavePath = '';
+/** Where an AI save goes: its path inside the workspace, the current file, or (Full Control) the workspace default. */
+export function agentSavePath(path: string, baseDir: string, filePath: string | null, defaultName: string | null): { path: string } | { outside: string } | null {
+  const sep = baseDir.includes('\\') ? '\\' : '/';
+  const base = baseDir.replace(/[\\/]+$/, '');
+  const norm = (p: string) => p.replace(/[\\/]+/g, '/').split('/').reduce<string[]>((out, part) => {
+    if (part === '..') out.pop(); else if (part !== '.' && part !== '') out.push(part);
+    return out;
+  }, []).join('/');
+  if (path.trim()) {
+    const absolute = /^([a-zA-Z]:[\\/]|[\\/])/.test(path);
+    const full = absolute ? path : `${base}${sep}${path}`;
+    const inside = base && ('/' + norm(full)).toLowerCase().startsWith('/' + norm(base).toLowerCase() + '/');
+    if (!inside) return { outside: path };
+    return { path: (/^[a-zA-Z]:/.test(full) ? '' : full.startsWith('/') || full.startsWith('\\') ? '/' : '') + norm(full).split('/').join(sep) };
+  }
+  if (filePath) return { path: filePath };
+  if (defaultName && base) return { path: `${base}${sep}${defaultName.replace(/[^\w-]+/g, '_') || 'workflow'}.flow.json` };
+  return null;
+}
 /** Permissions the user approved during the current task; cleared when a new request starts. */
 const taskGrants = new Set<string>();
 function describeOperation(operation: string, args: Record<string, unknown>) {
@@ -204,9 +224,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         useAiConversation.getState().requestRunApproval();
         return new Promise((resolve) => { resolveRunApproval = resolve; });
       },
-      requestSave: () => {
-        if (fullControlForCurrentWorkspace()) return saveForAgent();
+      requestSave: (path: string) => {
+        if (fullControlForCurrentWorkspace()) return saveForAgent(path, true);
         if (resolveSaveApproval) throw new Error('A workflow save is already awaiting approval');
+        pendingSavePath = path;
         useAiConversation.getState().requestSaveApproval();
         return new Promise((resolve) => { resolveSaveApproval = resolve; });
       },
@@ -323,9 +344,19 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
   }
-  async function saveForAgent() {
-    const outcome = await doSave();
-    return { status: outcome === 'failed' ? 'save_failed' : outcome, path_selected: outcome === 'saved' };
+  /** Saves where the AI asked, inside the workspace, without the file picker; or the current file. */
+  async function saveForAgent(path: string, useDefault: boolean) {
+    const s = useEditor.getState();
+    const target = agentSavePath(path, s.baseDir, s.filePath, useDefault ? s.name : null);
+    if (!target) {
+      const outcome = await doSave();
+      return { status: outcome === 'failed' ? 'save_failed' : outcome, path_selected: outcome === 'saved' };
+    }
+    if ('outside' in target) return { status: 'outside_workspace', path_selected: false, error: `${target.outside} is outside the workspace ${s.baseDir}` };
+    try {
+      await saveWorkflow(target.path);
+      return { status: 'saved', path_selected: true, path: useEditor.getState().filePath ?? target.path };
+    } catch (e) { return { status: 'save_failed', path_selected: false, error: messageOf(e).slice(0, 500) }; }
   }
   function rejectRun() {
     useAiConversation.setState({ runApprovalRequested: false });
@@ -333,8 +364,9 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   }
   async function approveSave() {
     useAiConversation.setState({ saveApprovalRequested: false });
-    const outcome = await doSave();
-    resolveSaveApproval?.({ status: outcome, path_selected: outcome === 'saved' });
+    const result = await saveForAgent(pendingSavePath, false);
+    pendingSavePath = '';
+    resolveSaveApproval?.(result);
     resolveSaveApproval = null;
   }
   function rejectSave() {
@@ -528,24 +560,29 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   ];
   return <aside className={`${embedded ? 'ai-content' : 'app-right'} ai-sidebar`} aria-label="Flowbench AI workspace" data-testid="ai-sidebar">
     <header className="ai-head">
-      <div className="ai-brand"><span className={`routing-dot ${ready ? 'connected' : ''}`} title={ready ? `${providerName} connected` : `${providerName} not connected`} />
-        <strong>Flowbench AI</strong><span className="ai-provider-badge">{providerName}</span></div>
-      <div className="ai-header-controls">
-        {authorized && <select aria-label="Active model" title="Model" value={model} onChange={(e) => setModel(e.target.value)} disabled={streaming || !models.length}>
+      <div className="ai-head-row">
+        <div className="ai-brand"><span className={`routing-dot ${ready ? 'connected' : ''}`} title={ready ? `${providerName} connected` : `${providerName} not connected`} />
+          <strong>Flowbench AI</strong><span className="ai-provider-badge">{providerName}</span></div>
+        <div className="ai-header-controls">
+          <button className="icon" aria-label="New conversation" title="New conversation" disabled={streaming} onClick={() => void newConversation()}>＋</button>
+          <button className={`icon ${settingsOpen ? 'active' : ''}`} aria-label="AI settings" title="AI settings" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((open) => !open)}>⚙</button>
+          {embedded && <button className="icon" onClick={close} aria-label="Close Flowbench AI" title="Close">×</button>}
+        </div>
+      </div>
+      {authorized && <div className="ai-head-row ai-model-row">
+        <select aria-label="Active model" title="Model" value={model} onChange={(e) => setModel(e.target.value)} disabled={streaming || !models.length}>
           {!models.length && <option value="">No models</option>}
           {models.map((choice) => <option key={choice.slug} value={choice.slug}>{choice.display_name}</option>)}
-        </select>}
-        {authorized && !local && <select aria-label="Reasoning effort" title="Reasoning effort: higher levels think longer and use more of the plan's limits" value={effort}
+        </select>
+        {!local && <select aria-label="Reasoning effort" title="Reasoning effort: higher levels think longer and use more of the plan's limits" value={effort}
           onChange={(e) => chooseEffort(e.target.value)} disabled={streaming || !models.length}>
           {effortChoices.map((choice) => <option key={choice} value={choice}>{effortLabel(choice)}</option>)}
         </select>}
-        <button className="icon" aria-label="New conversation" title="New conversation" disabled={streaming} onClick={() => void newConversation()}>＋</button>
-        <button className={`icon ${settingsOpen ? 'active' : ''}`} aria-label="AI settings" title="AI settings" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((open) => !open)}>⚙</button>
-        {embedded && <button className="icon" onClick={close} aria-label="Close Flowbench AI">×</button>}
-      </div>
+      </div>}
     </header>
 
     {settingsOpen && <div className="ai-settings" role="region" aria-label="AI settings panel">
+      <div className="ai-settings-head"><strong>AI settings</strong><button className="primary" onClick={() => setSettingsOpen(false)}>Done</button></div>
       <ProviderSettings local={local} disabled={busy || streaming} chatgptAccount={account} chatgptConnected={chatgptConnected}
         native={native} onChanged={providerChanged} onSignIn={() => void signIn()} onSignOut={() => void signOut()} />
 
@@ -564,7 +601,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
 
       <section className="ai-settings-section" aria-label="Usage">
         <h3>Usage</h3>
-        <p className="ai-usage-line">This conversation: <b>{tokens(sessionUsage.input)}</b> tokens sent · <b>{tokens(sessionUsage.output)}</b> received</p>
+        <p className="ai-usage-line">This conversation: <b>{tokens(sessionUsage.input)}</b> tokens sent{sessionUsage.cached ? <> (<b>{tokens(sessionUsage.cached)}</b> cached)</> : null} · <b>{tokens(sessionUsage.output)}</b> received</p>
         <small className="ai-menu-note">{local ? 'Local models cost nothing per token, but a long conversation can outgrow the context length.'
           : 'Each step of a turn resends the conversation, so long tasks add up. Lower reasoning effort and a new conversation per task keep usage down.'}</small>
       </section>
@@ -601,19 +638,19 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       </section>
     </div>}
 
-    <nav className="ai-views" role="tablist" aria-label="AI views">
+    {!settingsOpen && <nav className="ai-views" role="tablist" aria-label="AI views">
       <button role="tab" aria-selected={view === 'chat'} onClick={() => setView('chat')}>Conversation</button>
       <button role="tab" aria-selected={view === 'task'} onClick={() => void openTasks()}>Task{task?.status === 'running' ? ' ●' : ''}</button>
-    </nav>
-    {view === 'task' && <section className="ai-task-pane" aria-label="Task activity">
+    </nav>}
+    <section className="ai-conversation" aria-label="AI conversation" style={settingsOpen ? { display: 'none' } : undefined}>
+      {view === 'task' && <section className="ai-task-pane" aria-label="Task activity">
       {task ? <TaskView task={task} /> : <p className="ai-menu-note">No task yet. Ask Flowbench AI to do something and its steps, runs, files and evidence appear here.</p>}
       {recentTasks.filter((t) => t.id !== task?.id).length > 0 && <details className="ai-recent-tasks"><summary>Earlier tasks</summary>
         <ul>{recentTasks.filter((t) => t.id !== task?.id).map((t) => <li key={t.id}><details><summary>
           <span className={`ai-task-status ${t.status}`}>{STATUS_TEXT[t.status] ?? t.status}</span> {t.objective}</summary><TaskView task={t} /></details></li>)}</ul>
       </details>}
     </section>}
-    <section className="ai-conversation" aria-label="AI conversation" hidden={view !== 'chat'}>
-      <div className="ai-chat-messages" ref={chatScroll} aria-live="polite" onScroll={(e) => {
+      <div className="ai-chat-messages" ref={chatScroll} aria-live="polite" style={view === 'task' ? { display: 'none' } : undefined} onScroll={(e) => {
         const el = e.currentTarget;
         stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 56;
       }}>
@@ -652,8 +689,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
             <button onClick={rejectRun}>Cancel</button></div>
         </section>}
         {saveApprovalRequested && <section className="ai-proposal-card" aria-label="Save approval">
-          <strong>Save this workflow?</strong><p>Flowbench will open its normal save destination prompt. The workflow is written only after you confirm the path.</p>
-          <div><button className="primary" onClick={() => void approveSave()}>Choose destination and save</button>
+          <strong>Save this workflow?</strong><p>{pendingSavePath
+            ? <>Flowbench AI wants to save it as <code>{pendingSavePath}</code> in the workspace.</>
+            : 'Flowbench will open its normal save destination prompt. The workflow is written only after you confirm the path.'}</p>
+          <div><button className="primary" onClick={() => void approveSave()}>{pendingSavePath ? 'Save' : 'Choose destination and save'}</button>
             <button onClick={rejectSave}>Cancel</button></div>
         </section>}
         {actionApproval && <section className="ai-proposal-card" aria-label="Permission request">
@@ -680,8 +719,9 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           <span title={name}>{name}</span><span>·</span><span>{nodes} nodes</span>
           <span className="ai-tools-mode" title={fullControl ? 'Full Control is on for this workspace until Flowbench closes' : 'The AI asks before edits, runs and saves'}>{fullControl ? 'Full Control' : toolsEnabled ? 'Review mode' : 'No tools'}</span>
           {turnTotal > 0 && <span className={`ai-usage ${turnTotal > HEAVY_TURN_TOKENS || nearContext ? 'heavy' : ''}`}
-            title={`This turn: ${turnUsage.input.toLocaleString()} tokens sent, ${turnUsage.output.toLocaleString()} received`}>
-            {nearContext ? 'Near the context limit · start a new conversation' : `${tokens(turnTotal)} tokens this turn`}</span>}
+            title={`This turn: ${turnUsage.input.toLocaleString()} tokens sent (${turnUsage.cached.toLocaleString()} of them cached), ${turnUsage.output.toLocaleString()} received. Cached tokens are the repeated instructions and tool definitions, which the provider bills at a reduced rate.`}>
+            {nearContext ? 'Near the context limit · start a new conversation'
+              : `${tokens(turnTotal)} tokens this turn${turnUsage.cached ? ` · ${Math.round(100 * turnUsage.cached / Math.max(1, turnUsage.input))}% cached` : ''}`}</span>}
         </div>
         {authorized && <form className="ai-compose" onSubmit={(e) => { e.preventDefault(); void send(); }}>
           <button type="button" className="icon ai-attach" aria-label="Add files" title="Add data files: their paths go into your message" onClick={() => void addFiles()} disabled={streaming}>📎</button>
@@ -756,7 +796,8 @@ function Message({ message, onRetry }: { message: ChatMessage; onRetry: () => vo
     <div className="ai-message-label">{message.role === 'user' ? 'You' : <><span className="ai-assistant-mark">✦</span> Flowbench AI</>}</div>
     {message.text ? <MarkdownText text={message.text} /> : message.state === 'streaming' ? <div className="ai-thinking"><i />Thinking…</div> : null}
     {!!message.activity?.length && <details className="ai-tool-activity" open={message.state === 'streaming' || undefined}><summary>{message.state === 'streaming' || message.activity.length === 1 ? message.activity[message.activity.length - 1] : `${message.activity.length} Flowbench steps`}</summary>
-      {message.activity.length > 1 && <ul>{message.activity.map((activity, i) => <li key={`${i}_${activity}`}>{activity}</li>)}</ul>}</details>}
+      {message.activity.length > 1 && <ul ref={(el) => { if (el && message.state === 'streaming') el.scrollTop = el.scrollHeight; }}>
+        {groupActivity(message.activity).map(([activity, count], i) => <li key={`${i}_${activity}`}>{activity}{count > 1 && <span className="ai-activity-count"> ×{count}</span>}</li>)}</ul>}</details>}
     {message.verification?.status === 'verified' && <div className="ai-verification ok" title={message.verification.runIds?.length ? `Run ${message.verification.runIds.join(', ')}` : undefined}>✓ Backed by a Flowbench run</div>}
     {message.verification?.status === 'unverified' && <div className="ai-verification warn" role="note">Not verified: no Flowbench run backs this answer. Treat its numbers as unconfirmed.</div>}
     {message.verification?.status === 'incomplete' && <div className="ai-verification warn" role="note">Incomplete: {message.verification.missing?.length ? `missing ${message.verification.missing.join('; ')}` : 'some requested deliverables are missing'}. See the Task tab.</div>}
@@ -789,17 +830,18 @@ function verificationOf(task: TaskRecord | null | undefined): Verification | und
 /** Where the AI's web_search goes: the user's SearXNG instance, else DuckDuckGo. Stored by the engine. */
 function WebSearchSettings({ disabled }: { disabled: boolean }) {
   const [url, setUrl] = useState('');
+  const [engines, setEngines] = useState('');
   const [note, setNote] = useState<{ text: string; ok: boolean } | null>(null);
   const [working, setWorking] = useState(false);
   useEffect(() => {
-    engine().request<{ searxng_url: string | null }>('agent.search_settings', {})
-      .then((s) => setUrl(s.searxng_url ?? '')).catch(() => undefined);
+    engine().request<{ searxng_url: string | null; searxng_engines?: string | null }>('agent.search_settings', {})
+      .then((s) => { setUrl(s.searxng_url ?? ''); setEngines(s.searxng_engines ?? ''); }).catch(() => undefined);
   }, []);
   async function save(test: boolean) {
     setWorking(true); setNote(null);
     try {
       const s = await engine().request<{ searxng_url: string | null; test?: { results: number; unresponsive_engines: unknown[] } }>(
-        'agent.search_settings', { searxng_url: url.trim() || null, test });
+        'agent.search_settings', { searxng_url: url.trim() || null, searxng_engines: engines.trim() || null, test });
       setNote(!s.searxng_url ? { text: 'Web search uses DuckDuckGo.', ok: true }
         : s.test ? { text: `SearXNG answered with ${s.test.results} result(s)${s.test.unresponsive_engines.length ? `; engines not responding: ${s.test.unresponsive_engines.map((e) => (e as string[])[0]).join(', ')}` : ''}.`, ok: s.test.results > 0 }
         : { text: 'Saved.', ok: true });
@@ -811,7 +853,9 @@ function WebSearchSettings({ disabled }: { disabled: boolean }) {
     <div className="ai-settings-body">
       <label>SearXNG address
         <input value={url} placeholder="http://localhost:8888" onChange={(e) => setUrl(e.target.value)} disabled={disabled || working} spellCheck={false} /></label>
-      <small className="ai-menu-note">Your own SearXNG instance (JSON output enabled). Leave empty to use DuckDuckGo. Official statistics are also found through GOV.UK and data.gov.uk search.</small>
+      <label>Engines (optional)
+        <input value={engines} placeholder="yandex,bing" onChange={(e) => setEngines(e.target.value)} disabled={disabled || working} spellCheck={false} /></label>
+      <small className="ai-menu-note">Your own SearXNG instance (JSON output enabled). Many engines block self-hosted instances; list the ones that answer, or leave empty for SearXNG's defaults. If SearXNG finds nothing, DuckDuckGo is used. Official statistics are also found through GOV.UK and data.gov.uk search.</small>
       <div className="ai-settings-row wrap">
         <button onClick={() => void save(true)} disabled={disabled || working || !url.trim()}>{working ? 'Testing…' : 'Save and test'}</button>
         <button onClick={() => void save(false)} disabled={disabled || working}>Save</button>
@@ -821,6 +865,15 @@ function WebSearchSettings({ disabled }: { disabled: boolean }) {
   </section>;
 }
 
+/** Consecutive identical steps shown once with a count. */
+function groupActivity(steps: string[]): Array<[string, number]> {
+  const out: Array<[string, number]> = [];
+  for (const step of steps) {
+    const last = out[out.length - 1];
+    if (last && last[0] === step) last[1]++; else out.push([step, 1]);
+  }
+  return out;
+}
 function safeToolFailure(tool: string, error: unknown) {
   const text = error instanceof Error ? error.message : '';
   const contract = text.match(/Flowbench result contract violation for [a-z0-9_.-]+ at (\$[a-z0-9_.$-]+)/i);

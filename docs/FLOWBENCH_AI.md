@@ -105,7 +105,7 @@ search:
   formats: [html, json]
 ```
 
-Run `docker compose up -d`, then set the address to `http://localhost:8888`. The search results show which SearXNG engines did not respond. Engines such as Google and DuckDuckGo often block self-hosted instances; Bing and others usually work. The MCP server takes `--searxng URL`, and the `FLOWBENCH_SEARXNG_URL` environment variable works everywhere.
+Run `docker compose up -d`, then set the address to `http://localhost:8888`. Many engines block self-hosted instances: use **Save and test**, and list the engines that answer under **Engines** (for example `yandex,bing`). They are then used for every search. The search results show which SearXNG engines did not respond. Engines such as Google and DuckDuckGo often block self-hosted instances; Bing and others usually work. The MCP server takes `--searxng URL`, and the `FLOWBENCH_SEARXNG_URL` environment variable works everywhere.
 
 ### Tool contracts
 

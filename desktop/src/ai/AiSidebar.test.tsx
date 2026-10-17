@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useEditor } from '../state/store';
-import { AiSidebar, modelCell } from './AiSidebar';
+import { agentSavePath, AiSidebar, modelCell } from './AiSidebar';
 import { resetListenerForTests, useAiConversation } from './conversation';
 import { workflowRevision } from './workflowPatch';
 import { setTransport } from '../state/engineActions';
@@ -101,6 +101,7 @@ describe('Flowbench AI conversation', () => {
     fireEvent.click(screen.getByRole('checkbox', { name: /Full Control for this workspace/ }));
     expect(confirm).toHaveBeenCalledOnce();
     expect((screen.getByRole('checkbox', { name: /Full Control for this workspace/ }) as HTMLInputElement).checked).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
     tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
       if (command === 'ai_status') return { connected: true, plan_usage_authorized: true };
       if (command === 'ai_models') return [{ slug: 'model-a', display_name: 'Available model' }];
@@ -163,6 +164,7 @@ describe('Flowbench AI conversation', () => {
     fireEvent.click(screen.getByRole('button', { name: 'AI settings' }));
     fireEvent.click(screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }));
     await waitFor(() => expect((screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }) as HTMLInputElement).checked).toBe(true));
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
     const composer = screen.getByLabelText('Message Flowbench AI');
     for (let n = 1; n <= 10; n++) {
       fireEvent.change(composer, { target: { value: 'hello' } });
@@ -471,6 +473,7 @@ describe('local model provider', () => {
     expect(screen.getByText('Ollama', { selector: '.ai-provider-badge' })).toBeTruthy();
     expect(screen.queryByRole('combobox', { name: 'Reasoning effort' })).toBeNull();
     expect(screen.getByText(/Data stays on this computer/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
     fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'hello' } });
     fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     expect(await screen.findByText('Local answer')).toBeTruthy();
@@ -714,8 +717,22 @@ describe('deliverables and web search settings', () => {
     await ready();
     fireEvent.click(screen.getByRole('button', { name: 'AI settings' }));
     fireEvent.change(screen.getByLabelText('SearXNG address'), { target: { value: 'http://localhost:8888' } });
+    fireEvent.change(screen.getByLabelText('Engines (optional)'), { target: { value: 'yandex,bing' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save and test' }));
     expect(await screen.findByText(/SearXNG answered with 10 result\(s\); engines not responding: google/)).toBeTruthy();
-    expect(calls[calls.length - 1]).toEqual({ method: 'agent.search_settings', params: { searxng_url: 'http://localhost:8888', test: true } });
+    expect(calls[calls.length - 1]).toEqual({ method: 'agent.search_settings', params: { searxng_url: 'http://localhost:8888', searxng_engines: 'yandex,bing', test: true } });
+  });
+});
+
+describe('saving from the AI', () => {
+  it('resolves save paths inside the workspace and refuses paths outside it', () => {
+    expect(agentSavePath('fuel/prices.flow.json', '/home/u/proj', null, 'x')).toEqual({ path: '/home/u/proj/fuel/prices.flow.json' });
+    expect(agentSavePath('/home/u/proj/a.flow.json', '/home/u/proj', null, null)).toEqual({ path: '/home/u/proj/a.flow.json' });
+    expect(agentSavePath('../other/a.flow.json', '/home/u/proj', null, null)).toEqual({ outside: '../other/a.flow.json' });
+    expect(agentSavePath('/etc/a.flow.json', '/home/u/proj', null, null)).toEqual({ outside: '/etc/a.flow.json' });
+    expect(agentSavePath('out\\a.flow.json', 'C:\\Users\\u\\proj', null, null)).toEqual({ path: 'C:\\Users\\u\\proj\\out\\a.flow.json' });
+    expect(agentSavePath('', '/home/u/proj', '/home/u/proj/now.flow.json', 'x')).toEqual({ path: '/home/u/proj/now.flow.json' });
+    expect(agentSavePath('', '/home/u/proj', null, 'UK fuel prices')).toEqual({ path: '/home/u/proj/UK_fuel_prices.flow.json' });
+    expect(agentSavePath('', '/home/u/proj', null, null)).toBeNull();
   });
 });

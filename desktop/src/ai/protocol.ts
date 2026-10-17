@@ -47,7 +47,7 @@ export const AGENT_TOOLS: AgentToolDefinition[] = [
   { name: 'workflow.get_node_config', description: 'Read the active workflow node configuration, including file locations and expressions. Credential fields and raw records are excluded.', parameters: objectSchema({ node_ref: { type: 'string' } }, ['node_ref']) },
   { name: 'workflow.propose_patch', description: 'Prepare and validate a workflow graph change. In Review mode it is previewed for approval; in Full Control mode it is applied as one validated, undoable editor transaction.', parameters: objectSchema({ patch_json: { type: 'string', description: 'JSON object {"operations":[...]}. Operations: add {op,ref,tool_id,config,position}; configure {op,node_ref,config}; add_question {op,ref,question,config_path,position}; add_condition {op,ref,when,position}; configure_question {op,node_ref,question,config_path}; configure_condition {op,node_ref,when}; group {op,ref,node_refs,caption} groups existing top-level node_N or newly added refs in an editor Tool Container; configure_container {op,node_ref,caption,disabled,collapsed}; ungroup_container {op,node_ref}; connect {op,source_ref,source_anchor,target_ref,target_anchor}; connect_action {op,source_ref,target_ref}; connect_condition {op,source_ref,source_anchor,target_ref}; disconnect {op,source_ref,source_anchor,target_ref,target_anchor}; remove {op,node_ref}. Application question types include text-area for multiline answers and tree for configured leaf paths such as "Sales > Online". Existing refs are node_N from workflow.get_snapshot. Tool config must match installed manifests.' }, base_revision: { type: 'string', description: 'Opaque revision returned by workflow.get_snapshot.' } }, ['patch_json', 'base_revision']) },
   { name: 'workflow.request_run', description: 'Run the current workflow. Review mode requests confirmation; Full Control may run ordinary local processing immediately. File writes, scripts, database writes and other external effects retain their scoped permission checks.', parameters: objectSchema() },
-  { name: 'workflow.request_save', description: 'Save the active workflow. Full Control saves to the current authorized workflow path; choosing a new destination still uses the native file picker.', parameters: objectSchema() },
+  { name: 'workflow.request_save', description: 'Save the active workflow as a .flow.json file inside the workspace (path relative to it); an empty path saves to the current file or, in Full Control, to the workspace default.', parameters: objectSchema({ path: { type: 'string' } }, []) },
   { name: 'run.get_results', description: 'Read bounded previews from the most recent completed run. Results are shared only under the active data-routing consent.', parameters: objectSchema() },
   { name: 'run.get_result_page', description: 'Read actual rows from one Browse output in the latest completed run. Use node_ref values from run.get_results, request the row range needed, and name the columns needed (empty string for all).', parameters: objectSchema({ node_ref: { type: 'string' }, offset: { type: 'integer' }, limit: { type: 'integer' }, columns: { type: 'string' } }, ['node_ref', 'offset', 'limit', 'columns']) },
 ];
@@ -65,7 +65,7 @@ export type AgentToolEnvironment = {
   validate: () => Promise<void>;
   proposePatch?: (patchJson: string, baseRevision: string) => Promise<unknown>;
   requestRun?: () => unknown;
-  requestSave?: () => unknown;
+  requestSave?: (path: string) => unknown;
   getResults?: () => unknown;
   getResultPage?: (nodeRef: string, offset: number, limit: number, columns: string) => unknown;
   /** Engine agent operations (find_tools, profile_file, query_results, download_file, ...). */
@@ -177,7 +177,7 @@ async function dispatchAgentToolUnchecked(
       return environment.requestRun();
     case 'workflow.request_save':
       if (!environment.requestSave) throw new Error('Workflow saving is unavailable in this application context');
-      return environment.requestSave();
+      return environment.requestSave(String(input.path ?? ''));
     case 'run.get_results':
       if (!environment.getResults) throw new Error('Run results are unavailable in this application context');
       return environment.getResults();

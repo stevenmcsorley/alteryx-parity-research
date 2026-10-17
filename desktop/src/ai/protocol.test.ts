@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { dispatchAgentTool, AGENT_PROTOCOL, type AgentContext } from './protocol';
+import { agentResultContractError, dispatchAgentTool, AGENT_PROTOCOL, type AgentContext } from './protocol';
 import type { CanvasNode } from '../model/workflow';
 
 function context(): AgentContext {
@@ -168,5 +168,13 @@ describe('flowbench.agent.v1 application tools', () => {
     ] } };
     const result = await dispatchAgentTool({ ...env, getState: () => state }, 'workflow.get_schema', { node_ref: 'node_1' });
     expect(result).toEqual({ node_ref: 'node_1', anchors: [{ anchor: 'output', anchor_name: 'output', fields: [{ name: 'Sales', type: 'fixed_decimal', size: 12, scale: 2 }] }] });
+  });
+});
+
+describe('run and save result contracts', () => {
+  it('accept the shape a successful run and a path save actually return', () => {
+    expect(agentResultContractError('workflow.request_run', { status: 'succeeded', outputs: [], outputs_truncated: false, run_id: 'r1' })).toBeNull();
+    expect(agentResultContractError('workflow.request_save', { status: 'saved', path_selected: true, path: '/w/a.flow.json' })).toBeNull();
+    expect(agentResultContractError('workflow.request_save', { status: 'outside_workspace', path_selected: false, error: 'outside' })).toBeNull();
   });
 });

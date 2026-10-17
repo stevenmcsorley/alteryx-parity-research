@@ -20,7 +20,17 @@ describe('AI panel text', () => {
   });
 
   it('adds up token usage', () => {
-    expect(addUsage(addUsage(NO_USAGE, { input_tokens: 1000, output_tokens: 5 }), { input_tokens: null })).toEqual({ input: 1000, output: 5 });
+    expect(addUsage(addUsage(NO_USAGE, { input_tokens: 1000, output_tokens: 5 }), { input_tokens: null })).toEqual({ input: 1000, output: 5, cached: 0 });
     expect([tokens(999), tokens(1500), tokens(469_166), tokens(3_200_000)]).toEqual(['999', '1.5k', '469k', '3.2M']);
+  });
+});
+
+describe('engine operation labels', () => {
+  it('names each step instead of a generic message', () => {
+    expect(activityLabel('agent.describe_tool', { tool_id: 'core.multi_row_formula' })).toBe('Reading the multi row formula spec…');
+    expect(activityLabel('agent.download_file', { url: 'https://x/y.csv' })).toBe('Downloading https://x/y.csv…');
+    expect(activityLabel('agent.search_datasets', { query: 'fuel prices' })).toBe('Searching dataset catalogues for “fuel prices”…');
+    expect(activityLabel('task.plan', {})).toBe('Planning the deliverables…');
+    expect(addUsage(NO_USAGE, { input_tokens: 10000, output_tokens: 50, cached_tokens: 8000 })).toEqual({ input: 10000, output: 50, cached: 8000 });
   });
 });

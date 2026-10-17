@@ -95,6 +95,14 @@ class SearchTests(WebCase):
         out = self.call('web_search', query='fuel prices')['result']
         self.assertEqual((out['provider'], out['results'][0]['url'], out['results'][0]['engine']), ('searxng', 'https://www.gov.uk/x', 'bing'))
         self.assertEqual(out['unresponsive_engines'], [['google', 'access denied']])
+        agent_web.save_search_settings(self.base, 'yandex, bing')
+        self.assertEqual(agent_web.search_settings()['searxng_engines'], 'yandex,bing')
+        with mock.patch.object(agent_web, '_searxng', return_value=([{'title': 't', 'url': 'u', 'snippet': '', 'engine': 'yandex'}], [])) as sx:
+            self.call('web_search', query='fuel')
+        self.assertEqual(sx.call_args.args[3], 'yandex,bing', 'saved engines are used for every search')
+        self.assertEqual(self.call('web_search', provider='searxng', query='x', engines=None)['ok'], True)
+        with self.assertRaises(Exception):
+            agent_web.save_search_settings(self.base, 'bing; rm -rf')
         self.assertEqual(self.call('web_search', permissions=(), query='x')['error']['code'], 'permission-required')
 
     def test_auto_falls_back_to_duckduckgo_when_searxng_finds_nothing(self):
