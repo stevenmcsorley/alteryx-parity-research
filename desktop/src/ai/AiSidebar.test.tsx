@@ -573,3 +573,104 @@ describe('task view', () => {
     expect(pane.textContent).toContain('Backed by Flowbench execution (1 piece of evidence).');
   });
 });
+
+describe('manual and AI editing on one canvas (Test C)', () => {
+  it('extends a hand-built workflow, keeps later manual edits, and undoes and redoes both in order', async () => {
+    const manifest = (tool_id: string, inputs: string[], outputs: string[], config_schema: any = { type: 'object' }) => ({ tool_id, version: '1', display_name: tool_id,
+      catalog_ids: [], inputs: inputs.map((name) => ({ name, label: name, required: true, multiple: false, description: '' })),
+      outputs: outputs.map((name) => ({ name, label: name, required: false, multiple: false, description: '' })),
+      config_schema, side_effects: 'none', deterministic: true, dependencies: [], description: '' });
+    useEditor.getState().setEngineMeta({ tools: {
+      'core.input_data': manifest('core.input_data', [], ['output']) as any,
+      'core.auto_field': manifest('core.auto_field', ['input'], ['output']) as any,
+      'core.filter': manifest('core.filter', ['input'], ['true', 'false']) as any,
+      'core.summarize': manifest('core.summarize', ['input'], ['output']) as any,
+      'core.sort': manifest('core.sort', ['input'], ['output']) as any,
+    }, engineInfo: { engine: 'flowengine', version: 'test' } as any });
+    setTransport({ request: async () => ({ valid: true, problems: [], schemas: {} }), subscribe: () => () => {} } as any);
+    await ready();
+    // 1. Three nodes built by hand.
+    const editor = useEditor.getState();
+    const read = editor.addTool('core.input_data', { x: 0, y: 0 });
+    const types = useEditor.getState().addTool('core.auto_field', { x: 200, y: 0 });
+    const keep = useEditor.getState().addTool('core.filter', { x: 400, y: 0 });
+    useEditor.getState().connect({ source: read, sourceHandle: 'output', target: types, targetHandle: 'input' });
+    useEditor.getState().connect({ source: types, sourceHandle: 'output', target: keep, targetHandle: 'input' });
+    useEditor.getState().updateNodeData(keep, { config: { expression: '[Sales] > 0' } });
+    const manual = structuredClone({ nodes: useEditor.getState().nodes, edges: useEditor.getState().edges });
+    // 2. The AI completes it from the filter's True output (node_3).
+    const patch = JSON.stringify({ operations: [
+      { op: 'add', ref: 'totals', tool_id: 'core.summarize', config: { actions: [{ field: 'Region', op: 'group_by' }, { field: 'Sales', op: 'sum' }] }, position: { x: 600, y: 0 } },
+      { op: 'add', ref: 'ranked', tool_id: 'core.sort', config: { keys: [{ field: 'Sum_Sales', order: 'desc' }] }, position: { x: 800, y: 0 } },
+      { op: 'connect', source_ref: 'node_3', source_anchor: 'true', target_ref: 'totals', target_anchor: 'input' },
+      { op: 'connect', source_ref: 'totals', source_anchor: 'output', target_ref: 'ranked', target_anchor: 'input' },
+    ] });
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_status') return { connected: true, plan_usage_authorized: true };
+      if (command === 'ai_models') return [{ slug: 'model-a', display_name: 'Available model' }];
+      if (command === 'ai_begin') return { turn_id: 't_c', assistant_message_id: 'm_c' };
+      if (command === 'ai_respond') {
+        if (!tauriMock.invoke.mock.calls.some(([c]) => c === 'ai_submit_tool_result')) return { turn_id: args?.turnId, message_id: 'm_c', cycle_id: args?.cycleId, text: '',
+          calls: [{ name: 'workflow.propose_patch', call_id: 'p', arguments: JSON.stringify({ patch_json: patch, base_revision: workflowRevision(useEditor.getState()) }) }] };
+        return { turn_id: args?.turnId, message_id: 'm_c', cycle_id: args?.cycleId, text: 'Added totals and ranking.', calls: [] };
+      }
+      return undefined;
+    });
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'Finish this workflow: total sales by region, highest first.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Approve changes' }));
+    expect(await screen.findByText('Added totals and ranking.')).toBeTruthy();
+    const afterAi = useEditor.getState();
+    expect(afterAi.nodes).toHaveLength(5);
+    expect(afterAi.nodes.slice(0, 3).map((n) => n.id)).toEqual([read, types, keep]);
+    expect(afterAi.edges.some((e) => e.source === keep && e.sourceHandle === 'true')).toBe(true);
+    // 3. A manual edit to a node the AI added.
+    const sortNode = afterAi.nodes.find((n) => (n.data as any).tool === 'core.sort')!;
+    useEditor.getState().updateNodeData(sortNode.id, { config: { keys: [{ field: 'Sum_Sales', order: 'asc' }] } });
+    expect((useEditor.getState().nodes.find((n) => n.id === sortNode.id)!.data as any).config.keys[0].order).toBe('asc');
+    // 4. Undo steps back through the manual edit, then the whole AI change as one step; redo replays them.
+    useEditor.getState().undo();
+    expect((useEditor.getState().nodes.find((n) => n.id === sortNode.id)!.data as any).config.keys[0].order).toBe('desc');
+    useEditor.getState().undo();
+    expect(useEditor.getState().nodes.map((n) => n.id)).toEqual(manual.nodes.map((n) => n.id));
+    expect(useEditor.getState().edges).toHaveLength(manual.edges.length);
+    useEditor.getState().redo();
+    expect(useEditor.getState().nodes).toHaveLength(5);
+    useEditor.getState().redo();
+    expect((useEditor.getState().nodes.find((n) => n.id === sortNode.id)!.data as any).config.keys[0].order).toBe('asc');
+  });
+});
+
+describe('permissions last for the task', () => {
+  it('asks once before running programs and reuses the grant for later steps of the same task', async () => {
+    const requests: any[] = [];
+    setTransport({ request: async (_m: string, params: any) => {
+      requests.push(params);
+      if (!params.permissions.includes('processes')) return { ok: false, operation: 'run_python', error: { code: 'permission-required', message: 'x', permissions: ['processes'] } };
+      return { ok: true, operation: 'run_python', result: { exit_code: 0, stdout: '', stderr: '', files_written: [] } };
+    }, subscribe: () => () => {} } as any);
+    await ready();
+    let step = 0;
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_status') return { connected: true, plan_usage_authorized: true };
+      if (command === 'ai_models') return [{ slug: 'model-a', display_name: 'Available model' }];
+      if (command === 'ai_begin') return { turn_id: 't_p', assistant_message_id: 'm_p' };
+      if (command === 'ai_respond') {
+        step++;
+        if (step <= 2) return { turn_id: args?.turnId, message_id: 'm_p', cycle_id: args?.cycleId, text: '',
+          calls: [{ name: 'agent.run_python', call_id: `py${step}`, arguments: JSON.stringify({ code: `print(${step})` }) }] };
+        return { turn_id: args?.turnId, message_id: 'm_p', cycle_id: args?.cycleId, text: 'Both scripts ran.', calls: [] };
+      }
+      return undefined;
+    });
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'Prepare the data with Python.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    const card = await screen.findByRole('region', { name: 'Permission request' });
+    expect(card.textContent).toContain('Allow running programs for this task?');
+    expect(card.textContent).toContain('print(1)');
+    fireEvent.click(screen.getByRole('button', { name: 'Allow' }));
+    expect(await screen.findByText('Both scripts ran.')).toBeTruthy();
+    expect(screen.queryByRole('region', { name: 'Permission request' })).toBeNull();
+    expect(requests.map((r) => r.permissions.includes('processes'))).toEqual([false, true, true]);
+  });
+});

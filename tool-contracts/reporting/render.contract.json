@@ -172,9 +172,10 @@
     ]
   },
   "independent_tests": {
-    "count": 8,
-    "passing": 8,
+    "count": 9,
+    "passing": 9,
     "tests": [
+      "test_acceptance.WorkflowConstructionTests.test_clean_group_sort_chart_and_reopen",
       "test_batch10.VisualLayoutTests.test_rows_place_elements_side_by_side",
       "test_batch5.MapReportExampleTests.test_uk_map_report_example",
       "test_batch5.ReportFurnitureTests.test_header_and_footer_on_every_pdf_page",

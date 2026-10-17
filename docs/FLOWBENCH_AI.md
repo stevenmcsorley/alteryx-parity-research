@@ -47,6 +47,21 @@ The AI is the orchestrator; Flowbench is the worker. For anything beyond an ordi
 4. inspects outputs with **query_results**, which computes group-bys and aggregates over the full run output inside Flowbench;
 5. reports with **run_evidence**: workflow digest, tool versions, row counts, output digests and input file hashes.
 
+Each tool specification from **describe_tool** includes tested examples: a configuration, its input and the output the kernel produces. They are harvested from the test suite by `scripts/build_tool_examples.py` into `data/tool-examples.json` (110 tools so far), and `tests/test_tool_examples.py` re-runs every one against its kernel. The specification also lists related tools from the same catalogue category.
+
+Beyond workflow tools, the AI can work with the computer:
+
+| Operation | Does | Permission |
+|---|---|---|
+| read_text_file | read notes, metadata, provenance files, SQL or code | — |
+| write_text_file, make_folder | write reports and files inside the workspace (never outside it, never silently over an existing file) | file writes |
+| extract_archive | unpack .zip/.tar(.gz) downloads inside the workspace (entries that would escape it are refused) | file writes |
+| run_command | run an installed program (argv, no shell) and see its output and the files it wrote | running programs |
+| run_python | run a Python script with Flowbench's Python (pandas, numpy, pyarrow, scipy, scikit-learn, statsmodels, openpyxl); the script is kept under `.flowbench/scripts/` | running programs |
+| list_connections, list_tables, describe_table, query_database | discover saved database connections and query them read-only; credentials stay in the system vault | — |
+
+Python and commands are fallbacks for steps no native tool covers, and they are recorded as such in the task, not disguised as workflow nodes.
+
 If a run fails, the AI receives the engine's error code, message and failing node, so it can repair the workflow and run it again. When no native tool fits, it uses the Python or Run Command tools inside the workflow, so that step is recorded too.
 
 These operations come from one registry: the same tool manifests drive the editor's configuration panels, the engine's validation and the AI's discovery. Nothing is reimplemented for the AI.
@@ -78,7 +93,7 @@ The same operations are available to any Model Context Protocol client over stdi
 python -m flowengine mcp --workspace path/to/project --allow network,file_writes
 ```
 
-Besides the operations above, the server offers **validate_workflow** and **run_workflow** for `.flow.json` files in the workspace. Permissions are granted for the session with `--allow` (`network`, `file_writes`, `processes`, `database_writes`, `remote_writes`); anything not granted returns a structured `permission-required` error.
+Besides the operations above, the server offers **workflow_format** (the `.flow.json` document format with an example), **validate_workflow** and **run_workflow** for workflow files in the workspace. Permissions are granted for the session with `--allow` (`network`, `file_writes`, `processes`, `database_writes`, `remote_writes`); anything not granted returns a structured `permission-required` error.
 
 ## Usage
 
@@ -99,3 +114,21 @@ The protocol tests against a real local model are opt-in:
 cd desktop/src-tauri
 FLOWBENCH_TEST_OLLAMA_MODEL=qwen2.5:3b cargo test -- --ignored live_
 ```
+
+## Acceptance tests
+
+`tests/test_acceptance.py` drives Flowbench through the MCP server the way an orchestrator does, and recomputes every number independently with pandas:
+
+- **A:** download a CSV, build and run a workflow, query the summary, and trace it to the downloaded bytes with run_evidence.
+- **B:** clean a sales CSV, total and average by category, sort, chart to HTML, write a CSV, and reopen and rerun the workflow with identical output digests.
+- **D:** a wrong column name fails the run; the error is read, the workflow repaired and rerun, and the download is not repeated.
+- **E:** download JSON, flatten it with run_python, and analyse the result in a workflow.
+
+Scenarios C (manual and AI editing on one canvas, with undo and redo) and F (no false completion) need the editor and are in `desktop/src/ai/AiSidebar.test.tsx`.
+
+To give the same tasks to a real model:
+
+```
+FLOWBENCH_ACCEPTANCE_MODEL=ollama:qwen2.5:7b python -m unittest discover -s tests -p test_acceptance.py -k live
+```
+

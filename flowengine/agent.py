@@ -86,10 +86,18 @@ def _obj(properties: dict, required=()) -> dict:
 class Context:
     """What an operation may touch: the workspace folder, granted permissions and the engine's runs."""
 
-    def __init__(self, base_dir, permissions=None, runs=None):
+    def __init__(self, base_dir, permissions=None, runs=None, service=None):
         self.base_dir = Path(base_dir).expanduser().resolve()
         self.permissions = set(permissions or ())
         self.runs = runs if runs is not None else {}
+        self.service = service
+
+    def workspace_path(self, raw: str) -> Path:
+        """A path that must stay inside the workspace folder (for anything that writes)."""
+        p = self.path(raw)
+        if p != self.base_dir and self.base_dir not in p.parents:
+            raise EngineError(f'{p} is outside the workspace {self.base_dir}; writes stay inside the workspace', code='outside-workspace')
+        return p
 
     def path(self, raw: str) -> Path:
         p = Path(raw).expanduser()
@@ -327,10 +335,20 @@ def run_evidence(ctx: Context, run_id: str) -> dict:
     result = run.get('result') or {}
     manifest = result.get('manifest') or {}
     inputs = []
-    for node_id, node in (manifest.get('nodes') or {}).items():
-        path = (node.get('config') or {}).get('path') if isinstance(node.get('config'), dict) else None
-        if path and Path(path).is_file():
-            inputs.append({'node_id': node_id, 'path': path, 'sha256': _sha256(Path(path))})
+    reg = default_registry()
+    base = Path(run.get('base_dir') or ctx.base_dir)
+    for node in (run.get('workflow') or {}).get('nodes', []):
+        try:
+            reads = reg.get(node.get('tool', '')).manifest.side_effects == 'reads-files'
+        except Exception:
+            reads = False
+        raw = (node.get('config') or {}).get('path')
+        if reads and isinstance(raw, str):
+            p = Path(raw).expanduser()
+            p = (p if p.is_absolute() else base / p).resolve()
+            if p.is_file():
+                inputs.append({'node_id': node.get('id'), 'tool': node.get('tool'), 'path': str(p), 'sha256': _sha256(p),
+                               'bytes': p.stat().st_size})
     return {'run_id': run_id, 'status': run.get('status'), 'error': result.get('error'),
             'workflow_digest': manifest.get('workflow_digest'), 'engine_version': manifest.get('engine_version'),
             'nodes': {k: {'tool': v.get('tool'), 'tool_version': v.get('tool_version'),
@@ -381,6 +399,152 @@ def _filename(response, url: str) -> str:
     return re.sub(r'[^\w.\- ()]', '_', name)[:200] or 'download'
 
 
+# ---------------------------------------------------------------------------------------- local environment
+def read_text_file(ctx: Context, path: str, encoding: str = 'utf-8', start_line: int = 1, line_count: int | None = None) -> dict:
+    target = ctx.path(path)
+    if not target.is_file():
+        raise EngineError(f'{target} does not exist', code='not-found')
+    try:
+        lines = target.read_text(encoding=encoding).splitlines()
+    except UnicodeDecodeError:
+        raise EngineError(f'{target.name} is not {encoding} text; use profile_file for data files', code='not-text') from None
+    chosen = lines[start_line - 1:] if line_count is None else lines[start_line - 1:start_line - 1 + line_count]
+    return {'path': str(target), 'total_lines': len(lines), 'start_line': start_line, 'text': '\n'.join(chosen)}
+
+
+def write_text_file(ctx: Context, path: str, text: str, overwrite: bool = False) -> dict:
+    target = ctx.workspace_path(path)
+    if target.exists() and not overwrite:
+        raise EngineError(f'{target} exists; pass overwrite true to replace it', code='exists')
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(text, encoding='utf-8')
+    return {'path': str(target), 'bytes': target.stat().st_size, 'sha256': _sha256(target)}
+
+
+def make_folder(ctx: Context, path: str) -> dict:
+    target = ctx.workspace_path(path)
+    target.mkdir(parents=True, exist_ok=True)
+    return {'path': str(target)}
+
+
+def extract_archive(ctx: Context, path: str, folder: str | None = None) -> dict:
+    import tarfile
+    import zipfile
+    source = ctx.path(path)
+    if not source.is_file():
+        raise EngineError(f'{source} does not exist', code='not-found')
+    dest = ctx.workspace_path(folder or str(source.with_suffix('')).removesuffix('.tar'))
+    dest.mkdir(parents=True, exist_ok=True)
+
+    def safe(name: str) -> Path:
+        out = (dest / name).resolve()
+        if out != dest and dest not in out.parents:
+            raise EngineError(f'Archive entry {name!r} would be written outside {dest}', code='unsafe-archive')
+        return out
+    files = []
+    if zipfile.is_zipfile(source):
+        with zipfile.ZipFile(source) as z:
+            for info in z.infolist():
+                target = safe(info.filename)
+                if info.is_dir():
+                    target.mkdir(parents=True, exist_ok=True)
+                    continue
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with z.open(info) as src, open(target, 'wb') as out:
+                    out.write(src.read())
+                files.append(str(target))
+    elif tarfile.is_tarfile(source):
+        with tarfile.open(source) as t:
+            for member in t.getmembers():
+                if not (member.isfile() or member.isdir()):
+                    continue  # links and devices are not extracted
+                target = safe(member.name)
+                if member.isdir():
+                    target.mkdir(parents=True, exist_ok=True)
+                    continue
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with t.extractfile(member) as src, open(target, 'wb') as out:
+                    out.write(src.read())
+                files.append(str(target))
+    else:
+        raise EngineError(f'{source.name} is not a zip or tar archive', code='bad-archive')
+    return {'folder': str(dest), 'files': files}
+
+
+def _snapshot(folder: Path) -> dict:
+    out = {}
+    for i, p in enumerate(folder.rglob('*')):
+        if i > 20000:
+            break
+        if p.is_file() and '.flowbench' not in p.parts:
+            st = p.stat()
+            out[str(p)] = (st.st_size, st.st_mtime_ns)
+    return out
+
+
+def _execute(ctx: Context, argv: list[str], cwd: Path, timeout_seconds: int, stdin: str | None = None) -> dict:
+    import subprocess
+    import time
+    before = _snapshot(ctx.base_dir)
+    started = time.monotonic()
+    try:
+        proc = subprocess.run(argv, cwd=cwd, input=stdin, capture_output=True, text=True, timeout=timeout_seconds)
+    except FileNotFoundError:
+        raise EngineError(f'Program not found: {argv[0]}', code='not-found') from None
+    except subprocess.TimeoutExpired:
+        raise EngineError(f'The command did not finish within {timeout_seconds} s and was stopped', code='timeout') from None
+    after = _snapshot(ctx.base_dir)
+    changed = sorted(p for p, sig in after.items() if before.get(p) != sig)
+    return {'exit_code': proc.returncode, 'stdout': proc.stdout, 'stderr': proc.stderr,
+            'duration_seconds': round(time.monotonic() - started, 3), 'files_written': changed}
+
+
+def run_command(ctx: Context, argv: list[str], cwd: str = '.', timeout_seconds: int = 600, stdin: str | None = None) -> dict:
+    folder = ctx.path(cwd)
+    if not folder.is_dir():
+        raise EngineError(f'{folder} is not a folder', code='not-found')
+    return {'argv': argv, 'cwd': str(folder), **_execute(ctx, argv, folder, timeout_seconds, stdin)}
+
+
+def run_python(ctx: Context, code: str, timeout_seconds: int = 600) -> dict:
+    """Runs a script with Flowbench's own Python (pandas, numpy, pyarrow, scipy, ...) in the workspace.
+    The script is kept under .flowbench/scripts/ so the step is recorded and can be rerun."""
+    import sys
+    folder = ctx.base_dir / '.flowbench' / 'scripts'
+    folder.mkdir(parents=True, exist_ok=True)
+    script = folder / f'{_dt.datetime.now().strftime("%Y%m%d-%H%M%S")}-{hashlib.sha256(code.encode()).hexdigest()[:10]}.py'
+    script.write_text(code, encoding='utf-8')
+    return {'script': str(script), 'python': sys.executable, **_execute(ctx, [sys.executable, str(script)], ctx.base_dir, timeout_seconds)}
+
+
+# ---------------------------------------------------------------------------------------- databases
+def _db(ctx: Context, method: str, **params):
+    if ctx.service is None:
+        raise EngineError('Database access is unavailable here', code='unavailable')
+    return ctx.service.handle(method, params)
+
+
+def list_connections(ctx: Context) -> dict:
+    return {'connections': _db(ctx, 'database.connections.list'),
+            'note': 'Saved connections only; credentials stay in the system vault.'}
+
+
+def list_tables(ctx: Context, connection_id: str, schema: str | None = None) -> dict:
+    if schema is None:
+        return {'schemas': _db(ctx, 'database.schemas', connection_id=connection_id)}
+    return {'schema': schema, 'tables': _db(ctx, 'database.tables', connection_id=connection_id, schema=schema)}
+
+
+def describe_table(ctx: Context, connection_id: str, table: str, schema: str | None = None) -> dict:
+    return {'schema': schema, 'table': table,
+            'columns': _db(ctx, 'database.columns', connection_id=connection_id, schema=schema, table=table)}
+
+
+def query_database(ctx: Context, connection_id: str, sql: str, limit: int = 100) -> dict:
+    """A read-only query for inspection; build a workflow with Database Input to process whole tables."""
+    return _db(ctx, 'database.preview', connection_id=connection_id, mode='query', query=sql, limit=limit)
+
+
 # ---------------------------------------------------------------------------------------- registry
 OPS: dict[str, Op] = {op.name: op for op in [
     Op('find_tools', 'Search the installed Flowbench tools by task, method, data type or name, for example "average by group", "download csv", "join two tables". Returns tool ids with a one-line purpose.',
@@ -406,6 +570,33 @@ OPS: dict[str, Op] = {op.name: op for op in [
     Op('download_file', 'Download a file over HTTP(S) into the workspace (data/ by default) and save its provenance (URL, time, size, SHA-256) beside it as <file>.source.json. Use for public datasets; then build the workflow on the saved file.',
        _obj({'url': {'type': 'string', 'minLength': 8}, 'filename': {'type': 'string'}, 'folder': {'type': 'string'}}, ['url']),
        download_file, read_only=False, open_world=True, writes_files=True, permissions=('network', 'file_writes')),
+    Op('read_text_file', 'Read a text file (notes, metadata, provenance .source.json, README, SQL, code). Use profile_file for data files.',
+       _obj({'path': {'type': 'string', 'minLength': 1}, 'encoding': {'type': 'string'},
+             'start_line': {'type': 'integer', 'minimum': 1}, 'line_count': {'type': ['integer', 'null'], 'minimum': 1}}, ['path']), read_text_file),
+    Op('write_text_file', 'Write a text file inside the workspace (a report, notes, a CSV you composed, SQL, configuration). Refuses to replace an existing file unless overwrite is true.',
+       _obj({'path': {'type': 'string', 'minLength': 1}, 'text': {'type': 'string'}, 'overwrite': {'type': 'boolean'}}, ['path', 'text']),
+       write_text_file, read_only=False, writes_files=True, permissions=('file_writes',)),
+    Op('make_folder', 'Create a folder inside the workspace, for example for a project\'s outputs.',
+       _obj({'path': {'type': 'string', 'minLength': 1}}, ['path']), make_folder, read_only=False, writes_files=True, permissions=('file_writes',)),
+    Op('extract_archive', 'Extract a .zip or .tar(.gz) archive (for example a downloaded dataset) into a folder inside the workspace.',
+       _obj({'path': {'type': 'string', 'minLength': 1}, 'folder': {'type': 'string'}}, ['path']),
+       extract_archive, read_only=False, writes_files=True, permissions=('file_writes',)),
+    Op('run_command', 'Run an installed program (argv list, no shell) in the workspace, for example git, docker, curl, ogr2ogr or a converter, and return its exit code, output and the files it wrote. Prefer native Flowbench tools for data processing.',
+       _obj({'argv': {'type': 'array', 'minItems': 1, 'items': {'type': 'string'}}, 'cwd': {'type': 'string'},
+             'timeout_seconds': {'type': 'integer', 'minimum': 1}, 'stdin': {'type': ['string', 'null']}}, ['argv']),
+       run_command, read_only=False, open_world=True, writes_files=True, permissions=('processes',)),
+    Op('run_python', 'Run a Python script with Flowbench\'s Python (pandas, numpy, pyarrow, scipy, scikit-learn, statsmodels, openpyxl, requests) in the workspace, and return its output and the files it wrote. Use it to prepare data that no native tool can handle, writing results to files that the workflow then reads; the script is kept under .flowbench/scripts/.',
+       _obj({'code': {'type': 'string', 'minLength': 1}, 'timeout_seconds': {'type': 'integer', 'minimum': 1}}, ['code']),
+       run_python, read_only=False, open_world=True, writes_files=True, permissions=('processes',)),
+    Op('list_connections', 'List the saved database connections (name, kind, host, database; never credentials).', _obj({}), list_connections),
+    Op('list_tables', 'List the schemas of a saved database connection, or the tables in one schema.',
+       _obj({'connection_id': {'type': 'string', 'minLength': 1}, 'schema': {'type': ['string', 'null']}}, ['connection_id']), list_tables),
+    Op('describe_table', 'Columns and types of a database table.',
+       _obj({'connection_id': {'type': 'string', 'minLength': 1}, 'schema': {'type': ['string', 'null']}, 'table': {'type': 'string', 'minLength': 1}},
+            ['connection_id', 'table']), describe_table),
+    Op('query_database', 'Run a read-only SQL query on a saved connection and return its rows (100 by default). For analysis, build a workflow with the Database Input tool so Flowbench processes the data.',
+       _obj({'connection_id': {'type': 'string', 'minLength': 1}, 'sql': {'type': 'string', 'minLength': 1}, 'limit': {'type': 'integer', 'minimum': 1, 'maximum': 1000}},
+            ['connection_id', 'sql']), query_database),
 ]}
 
 

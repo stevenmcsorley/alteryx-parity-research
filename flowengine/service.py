@@ -101,7 +101,7 @@ class EngineService:
             return agent.tools_list()
         if method == 'agent.call':
             from . import agent
-            ctx = agent.Context(self._base(params), params.get('permissions') or (), self.runs)
+            ctx = agent.Context(self._base(params), params.get('permissions') or (), self.runs, service=self)
             return agent.call_envelope(params['name'], params.get('arguments') or {}, ctx)
         if method == 'workflow.permissions':
             from .workflow_effects import workflow_effects
@@ -287,7 +287,8 @@ class EngineService:
         run_id = uuid.uuid4().hex
         token = CancelToken()
         n = int(params.get('preview_rows', 100))
-        entry = {'status': 'running', 'token': token, 'artifacts': {}, 'artifact_errors': {}}
+        entry = {'status': 'running', 'token': token, 'artifacts': {}, 'artifact_errors': {},
+                 'workflow': params['workflow'], 'base_dir': str(base_dir)}
         with self._lock:
             self.runs[run_id] = entry
         # validate synchronously so problems are returned to the caller immediately

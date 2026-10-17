@@ -155,9 +155,10 @@
     ]
   },
   "independent_tests": {
-    "count": 3,
-    "passing": 3,
+    "count": 4,
+    "passing": 4,
     "tests": [
+      "test_acceptance.WorkflowConstructionTests.test_clean_group_sort_chart_and_reopen",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_tools.PreparationTests.test_data_cleansing"

@@ -22,6 +22,22 @@ RUN_PERMISSIONS = {'network': 'allow_network', 'file_writes': 'allow_file_writes
                    'database_writes': 'allow_database_writes', 'remote_writes': 'allow_remote_writes'}
 
 
+WORKFLOW_FORMAT = {
+    'document': {'format': 'flowengine.workflow', 'formatVersion': 1, 'nodes': '[node, ...]', 'edges': '[edge, ...]'},
+    'node': {'id': 'unique text id', 'tool': 'tool id from find_tools, e.g. core.summarize', 'config': 'object matching describe_tool settings'},
+    'edge': {'from': {'node': 'source node id', 'anchor': 'output anchor name'}, 'to': {'node': 'target node id', 'anchor': 'input anchor name'}},
+    'paths': 'Relative paths in configs resolve against the folder that holds the workflow file.',
+    'example': {'format': 'flowengine.workflow', 'formatVersion': 1, 'nodes': [
+        {'id': 'read', 'tool': 'core.input_data', 'config': {'path': 'data/sales.csv'}},
+        {'id': 'types', 'tool': 'core.auto_field', 'config': {}},
+        {'id': 'totals', 'tool': 'core.summarize', 'config': {'actions': [{'field': 'Region', 'op': 'group_by'}, {'field': 'Sales', 'op': 'sum', 'output': 'Total'}]}},
+        {'id': 'save', 'tool': 'core.output_data', 'config': {'path': 'out/totals.csv', 'if_exists': 'overwrite'}}],
+        'edges': [{'from': {'node': 'read', 'anchor': 'output'}, 'to': {'node': 'types', 'anchor': 'input'}},
+                  {'from': {'node': 'types', 'anchor': 'output'}, 'to': {'node': 'totals', 'anchor': 'input'}},
+                  {'from': {'node': 'totals', 'anchor': 'output'}, 'to': {'node': 'save', 'anchor': 'input'}}]},
+}
+
+
 class Server:
     def __init__(self, workspace: Path, permissions=()):
         from .service import EngineService
@@ -35,6 +51,9 @@ class Server:
     def _workflow_ops(self):
         path_schema = agent._obj({'path': {'type': 'string', 'minLength': 1}}, ['path'])
         return [
+            agent.Op('workflow_format', 'How to write a Flowbench workflow file (.flow.json): document fields, node and edge shapes, '
+                     'and a small example. Use describe_tool for each tool\'s config and anchors, write the file with '
+                     'write_text_file, then validate_workflow and run_workflow.', agent._obj({}), lambda ctx: WORKFLOW_FORMAT),
             agent.Op('validate_workflow', 'Validate a Flowbench workflow file (.flow.json) and return its problems.',
                      path_schema, lambda ctx, path: self._validate(path)),
             agent.Op('run_workflow', 'Run a Flowbench workflow file (.flow.json) to completion. Returns run_id, status, '
@@ -98,7 +117,7 @@ class Server:
             name = params.get('name')
             if name not in self.ops:
                 return self._error(rid, -32602, f'Unknown tool {name!r}')
-            ctx = agent.Context(self.workspace, self.permissions, self.service.runs)
+            ctx = agent.Context(self.workspace, self.permissions, self.service.runs, service=self.service)
             outcome = agent.call_envelope(name, params.get('arguments') or {}, ctx, self.ops)
             payload = outcome['result'] if outcome['ok'] else {'error': outcome['error']}
             return self._ok(rid, {'content': [{'type': 'text', 'text': json.dumps(payload, default=str)}],
