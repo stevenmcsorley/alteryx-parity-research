@@ -6,6 +6,8 @@ import { ensureAiStreamListener, useAiConversation, type ChatMessage } from './c
 import { prepareWorkflowProposal, workflowRevision } from './workflowPatch';
 import { runWorkflow } from '../state/engineActions';
 import { doSave } from '../panels/Toolbar';
+import { activityLabel, addUsage, diagnosticSummary, NO_USAGE, tokens, type Usage } from './panelText';
+import { ProviderSettings, providerLabel, type LocalProvider } from './ProviderSettings';
 
 type Entry = { label: string; tool: AgentToolName; args?: Record<string, unknown> };
 type Model = { slug: string; display_name: string; supported_efforts?: string[]; default_effort?: string | null };
@@ -20,15 +22,20 @@ function effortFor(model: Model | undefined, preferred: string) {
   return choices.includes('low') ? 'low' : choices[0];
 }
 type ValueItem = { type?: string; name?: string; arguments?: string; call_id?: string; [key: string]: unknown };
-type NativeResponse = { turn_id: string; message_id: string; cycle_id: string; status?: 'retryable_stream_interruption'; needs_tool_correction?: boolean; text?: string; text_source?: string; empty_reason?: string; calls?: ValueItem[] };
+type NativeResponse = { turn_id: string; message_id: string; cycle_id: string; status?: 'retryable_stream_interruption'; needs_tool_correction?: boolean; text?: string; text_source?: string; empty_reason?: string; calls?: ValueItem[];
+  usage?: { input_tokens?: number | null; output_tokens?: number | null } };
+type AuthStatus = { provider?: 'chatgpt' | 'local'; local?: LocalProvider; chatgpt_connected?: boolean; connected: boolean; plan_usage_authorized: boolean;
+  subject_hint?: string; session_recovery_required?: boolean; data_routing_allowed?: boolean };
+/** A turn above this many tokens is flagged: it is using a large share of a plan's limits. */
+const HEAVY_TURN_TOKENS = 200_000;
 class ToolCorrectionFailure extends Error {
   constructor() {
-    super('ChatGPT could not correct its tool arguments after three attempts. Rejected actions were not executed; earlier completed actions were kept. Retry to continue.');
+    super('The model could not correct its tool arguments after three attempts. Rejected actions were not executed; earlier completed actions were kept. Retry to continue.');
   }
 }
 class StreamInterruption extends Error {
   constructor() {
-    super('The ChatGPT connection was interrupted after two automatic retries. Completed workflow actions were kept. Retry to continue from the current state.');
+    super('The connection to the model was interrupted after two automatic retries. Completed workflow actions were kept. Retry to continue from the current state.');
   }
 }
 const quickActions: Entry[] = [
@@ -63,6 +70,13 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   const [consentUpdating, setConsentUpdating] = useState(false);
   const [error, setError] = useState('');
   const [responseDiagnostics, setResponseDiagnostics] = useState<unknown[]>([]);
+  const [showDiagnosticJson, setShowDiagnosticJson] = useState(false);
+  const [local, setLocal] = useState<LocalProvider | null>(null);
+  const [chatgptConnected, setChatgptConnected] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [turnUsage, setTurnUsage] = useState<Usage>(NO_USAGE);
+  const [sessionUsage, setSessionUsage] = useState<Usage>(NO_USAGE);
+  const [lastInputTokens, setLastInputTokens] = useState(0);
   const activeModel = models.find((choice) => choice.slug === model);
   const effortChoices = activeModel?.supported_efforts?.length ? activeModel.supported_efforts : FALLBACK_EFFORTS;
   const effort = effortFor(activeModel, preferredEffort);
@@ -99,8 +113,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
 
   async function refreshAuth() {
     try {
-      const auth = await native<{ connected: boolean; plan_usage_authorized: boolean; subject_hint?: string; session_recovery_required?: boolean; data_routing_allowed?: boolean }>('ai_status');
+      const auth = await native<AuthStatus>('ai_status');
       setConnected(auth.connected); setAuthorized(auth.plan_usage_authorized); setAccount(auth.subject_hint ?? '');
+      setLocal(auth.provider === 'local' && auth.local ? auth.local : null);
+      setChatgptConnected(auth.provider === 'local' ? Boolean(auth.chatgpt_connected) : auth.connected);
       setSessionRecovery(Boolean(auth.session_recovery_required));
       setRoutingConsent(Boolean(auth.data_routing_allowed));
       if (!auth.connected) setRoutingConsent(false);
@@ -123,7 +139,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     setBusy(true); setError('');
     try {
       const auth = await native<{ remote_revocation_confirmed: boolean }>('ai_sign_out');
-      setConnected(false); setAuthorized(false); setAccount(''); setModels([]); setModel(''); setRoutingConsent(false);
+      setConnected(false); setAuthorized(false); setAccount(''); setModels([]); setModel(''); setRoutingConsent(false); setChatgptConnected(false);
       useAiConversation.getState().reset();
       useAiConversation.getState().setFullControl(null);
       if (!auth.remote_revocation_confirmed) setError('Disconnected locally. OpenAI could not confirm remote token revocation; the protected local session was removed.');
@@ -293,14 +309,14 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     try {
       const entries = await native<unknown[]>('ai_get_response_diagnostics');
       setResponseDiagnostics(entries);
-      if (!entries.length) setError('No native ChatGPT response diagnostics have been recorded in this session.');
+      if (!entries.length) setError('No responses have been recorded in this session yet.');
     } catch (e) { setError(messageOf(e)); }
   }
   async function send(textOverride?: string) {
     const text = (textOverride ?? draft).trim();
     if (!text || !model || streaming || !authorized || !routingConsent) return;
     stickToBottom.current = true;
-    setError(''); setDraft(''); cancelled.current = false;
+    setError(''); setDraft(''); cancelled.current = false; setTurnUsage(NO_USAGE);
     let turnId: string | undefined;
     let correctionAttempts = 0;
     try {
@@ -317,7 +333,12 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         for (let attempt = 0; attempt < 3 && !cancelled.current; attempt++) {
           cycleId = `cycle_${crypto.randomUUID().replaceAll('-', '')}`;
           useAiConversation.getState().responseStart(turnId, cycleId);
-          response = await native<NativeResponse>('ai_respond', { model, effort, turnId, cycleId, toolsEnabled });
+          response = await native<NativeResponse>('ai_respond', { model, effort: local ? null : effort, turnId, cycleId, toolsEnabled });
+          if (response.usage) {
+            const used = response.usage;
+            setTurnUsage((total) => addUsage(total, used)); setSessionUsage((total) => addUsage(total, used));
+            if (used.input_tokens) setLastInputTokens(used.input_tokens);
+          }
           if (response.turn_id !== turnId || response.message_id !== started.assistant_message_id || response.cycle_id !== cycleId) throw new Error('The response belonged to a different conversation turn.');
           if (cancelled.current) break;
           if (response.status !== 'retryable_stream_interruption') break;
@@ -327,7 +348,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
         }
         if (cancelled.current) break;
-        if (!response) throw new Error('ChatGPT returned no response.');
+        if (!response) throw new Error('The model returned no response.');
         if (response.needs_tool_correction) {
           useAiConversation.getState().discardResponse(turnId, cycleId);
           correctionAttempts++;
@@ -347,7 +368,9 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         }
           for (const call of calls) {
           const toolName = call.name ?? '';
-          useAiConversation.getState().activity(turnId, activityLabel(toolName));
+          let args: Record<string, unknown> = {};
+          try { args = JSON.parse(call.arguments ?? '{}'); } catch { /* dispatch reports the bad arguments */ }
+          useAiConversation.getState().activity(turnId, activityLabel(toolName, args, useEditor.getState()));
           let toolResult: unknown;
           try {
             toolResult = await dispatchAgentTool(agentEnvironment(), toolName,
@@ -401,60 +424,105 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     }
   }
   async function localCommand(entry: Entry) { await inspect(entry); }
+  async function addFiles() {
+    try {
+      const dlg = await import('@tauri-apps/plugin-dialog');
+      const picked = await dlg.open({ title: 'Add data files for Flowbench AI', multiple: true, defaultPath: baseDir || undefined });
+      const paths = (Array.isArray(picked) ? picked : picked ? [picked] : []).map(String);
+      if (paths.length) setDraft((text) => `${text.trimEnd()}${text.trim() ? '\n\n' : ''}Data files:\n${paths.map((path) => `- ${path}`).join('\n')}\n`);
+    } catch (e) { setError(messageOf(e)); }
+  }
+  async function providerChanged() {
+    useAiConversation.getState().reset(); setResult(null); setTurnUsage(NO_USAGE); setLastInputTokens(0);
+    setModels([]); setModel('');
+    await refreshAuth();
+  }
 
+  const providerName = providerLabel(local);
+  const ready = connected && authorized;
+  const turnTotal = turnUsage.input + turnUsage.output;
+  const nearContext = Boolean(local && lastInputTokens > local.context_tokens * 0.85);
+  const lastProblem = responseDiagnostics.length ? diagnosticSummary(responseDiagnostics[responseDiagnostics.length - 1]) : null;
+  const examples = [
+    'Explain what the open workflow does',
+    'Why is this workflow invalid?',
+    'Which tool should I use to fuzzy-match customer names?',
+    'Build a workflow that totals sales by region from the file I add',
+  ];
   return <aside className={`${embedded ? 'ai-content' : 'app-right'} ai-sidebar`} aria-label="Flowbench AI workspace" data-testid="ai-sidebar">
     <header className="ai-head">
-      <div className="ai-brand"><span className={`routing-dot ${connected && authorized ? 'connected' : ''}`} title={connected && authorized ? 'ChatGPT connected' : 'ChatGPT not connected'} /><strong>Flowbench AI</strong></div>
+      <div className="ai-brand"><span className={`routing-dot ${ready ? 'connected' : ''}`} title={ready ? `${providerName} connected` : `${providerName} not connected`} />
+        <strong>Flowbench AI</strong><span className="ai-provider-badge">{providerName}</span></div>
       <div className="ai-header-controls">
-        {authorized && <select aria-label="Active model" value={model} onChange={(e) => setModel(e.target.value)} disabled={streaming || !models.length}>
+        {authorized && <select aria-label="Active model" title="Model" value={model} onChange={(e) => setModel(e.target.value)} disabled={streaming || !models.length}>
+          {!models.length && <option value="">No models</option>}
           {models.map((choice) => <option key={choice.slug} value={choice.slug}>{choice.display_name}</option>)}
         </select>}
-        {authorized && <select aria-label="Reasoning effort" title="Reasoning effort: higher levels think longer and use more of the plan's limits" value={effort}
+        {authorized && !local && <select aria-label="Reasoning effort" title="Reasoning effort: higher levels think longer and use more of the plan's limits" value={effort}
           onChange={(e) => chooseEffort(e.target.value)} disabled={streaming || !models.length}>
           {effortChoices.map((choice) => <option key={choice} value={choice}>{effortLabel(choice)}</option>)}
         </select>}
         <button className="icon" aria-label="New conversation" title="New conversation" disabled={streaming} onClick={() => void newConversation()}>＋</button>
-        <details className="ai-menu"><summary aria-label="AI settings" title="AI settings">•••</summary>
-          <div className="ai-menu-panel">
-            <strong>ChatGPT · {connected && authorized ? account || 'Connected' : 'Not connected'}</strong>
-            <section className="ai-full-control" aria-label="Full Control mode">
-              <label className="ai-consent"><input type="checkbox" checked={fullControl} disabled={busy || !authorized || (streaming && !fullControl)}
-                onChange={(e) => setFullControl(e.target.checked)} />Full Control for this workspace</label>
-              <small className="ai-menu-note">{fullControl
-                ? 'Enabled for this workspace during this app session. Turn it off here at any time.'
-                : 'Review mode asks before workflow edits, runs and saves. Full Control removes routine prompts; external effects remain separately protected.'}</small>
-            </section>
-            <label className="ai-consent"><input type="checkbox" checked={routingConsent} disabled={!authorized || consentUpdating || streaming} onChange={(e) => void updateConsent(e.target.checked)} />
-              Allow prompts, workflow context and requested data results to be sent to ChatGPT</label>
-            <label className="ai-consent"><input type="checkbox" checked={toolsEnabled} disabled={streaming} onChange={(e) => setToolsEnabled(e.target.checked)} />
-              Include Flowbench application tools in requests</label>
-            <small className="ai-menu-note">Turn this off for a simple no-tools comparison. Normal assistant use keeps tools enabled.</small>
-            {authorized && <>
-              <button onClick={() => void refreshModels()} disabled={busy || streaming}>Refresh models</button>
-              <button onClick={() => void signIn()} disabled={busy || streaming}>Reauthorize</button>
-            </>}
-            <button onClick={() => void loadResponseDiagnostics()} disabled={busy || streaming}>Show safe response diagnostics</button>
-            {responseDiagnostics.length > 0 && <details className="ai-response-diagnostics" open>
-              <summary>Last {responseDiagnostics.length} response summaries</summary>
-              <p>Metadata only: prompts, response text, reasoning, tool arguments/results and credentials are excluded.</p>
-              <pre>{JSON.stringify(responseDiagnostics, null, 2)}</pre>
-            </details>}
-            <hr />
-            <strong>Inspect Flowbench</strong>
-            {quickActions.map((entry) => <button key={entry.tool} disabled={busy || streaming} onClick={() => void localCommand(entry)}>{entry.label}</button>)}
-            <form className="ai-search" onSubmit={(e) => { e.preventDefault(); void inspect({ label: 'Search catalogue', tool: 'catalog.search_tools', args: { query } }); }}>
-              <label htmlFor="ai-catalog-search">Search tool catalogue</label>
-              <div><input id="ai-catalog-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Filter, summarize…" />
-                <button disabled={!query.trim() || busy}>Search</button></div>
-            </form>
-            {connected ? <button className="danger" onClick={() => void signOut()} disabled={busy || streaming}>Disconnect ChatGPT</button> : <button onClick={() => void signIn()} disabled={busy}>Continue with ChatGPT</button>}
-          </div>
-        </details>
+        <button className={`icon ${settingsOpen ? 'active' : ''}`} aria-label="AI settings" title="AI settings" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((open) => !open)}>⚙</button>
         {embedded && <button className="icon" onClick={close} aria-label="Close Flowbench AI">×</button>}
       </div>
     </header>
 
-    <section className="ai-conversation" aria-label="ChatGPT conversation">
+    {settingsOpen && <div className="ai-settings" role="region" aria-label="AI settings panel">
+      <ProviderSettings local={local} disabled={busy || streaming} chatgptAccount={account} chatgptConnected={chatgptConnected}
+        native={native} onChanged={providerChanged} onSignIn={() => void signIn()} onSignOut={() => void signOut()} />
+
+      <section className="ai-settings-section" aria-label="Permissions">
+        <h3>Permissions</h3>
+        <label className="ai-consent"><input type="checkbox" checked={fullControl} disabled={busy || !authorized || (streaming && !fullControl)}
+          onChange={(e) => setFullControl(e.target.checked)} /><span><b>Full Control for this workspace</b><br />
+          <small className="ai-menu-note">{fullControl
+            ? 'On for this workspace until Flowbench closes. The AI edits, runs and saves without asking; every edit can be undone.'
+            : 'Off: the AI asks before each workflow edit, run and save. Turn on to let it work without prompts. Code and database writes are still confirmed separately.'}</small></span></label>
+        {local?.loopback
+          ? <p className="ai-menu-note">Data stays on this computer: the model server is on localhost.</p>
+          : <label className="ai-consent"><input type="checkbox" checked={routingConsent} disabled={!authorized || consentUpdating || streaming} onChange={(e) => void updateConsent(e.target.checked)} />
+            <span>Allow prompts, workflow context and requested data results to be sent to {local ? `the model server at ${local.base_url}` : 'ChatGPT'}</span></label>}
+      </section>
+
+      <section className="ai-settings-section" aria-label="Usage">
+        <h3>Usage</h3>
+        <p className="ai-usage-line">This conversation: <b>{tokens(sessionUsage.input)}</b> tokens sent · <b>{tokens(sessionUsage.output)}</b> received</p>
+        <small className="ai-menu-note">{local ? 'Local models cost nothing per token, but a long conversation can outgrow the context length.'
+          : 'Each step of a turn resends the conversation, so long tasks add up. Lower reasoning effort and a new conversation per task keep usage down.'}</small>
+      </section>
+
+      <section className="ai-settings-section" aria-label="Troubleshooting">
+        <h3>Troubleshooting</h3>
+        <button onClick={() => void loadResponseDiagnostics()} disabled={busy || streaming}>Show safe response diagnostics</button>
+        {responseDiagnostics.length > 0 && <div className="ai-response-diagnostics">
+          <ul>{responseDiagnostics.slice(-6).reverse().map((entry, i) => {
+            const line = diagnosticSummary(entry);
+            return <li key={i} className={line.problem ? 'problem' : ''}>{line.text}</li>;
+          })}</ul>
+          <button className="link" onClick={() => setShowDiagnosticJson((open) => !open)}>{showDiagnosticJson ? 'Hide' : 'Show'} technical details</button>
+          {showDiagnosticJson && <><p>Metadata only: prompts, response text, reasoning, tool arguments/results and credentials are excluded.</p>
+            <pre>{JSON.stringify(responseDiagnostics, null, 2)}</pre></>}
+        </div>}
+        {authorized && <div className="ai-settings-row">
+          <button onClick={() => void refreshModels()} disabled={busy || streaming}>Refresh models</button>
+          {!local && <button onClick={() => void signIn()} disabled={busy || streaming}>Reauthorize</button>}
+        </div>}
+        <label className="ai-consent"><input type="checkbox" checked={toolsEnabled} disabled={streaming} onChange={(e) => setToolsEnabled(e.target.checked)} />
+          <span>Include Flowbench application tools in requests<br /><small className="ai-menu-note">Turn off only to compare a plain answer without tools.</small></span></label>
+        <details className="ai-inspect"><summary>Inspect Flowbench yourself</summary>
+          <div className="ai-settings-row wrap">{quickActions.map((entry) => <button key={entry.tool} disabled={busy || streaming} onClick={() => void localCommand(entry)}>{entry.label}</button>)}</div>
+          <form className="ai-search" onSubmit={(e) => { e.preventDefault(); void inspect({ label: 'Search catalogue', tool: 'catalog.search_tools', args: { query } }); }}>
+            <label htmlFor="ai-catalog-search">Search tool catalogue</label>
+            <div><input id="ai-catalog-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Filter, summarize…" />
+              <button disabled={!query.trim() || busy}>Search</button></div>
+          </form>
+          {result !== null && <pre className="ai-local-result">{JSON.stringify(result, null, 2)}</pre>}
+        </details>
+      </section>
+    </div>}
+
+    <section className="ai-conversation" aria-label="AI conversation">
       <div className="ai-chat-messages" ref={chatScroll} aria-live="polite" onScroll={(e) => {
         const el = e.currentTarget;
         stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 56;
@@ -462,16 +530,20 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         {messages.length === 0 && <div className="ai-empty">
           <div className="ai-orb" aria-hidden="true">✦</div>
           <h2>What would you like to analyse?</h2>
-          <p>{fullControl ? 'Flowbench AI can build, validate and run workflows in this workspace. External effects remain separately protected.' : 'Flowbench AI can build and validate workflows using installed tools. Enable Full Control in settings to delegate routine workspace operations.'}</p>
+          <p>{fullControl ? 'Flowbench AI can build, validate and run workflows in this workspace.' : 'Flowbench AI can build and validate workflows, asking before each change. Turn on Full Control in settings to let it work without prompts.'}</p>
+          <p className="ai-empty-note">It works with files on this computer and can’t browse the web. Download your data first, then use <b>Add files</b> so it knows where the files are.</p>
           {!authorized && <div className="ai-connect-inline">
-            <span>{sessionRecovery ? 'Reconnect your protected ChatGPT session to continue.' : connected ? 'ChatGPT plan usage is not authorised yet.' : 'Connect an eligible ChatGPT account to start a conversation.'}</span>
-            <button className="primary" onClick={() => void signIn()} disabled={busy}>{busy ? 'Opening sign-in…' : 'Continue with ChatGPT'}</button>
+            <span>{sessionRecovery ? 'Reconnect your protected ChatGPT session to continue.' : connected ? 'ChatGPT plan usage is not authorised yet.' : 'Connect a ChatGPT account, or use a local model with Ollama or LM Studio.'}</span>
+            <div className="ai-settings-row center">
+              <button className="primary" onClick={() => void signIn()} disabled={busy}>{busy ? 'Opening sign-in…' : 'Continue with ChatGPT'}</button>
+              <button onClick={() => setSettingsOpen(true)}>Use a local model</button>
+            </div>
           </div>}
-          {authorized && <div className="ai-examples">{[
-            'What tools are implemented in Flowbench?',
-            'What does the open workflow do?',
-            'Why is this workflow invalid?',
-          ].map((example) => <button key={example} disabled={!routingConsent || streaming} onClick={() => void send(example)}>{example}<span>→</span></button>)}</div>}
+          {ready && !routingConsent && <div className="ai-connect-inline">
+            <span>Allow Flowbench to send your prompts and the data the AI asks for to {local ? 'the model server' : 'ChatGPT'}.</span>
+            <button className="primary" onClick={() => void updateConsent(true)} disabled={consentUpdating}>Allow and start</button>
+          </div>}
+          {authorized && <div className="ai-examples">{examples.map((example) => <button key={example} disabled={!routingConsent || streaming} onClick={() => void send(example)}>{example}<span>→</span></button>)}</div>}
         </div>}
         {messages.map((message) => <Message key={message.id} message={message} onRetry={() => void retry(message)} />)}
         {proposal && <section className="ai-proposal-card" aria-label="Workflow change preview">
@@ -494,20 +566,22 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           <div><button className="primary" onClick={() => void approveSave()}>Choose destination and save</button>
             <button onClick={rejectSave}>Cancel</button></div>
         </section>}
-        {result !== null && <details className="ai-local-result"><summary>Local inspection result</summary><pre>{JSON.stringify(result, null, 2)}</pre></details>}
         {error && <div className="ai-inline-error" role="alert">{error}<button onClick={() => setError('')}>Dismiss</button></div>}
-        {status === 'tool-running' && <div className="ai-live-activity" role="status">Working with Flowbench…</div>}
+        {lastProblem?.problem && !streaming && messages.some((m) => m.state === 'failed') && <div className="ai-inline-hint">{lastProblem.text}</div>}
       </div>
       <footer className="ai-composer-wrap">
-        <div className="ai-contextline"><span className={`routing-dot ${connected && authorized ? 'connected' : ''}`} />
+        <div className="ai-contextline"><span className={`routing-dot ${ready ? 'connected' : ''}`} />
           <span title={name}>{name}</span><span>·</span><span>{nodes} nodes</span>
-          <span className="ai-tools-mode" title={fullControl ? 'Full Control is enabled for the active workspace during this app session' : undefined}>{fullControl ? 'Full Control' : toolsEnabled ? 'Tools on' : 'No-tools probe'}</span>
-          <span className={`ai-routing-label ${routingConsent ? '' : 'off'}`}>{routingConsent ? 'External AI routing allowed' : 'External AI routing off'}</span>
+          <span className="ai-tools-mode" title={fullControl ? 'Full Control is on for this workspace until Flowbench closes' : 'The AI asks before edits, runs and saves'}>{fullControl ? 'Full Control' : toolsEnabled ? 'Review mode' : 'No tools'}</span>
+          {turnTotal > 0 && <span className={`ai-usage ${turnTotal > HEAVY_TURN_TOKENS || nearContext ? 'heavy' : ''}`}
+            title={`This turn: ${turnUsage.input.toLocaleString()} tokens sent, ${turnUsage.output.toLocaleString()} received`}>
+            {nearContext ? 'Near the context limit · start a new conversation' : `${tokens(turnTotal)} tokens this turn`}</span>}
         </div>
         {authorized && <form className="ai-compose" onSubmit={(e) => { e.preventDefault(); void send(); }}>
+          <button type="button" className="icon ai-attach" aria-label="Add files" title="Add data files: their paths go into your message" onClick={() => void addFiles()} disabled={streaming}>📎</button>
           <textarea aria-label="Message Flowbench AI" rows={2} value={draft} onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void send(); } }}
-            placeholder={routingConsent ? 'Ask about this workflow…' : 'Allow data routing in settings to start'} disabled={streaming || !routingConsent} />
+            placeholder={routingConsent ? 'Ask about this workflow, or describe the analysis you want…' : 'Allow data sharing to start'} disabled={streaming || !routingConsent} />
           {streaming ? <button type="button" className="ai-stop" onClick={() => void cancel()} aria-label="Stop response">■</button> :
             <button className="primary" aria-label="Send" disabled={consentUpdating || !routingConsent || !draft.trim() || !model}>↑</button>}
         </form>}
@@ -575,7 +649,7 @@ function Message({ message, onRetry }: { message: ChatMessage; onRetry: () => vo
   return <article className={`ai-message ${message.role}`} data-state={message.state} data-message-id={message.id}>
     <div className="ai-message-label">{message.role === 'user' ? 'You' : <><span className="ai-assistant-mark">✦</span> Flowbench AI</>}</div>
     {message.text ? <MarkdownText text={message.text} /> : message.state === 'streaming' ? <div className="ai-thinking"><i />Thinking…</div> : null}
-    {!!message.activity?.length && <details className="ai-tool-activity"><summary>{message.activity.length === 1 ? message.activity[0] : `${message.activity.length} Flowbench actions`}</summary>
+    {!!message.activity?.length && <details className="ai-tool-activity" open={message.state === 'streaming' || undefined}><summary>{message.state === 'streaming' || message.activity.length === 1 ? message.activity[message.activity.length - 1] : `${message.activity.length} Flowbench steps`}</summary>
       {message.activity.length > 1 && <ul>{message.activity.map((activity, i) => <li key={`${i}_${activity}`}>{activity}</li>)}</ul>}</details>}
     {message.error && <div className="ai-message-error" role="alert">{message.error}<button onClick={onRetry}>Retry</button></div>}
     {message.state === 'cancelled' && <div className="ai-message-error">Response stopped</div>}
@@ -595,17 +669,6 @@ function inlineMarkdown(line: string) {
   const parts = line.split(/(`[^`]+`|\*\*[^*]+\*\*)/g);
   return parts.map((part, i) => part.startsWith('`') && part.endsWith('`') ? <code key={i}>{part.slice(1, -1)}</code> :
     part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : part);
-}
-function activityLabel(tool: string) {
-  if (tool === 'workflow.propose_patch') return 'Preparing a validated workflow change…';
-  if (tool === 'workflow.request_run') return 'Waiting for run approval and execution…';
-  if (tool === 'run.get_results') return 'Reading actual workflow results…';
-  if (tool === 'run.get_result_page') return 'Reading the requested result page…';
-  if (tool === 'workflow.get_schema') return 'Inspecting output fields and types…';
-  if (tool === 'workflow.get_snapshot' || tool === 'app.get_active_workflow') return 'Inspecting workflow…';
-  if (tool === 'catalog.search_tools' || tool === 'catalog.get_tool_manifest' || tool === 'app.get_capabilities') return 'Searching tool catalogue…';
-  if (tool === 'workflow.validate' || tool === 'workflow.get_diagnostics') return 'Checking validation…';
-  return 'Inspecting Flowbench…';
 }
 function safeToolFailure(tool: string, error: unknown) {
   const text = error instanceof Error ? error.message : '';
