@@ -5,7 +5,7 @@ Transports:
 * HTTP (``POST /rpc``) + Server-Sent Events (``GET /events``) - used by the browser
   development build and the automated UI tests. Both share :class:`EngineService`.
 
-Requests: engine.info, tools.list, catalog.list, profiles.list,
+Requests: engine.info, tools.list, catalog.list, profiles.list, agent.tools_list, agent.call {name, arguments, base_dir, permissions?},
 workflow.validate {workflow, base_dir, profile?}, workflow.run {...} (synchronous),
 run.start {workflow, base_dir, profile?, workers?, batch_rows?, memory_budget?, preview_rows?, clock?} -> {run_id},
 run.cancel {run_id}, run.result {run_id}, history.list {limit?}, history.get {run_id},
@@ -96,6 +96,13 @@ class EngineService:
                     'python': sys.version.split()[0], 'history': bool(self.history), 'cwd': os.getcwd()}
         if method == 'tools.list':
             return [t.manifest.to_dict() for t in reg.tools()]
+        if method == 'agent.tools_list':
+            from . import agent
+            return agent.tools_list()
+        if method == 'agent.call':
+            from . import agent
+            ctx = agent.Context(self._base(params), params.get('permissions') or (), self.runs)
+            return agent.call_envelope(params['name'], params.get('arguments') or {}, ctx)
         if method == 'workflow.permissions':
             from .workflow_effects import workflow_effects
             return workflow_effects(params['workflow'], self._base(params), registry=reg)

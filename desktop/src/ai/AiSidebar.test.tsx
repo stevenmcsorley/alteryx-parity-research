@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useEditor } from '../state/store';
-import { AiSidebar, modelCell, RESULT_CELL_MAX_CHARS } from './AiSidebar';
+import { AiSidebar, modelCell } from './AiSidebar';
 import { resetListenerForTests, useAiConversation } from './conversation';
 import { workflowRevision } from './workflowPatch';
 import { setTransport } from '../state/engineActions';
@@ -441,9 +441,9 @@ describe('Flowbench AI conversation', () => {
 });
 
 describe('model-facing result cells', () => {
-  it('reduces blobs to a size note and cuts long text', () => {
+  it('describes blobs by size and passes text through in full', () => {
     expect(modelCell('ab'.repeat(5000), 'blob')).toBe('[blob, 5000 bytes]');
-    expect(modelCell('x'.repeat(RESULT_CELL_MAX_CHARS + 10), 'v_wstring')).toBe(`${'x'.repeat(RESULT_CELL_MAX_CHARS)}… [10 more characters]`);
+    expect(modelCell('x'.repeat(5000), 'v_wstring')).toBe('x'.repeat(5000));
     expect(modelCell('short', 'v_wstring')).toBe('short');
     expect(modelCell(null, 'blob')).toBeNull();
   });
@@ -476,5 +476,38 @@ describe('local model provider', () => {
     expect(await screen.findByText('Local answer')).toBeTruthy();
     expect(tauriMock.invoke.mock.calls.find(([c]) => c === 'ai_respond')?.[1]).toMatchObject({ model: 'qwen2.5:7b', effort: null });
     expect(screen.getByText('6.4k tokens this turn')).toBeTruthy();
+  });
+});
+
+describe('engine operations', () => {
+  it('asks before a download in Review mode and sends the grant only after approval', async () => {
+    const requests: Array<{ method: string; params: any }> = [];
+    setTransport({ request: async (method: string, params: any) => {
+      requests.push({ method, params });
+      if (!params.permissions.length) return { ok: false, operation: 'download_file', error: { code: 'permission-required', message: 'x', permissions: ['network', 'file_writes'] } };
+      return { ok: true, operation: 'download_file', result: { path: '/w/data/fuel.csv', sha256: 'f'.repeat(64) } };
+    }, subscribe: () => () => {} } as any);
+    await ready();
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_status') return { connected: true, plan_usage_authorized: true };
+      if (command === 'ai_models') return [{ slug: 'model-a', display_name: 'Available model' }];
+      if (command === 'ai_begin') return { turn_id: 't_dl', assistant_message_id: 'm_dl' };
+      if (command === 'ai_respond') {
+        if (!tauriMock.invoke.mock.calls.some(([c]) => c === 'ai_submit_tool_result')) return { turn_id: args?.turnId, message_id: 'm_dl', cycle_id: args?.cycleId, text: '',
+          calls: [{ name: 'agent.download_file', call_id: 'dl', arguments: JSON.stringify({ url: 'https://example.org/fuel.csv' }) }] };
+        return { turn_id: args?.turnId, message_id: 'm_dl', cycle_id: args?.cycleId, text: 'Downloaded.', calls: [] };
+      }
+      return undefined;
+    });
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'Get the fuel data.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    const card = await screen.findByRole('region', { name: 'Permission request' });
+    expect(card.textContent).toContain('Download https://example.org/fuel.csv');
+    expect(requests).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Allow' }));
+    expect(await screen.findByText('Downloaded.')).toBeTruthy();
+    expect(requests[1].params).toMatchObject({ name: 'download_file', permissions: ['network', 'file_writes'] });
+    const submitted = tauriMock.invoke.mock.calls.find(([c]) => c === 'ai_submit_tool_result')?.[1] as any;
+    expect(submitted.result).toMatchObject({ ok: true, result: { path: '/w/data/fuel.csv' } });
   });
 });

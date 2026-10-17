@@ -240,9 +240,13 @@
     ]
   },
   "independent_tests": {
-    "count": 28,
-    "passing": 28,
+    "count": 32,
+    "passing": 32,
     "tests": [
+      "test_agent.DataTests.test_evidence_names_versions_digests_and_artifacts",
+      "test_agent.DataTests.test_profile_computes_types_and_stats_natively",
+      "test_agent.DataTests.test_query_results_aggregates_the_full_output",
+      "test_agent.DownloadTests.test_download_needs_permission_and_records_provenance",
       "test_batch5.MapReportExampleTests.test_uk_map_report_example",
       "test_batch8.ExampleTests.test_diesel_forecast_example",
       "test_control_container.ControlContainerTests.test_chained_containers_run_in_sequence_through_a_file",

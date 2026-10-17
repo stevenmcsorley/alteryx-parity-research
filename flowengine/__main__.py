@@ -109,6 +109,9 @@ def main(argv=None) -> int:
     sv = sub.add_parser('serve', help='JSON-RPC 2.0 engine service (stdio sidecar, or --http for the browser build)')
     sv.add_argument('--http', type=int, metavar='PORT', help='Serve over loopback HTTP + SSE instead of stdio')
     sv.add_argument('--history', type=Path, help='SQLite run-history database')
+    mc = sub.add_parser('mcp', help='Model Context Protocol server (stdio) over the Flowbench tools')
+    mc.add_argument('--workspace', type=Path, default=Path('.'), help='Folder the AI may read and write (default: current)')
+    mc.add_argument('--allow', default='', help='Comma-separated permissions: network,file_writes,processes,database_writes,remote_writes')
     im = sub.add_parser('import', help='Convert a .yxmd/.yxmc/.yxwz/.yxzp document to a flowengine workflow')
     im.add_argument('source', type=Path)
     im.add_argument('-o', '--output', type=Path, required=True)
@@ -142,6 +145,15 @@ def main(argv=None) -> int:
                 serve_http(port=args.http, history_path=args.history)
             else:
                 serve(history_path=args.history)
+            return 0
+        if args.cmd == 'mcp':
+            from .mcp import RUN_PERMISSIONS, serve as serve_mcp
+            granted = [p.strip() for p in args.allow.split(',') if p.strip()]
+            unknown = [p for p in granted if p not in RUN_PERMISSIONS]
+            if unknown:
+                print(f'Unknown permission(s): {", ".join(unknown)}', file=sys.stderr)
+                return 2
+            serve_mcp(args.workspace, granted)
             return 0
         if args.cmd == 'import':
             from .interop.yxmd import import_file
