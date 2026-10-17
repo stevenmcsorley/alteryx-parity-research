@@ -24,11 +24,33 @@ Pillow, NumPy and SciPy for images, **PDFium** (`pypdfium2`) for PDFs, and **zxi
 - **Image Template** annotations are entered as coordinates, since there is no drawing tool yet. Automatic table
   detection is not implemented.
 
-## OCR (next batch)
+## Tools that download models on first use
 
-These need an OCR engine, which will download on first use like the text-mining models:
+| Tool | Method |
+|---|---|
+| Image to Text | OCR with PaddleOCR in ONNX Runtime: PP-OCRv3 DB text detection and PP-OCRv5 **Latin-script** recognition, one model for English, French, German, Italian, Portuguese and Spanish, with accents. Adds `text` (lines top to bottom) and `confidence`. With Image Template regions it gives per-region text, table lines or cropped images. |
+| PDF to Text (`text_and_ocr`) | Scanned pages, with little or no stored text, are OCR'd entirely. On other pages the text of pictures is added. |
+| Key-Value Pair Extraction | OCR, then fuzzy key matching (similarity ≥ 0.8, so small OCR errors still match). The value is the rest of the line, or the next line. Repeats become `key2`, `key3` and so on. Empty keys raise the vendor's error. |
+| Image Recognition | Transfer learning: the 1000 ImageNet class scores of **MobileNetV2** (14 MB) or **ResNet50-v2** (102 MB) feed a one-hidden-layer network trained with Adam for the chosen epochs, batch size and learning rate. Outputs **M** (for Predict), **E** (per-label precision, recall and accuracy) and **R** (accuracy and loss per epoch). The backbone is not fine-tuned. |
 
-- Image to Text
-- scanned pages in PDF to Text (`text_and_ocr`)
-- Key-Value Pair Extraction
-- Image Recognition
+### First-use downloads
+
+| Component | Download | Source |
+|---|---|---|
+| `vision-runtime` (OpenCV 4.13, pyclipper) | about 60 MB | pypi.org |
+| `ocr-models` | about 10 MB | huggingface.co/monkt/paddleocr-onnx (Apache-2.0), pinned |
+| `image-model:mobilenet_v2` / `image-model:resnet50_v2` | 14 / 102 MB | huggingface.co/onnxmodelzoo (Apache-2.0), pinned |
+
+These need the `neural-runtime` (about 45 MB) from the Text Mining tools. All are installed once, after you confirm,
+and the models are verified against their SHA-256 checksums (see `docs/TEXT_MINING.md`). Arabic, Japanese and
+Chinese OCR are not included.
+
+**Evidence:**
+- `tests/test_batch12b.py` covers reading order, template regions scaled from the template, key matching with an
+  OCR typo, values on the next line and repeats, image-recognition training and Predict, and the download
+  preflight.
+- `tests/integration/test_vision_addons_integration.py` runs the real models, in the `text-addons` CI job:
+  - OCR of English and accented French text at confidence > 0.9
+  - key-value extraction
+  - a scanned PDF read by OCR
+  - MobileNetV2 transfer learning that separates two kinds of picture

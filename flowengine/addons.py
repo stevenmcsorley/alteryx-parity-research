@@ -1,5 +1,5 @@
 """Optional components that download on first use: the language pack (spaCy), the neural runtime (ONNX
-Runtime) and their models.
+Runtime), the vision runtime (OpenCV) and their models.
 
 They are not bundled in the installers. A workflow that needs one lists it in its preflight
 (``workflow_effects(...)['downloads']``). The desktop app asks once, then calls :func:`install`; the CLI
@@ -11,8 +11,8 @@ stops the tool with ``addon-missing`` and says how to install it.
   ``CONSTRAINTS``.
 * **spaCy models** are the official wheels from github.com/explosion/spacy-models. They are checked
   against their SHA-256 before being installed into that environment.
-* **ONNX models** are files from huggingface.co at a pinned revision, each checked against its SHA-256 and
-  stored under ``<home>/models``.
+* **ONNX models** (zero-shot, OCR, image backbones) are files from huggingface.co at a pinned revision, each
+  checked against its SHA-256 and stored under ``<home>/models``.
 
 Tools run these libraries in a separate process, using the scripts in ``flowengine/addon_workers``, so
 the engine itself never imports them. ``size_mb`` is the approximate download size. Installed, the
@@ -53,11 +53,13 @@ mdurl==0.1.2
 murmurhash==1.0.15
 numpy==2.5.4
 onnxruntime==1.31.0
+opencv-python-headless==4.13.0.92
 packaging==26.3
 preshed==3.0.13
 protobuf==7.36.2
 pydantic==2.14.1
 pydantic_core==2.50.1
+pyclipper==1.4.0
 Pygments==2.21.0
 PyYAML==6.0.3
 requests==2.34.2
@@ -89,15 +91,34 @@ SPACY_MODELS = {
     'spanish': ('es_core_news_sm', 12884212, 'e451a83d6df79b87e9eed0cb553f03e99e36a3bab18a7b79f0dcfd1fdf875e12'),
 }
 SPACY_MODEL_VERSION = '3.8.0'
-ZERO_SHOT = {
-    'repo': 'Xenova/nli-deberta-v3-xsmall', 'revision': '2a4f614a701367a02d51389039afc998faeda637',
-    'source': 'cross-encoder/nli-deberta-v3-xsmall (Apache-2.0), quantized ONNX export',
-    'files': {
-        'config.json': ('config.json', 1038, 'ec0bd14cc28640326474399cd61d38ccd52b64900228799d0f81debda8c4bc53'),
-        'tokenizer.json': ('tokenizer.json', 8656551, 'a86f883318afa11c8c10466f1bf4efaeb6ded28a52cbe57217a8fa0d0a2a87df'),
-        'model.onnx': ('onnx/model_quantized.onnx', 87246587, '3fac2500c45c75af42c7711de0d1b93d59577456100208be0dc1f9e8811946b6'),
-    },
+# Hugging Face model files at pinned revisions: component -> repo, revision, folder and {local: (remote, size, sha256)}.
+MODEL_FILES = {
+    'zero-shot-model': {
+        'repo': 'Xenova/nli-deberta-v3-xsmall', 'revision': '2a4f614a701367a02d51389039afc998faeda637',
+        'dir': 'nli-deberta-v3-xsmall', 'source': 'cross-encoder/nli-deberta-v3-xsmall (Apache-2.0), quantized ONNX export',
+        'files': {
+            'config.json': ('config.json', 1038, 'ec0bd14cc28640326474399cd61d38ccd52b64900228799d0f81debda8c4bc53'),
+            'tokenizer.json': ('tokenizer.json', 8656551, 'a86f883318afa11c8c10466f1bf4efaeb6ded28a52cbe57217a8fa0d0a2a87df'),
+            'model.onnx': ('onnx/model_quantized.onnx', 87246587, '3fac2500c45c75af42c7711de0d1b93d59577456100208be0dc1f9e8811946b6'),
+        }},
+    'ocr-models': {
+        'repo': 'monkt/paddleocr-onnx', 'revision': '7b02d0a30a07ba2b92ad1ff5a8941ae2c633de65', 'dir': 'paddleocr',
+        'source': 'PaddleOCR PP-OCRv3 detection and PP-OCRv5 Latin recognition (Apache-2.0), ONNX export',
+        'files': {
+            'det.onnx': ('detection/v3/det.onnx', 2429873, 'ee40e80071ba3a320d4efda75f3e22047a7d049e9bf7bcaaf9daea23fc21b935'),
+            'rec.onnx': ('languages/latin/rec.onnx', 7862832, '614ffc2d6d3902d360fad7f1b0dd455ee45e877069d14c4e51a99dc4ef144409'),
+            'dict.txt': ('languages/latin/dict.txt', 1634, '3c0a8a79b612653c25f765271714f71281e4e955962c153e272b7b8c1d2b13ff'),
+        }},
+    'image-model:mobilenet_v2': {
+        'repo': 'onnxmodelzoo/mobilenetv2-12', 'revision': '23a2a25eaaa6fcd61865414c8a1acf13dda66b7a', 'dir': 'mobilenetv2-12',
+        'source': 'ONNX Model Zoo MobileNetV2 (Apache-2.0), ImageNet',
+        'files': {'model.onnx': ('mobilenetv2-12.onnx', 13964571, 'c0c3f76d93fa3fd6580652a45618618a220fced18babf65774ed169de0432ad5')}},
+    'image-model:resnet50_v2': {
+        'repo': 'onnxmodelzoo/resnet50-v2-7', 'revision': '7f3795d17e7b4eebf717b03e03bc2e2007760d23', 'dir': 'resnet50-v2-7',
+        'source': 'ONNX Model Zoo ResNet50-v2 (Apache-2.0), ImageNet',
+        'files': {'model.onnx': ('resnet50-v2-7.onnx', 102442452, '79102261eb6e5fd7af5d27f41316293e388c5cb691e5d25bfb035c4f64fefe31')}},
 }
+ZERO_SHOT = MODEL_FILES['zero-shot-model']
 
 
 def _components():
@@ -108,6 +129,14 @@ def _components():
                            'requires': []},
         'zero-shot-model': {'title': 'Zero-shot classification model (DeBERTa-v3 xsmall NLI)', 'size_mb': 92,
                             'source': 'huggingface.co', 'requires': ['neural-runtime']},
+        'vision-runtime': {'title': 'Vision runtime (OpenCV 4.13)', 'size_mb': 60, 'source': 'pypi.org',
+                           'requires': ['neural-runtime']},
+        'ocr-models': {'title': 'OCR models (PaddleOCR detection + Latin-script recognition)', 'size_mb': 10,
+                       'source': 'huggingface.co', 'requires': ['vision-runtime']},
+        'image-model:mobilenet_v2': {'title': 'Image backbone MobileNetV2 (ImageNet)', 'size_mb': 14,
+                                     'source': 'huggingface.co', 'requires': ['vision-runtime']},
+        'image-model:resnet50_v2': {'title': 'Image backbone ResNet50-v2 (ImageNet)', 'size_mb': 102,
+                                    'source': 'huggingface.co', 'requires': ['vision-runtime']},
     }
     for lang, (name, size, _) in SPACY_MODELS.items():
         out[f'spacy-model:{lang}'] = {'title': f'{lang.title()} language model ({name} {SPACY_MODEL_VERSION})',
@@ -133,8 +162,8 @@ def installed(component: str) -> bool:
         raise ConfigError(f'Unknown component {component!r}')
     if not _marker(component).is_file():
         return False
-    if component == 'zero-shot-model':
-        return all((zero_shot_dir() / name).is_file() for name in ZERO_SHOT['files'])
+    if component in MODEL_FILES:
+        return all((model_dir(component) / name).is_file() for name in MODEL_FILES[component]['files'])
     return env_python().is_file()
 
 
@@ -168,8 +197,13 @@ def require(components, tool: str):
                           f'{" ".join(c["id"] for c in absent)}', code='addon-missing')
 
 
+def model_dir(component: str) -> Path:
+    spec = MODEL_FILES[component]
+    return home() / 'models' / spec['dir'] / spec['revision']
+
+
 def zero_shot_dir() -> Path:
-    return home() / 'models' / 'nli-deberta-v3-xsmall' / ZERO_SHOT['revision']
+    return model_dir('zero-shot-model')
 
 
 # =========================================================================== installation
@@ -247,11 +281,14 @@ def install(components, log=lambda m: None) -> list[str]:
                 _download(f'https://github.com/explosion/spacy-models/releases/download/{name}-{SPACY_MODEL_VERSION}/{wheel}',
                           path, size, sha)
                 _pip(['--no-deps', str(path)], log)
-        elif c == 'zero-shot-model':
-            target = zero_shot_dir()
-            for local, (remote, size, sha) in ZERO_SHOT['files'].items():
+        elif c == 'vision-runtime':
+            _ensure_env(log)
+            _pip(['-c', str(_constraints_file()), 'opencv-python-headless==4.13.0.92', 'pyclipper==1.4.0'], log)
+        elif c in MODEL_FILES:
+            spec, target = MODEL_FILES[c], model_dir(c)
+            for local, (remote, size, sha) in spec['files'].items():
                 if not (target / local).is_file():
-                    _download(f'https://huggingface.co/{ZERO_SHOT["repo"]}/resolve/{ZERO_SHOT["revision"]}/{remote}',
+                    _download(f'https://huggingface.co/{spec["repo"]}/resolve/{spec["revision"]}/{remote}',
                               target / local, size, sha)
         _marker(c).parent.mkdir(parents=True, exist_ok=True)
         _marker(c).write_text(json.dumps({'component': c, 'title': COMPONENTS[c]['title']}), encoding='utf-8')
@@ -264,13 +301,13 @@ def status() -> list[dict]:
 
 
 def remove(component: str):
-    if component in ('language-pack', 'neural-runtime'):
-        shutil.rmtree(env_dir(ENV), ignore_errors=True)
+    if component in ('language-pack', 'neural-runtime', 'vision-runtime'):
+        shutil.rmtree(env_dir(ENV), ignore_errors=True)  # one environment holds all the libraries
         for c in COMPONENTS:
-            if c in ('language-pack', 'neural-runtime') or c.startswith('spacy-model:'):
+            if c in ('language-pack', 'neural-runtime', 'vision-runtime') or c.startswith('spacy-model:'):
                 _marker(c).unlink(missing_ok=True)
-    elif component == 'zero-shot-model':
-        shutil.rmtree(zero_shot_dir(), ignore_errors=True)
+    elif component in MODEL_FILES:
+        shutil.rmtree(model_dir(component), ignore_errors=True)
         _marker(component).unlink(missing_ok=True)
     else:
         _marker(component).unlink(missing_ok=True)

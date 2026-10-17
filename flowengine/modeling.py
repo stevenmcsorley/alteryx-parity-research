@@ -191,7 +191,7 @@ def predict(info: dict, payload: bytes, table: Table):
     if info.get('family') == 'text_classifier':
         from .tools.text_mining import text_predict
         return text_predict(info, sk_loads(payload), table)
-    if info.get('family') in ('topic_model', 'ner'):
+    if info.get('family') in ('topic_model', 'ner', 'image_classifier'):
         raise ConfigError('Topic and entity models add fields of their own; apply them with the Machine Learning Predict tool')
     design = Design.from_json(info['design'])
     X, mask, unseen = design.matrix(table)
