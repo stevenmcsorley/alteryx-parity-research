@@ -39,7 +39,7 @@ python -m pip install --only-binary=:all: --no-compile --disable-pip-version-che
 if ($LASTEXITCODE -ne 0) { throw 'Bundled Windows runtime dependency installation failed.' }
 Copy-Item -Path (Join-Path $Stage '*') -Destination $Runtime -Recurse -Force
 $BundledPython = Join-Path $Runtime 'python.exe'
-& $BundledPython -c "import ensurepip, jsonschema, numpy, pyarrow, psycopg, pymssql, scipy.stats, reportlab.platypus, PIL.Image, shapely, pyproj, sklearn.ensemble, statsmodels.api, skops.io, networkx, venv, yxdb; from metaphone import doublemetaphone; assert doublemetaphone('Smith')[0]; print('bundled runtime imports passed')"
+& $BundledPython -c "import ensurepip, jsonschema, numpy, pyarrow, psycopg, pymssql, scipy.stats, reportlab.platypus, PIL.Image, shapely, pyproj, sklearn.ensemble, statsmodels.api, skops.io, networkx, venv, yxdb, vaderSentiment.vaderSentiment; from metaphone import doublemetaphone; assert doublemetaphone('Smith')[0]; print('bundled runtime imports passed')"
 if ($LASTEXITCODE -ne 0) { throw 'Bundled Python dependency smoke test failed.' }
 $VenvSmoke = Join-Path $env:RUNNER_TEMP 'flowbench-venv-smoke'
 if (Test-Path $VenvSmoke) { Remove-Item -LiteralPath $VenvSmoke -Recurse -Force }

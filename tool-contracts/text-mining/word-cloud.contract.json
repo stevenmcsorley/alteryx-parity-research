@@ -6,49 +6,132 @@
   "xml_tool_name": "WordCloud",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/word-cloud.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "\"D\"",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "mask",
+      "direction": "input",
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Advanced Options",
-      "Change Background Color",
-      "Generate Phrases",
-      "Theme",
-      "Max Words",
-      "Size",
-      "Mask",
-      "Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "text_field"
+    ],
+    "properties": {
+      "text_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "language": {
+        "enum": [
+          "english",
+          "french",
+          "german",
+          "italian",
+          "portuguese",
+          "spanish"
+        ],
+        "default": "english"
+      },
+      "stop_words": {
+        "type": "boolean",
+        "default": true
+      },
+      "extra_stop_words": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      },
+      "generate_phrases": {
+        "type": "boolean",
+        "default": false
+      },
+      "max_words": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000,
+        "default": 150
+      },
+      "width": {
+        "type": "integer",
+        "minimum": 100,
+        "maximum": 4000,
+        "default": 800
+      },
+      "height": {
+        "type": "integer",
+        "minimum": 100,
+        "maximum": 4000,
+        "default": 450
+      },
+      "background": {
+        "type": "string",
+        "pattern": "^#[0-9A-Fa-f]{6}$",
+        "default": "#ffffff"
+      },
+      "theme": {
+        "enum": [
+          "viridis",
+          "blues",
+          "reds",
+          "categorical",
+          "mono"
+        ],
+        "default": "viridis"
+      },
+      "title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "seed": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 1
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-nlp-runtime",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.word_cloud",
+    "version": "1.0.0",
+    "module": "flowengine.tools.text_mining",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -87,9 +170,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_batch11.WordCloudTests.test_tool_counts_words_and_phrases"
+    ]
   },
   "sources": [
     {
@@ -105,6 +190,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

@@ -6,46 +6,74 @@
   "xml_tool_name": "Sentiment",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/sentiment-analysis.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Advanced Options",
-      "Algorithms",
-      "Sentence-Level Sentiment",
-      "Categorical Sentiment",
-      "Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "text_field"
+    ],
+    "properties": {
+      "text_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "sentence_level": {
+        "type": "boolean",
+        "default": false
+      },
+      "categorical": {
+        "type": "boolean",
+        "default": false
+      },
+      "max_negative": {
+        "type": "number",
+        "minimum": -1,
+        "maximum": 1,
+        "default": -0.05
+      },
+      "min_positive": {
+        "type": "number",
+        "minimum": -1,
+        "maximum": 1,
+        "default": 0.05
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-nlp-runtime",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.sentiment_analysis",
+    "version": "1.0.0",
+    "module": "flowengine.tools.text_mining",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -76,9 +104,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch11.SentimentTests.test_matches_vader_and_categorises",
+      "test_batch11.SentimentTests.test_sentence_level_averages_sentences"
+    ]
   },
   "sources": [
     {
@@ -94,6 +125,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

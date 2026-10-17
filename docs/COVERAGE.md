@@ -12,7 +12,7 @@
 | Machine-readable contracts generated | 323 |
 | Entries with known anchors (manifest, reference-observed or public-doc) | 247 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 194 |
+| Independent kernels implemented and passing tests | 199 |
 | Independently implemented application adapters (in progress) | 14 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 394 run, 0 failed |
+| Unit/integration tests in last ledger build | 404 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -37,7 +37,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:input-data` | `core.input_data` | 28 | 0/0 | not-tested |
 | `in-out:map-input` | `core.map_input` | 1 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 12 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 259 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 267 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 2 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -223,9 +223,14 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `machine-learning:data-health` | `core.data_health` | 2 | 0/0 | not-tested |
 | `machine-learning:feature-types` | `core.ml_feature_types` | 1 | 0/0 | not-tested |
 | `machine-learning:fit` | `core.ml_fit` | 5 | 0/0 | not-tested |
-| `machine-learning:predict` | `core.ml_predict` | 4 | 0/0 | not-tested |
+| `machine-learning:predict` | `core.ml_predict` | 6 | 0/0 | not-tested |
 | `machine-learning:regression` | `core.ml_regression` | 2 | 0/0 | not-tested |
 | `machine-learning:transformation` | `core.ml_transformation` | 3 | 0/0 | not-tested |
+| `text-mining:sentiment-analysis` | `core.sentiment_analysis` | 2 | 0/0 | not-tested |
+| `text-mining:text-classification` | `core.text_classification` | 2 | 0/0 | not-tested |
+| `text-mining:text-summary` | `core.text_summary` | 1 | 0/0 | not-tested |
+| `text-mining:topic-modeling` | `core.topic_modeling` | 2 | 0/0 | not-tested |
+| `text-mining:word-cloud` | `core.word_cloud` | 1 | 0/0 | not-tested |
 
 ## By category
 
@@ -257,7 +262,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Reporting | 13 | 13 | 0 | 13 | 0 |
 | SDK Examples | 1 | 0 | 0 | 0 | 0 |
 | Spatial | 15 | 14 | 0 | 14 | 0 |
-| Text Mining | 9 | 0 | 0 | 9 | 0 |
+| Text Mining | 9 | 5 | 0 | 9 | 0 |
 | Time Series | 9 | 9 | 0 | 9 | 0 |
 | Transform | 8 | 8 | 7 | 8 | 0 |
 

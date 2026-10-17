@@ -626,8 +626,9 @@ class Predict(Tool):
         inputs=(Anchor('model', 'M', description='Model from Fit or Assisted Modeling (or any Flowbench model)'),
                 Anchor('input', 'D', description='New records with the training fields')),
         outputs=(Anchor('output', 'Output'),),
-        description='Apply a trained model to new records. Classification adds one Probability_<class> field per '
-                    'class and Prediction (the most probable class). Regression adds Prediction. The pipeline\'s '
+        description='Apply a trained model to new records. Classification (including Text Classification) adds one '
+                    'Probability_<class> field per class and Prediction (the most probable class). Regression adds '
+                    'Prediction. Topic Modeling models add topic_1 … topic_k shares. The pipeline\'s '
                     'preparation is applied first. Records that cannot be prepared (a missing value with no '
                     'clean-up) get null predictions.',
         config_schema={'type': 'object', 'additionalProperties': False, 'properties': {}})
@@ -643,6 +644,8 @@ class Predict(Tool):
             raise DataError(f'Model input holds {len(models)} models; connect one')
         _, info, payload = models[0]
         data, _ = ml.read_stream(inputs['input'])
+        if info.get('family') == 'topic_model':
+            return {'output': self._topics(info, payload, data)}
         res = modeling.predict(info, payload, data)
         if res['unseen']:
             ctx.warn(f"{res['unseen']} value(s) were categories the model did not see in training")
@@ -661,6 +664,18 @@ class Predict(Tool):
             raise SchemaError(f'Prediction would overwrite field(s) {clash}')
         schema = Schema([*data.schema, *added])
         return {'output': Table.from_rows(schema, [(*r, *v) for r, v in zip(data.rows(), values)])}
+
+    def _topics(self, info, payload, data):
+        from .text_mining import topic_matrix
+        if info['text_field'] not in data.schema:
+            raise SchemaError(f"Data has no text field {info['text_field']!r}")
+        shares, mask = topic_matrix(info, modeling.sk_loads(payload), data)
+        added = [Field(f'topic_{i + 1}', FieldType.DOUBLE) for i in range(info['topics'])]
+        clash = [f.name for f in added if f.name in data.schema]
+        if clash:
+            raise SchemaError(f'Prediction would overwrite field(s) {clash}')
+        rows = [(*r, *([float(x) for x in s] if m else [None] * len(added))) for r, s, m in zip(data.rows(), shares, mask)]
+        return Table.from_rows(Schema([*data.schema, *added]), rows)
 
 
 # =========================================================================== Assisted Modeling
