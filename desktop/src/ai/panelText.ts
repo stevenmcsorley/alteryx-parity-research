@@ -75,6 +75,7 @@ export function activityLabel(tool: string, args: Args = {}, state?: Pick<Editor
     case 'task.plan': return 'Planning the deliverables…';
     case 'task.deliver': return `Checking deliverable ${String(args.id ?? '')}…`;
     case 'task.classify': return 'Classifying the request…';
+    case 'results.read': return `Reading part of a stored result${args.path ? ` (${String(args.path)})` : ''}…`;
     default: return 'Working with Flowbench…';
   }
 }

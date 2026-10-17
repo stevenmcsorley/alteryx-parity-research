@@ -224,6 +224,7 @@ button.link { justify-self: start; padding: 0; border: 0; background: none; colo
 .ai-task-group div { overflow-wrap: anywhere; }
 .ai-task-group .failed { color: var(--err); }
 .ai-task-url { color: var(--text-3); }
+.ai-task-size { margin-left: 6px; padding: 0 5px; border-radius: 8px; background: var(--warn-soft); color: var(--warn); font-size: 9.5px; font-weight: 600; }
 .ai-task-verdict { margin: 0; padding: 6px 8px; border-radius: 5px; background: var(--panel-2); }
 .ai-task-verdict.verified { background: var(--ok-soft); }
 .ai-task-verdict.unverified { background: var(--warn-soft); color: var(--warn); }

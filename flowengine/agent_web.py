@@ -17,6 +17,9 @@ from urllib.parse import parse_qs, quote, unquote, urljoin, urlparse
 from . import __version__
 from .errors import EngineError
 
+PREVIEW_LINES = 20
+PREVIEW_CHARS = 4000
+INLINE_ITEMS_MAX_BYTES = 256 * 1024
 USER_AGENT = f'Flowbench/{__version__} (+https://github.com/stevenmcsorley/alteryx-parity-research)'
 DATA_EXTENSIONS = ('.csv', '.tsv', '.xlsx', '.xlsm', '.xls', '.ods', '.json', '.jsonl', '.geojson', '.xml', '.zip',
                    '.gz', '.parquet', '.txt', '.pdf', '.shp', '.kml', '.gpkg')
@@ -120,8 +123,15 @@ def fetch_page(ctx, url: str) -> dict:
     result = {'url': url, 'final_url': r.url, 'http_status': r.status_code, 'content_type': ctype, 'retrieved_at': _now()}
     if r.status_code >= 400:
         raise EngineError(f'The server returned HTTP {r.status_code} for {url}', code='http-error')
-    if 'html' not in ctype and not r.text.lstrip().startswith('<'):
-        return {**result, 'title': None, 'text': r.text, 'links': [], 'data_files': []}
+    body = r.text
+    if 'html' not in ctype.lower() and not body.lstrip()[:200].lower().startswith(('<!doctype html', '<html')):
+        # Data (CSV, JSON, XML...) is not a page: return its size and a preview, and point to a download,
+        # so a whole dataset never travels as page text.
+        lines = body.splitlines()
+        return {**result, 'kind': 'data', 'bytes': len(r.content), 'lines': len(lines),
+                'preview': '\n'.join(lines[:PREVIEW_LINES])[:PREVIEW_CHARS],
+                'note': 'This URL returns data, not a web page. Save it with download_file (or fetch_api with save_as for JSON APIs), '
+                        'then profile_file and build the workflow on the saved file.'}
     page = _Page(r.url)
     page.feed(r.text)
     files = [{'title': l['text'], 'url': l['href']} for l in page.links if _is_data_link(l['href'])]
@@ -404,6 +414,12 @@ def fetch_api(ctx, url: str, params: dict | None = None, items_path: str | None 
                 break
             next_url = urljoin(r.url, nxt)
     result = {'url': url, 'pages': pages, 'item_count': len(items), 'retrieved_at': _now()}
+    if not save_as and len(json.dumps(items, default=str)) > INLINE_ITEMS_MAX_BYTES:
+        # Large responses are kept as a workspace file rather than returned inline.
+        import hashlib
+        host = re.sub(r'[^a-z0-9]+', '_', urlparse(url).netloc.lower()).strip('_')[:40] or 'api'
+        save_as = f"data/{host}_{hashlib.sha256(url.encode()).hexdigest()[:10]}.json"
+        result['note'] = 'The response was large, so it was saved to a file instead of returned inline; profile it with profile_file.'
     if save_as:
         target = ctx.workspace_path(save_as)
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -415,7 +431,9 @@ def fetch_api(ctx, url: str, params: dict | None = None, items_path: str | None 
         from .agent import _sha256
         provenance = {**result, 'saved_as': str(target), 'sha256': _sha256(target), 'tool': f'flowbench-agent/{__version__}'}
         Path(f'{target}.source.json').write_text(json.dumps(provenance, indent=2), encoding='utf-8')
-        result.update(saved_as=str(target), sha256=provenance['sha256'])
+        result.update(saved_as=str(target), sha256=provenance['sha256'], bytes=target.stat().st_size,
+                      fields=sorted({k for item in items[:200] if isinstance(item, dict) for k in item})[:100],
+                      first_items=items[:3])
     else:
         result['items'] = items
     return result

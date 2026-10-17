@@ -132,7 +132,13 @@ If a run fails, the AI receives the engine's error code, message and failing nod
 
 These operations come from one registry: the same tool manifests drive the editor's configuration panels, the engine's validation and the AI's discovery. Nothing is reimplemented for the AI.
 
-Results reach the AI in full. Image and chart cells are described by their size, because the raw bytes are of no use to a language model. Results older than the last six are shortened when the conversation is resent; the AI can call the tool again if it needs one.
+Large results are kept in full by Flowbench and reach the model as a bounded view. A result over 2 KB is stored under the app's data folder (`ai-results/<task>/`). A result over 24 KB (about 6k tokens) is sent as its shape, with short previews, a reference, and byte and token counts. The model reads further parts with **read_tool_result**, using a JSON pointer, an offset and a limit.
+
+- **Data at a URL:** `fetch_page` returns a preview, and the AI saves the data with `download_file`.
+- **Large API responses:** `fetch_api` saves them to a workspace file automatically.
+- **Telemetry:** the Task tab shows each large result's kept and sent sizes.
+
+Before every request, Flowbench estimates its size. If a step grew the context by more than 60k tokens, older tool interactions are compacted first; their full results stay stored. A request still over 150k tokens (or 90% of a local model's context) is not sent: the task records why and keeps the work so far. MCP clients get the same bounded results, stored under `<workspace>/.flowbench/results`.
 
 ### Tasks and verification
 

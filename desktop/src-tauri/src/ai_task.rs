@@ -28,6 +28,13 @@ pub(super) struct Action {
     pub phase: Phase,
     pub ok: Option<bool>,
     pub summary: String,
+    /// Size of the full result Flowbench kept, and of what the model received (telemetry).
+    #[serde(default)]
+    pub result_bytes: Option<usize>,
+    #[serde(default)]
+    pub model_bytes: Option<usize>,
+    #[serde(default)]
+    pub result_ref: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -269,7 +276,8 @@ impl Task {
         if tool == "workflow.propose_patch" {
             if let Some(rev) = args.get("base_revision").and_then(Value::as_str) { self.revisions.push(rev.chars().take(40).collect()); }
         }
-        self.actions.push(Action { at: unix_now(), tool: tool.into(), phase, ok: None, summary: String::new() });
+        self.actions.push(Action { at: unix_now(), tool: tool.into(), phase, ok: None, summary: String::new(),
+            result_bytes: None, model_bytes: None, result_ref: None });
     }
 
     fn repaired(&self) -> usize { self.actions.iter().filter(|a| a.phase == Phase::Repair).count().min(self.errors.len()) }
@@ -319,6 +327,15 @@ impl Task {
     }
 
     pub fn has_evidence(&self) -> bool { !self.evidence.is_empty() }
+
+    /// Records how large a result was and how much of it reached the model.
+    pub fn record_sizes(&mut self, tool: &str, result_bytes: usize, model_bytes: usize, reference: Option<&str>) {
+        if let Some(action) = self.actions.iter_mut().rev().find(|a| a.tool == tool && a.result_bytes.is_none()) {
+            action.result_bytes = Some(result_bytes);
+            action.model_bytes = Some(model_bytes);
+            action.result_ref = reference.map(str::to_owned);
+        }
+    }
 
     /// Called when the model answers with text and no tool calls. Returns a message to send back to
     /// the model when the answer is not yet backed by execution, or None when the task may complete.

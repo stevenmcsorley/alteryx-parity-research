@@ -5,6 +5,7 @@ Each scenario is scripted the way a competent orchestrator would act, and checke
 give the same tasks to a real model. Scenario C (manual and AI editing on one canvas, with undo) and
 F (no false completion) need the editor and are covered in desktop/src/ai/AiSidebar.test.tsx.
 """
+import datetime as dt
 import hashlib
 import json
 import tempfile
@@ -201,3 +202,68 @@ class ExternalExecutionTests(Scenario):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+def usgs_catalogue(events=30000):
+    """A response shaped like the USGS FDSN event service's CSV (format=csv), 3+ MB."""
+    head = 'time,latitude,longitude,depth,mag,magType,nst,gap,dmin,rms,net,id,updated,place,type,horizontalError,depthError,magError,magNst,status,locationSource,magSource\n'
+    rows = []
+    for i in range(events):
+        day = dt.datetime(2026, 7, 20) + dt.timedelta(minutes=i * 4 + (i % 7))
+        rows.append(f'{day:%Y-%m-%dT%H:%M:%S}.{i % 1000:03d}Z,{30 + i % 20}.{i % 97:02d},-{110 + i % 50}.{i % 89:02d},{5 + i % 30}.0,'
+                    f'{3.5 + (i % 30) / 10:.1f},ml,{i % 60},{i % 180},0.{i % 9},0.{i % 7},us,us7{i:06d},2026-10-17T00:00:00.000Z,'
+                    f'"{i % 40} km N of Somewhere, CA",earthquake,0.{i % 9},0.{i % 5},0.1,{i % 30},reviewed,us,us\n')
+    return head + ''.join(rows)
+
+
+class EarthquakeRegressionTests(Scenario):
+    """Regression for the 438k-token explosion: fetch_page returned a whole USGS catalogue inline.
+
+    Every model-facing result stays bounded; the complete catalogue is kept as a workspace file; the workflow
+    counts earthquakes by week and pandas checks the counts."""
+
+    def test_large_catalogue_is_kept_as_a_file_and_only_bounded_results_reach_the_model(self):
+        import datetime as _dt
+        catalogue = usgs_catalogue()
+        self.assertGreater(len(catalogue), 3_000_000)
+        api = self.site / 'fdsnws' / 'event' / '1'
+        api.mkdir(parents=True)
+        (api / 'query').write_text(catalogue)
+        url = self.web.url('fdsnws/event/1/query') + '?format=csv&starttime=2026-07-20&minmagnitude=3.5'
+        s = self.session
+        page = s.ok('fetch_page', url=url)
+        self.assertEqual(page['kind'], 'data', 'an API response is data, not page text')
+        self.assertTrue(page['preview'].startswith('time,latitude,longitude'))
+        got = s.ok('download_file', url=url, filename='usgs_m35_90days.csv')
+        self.assertEqual(Path(got['path']).read_text(), catalogue, 'the complete catalogue is retained')
+        profile = s.ok('profile_file', path='data/usgs_m35_90days.csv')
+        self.assertEqual(profile['rows'], 30000)
+        monday = ('DateTimeFormat(DateTimeAdd([when], -SWITCH(DateTimeFormat([when], "%a"), 0, "Mon", 0, "Tue", 1, "Wed", 2, '
+                  '"Thu", 3, "Fri", 4, "Sat", 5, "Sun", 6), "days"), "%Y-%m-%d")')
+        self.write_flow('quakes.flow.json', flow([
+            {'id': 'read', 'tool': 'core.input_data', 'config': {'path': 'data/usgs_m35_90days.csv'}},
+            {'id': 'week', 'tool': 'core.formula', 'config': {'formulas': [
+                {'field': 'when', 'expression': 'DateTimeParse(Left([time], 19), "%Y-%m-%dT%H:%M:%S")', 'type': 'datetime'},
+                {'field': 'week_start', 'expression': monday, 'type': 'v_wstring'}]}},
+            {'id': 'count', 'tool': 'core.summarize', 'config': {'actions': [
+                {'field': 'week_start', 'op': 'group_by'}, {'field': 'id', 'op': 'count', 'output': 'earthquakes'}]}}],
+            [edge('read', 'output', 'week', 'input'), edge('week', 'output', 'count', 'input')]))
+        run = s.ok('run_workflow', path='quakes.flow.json')
+        self.assertEqual(run['status'], 'succeeded', run)
+        weekly = {r['week_start']: r['earthquakes'] for r in self.summary_of(run['run_id'], 'count')}
+        df = pd.read_csv(self.work / 'data' / 'usgs_m35_90days.csv')
+        times = pd.to_datetime(df['time'].str[:19])
+        expected = (times - pd.to_timedelta(times.dt.weekday, unit='D')).dt.strftime('%Y-%m-%d').value_counts().to_dict()
+        self.assertEqual(weekly, expected)
+        evidence = s.ok('run_evidence', run_id=run['run_id'])
+        self.assertEqual(evidence['input_files'][0]['sha256'], got['sha256'])
+
+        # Asking for every raw row is answered with a bounded view and a reference, not 30,000 rows inline.
+        raw = s.ok('query_results', run_id=run['run_id'], node_id='week', limit=None)
+        self.assertIn('stored_result', raw)
+        part = s.ok('read_tool_result', ref=raw['stored_result']['ref'], path='/rows', offset=100, limit=5)
+        self.assertEqual((part['items'], len(part['values'])), (30000, 5))
+
+        sizes = {t['tool']: len(json.dumps(t['result'], default=str)) for t in s.transcript}
+        print('\nmodel-facing bytes per operation:', sizes)
+        self.assertLessEqual(max(sizes.values()), 24 * 1024 + 2048, f'an operation sent too much to the model: {sizes}')
