@@ -30,7 +30,7 @@ def flow(nodes, edges):
 class Scenario(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         self.site = self.root / 'site'
         self.site.mkdir()
         self.work = self.root / 'project'

@@ -12,7 +12,7 @@ from flowengine import agent
 class HostCase(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.dir = Path(self.tmp.name) / 'work'
+        self.dir = (Path(self.tmp.name) / 'work').resolve()
         self.dir.mkdir()
 
     def tearDown(self):
