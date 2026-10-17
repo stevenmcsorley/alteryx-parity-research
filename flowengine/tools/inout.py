@@ -21,7 +21,7 @@ from ._common import FIELD_SPEC, ON_ERROR, cast_column, field_from_spec
 
 UNBOUNDED_TEXT = 2**30 - 1  # declared size for untyped text fields: never truncates
 
-_FORMATS = ['auto', 'csv', 'tsv', 'delimited', 'json', 'jsonl', 'parquet', 'arrow', 'yxdb']
+_FORMATS = ['auto', 'csv', 'tsv', 'delimited', 'json', 'jsonl', 'parquet', 'arrow', 'yxdb', 'xlsx', 'ods']
 _BINARY = ('parquet', 'arrow')
 _INTEGER_TEXT = re.compile(r'^[+-]?(?:0|[1-9][0-9]*)$')
 _DECIMAL_TEXT = re.compile(r'^[+-]?(?:(?:[0-9]+(?:\.[0-9]*)?)|(?:\.[0-9]+))(?:[eE][+-]?[0-9]+)?$')
@@ -137,7 +137,8 @@ def _resolve_format(fmt: str, path: Path) -> str:
     ext = path.suffix.lower()
     return {'.csv': 'csv', '.tsv': 'tsv', '.tab': 'tsv', '.txt': 'delimited', '.json': 'json',
             '.jsonl': 'jsonl', '.ndjson': 'jsonl', '.parquet': 'parquet', '.arrow': 'arrow',
-            '.feather': 'arrow', '.ipc': 'arrow', '.yxdb': 'yxdb'}.get(ext) or _unsupported(ext)
+            '.feather': 'arrow', '.ipc': 'arrow', '.yxdb': 'yxdb', '.xlsx': 'xlsx', '.xlsm': 'xlsx',
+            '.ods': 'ods'}.get(ext) or _unsupported(ext)
 
 
 def _unsupported(ext):
@@ -157,8 +158,10 @@ class InputData(Tool):
         inputs=(),
         outputs=(Anchor('output', 'O', description='Records read from the file'),),
         side_effects='reads-files', deterministic=True,
-        description='Read delimited text (CSV/TSV/custom), JSON/JSON Lines, Parquet or Arrow IPC. Database and '
-                    'other formats are separate adapters, not yet implemented.',
+        description='Read delimited text (CSV/TSV/custom), JSON/JSON Lines, Parquet, Arrow IPC, Alteryx .yxdb, or an '
+                    'Excel (.xlsx/.xlsm) or OpenDocument (.ods) worksheet. For worksheets choose the sheet, skip_rows '
+                    '(rows above the header) or a cell range; cells keep their spreadsheet types. Databases are a '
+                    'separate tool.',
         config_schema={
             'type': 'object', 'additionalProperties': False, 'required': ['path'],
             'properties': {
@@ -179,6 +182,10 @@ class InputData(Tool):
                 'empty_as_null': {'type': 'boolean', 'default': False,
                                   'description': 'Treat empty delimited values as null instead of empty string'},
                 'add_file_name_field': {'type': ['string', 'null'], 'default': None},
+                'sheet': {'type': ['string', 'null'], 'default': None,
+                          'description': 'Worksheet name for .xlsx/.ods files; null reads the first sheet.'},
+                'range': {'type': ['string', 'null'], 'default': None, 'pattern': '^[A-Za-z]{1,3}[0-9]+(:[A-Za-z]{1,3}[0-9]+)?$',
+                          'description': 'Cell range for .xlsx/.ods files, such as A5:H200, or A5 to read from A5 to the end.'},
             },
         })
 
@@ -360,6 +367,11 @@ class InputData(Tool):
         fmt = _resolve_format(cfg['format'], path)
         if fmt == 'yxdb':
             names, cols, natural = _read_yxdb(path, cfg['max_records'], ctx)
+        elif fmt in ('xlsx', 'ods'):
+            from ..spreadsheet import read_table
+            if not path.is_file():
+                raise DataError(f'Input file not found: {path}')
+            names, cols, natural = read_table(path, fmt, cfg, ctx.warn)
         elif fmt in _BINARY:
             from .. import arrow
             if not path.is_file():

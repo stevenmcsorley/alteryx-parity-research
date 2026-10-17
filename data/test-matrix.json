@@ -115,7 +115,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 32,
+      "independent_tests": 37,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:input-data)"
@@ -211,7 +211,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 5,
+      "independent_tests": 6,
       "reference_cases": 1,
       "evidence_refs": [
         "tool-contracts (contract JSON for preparation:auto-field)"
