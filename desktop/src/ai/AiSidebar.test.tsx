@@ -511,3 +511,65 @@ describe('engine operations', () => {
     expect(submitted.result).toMatchObject({ ok: true, result: { path: '/w/data/fuel.csv' } });
   });
 });
+
+describe('completion requires execution evidence', () => {
+  function scripted(final: { verification: string; classified_as_question?: string | null; evidence?: unknown[] }, gateTimes: number) {
+    let responses = 0;
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_status') return { connected: true, plan_usage_authorized: true };
+      if (command === 'ai_models') return [{ slug: 'model-a', display_name: 'Available model' }];
+      if (command === 'ai_begin') return { turn_id: 't_gate', assistant_message_id: 'm_gate' };
+      if (command === 'ai_respond') {
+        responses++;
+        if (responses <= gateTimes) return { turn_id: args?.turnId, message_id: 'm_gate', cycle_id: args?.cycleId, text: '', calls: [], needs_execution: true };
+        return { turn_id: args?.turnId, message_id: 'm_gate', cycle_id: args?.cycleId, text: 'Category A totals 1,204.', calls: [] };
+      }
+      if (command === 'ai_finish_turn') return { verification: final.verification, classified_as_question: final.classified_as_question ?? null, evidence: final.evidence ?? [] };
+      return undefined;
+    });
+    return () => responses;
+  }
+
+  it('does not present a text-only analysis as complete (Test F)', async () => {
+    await ready();
+    const count = scripted({ verification: 'unverified' }, 2);
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'Build a workflow that totals sales by category.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    expect(await screen.findByText(/Not verified: no Flowbench run backs this answer/)).toBeTruthy();
+    expect(count()).toBe(3);
+    expect(screen.getByText('Category A totals 1,204.')).toBeTruthy();
+  });
+
+  it('marks an answer backed by a run as verified', async () => {
+    await ready();
+    scripted({ verification: 'verified', evidence: [{ kind: 'run', run_id: 'run_42' }] }, 0);
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'Total sales by category.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    expect((await screen.findByText('✓ Backed by a Flowbench run')).getAttribute('title')).toBe('Run run_42');
+  });
+});
+
+describe('task view', () => {
+  it('shows phases, actions, runs, downloaded files, errors and the verdict', async () => {
+    await ready();
+    useAiConversation.getState().setTask({ id: 'turn_t', objective: 'Average fuel price by year', kind: 'execution', phase: 'inspect', status: 'completed',
+      verification: 'verified', actions: [
+        { at: 1, tool: 'agent.download_file', phase: 'acquire', ok: true, summary: 'ok' },
+        { at: 2, tool: 'workflow.request_run', phase: 'execute', ok: false, summary: 'failed: Unknown field [Pric]' },
+        { at: 3, tool: 'workflow.propose_patch', phase: 'repair', ok: true, summary: 'approved' },
+        { at: 4, tool: 'workflow.request_run', phase: 'execute', ok: true, summary: 'succeeded' }],
+      runs: [{ run_id: 'r1', status: 'failed', outputs: 0 }, { run_id: 'r2abcdef99', status: 'succeeded', outputs: 2 }],
+      artifacts: [{ kind: 'download', path: '/w/data/fuel.csv', url: 'https://gov.uk/fuel.csv', sha256: 'aa' }],
+      revisions: ['rev_1'], errors: [{ tool: 'workflow.request_run', error: { message: 'Unknown field [Pric]' } }],
+      evidence: [{ kind: 'run', run_id: 'r2abcdef99' }], started_at: 1, finished_at: 5 } as any);
+    fireEvent.click(screen.getByRole('tab', { name: /Task/ }));
+    const pane = await screen.findByRole('region', { name: 'Task details' });
+    expect(pane.textContent).toContain('Average fuel price by year');
+    expect(screen.getByRole('list', { name: 'Task phases' }).textContent).toContain('Repair');
+    expect(screen.getByRole('list', { name: 'Actions' }).children).toHaveLength(4);
+    expect(pane.textContent).toContain('succeeded · 2 outputs · r2abcdef');
+    expect(pane.textContent).toContain('/w/data/fuel.csv');
+    expect(pane.textContent).toContain('Unknown field [Pric]');
+    expect(pane.textContent).toContain('Backed by Flowbench execution (1 piece of evidence).');
+  });
+});

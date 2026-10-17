@@ -53,6 +53,19 @@ These operations come from one registry: the same tool manifests drive the edito
 
 Results reach the AI in full. Image and chart cells are described by their size, because the raw bytes are of no use to a language model. Results older than the last six are shortened when the conversation is resent; the AI can call the tool again if it needs one.
 
+### Tasks and verification
+
+Every request is a task, saved under the app's data folder in `ai-tasks/`. A task records:
+- the objective;
+- the phases visited (Discover, Plan, Acquire, Build, Validate, Execute, Inspect, Repair, Complete);
+- every action and its outcome;
+- the runs, downloaded files and workflow revisions;
+- errors and the evidence gathered.
+
+The **Task** tab shows the current task live, with earlier tasks below it. While the AI works, a strip above the message box shows the phase, with **Pause** (the AI waits between actions so you can edit the workflow) and **Take over** (stop the AI and turn Full Control off).
+
+A request that asks for analysis, calculations, a workflow, a chart or data needs execution evidence before it can complete: a successful run, or a result query on one. If the model answers in text alone, Flowbench sends it back, at most twice, to build and run the workflow. An answer that is still not backed by a run is labelled **Not verified**. Ordinary questions are answered normally. The model can declare a request a plain question with `task_classify`, and its reason is shown beside the answer. These checks are made by Flowbench from tool observations, not by the model.
+
 ### Permissions
 
 Downloads and file writes need permission. In **Full Control** they are granted for the workspace. In **Review mode** the panel shows each request (for example, "Download https://… into data/") with **Allow** and **Decline**. The engine itself refuses these operations without the grant, so this does not depend on the model following instructions.

@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { dispatchAgentTool, type AgentToolName } from './protocol';
 import { useEditor } from '../state/store';
 import { cancelRun, validateNow } from '../state/engineActions';
-import { ensureAiStreamListener, useAiConversation, type ChatMessage } from './conversation';
+import { ensureAiStreamListener, useAiConversation, type ChatMessage, type Verification } from './conversation';
 import { prepareWorkflowProposal, workflowRevision } from './workflowPatch';
 import { engine, runWorkflow } from '../state/engineActions';
 import { doSave } from '../panels/Toolbar';
 import { activityLabel, addUsage, diagnosticSummary, NO_USAGE, tokens, type Usage } from './panelText';
 import { ProviderSettings, providerLabel, type LocalProvider } from './ProviderSettings';
+import { STATUS_TEXT, TaskView } from './TaskView';
+import type { AgentTask } from './conversation';
 
 type Entry = { label: string; tool: AgentToolName; args?: Record<string, unknown> };
 type Model = { slug: string; display_name: string; supported_efforts?: string[]; default_effort?: string | null };
@@ -22,7 +24,8 @@ function effortFor(model: Model | undefined, preferred: string) {
   return choices.includes('low') ? 'low' : choices[0];
 }
 type ValueItem = { type?: string; name?: string; arguments?: string; call_id?: string; [key: string]: unknown };
-type NativeResponse = { turn_id: string; message_id: string; cycle_id: string; status?: 'retryable_stream_interruption'; needs_tool_correction?: boolean; text?: string; text_source?: string; empty_reason?: string; calls?: ValueItem[];
+type NativeResponse = { turn_id: string; message_id: string; cycle_id: string; status?: 'retryable_stream_interruption'; needs_tool_correction?: boolean;
+  needs_execution?: boolean; continue?: boolean; text?: string; text_source?: string; empty_reason?: string; calls?: ValueItem[];
   usage?: { input_tokens?: number | null; output_tokens?: number | null } };
 type AuthStatus = { provider?: 'chatgpt' | 'local'; local?: LocalProvider; chatgpt_connected?: boolean; connected: boolean; plan_usage_authorized: boolean;
   subject_hint?: string; session_recovery_required?: boolean; data_routing_allowed?: boolean };
@@ -82,6 +85,11 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   const [turnUsage, setTurnUsage] = useState<Usage>(NO_USAGE);
   const [sessionUsage, setSessionUsage] = useState<Usage>(NO_USAGE);
   const [lastInputTokens, setLastInputTokens] = useState(0);
+  const [view, setView] = useState<'chat' | 'task'>('chat');
+  const [recentTasks, setRecentTasks] = useState<AgentTask[]>([]);
+  const [paused, setPaused] = useState(false);
+  const pausedRef = useRef(false);
+  const task = useAiConversation((s) => s.task);
   const activeModel = models.find((choice) => choice.slug === model);
   const effortChoices = activeModel?.supported_efforts?.length ? activeModel.supported_efforts : FALLBACK_EFFORTS;
   const effort = effortFor(activeModel, preferredEffort);
@@ -343,10 +351,14 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     setError(''); setDraft(''); cancelled.current = false; setTurnUsage(NO_USAGE);
     let turnId: string | undefined;
     let correctionAttempts = 0;
+    let executionChecks = 0;
+    let internalSteps = 0;
     try {
       await ensureAiStreamListener();
-      const started = await native<{ turn_id: string; assistant_message_id: string }>('ai_begin', { prompt: text });
+      const started = await native<{ turn_id: string; assistant_message_id: string; task?: AgentTask }>('ai_begin', { prompt: text });
       turnId = started.turn_id;
+      if (started.task) useAiConversation.getState().setTask(started.task);
+      pausedRef.current = false; setPaused(false);
       useAiConversation.getState().begin(
         { id: `user_${turnId}`, turnId, role: 'user', text, state: 'completed' },
         { id: started.assistant_message_id, turnId, role: 'assistant', text: '', state: 'streaming' },
@@ -380,17 +392,31 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           useAiConversation.getState().activity(turnId, `Correcting rejected tool arguments (${correctionAttempts}/3)…`);
           continue;
         }
+        if (response.continue) {
+          if (++internalSteps > 5) throw new Error('The model kept reclassifying the task without acting. Retry to continue.');
+          continue;
+        }
+        if (response.needs_execution) {
+          // The task controller rejected a text-only answer to an execution request.
+          useAiConversation.getState().discardResponse(turnId, cycleId);
+          executionChecks++;
+          useAiConversation.getState().activity(turnId, `No Flowbench run backs that answer yet; asking the AI to run the workflow (${executionChecks}/2)…`);
+          continue;
+        }
         correctionAttempts = 0;
         // Completed output is authoritative. This recovers text if event delivery was late or lost.
         useAiConversation.getState().authoritative(turnId, response.message_id, cycleId, response.text ?? '');
         const calls = response.calls ?? [];
         if (!calls.length) {
           if (!response.text?.trim()) throw new Error(emptyResponseMessage(response.empty_reason));
-          await native('ai_finish_turn', { turnId });
-          useAiConversation.getState().finish(turnId, 'completed');
+          const task = await native<TaskRecord | null>('ai_finish_turn', { turnId });
+          useAiConversation.getState().finish(turnId, 'completed', undefined, undefined, verificationOf(task));
           return;
         }
           for (const call of calls) {
+          // Pause holds the AI between actions; the user can edit the workflow meanwhile.
+          while (pausedRef.current && !cancelled.current) await new Promise((resolve) => setTimeout(resolve, 200));
+          if (cancelled.current) break;
           const toolName = call.name ?? '';
           let args: Record<string, unknown> = {};
           try { args = JSON.parse(call.arguments ?? '{}'); } catch { /* dispatch reports the bad arguments */ }
@@ -421,8 +447,21 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       }
     }
   }
+  function togglePause() {
+    pausedRef.current = !pausedRef.current;
+    setPaused(pausedRef.current);
+  }
+  async function takeOver() {
+    await cancel();
+    if (fullControl) useAiConversation.getState().setFullControl(null);
+  }
+  async function openTasks() {
+    setView('task');
+    try { setRecentTasks(await native<AgentTask[]>('ai_recent_tasks')); } catch { setRecentTasks([]); }
+  }
   async function cancel() {
     cancelled.current = true;
+    pausedRef.current = false; setPaused(false);
     useAiConversation.getState().setProposal(null);
     resolvePatchApproval?.({ status: 'cancelled', operation_count: 0, valid: false, problem_codes: [] }); resolvePatchApproval = null;
     resolveSaveApproval?.({ status: 'cancelled', path_selected: false }); resolveSaveApproval = null;
@@ -547,7 +586,18 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       </section>
     </div>}
 
-    <section className="ai-conversation" aria-label="AI conversation">
+    <nav className="ai-views" role="tablist" aria-label="AI views">
+      <button role="tab" aria-selected={view === 'chat'} onClick={() => setView('chat')}>Conversation</button>
+      <button role="tab" aria-selected={view === 'task'} onClick={() => void openTasks()}>Task{task?.status === 'running' ? ' ●' : ''}</button>
+    </nav>
+    {view === 'task' && <section className="ai-task-pane" aria-label="Task activity">
+      {task ? <TaskView task={task} /> : <p className="ai-menu-note">No task yet. Ask Flowbench AI to do something and its steps, runs, files and evidence appear here.</p>}
+      {recentTasks.filter((t) => t.id !== task?.id).length > 0 && <details className="ai-recent-tasks"><summary>Earlier tasks</summary>
+        <ul>{recentTasks.filter((t) => t.id !== task?.id).map((t) => <li key={t.id}><details><summary>
+          <span className={`ai-task-status ${t.status}`}>{STATUS_TEXT[t.status] ?? t.status}</span> {t.objective}</summary><TaskView task={t} /></details></li>)}</ul>
+      </details>}
+    </section>}
+    <section className="ai-conversation" aria-label="AI conversation" hidden={view !== 'chat'}>
       <div className="ai-chat-messages" ref={chatScroll} aria-live="polite" onScroll={(e) => {
         const el = e.currentTarget;
         stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 56;
@@ -602,6 +652,13 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         {lastProblem?.problem && !streaming && messages.some((m) => m.state === 'failed') && <div className="ai-inline-hint">{lastProblem.text}</div>}
       </div>
       <footer className="ai-composer-wrap">
+        {streaming && task && <div className="ai-task-live">
+          <TaskView task={task} compact />
+          <div className="ai-task-controls">
+            <button onClick={togglePause} aria-pressed={paused}>{paused ? 'Resume' : 'Pause'}</button>
+            <button onClick={() => void takeOver()} title="Stop the AI and continue by hand">Take over</button>
+          </div>
+        </div>}
         <div className="ai-contextline"><span className={`routing-dot ${ready ? 'connected' : ''}`} />
           <span title={name}>{name}</span><span>·</span><span>{nodes} nodes</span>
           <span className="ai-tools-mode" title={fullControl ? 'Full Control is on for this workspace until Flowbench closes' : 'The AI asks before edits, runs and saves'}>{fullControl ? 'Full Control' : toolsEnabled ? 'Review mode' : 'No tools'}</span>
@@ -683,6 +740,9 @@ function Message({ message, onRetry }: { message: ChatMessage; onRetry: () => vo
     {message.text ? <MarkdownText text={message.text} /> : message.state === 'streaming' ? <div className="ai-thinking"><i />Thinking…</div> : null}
     {!!message.activity?.length && <details className="ai-tool-activity" open={message.state === 'streaming' || undefined}><summary>{message.state === 'streaming' || message.activity.length === 1 ? message.activity[message.activity.length - 1] : `${message.activity.length} Flowbench steps`}</summary>
       {message.activity.length > 1 && <ul>{message.activity.map((activity, i) => <li key={`${i}_${activity}`}>{activity}</li>)}</ul>}</details>}
+    {message.verification?.status === 'verified' && <div className="ai-verification ok" title={message.verification.runIds?.length ? `Run ${message.verification.runIds.join(', ')}` : undefined}>✓ Backed by a Flowbench run</div>}
+    {message.verification?.status === 'unverified' && <div className="ai-verification warn" role="note">Not verified: no Flowbench run backs this answer. Treat its numbers as unconfirmed.</div>}
+    {message.verification?.status === 'answered_without_execution' && <div className="ai-verification" role="note">Answered without running Flowbench{message.verification.note ? `: ${message.verification.note}` : ''}</div>}
     {message.error && <div className="ai-message-error" role="alert">{message.error}<button onClick={onRetry}>Retry</button></div>}
     {message.state === 'cancelled' && <div className="ai-message-error">Response stopped</div>}
   </article>;
@@ -701,6 +761,12 @@ function inlineMarkdown(line: string) {
   const parts = line.split(/(`[^`]+`|\*\*[^*]+\*\*)/g);
   return parts.map((part, i) => part.startsWith('`') && part.endsWith('`') ? <code key={i}>{part.slice(1, -1)}</code> :
     part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : part);
+}
+type TaskRecord = { verification?: Verification['status']; classified_as_question?: string | null; evidence?: Array<{ run_id?: string | null }> };
+function verificationOf(task: TaskRecord | null | undefined): Verification | undefined {
+  if (!task?.verification) return undefined;
+  const runIds = [...new Set((task.evidence ?? []).map((e) => e.run_id).filter((id): id is string => Boolean(id)))];
+  return { status: task.verification, note: task.classified_as_question ?? undefined, runIds };
 }
 function safeToolFailure(tool: string, error: unknown) {
   const text = error instanceof Error ? error.message : '';

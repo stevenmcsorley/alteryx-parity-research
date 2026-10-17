@@ -41,6 +41,7 @@ pub fn run() {
             charts::chart_open,
             ai::ai_status,
             ai::ai_set_provider,
+            ai::ai_recent_tasks,
             ai::ai_sign_in,
             ai::ai_models,
             ai::ai_sign_out,

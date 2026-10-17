@@ -175,6 +175,45 @@ button.link { justify-self: start; padding: 0; border: 0; background: none; colo
 .ai-tool-activity { width: fit-content; margin-top: 8px; color: var(--text-3); font-size: 10.5px; }
 .ai-tool-activity summary { cursor: pointer; }
 .ai-tool-activity ul { margin: 5px 0; padding-left: 18px; }
+.ai-views { display: flex; gap: 2px; padding: 4px 12px 0; border-bottom: 1px solid var(--border); background: var(--panel); }
+.ai-views button { padding: 5px 10px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; color: var(--text-3); font-size: 11.5px; }
+.ai-views button[aria-selected="true"] { border-bottom-color: var(--accent); color: var(--text); font-weight: 600; }
+.ai-task-pane { flex: 1; min-height: 0; overflow: auto; padding: 14px 16px; display: grid; align-content: start; gap: 14px; }
+.ai-task { display: grid; gap: 10px; font-size: 11.5px; color: var(--text-2); }
+.ai-task header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.ai-task header strong { color: var(--text); font-size: 12.5px; line-height: 1.4; overflow-wrap: anywhere; }
+.ai-task-status { flex-shrink: 0; padding: 1px 7px; border-radius: 9px; background: var(--panel-2); font-size: 10px; font-weight: 600; }
+.ai-task-status.completed { background: var(--ok-soft); }
+.ai-task-status.unverified { background: var(--warn-soft); color: var(--warn); }
+.ai-task-status.failed { background: var(--err-soft); color: var(--err); }
+.ai-task-phases { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.ai-task-phases li { padding: 2px 7px; border: 1px solid var(--border); border-radius: 9px; color: var(--text-3); font-size: 10px; }
+.ai-task-phases li.visited { border-color: var(--accent); color: var(--text-2); }
+.ai-task-phases li.current { background: var(--accent-soft); color: var(--accent); font-weight: 650; }
+.ai-task-actions { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; }
+.ai-task-actions li { display: grid; grid-template-columns: 14px auto 1fr auto; gap: 6px; align-items: baseline; }
+.ai-task-actions li.failed { color: var(--err); }
+.ai-task-actions time { color: var(--text-3); font-size: 10px; }
+.ai-task-summary { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-3); }
+.ai-task-group h4 { margin: 0 0 3px; color: var(--text-3); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; }
+.ai-task-group div { overflow-wrap: anywhere; }
+.ai-task-group .failed { color: var(--err); }
+.ai-task-url { color: var(--text-3); }
+.ai-task-verdict { margin: 0; padding: 6px 8px; border-radius: 5px; background: var(--panel-2); }
+.ai-task-verdict.verified { background: var(--ok-soft); }
+.ai-task-verdict.unverified { background: var(--warn-soft); color: var(--warn); }
+.ai-recent-tasks summary { cursor: pointer; color: var(--text-2); font-size: 11px; }
+.ai-recent-tasks ul { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.ai-task-live { display: flex; align-items: center; gap: 8px; margin: 0 2px 7px; }
+.ai-task-strip { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1; font-size: 10.5px; color: var(--text-3); }
+.ai-task-phase { flex-shrink: 0; padding: 1px 7px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); font-weight: 650; }
+.ai-task-objective { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); }
+.ai-task-last { flex-shrink: 0; }
+.ai-task-controls { display: flex; gap: 4px; flex-shrink: 0; }
+.ai-task-controls button { padding: 2px 7px; font-size: 10.5px; }
+.ai-verification { width: fit-content; margin-top: 8px; padding: 3px 8px; border-radius: 9px; background: var(--panel-2); color: var(--text-3); font-size: 10.5px; }
+.ai-verification.ok { background: var(--ok-soft); color: var(--text-2); }
+.ai-verification.warn { background: var(--warn-soft); color: var(--warn); font-weight: 600; }
 .ai-message-error, .ai-inline-error { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 8px 10px; border-left: 3px solid var(--err); border-radius: 4px; background: var(--err-soft); color: var(--text); font-size: 11px; }
 .ai-message-error button, .ai-inline-error button { flex-shrink: 0; padding: 2px 6px; color: var(--err); }
 .ai-local-result { color: var(--text-3); font-size: 10.5px; }
