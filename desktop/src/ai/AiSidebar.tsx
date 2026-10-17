@@ -26,7 +26,7 @@ function effortFor(model: Model | undefined, preferred: string) {
 type ValueItem = { type?: string; name?: string; arguments?: string; call_id?: string; [key: string]: unknown };
 type NativeResponse = { turn_id: string; message_id: string; cycle_id: string; status?: 'retryable_stream_interruption'; needs_tool_correction?: boolean;
   needs_execution?: boolean; continue?: boolean; text?: string; text_source?: string; empty_reason?: string; calls?: ValueItem[];
-  usage?: { input_tokens?: number | null; output_tokens?: number | null } };
+  usage?: { input_tokens?: number | null; output_tokens?: number | null; cached_tokens?: number | null } };
 type AuthStatus = { provider?: 'chatgpt' | 'local'; local?: LocalProvider; chatgpt_connected?: boolean; connected: boolean; plan_usage_authorized: boolean;
   subject_hint?: string; session_recovery_required?: boolean; data_routing_allowed?: boolean };
 /** A turn above this many tokens is flagged: it is using a large share of a plan's limits. */
@@ -550,6 +550,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     </header>
 
     {settingsOpen && <div className="ai-settings" role="region" aria-label="AI settings panel">
+      <div className="ai-settings-head"><strong>AI settings</strong><button className="primary" onClick={() => setSettingsOpen(false)}>Done</button></div>
       <ProviderSettings local={local} disabled={busy || streaming} chatgptAccount={account} chatgptConnected={chatgptConnected}
         native={native} onChanged={providerChanged} onSignIn={() => void signIn()} onSignOut={() => void signOut()} />
 
@@ -568,7 +569,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
 
       <section className="ai-settings-section" aria-label="Usage">
         <h3>Usage</h3>
-        <p className="ai-usage-line">This conversation: <b>{tokens(sessionUsage.input)}</b> tokens sent · <b>{tokens(sessionUsage.output)}</b> received</p>
+        <p className="ai-usage-line">This conversation: <b>{tokens(sessionUsage.input)}</b> tokens sent{sessionUsage.cached ? <> (<b>{tokens(sessionUsage.cached)}</b> cached)</> : null} · <b>{tokens(sessionUsage.output)}</b> received</p>
         <small className="ai-menu-note">{local ? 'Local models cost nothing per token, but a long conversation can outgrow the context length.'
           : 'Each step of a turn resends the conversation, so long tasks add up. Lower reasoning effort and a new conversation per task keep usage down.'}</small>
       </section>
@@ -605,19 +606,19 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       </section>
     </div>}
 
-    <nav className="ai-views" role="tablist" aria-label="AI views">
+    {!settingsOpen && <nav className="ai-views" role="tablist" aria-label="AI views">
       <button role="tab" aria-selected={view === 'chat'} onClick={() => setView('chat')}>Conversation</button>
       <button role="tab" aria-selected={view === 'task'} onClick={() => void openTasks()}>Task{task?.status === 'running' ? ' ●' : ''}</button>
-    </nav>
-    {view === 'task' && <section className="ai-task-pane" aria-label="Task activity">
+    </nav>}
+    <section className="ai-conversation" aria-label="AI conversation" style={settingsOpen ? { display: 'none' } : undefined}>
+      {view === 'task' && <section className="ai-task-pane" aria-label="Task activity">
       {task ? <TaskView task={task} /> : <p className="ai-menu-note">No task yet. Ask Flowbench AI to do something and its steps, runs, files and evidence appear here.</p>}
       {recentTasks.filter((t) => t.id !== task?.id).length > 0 && <details className="ai-recent-tasks"><summary>Earlier tasks</summary>
         <ul>{recentTasks.filter((t) => t.id !== task?.id).map((t) => <li key={t.id}><details><summary>
           <span className={`ai-task-status ${t.status}`}>{STATUS_TEXT[t.status] ?? t.status}</span> {t.objective}</summary><TaskView task={t} /></details></li>)}</ul>
       </details>}
     </section>}
-    <section className="ai-conversation" aria-label="AI conversation" hidden={view !== 'chat'}>
-      <div className="ai-chat-messages" ref={chatScroll} aria-live="polite" onScroll={(e) => {
+      <div className="ai-chat-messages" ref={chatScroll} aria-live="polite" style={view === 'task' ? { display: 'none' } : undefined} onScroll={(e) => {
         const el = e.currentTarget;
         stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 56;
       }}>
@@ -684,8 +685,9 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           <span title={name}>{name}</span><span>·</span><span>{nodes} nodes</span>
           <span className="ai-tools-mode" title={fullControl ? 'Full Control is on for this workspace until Flowbench closes' : 'The AI asks before edits, runs and saves'}>{fullControl ? 'Full Control' : toolsEnabled ? 'Review mode' : 'No tools'}</span>
           {turnTotal > 0 && <span className={`ai-usage ${turnTotal > HEAVY_TURN_TOKENS || nearContext ? 'heavy' : ''}`}
-            title={`This turn: ${turnUsage.input.toLocaleString()} tokens sent, ${turnUsage.output.toLocaleString()} received`}>
-            {nearContext ? 'Near the context limit · start a new conversation' : `${tokens(turnTotal)} tokens this turn`}</span>}
+            title={`This turn: ${turnUsage.input.toLocaleString()} tokens sent (${turnUsage.cached.toLocaleString()} of them cached), ${turnUsage.output.toLocaleString()} received. Cached tokens are the repeated instructions and tool definitions, which the provider bills at a reduced rate.`}>
+            {nearContext ? 'Near the context limit · start a new conversation'
+              : `${tokens(turnTotal)} tokens this turn${turnUsage.cached ? ` · ${Math.round(100 * turnUsage.cached / Math.max(1, turnUsage.input))}% cached` : ''}`}</span>}
         </div>
         {authorized && <form className="ai-compose" onSubmit={(e) => { e.preventDefault(); void send(); }}>
           <button type="button" className="icon ai-attach" aria-label="Add files" title="Add data files: their paths go into your message" onClick={() => void addFiles()} disabled={streaming}>📎</button>
@@ -760,7 +762,8 @@ function Message({ message, onRetry }: { message: ChatMessage; onRetry: () => vo
     <div className="ai-message-label">{message.role === 'user' ? 'You' : <><span className="ai-assistant-mark">✦</span> Flowbench AI</>}</div>
     {message.text ? <MarkdownText text={message.text} /> : message.state === 'streaming' ? <div className="ai-thinking"><i />Thinking…</div> : null}
     {!!message.activity?.length && <details className="ai-tool-activity" open={message.state === 'streaming' || undefined}><summary>{message.state === 'streaming' || message.activity.length === 1 ? message.activity[message.activity.length - 1] : `${message.activity.length} Flowbench steps`}</summary>
-      {message.activity.length > 1 && <ul>{message.activity.map((activity, i) => <li key={`${i}_${activity}`}>{activity}</li>)}</ul>}</details>}
+      {message.activity.length > 1 && <ul ref={(el) => { if (el && message.state === 'streaming') el.scrollTop = el.scrollHeight; }}>
+        {groupActivity(message.activity).map(([activity, count], i) => <li key={`${i}_${activity}`}>{activity}{count > 1 && <span className="ai-activity-count"> ×{count}</span>}</li>)}</ul>}</details>}
     {message.verification?.status === 'verified' && <div className="ai-verification ok" title={message.verification.runIds?.length ? `Run ${message.verification.runIds.join(', ')}` : undefined}>✓ Backed by a Flowbench run</div>}
     {message.verification?.status === 'unverified' && <div className="ai-verification warn" role="note">Not verified: no Flowbench run backs this answer. Treat its numbers as unconfirmed.</div>}
     {message.verification?.status === 'incomplete' && <div className="ai-verification warn" role="note">Incomplete: {message.verification.missing?.length ? `missing ${message.verification.missing.join('; ')}` : 'some requested deliverables are missing'}. See the Task tab.</div>}
@@ -828,6 +831,15 @@ function WebSearchSettings({ disabled }: { disabled: boolean }) {
   </section>;
 }
 
+/** Consecutive identical steps shown once with a count. */
+function groupActivity(steps: string[]): Array<[string, number]> {
+  const out: Array<[string, number]> = [];
+  for (const step of steps) {
+    const last = out[out.length - 1];
+    if (last && last[0] === step) last[1]++; else out.push([step, 1]);
+  }
+  return out;
+}
 function safeToolFailure(tool: string, error: unknown) {
   const text = error instanceof Error ? error.message : '';
   const contract = text.match(/Flowbench result contract violation for [a-z0-9_.-]+ at (\$[a-z0-9_.$-]+)/i);

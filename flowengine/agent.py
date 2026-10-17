@@ -160,7 +160,22 @@ def _example_view(example: dict, full: bool) -> dict:
             'checked': 'replayed against this kernel by tests/test_tool_examples.py'}
 
 
-def describe_tool(ctx: Context, tool_id: str, full: bool = False) -> dict:
+def describe_tool(ctx: Context, tool_id: str | None = None, full: bool = False, tool_ids: list[str] | None = None) -> dict:
+    """One tool's specification, or several at once with tool_ids (one call instead of many)."""
+    if tool_ids:
+        out = {}
+        for tid in tool_ids:
+            try:
+                out[tid] = _describe_one(tid, full)
+            except EngineError as e:
+                out[tid] = {'error': e.to_dict()}
+        return {'tools': out}
+    if not tool_id:
+        raise EngineError('Pass tool_id, or tool_ids for several tools', code='invalid-arguments')
+    return _describe_one(tool_id, full)
+
+
+def _describe_one(tool_id: str, full: bool) -> dict:
     reg = default_registry()
     try:
         tool = reg.get(tool_id)
@@ -178,7 +193,7 @@ def describe_tool(ctx: Context, tool_id: str, full: bool = False) -> dict:
         'inputs': [a.to_dict() if hasattr(a, 'to_dict') else a for a in m.inputs],
         'outputs': [a.to_dict() if hasattr(a, 'to_dict') else a for a in m.outputs],
         'settings': [_setting(k, v, k in required) for k, v in schema.get('properties', {}).items()],
-        'config_schema': schema,
+        **({'config_schema': schema} if full else {}),
         'execution': {'side_effects': m.side_effects, 'deterministic': m.deterministic,
                       'dependencies': list(m.dependencies or [])},
         'usage_notes': USAGE_NOTES.get(m.tool_id, []),
@@ -677,8 +692,9 @@ def query_database(ctx: Context, connection_id: str, sql: str, limit: int = 100)
 OPS: dict[str, Op] = {op.name: op for op in [
     Op('find_tools', 'Search the installed Flowbench tools by task, method, data type or name, for example "average by group", "download csv", "join two tables". Returns tool ids with a one-line purpose.',
        _obj({'query': {'type': 'string', 'minLength': 1}, 'limit': {'type': 'integer', 'minimum': 1, 'maximum': 30}}, ['query']), find_tools),
-    Op('describe_tool', 'Full specification of one tool: purpose, input and output anchors, every setting with type, default and allowed values, side effects, usage notes, related tools and tested examples (configuration, input and the output it produces). Call before adding a tool to a workflow. Examples show the first five input rows; pass full true for all of them.',
-       _obj({'tool_id': {'type': 'string', 'minLength': 1}, 'full': {'type': 'boolean'}}, ['tool_id']), describe_tool),
+    Op('describe_tool', 'Specification of a tool: purpose, input and output anchors, every setting with type, default and allowed values, side effects, errors, usage notes, related tools and tested examples (configuration, input and the output it produces). Read every tool you plan to use in one call with tool_ids. full true adds the raw config schema and all example rows.',
+       _obj({'tool_id': {'type': 'string', 'minLength': 1}, 'tool_ids': {'type': 'array', 'minItems': 1, 'maxItems': 25, 'items': {'type': 'string'}},
+             'full': {'type': 'boolean'}}), describe_tool),
     Op('formula_reference', 'The Flowbench expression language used by Formula, Filter, Multi-Row Formula and other expression settings: fields, literals, operators, conditionals, null rules and every available function with its argument counts.',
        _obj({}), lambda ctx: tool_specs.formula_reference()),
     Op('list_files', 'List files in the workspace folder or a sub-folder (relative paths resolve against the workspace).',

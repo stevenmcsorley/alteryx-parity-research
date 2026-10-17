@@ -101,6 +101,7 @@ describe('Flowbench AI conversation', () => {
     fireEvent.click(screen.getByRole('checkbox', { name: /Full Control for this workspace/ }));
     expect(confirm).toHaveBeenCalledOnce();
     expect((screen.getByRole('checkbox', { name: /Full Control for this workspace/ }) as HTMLInputElement).checked).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
     tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
       if (command === 'ai_status') return { connected: true, plan_usage_authorized: true };
       if (command === 'ai_models') return [{ slug: 'model-a', display_name: 'Available model' }];
@@ -163,6 +164,7 @@ describe('Flowbench AI conversation', () => {
     fireEvent.click(screen.getByRole('button', { name: 'AI settings' }));
     fireEvent.click(screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }));
     await waitFor(() => expect((screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }) as HTMLInputElement).checked).toBe(true));
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
     const composer = screen.getByLabelText('Message Flowbench AI');
     for (let n = 1; n <= 10; n++) {
       fireEvent.change(composer, { target: { value: 'hello' } });
@@ -471,6 +473,7 @@ describe('local model provider', () => {
     expect(screen.getByText('Ollama', { selector: '.ai-provider-badge' })).toBeTruthy();
     expect(screen.queryByRole('combobox', { name: 'Reasoning effort' })).toBeNull();
     expect(screen.getByText(/Data stays on this computer/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
     fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'hello' } });
     fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     expect(await screen.findByText('Local answer')).toBeTruthy();

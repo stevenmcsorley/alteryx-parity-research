@@ -60,7 +60,7 @@ export function TaskView({ task, compact = false }: { task: AgentTask; compact?:
       {task.actions.map((a, i) => <li key={i} className={a.ok === false ? 'failed' : a.ok ? 'ok' : 'pending'}>
         <span className="ai-task-mark" aria-hidden="true">{a.ok === false ? '✗' : a.ok ? '✓' : '…'}</span>
         <span>{TOOL_LABEL[a.tool] ?? a.tool}</span>
-        {a.summary && a.summary !== 'ok' && <span className="ai-task-summary">{a.summary}</span>}
+        <span className="ai-task-summary" title={a.summary && a.summary !== 'ok' ? a.summary : undefined}>{a.summary && a.summary !== 'ok' ? a.summary : ''}</span>
         <time>{time(a.at)}</time>
       </li>)}
     </ul>}

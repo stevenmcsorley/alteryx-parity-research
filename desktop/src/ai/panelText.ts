@@ -40,15 +40,51 @@ export function activityLabel(tool: string, args: Args = {}, state?: Pick<Editor
     case 'app.get_capabilities': return 'Listing available tools…';
     case 'workflow.validate': case 'workflow.get_diagnostics': return 'Checking the workflow for problems…';
     case 'app.get_status': return 'Checking Flowbench status…';
+    case 'agent.find_tools': return `Searching tools for “${String(args.query ?? '')}”…`;
+    case 'agent.describe_tool': return `Reading the ${String(args.tool_id ?? 'tool').replace(/^core\./, '').replaceAll('_', ' ')} spec…`;
+    case 'agent.formula_reference': return 'Reading the formula reference…';
+    case 'agent.list_files': return `Listing files in ${String(args.path ?? 'the workspace')}…`;
+    case 'agent.profile_file': return `Profiling ${String(args.path ?? 'a file')}…`;
+    case 'agent.inspect_spreadsheet': return `Inspecting the sheets of ${String(args.path ?? 'a spreadsheet')}…`;
+    case 'agent.read_text_file': return `Reading ${String(args.path ?? 'a file')}…`;
+    case 'agent.write_text_file': return `Writing ${String(args.path ?? 'a file')}…`;
+    case 'agent.make_folder': return `Creating ${String(args.path ?? 'a folder')}…`;
+    case 'agent.extract_archive': return `Extracting ${String(args.path ?? 'an archive')}…`;
+    case 'agent.download_file': return `Downloading ${String(args.url ?? 'a file')}…`;
+    case 'agent.web_search': return `Searching the web for “${String(args.query ?? '')}”…`;
+    case 'agent.search_datasets': return `Searching dataset catalogues for “${String(args.query ?? '')}”…`;
+    case 'agent.fetch_page': return `Reading ${String(args.url ?? 'a web page')}…`;
+    case 'agent.find_data_files': return `Looking for data files from ${String(args.url ?? 'a page')}…`;
+    case 'agent.inspect_api': return `Inspecting the API at ${String(args.url ?? '')}…`;
+    case 'agent.fetch_api': return `Fetching ${String(args.url ?? 'API data')}…`;
+    case 'agent.query_results': return `Querying results of ${String(args.node_id ?? 'a node')}…`;
+    case 'agent.run_evidence': return 'Collecting run evidence…';
+    case 'agent.run_python': return 'Running a Python script…';
+    case 'agent.run_r': return 'Running an R script…';
+    case 'agent.run_command': return `Running ${((args.argv as string[] | undefined) ?? []).join(' ')}…`;
+    case 'agent.docker': return `Running docker ${((args.args as string[] | undefined) ?? []).join(' ')}…`;
+    case 'agent.install_python_packages': return `Installing ${((args.packages as string[] | undefined) ?? []).join(', ')}…`;
+    case 'agent.inspect_environment': return 'Checking the installed software…';
+    case 'agent.start_process': return `Starting ${((args.argv as string[] | undefined) ?? []).join(' ')}…`;
+    case 'agent.process_status': return 'Checking a running process…';
+    case 'agent.stop_process': return 'Stopping a process…';
+    case 'agent.list_connections': return 'Listing database connections…';
+    case 'agent.list_tables': return 'Listing database tables…';
+    case 'agent.describe_table': return `Reading the columns of ${String(args.table ?? 'a table')}…`;
+    case 'agent.query_database': return 'Querying the database…';
+    case 'task.plan': return 'Planning the deliverables…';
+    case 'task.deliver': return `Checking deliverable ${String(args.id ?? '')}…`;
+    case 'task.classify': return 'Classifying the request…';
     default: return 'Working with Flowbench…';
   }
 }
 
-export type Usage = { input: number; output: number };
-export const NO_USAGE: Usage = { input: 0, output: 0 };
+export type Usage = { input: number; output: number; cached: number };
+export const NO_USAGE: Usage = { input: 0, output: 0, cached: 0 };
 
-export function addUsage(total: Usage, usage: { input_tokens?: number | null; output_tokens?: number | null } | undefined): Usage {
-  return { input: total.input + (usage?.input_tokens ?? 0), output: total.output + (usage?.output_tokens ?? 0) };
+export function addUsage(total: Usage, usage: { input_tokens?: number | null; output_tokens?: number | null; cached_tokens?: number | null } | undefined): Usage {
+  return { input: total.input + (usage?.input_tokens ?? 0), output: total.output + (usage?.output_tokens ?? 0),
+    cached: total.cached + (usage?.cached_tokens ?? 0) };
 }
 
 export function tokens(n: number): string {
