@@ -144,10 +144,11 @@
     ]
   },
   "independent_tests": {
-    "count": 36,
-    "passing": 36,
+    "count": 37,
+    "passing": 37,
     "tests": [
       "test_acceptance.AcquisitionTests.test_download_build_run_and_cite_evidence",
+      "test_acceptance.EarthquakeRegressionTests.test_large_catalogue_is_kept_as_a_file_and_only_bounded_results_reach_the_model",
       "test_acceptance.ExternalExecutionTests.test_python_prepares_api_data_that_a_workflow_analyses",
       "test_acceptance.WorkflowConstructionTests.test_clean_group_sort_chart_and_reopen",
       "test_batch12.InputOutputTests.test_output_writes_named_files_with_permission",

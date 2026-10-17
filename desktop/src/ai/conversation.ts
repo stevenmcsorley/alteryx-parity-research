@@ -15,7 +15,8 @@ export type ChatMessage = {
 };
 export type Verification = { status: 'verified' | 'unverified' | 'incomplete' | 'answered_without_execution' | 'not_required'; missing?: string[]; note?: string; runIds?: string[] };
 export type TaskPhase = 'discover' | 'plan' | 'acquire' | 'build' | 'validate' | 'execute' | 'inspect' | 'repair' | 'complete';
-export type TaskAction = { at: number; tool: string; phase: TaskPhase; ok: boolean | null; summary: string };
+export type TaskAction = { at: number; tool: string; phase: TaskPhase; ok: boolean | null; summary: string;
+  result_bytes?: number | null; model_bytes?: number | null; result_ref?: string | null };
 /** The task controller's record of a turn (desktop/src-tauri/src/ai_task.rs). */
 export type AgentTask = { id: string; objective: string; kind: 'question' | 'execution'; phase: TaskPhase; status: string;
   verification: Verification['status']; classified_as_question?: string | null; actions: TaskAction[];

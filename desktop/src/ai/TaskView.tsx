@@ -16,7 +16,17 @@ const TOOL_LABEL: Record<string, string> = {
   'agent.run_python': 'Ran Python', 'agent.run_command': 'Ran a command', 'agent.run_r': 'Ran R', 'agent.docker': 'Ran Docker',
   'agent.install_python_packages': 'Installed Python packages', 'agent.inspect_environment': 'Inspected the computer', 'agent.write_text_file': 'Wrote a file',
   'agent.extract_archive': 'Extracted an archive', 'agent.formula_reference': 'Read the formula reference',
+  'results.read': 'Read part of a stored result',
 };
+
+function formatBytes(n: number) {
+  return n < 1024 ? `${n} B` : n < 1024 * 1024 ? `${(n / 1024).toFixed(1)} kB` : `${(n / 1024 / 1024).toFixed(1)} MB`;
+}
+/** Telemetry: a large result is kept in full by Flowbench and reaches the model as a bounded view. */
+function sizeNote(a: { result_bytes?: number | null; model_bytes?: number | null; result_ref?: string | null }) {
+  if (!a.result_ref) return undefined;
+  return `Flowbench kept the full ${formatBytes(a.result_bytes ?? 0)} result (${a.result_ref}); the model received ${formatBytes(a.model_bytes ?? 0)} and can read more with read_tool_result.`;
+}
 
 export const STATUS_TEXT: Record<string, string> = {
   running: 'Working', completed: 'Completed', unverified: 'Finished without a Flowbench run', incomplete: 'Finished with deliverables missing',
@@ -60,7 +70,10 @@ export function TaskView({ task, compact = false }: { task: AgentTask; compact?:
       {task.actions.map((a, i) => <li key={i} className={a.ok === false ? 'failed' : a.ok ? 'ok' : 'pending'}>
         <span className="ai-task-mark" aria-hidden="true">{a.ok === false ? '✗' : a.ok ? '✓' : '…'}</span>
         <span>{TOOL_LABEL[a.tool] ?? a.tool}</span>
-        <span className="ai-task-summary" title={a.summary && a.summary !== 'ok' ? a.summary : undefined}>{a.summary && a.summary !== 'ok' ? a.summary : ''}</span>
+        <span className="ai-task-summary" title={sizeNote(a) ?? (a.summary && a.summary !== 'ok' ? a.summary : undefined)}>
+          {a.summary && a.summary !== 'ok' ? a.summary : ''}
+          {a.result_ref && <span className="ai-task-size">{formatBytes(a.result_bytes ?? 0)} kept · {formatBytes(a.model_bytes ?? 0)} sent</span>}
+        </span>
         <time>{time(a.at)}</time>
       </li>)}
     </ul>}
