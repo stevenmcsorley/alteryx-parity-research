@@ -40,7 +40,9 @@
           "jsonl",
           "parquet",
           "arrow",
-          "yxdb"
+          "yxdb",
+          "xlsx",
+          "ods"
         ],
         "default": "auto"
       },
@@ -157,6 +159,23 @@
           "null"
         ],
         "default": null
+      },
+      "sheet": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Worksheet name for .xlsx/.ods files; null reads the first sheet."
+      },
+      "range": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "pattern": "^[A-Za-z]{1,3}[0-9]+(:[A-Za-z]{1,3}[0-9]+)?$",
+        "description": "Cell range for .xlsx/.ods files, such as A5:H200, or A5 to read from A5 to the end."
       }
     }
   },
@@ -240,8 +259,8 @@
     ]
   },
   "independent_tests": {
-    "count": 32,
-    "passing": 32,
+    "count": 37,
+    "passing": 37,
     "tests": [
       "test_agent.DataTests.test_evidence_names_versions_digests_and_artifacts",
       "test_agent.DataTests.test_profile_computes_types_and_stats_natively",
@@ -274,7 +293,12 @@
       "test_reporting.RenderTests.test_fuel_report_example",
       "test_runner.RunnerTests.test_routes_success_and_failure_logs_without_failing_the_parent",
       "test_runner.RunnerTests.test_stop_on_failure_marks_remaining_workflows_not_run",
-      "test_spatial.ExampleTests.test_uk_spatial_example"
+      "test_spatial.ExampleTests.test_uk_spatial_example",
+      "test_spreadsheet.ExcelTests.test_first_sheet_is_the_default",
+      "test_spreadsheet.ExcelTests.test_range_without_header_and_missing_sheet",
+      "test_spreadsheet.ExcelTests.test_sheet_and_skip_rows_select_the_table_with_cell_types",
+      "test_spreadsheet.OdsTests.test_inspect_lists_sheets_with_first_rows",
+      "test_spreadsheet.OdsTests.test_repeated_cells_and_rows_types_and_trailing_blank_runs"
     ]
   },
   "sources": [

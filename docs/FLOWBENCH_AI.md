@@ -42,7 +42,7 @@ Under **Permissions**:
 The AI is the orchestrator; Flowbench is the worker. For anything beyond an ordinary question, the AI:
 
 1. finds tools with **find_tools** (search by task, such as "average by group" or "download csv") and reads their full specification with **describe_tool**;
-2. locates data with **list_files** and **profile_file** (Flowbench reads the file and returns fields, suggested types, null counts and ranges), or fetches public data with **download_file**, which saves the file under `data/` with a `<file>.source.json` provenance record (URL, time, size, SHA-256);
+2. locates data with **list_files** and **profile_file** (Flowbench reads the file and returns fields, suggested types, null counts and ranges); for Excel and OpenDocument files, **inspect_spreadsheet** first lists every sheet with its first rows, so the AI can find where the table starts below the notes and multi-row headers that published statistics carry. It also fetches public data with **download_file**, which saves the file under `data/` with a `<file>.source.json` provenance record (URL, time, size, SHA-256);
 3. builds the workflow on the canvas, validates it and runs it, exactly as you would;
 4. inspects outputs with **query_results**, which computes group-bys and aggregates over the full run output inside Flowbench;
 5. reports with **run_evidence**: workflow digest, tool versions, row counts, output digests and input file hashes.

@@ -41,7 +41,8 @@ SYNONYMS = {
     'rolling': 'multi-row formula moving', 'moving': 'multi-row formula', 'running': 'running total',
     'percentile': 'summarize percentile', 'sample': 'sample random', 'outlier': 'outlier',
     'correlation': 'correlation', 'map': 'spatial map', 'geocode': 'spatial', 'text': 'text',
-    'sentiment': 'sentiment', 'ocr': 'image to text', 'pdf': 'pdf', 'excel': 'excel xlsx', 'csv': 'input data csv',
+    'sentiment': 'sentiment', 'ocr': 'image to text', 'pdf': 'pdf', 'excel': 'excel xlsx worksheet input data', 'xlsx': 'excel worksheet input data', 'ods': 'opendocument worksheet input data',
+    'spreadsheet': 'excel worksheet input data', 'sheet': 'worksheet input data', 'csv': 'input data csv',
     'read': 'input data', 'load': 'input data', 'import': 'input data', 'write': 'output data', 'save': 'output data',
     'export': 'output data', 'report': 'report render', 'database': 'database db input',
 }
@@ -49,6 +50,7 @@ SYNONYMS = {
 # Facts an AI needs that the configuration schema alone does not say. Keep these true to the kernel.
 USAGE_NOTES = {
     'core.input_data': ['Delimited text (CSV/TSV) fields arrive as text (v_wstring). Add Auto Field, or Select with explicit types, before numeric work such as Summarize sums or Formula arithmetic.',
+                        'Excel and ODS cells keep their types. Use inspect_spreadsheet first, then set sheet and skip_rows (rows above the header) or range such as A6:P400; with multi-row headers, read with has_header false and rename with Select.',
                         'Relative paths resolve against the workflow folder.'],
     'core.auto_field': ['Chooses the narrowest type that fits every value, for example byte, int32, double or date. Use it straight after Input Data for CSV files.'],
     'core.summarize': ['Each action is {field, op, output?}. Use op group_by for grouping fields. Numeric ops (sum, avg, std_dev, ...) need numeric fields.',
@@ -198,14 +200,32 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def profile_file(ctx: Context, path: str, format: str = 'auto') -> dict:
+def inspect_spreadsheet(ctx: Context, path: str, preview_rows: int = 15) -> dict:
+    """Every worksheet with its size and first rows, to choose sheet, skip_rows and range for Input Data."""
+    from .spreadsheet import describe
+    target = ctx.path(path)
+    if not target.is_file():
+        raise EngineError(f'{target} does not exist', code='not-found')
+    if target.suffix.lower() not in ('.xlsx', '.xlsm', '.ods'):
+        raise EngineError('inspect_spreadsheet reads .xlsx, .xlsm and .ods files', code='bad-format')
+    return {'path': str(target), 'sheets': describe(target, preview_rows),
+            'note': 'Rows are 1-based. Configure Input Data with sheet, plus skip_rows (rows above the header) or range (e.g. A6:P400 with has_header false).'}
+
+
+def profile_file(ctx: Context, path: str, format: str = 'auto', sheet: str | None = None, skip_rows: int = 0,
+                 range: str | None = None, has_header: bool = True) -> dict:
     """Reads a file with the Input Data and Auto Field kernels and profiles it natively."""
     from .executor import run_workflow
     target = ctx.path(path)
     if not target.is_file():
         raise EngineError(f'{target} does not exist', code='not-found')
+    read_cfg = {'path': str(target), 'format': format, 'skip_rows': skip_rows, 'has_header': has_header}
+    if sheet is not None:
+        read_cfg['sheet'] = sheet
+    if range is not None:
+        read_cfg['range'] = range
     doc = {'format': 'flowengine.workflow', 'formatVersion': 1, 'nodes': [
-        {'id': 'read', 'tool': 'core.input_data', 'config': {'path': str(target), 'format': format}},
+        {'id': 'read', 'tool': 'core.input_data', 'config': read_cfg},
         {'id': 'typed', 'tool': 'core.auto_field', 'config': {}}],
         'edges': [{'from': {'node': 'read', 'anchor': 'output'}, 'to': {'node': 'typed', 'anchor': 'input'}}]}
     result = run_workflow(doc, base_dir=ctx.base_dir)
@@ -214,11 +234,11 @@ def profile_file(ctx: Context, path: str, format: str = 'auto') -> dict:
     raw, typed = result.outputs['read']['output'], result.outputs['typed']['output']
     rows = list(typed.rows())
     fields = []
-    raw_types = {f.name: f.type for f in raw.schema}
+    raw_types = {f.name: f.type.value for f in raw.schema}
     for i, f in enumerate(typed.schema):
         values = [r[i] for r in rows]
         present = [v for v in values if v is not None and v != '']
-        info = {'name': f.name, 'type_as_read': raw_types.get(f.name), 'suggested_type': f.type,
+        info = {'name': f.name, 'type_as_read': raw_types.get(f.name), 'suggested_type': f.type.value,
                 'nulls': len(values) - len(present), 'distinct': len({str(v) for v in present})}
         if present and isinstance(present[0], (int, float)) and not isinstance(present[0], bool):
             nums = [float(v) for v in present]
@@ -350,8 +370,12 @@ OPS: dict[str, Op] = {op.name: op for op in [
        _obj({'tool_id': {'type': 'string', 'minLength': 1}}, ['tool_id']), describe_tool),
     Op('list_files', 'List files in the workspace folder or a sub-folder (relative paths resolve against the workspace).',
        _obj({'path': {'type': 'string'}, 'pattern': {'type': 'string'}}), list_files),
-    Op('profile_file', 'Read a data file with Flowbench and return its fields, suggested types, null counts, distinct counts, numeric ranges and five sample rows. Use this instead of reading the file yourself.',
-       _obj({'path': {'type': 'string', 'minLength': 1}, 'format': {'enum': ['auto', 'csv', 'tsv', 'delimited', 'json', 'jsonl', 'parquet', 'arrow', 'yxdb']}}, ['path']), profile_file),
+    Op('inspect_spreadsheet', 'Show every worksheet of an Excel (.xlsx/.xlsm) or OpenDocument (.ods) file with its size and first rows, so you can choose the sheet and where the table starts. Published statistics usually have notes and multi-row headers above the data.',
+       _obj({'path': {'type': 'string', 'minLength': 1}, 'preview_rows': {'type': 'integer', 'minimum': 1}}, ['path']), inspect_spreadsheet),
+    Op('profile_file', 'Read a data file with Flowbench and return its fields, suggested types, null counts, distinct counts, numeric ranges and five sample rows. Use this instead of reading the file yourself. For worksheets pass sheet and skip_rows or range, as for Input Data.',
+       _obj({'path': {'type': 'string', 'minLength': 1}, 'format': {'enum': ['auto', 'csv', 'tsv', 'delimited', 'json', 'jsonl', 'parquet', 'arrow', 'yxdb', 'xlsx', 'ods']},
+             'sheet': {'type': ['string', 'null']}, 'skip_rows': {'type': 'integer', 'minimum': 0},
+             'range': {'type': ['string', 'null']}, 'has_header': {'type': 'boolean'}}, ['path']), profile_file),
     Op('query_results', 'Compute on the full output of a finished run inside Flowbench: group_by with aggregates (sum, avg, min, max, count, count_distinct, std_dev, median), selected columns, sorting, and the rows you ask for (100 by default; set limit, or null for all). Prefer aggregating here over reading raw rows.',
        _obj({'run_id': {'type': 'string'}, 'node_id': {'type': 'string'}, 'anchor': {'type': 'string'},
              'columns': {'type': 'array', 'items': {'type': 'string'}}, 'group_by': {'type': 'array', 'items': {'type': 'string'}},
