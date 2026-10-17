@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 236,
-    "passing": 236,
+    "count": 247,
+    "passing": 247,
     "tests": [
       "test_batch5.GeometryEditingTests.test_generalize_uses_metric_tolerance",
       "test_batch5.GeometryEditingTests.test_heat_map_density_integrates_to_point_count",
@@ -173,6 +173,17 @@
       "test_batch8.TimeSeriesTests.test_covariate_forecast_uses_future_covariates",
       "test_batch8.TimeSeriesTests.test_ets_and_compare_on_trend_with_seasonality",
       "test_batch8.TimeSeriesTests.test_filler_plot_and_factory",
+      "test_batch9.AssistedModelingTests.test_compares_algorithms_and_returns_a_usable_model",
+      "test_batch9.AssistedModelingTests.test_regression_metric_and_task_checks",
+      "test_batch9.BuildFeaturesTests.test_aggregations_transforms_and_stacked_features",
+      "test_batch9.BuildFeaturesTests.test_direct_features_from_a_parent",
+      "test_batch9.DataHealthTests.test_needs_thirty_records",
+      "test_batch9.DataHealthTests.test_scores_outliers_and_recommendations",
+      "test_batch9.PipelineTests.test_classification_pipeline_matches_a_direct_scikit_learn_fit",
+      "test_batch9.PipelineTests.test_feature_types_autodetect_and_override",
+      "test_batch9.PipelineTests.test_missing_values_need_a_clean_up_and_the_training_median_is_reused",
+      "test_batch9.PipelineTests.test_pipeline_survives_sampling_and_refits_in_cross_validation",
+      "test_batch9.PipelineTests.test_unknown_categories_can_be_an_error",
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_output_rejects_traversal_and_preexisting_destination",
       "test_blob_tools.BlobToolsTests.test_blob_output_requires_consent_and_writes_per_record_files",

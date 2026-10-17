@@ -3429,7 +3429,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/assisted-modeling-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3441,7 +3441,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/build-features.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3453,7 +3453,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/classification-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3465,7 +3465,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/data-health.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3477,7 +3477,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/feature-types.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3489,7 +3489,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/fit-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3525,7 +3525,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/predict-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3537,7 +3537,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/regression-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3549,7 +3549,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/transformation-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

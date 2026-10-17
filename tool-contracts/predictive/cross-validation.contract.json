@@ -116,9 +116,10 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
+    "count": 2,
+    "passing": 2,
     "tests": [
+      "test_batch9.PipelineTests.test_pipeline_survives_sampling_and_refits_in_cross_validation",
       "test_predictive.EvaluationTests.test_comparison_cross_validation_and_lift"
     ]
   },

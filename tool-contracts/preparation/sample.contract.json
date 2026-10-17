@@ -104,9 +104,10 @@
     ]
   },
   "independent_tests": {
-    "count": 2,
-    "passing": 2,
+    "count": 3,
+    "passing": 3,
     "tests": [
+      "test_batch9.PipelineTests.test_pipeline_survives_sampling_and_refits_in_cross_validation",
       "test_fe_executor.ExecutionTests.test_fan_out_and_release",
       "test_fe_tools.PreparationTests.test_sample_modes"
     ]

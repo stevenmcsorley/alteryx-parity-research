@@ -10,9 +10,9 @@
 | Distinct tool names | 321 |
 | Public help URL resolved (official tool list sync) | 323 |
 | Machine-readable contracts generated | 323 |
-| Entries with known anchors (manifest, reference-observed or public-doc) | 239 |
+| Entries with known anchors (manifest, reference-observed or public-doc) | 245 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 179 |
+| Independent kernels implemented and passing tests | 188 |
 | Independently implemented application adapters (in progress) | 14 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 371 run, 0 failed |
+| Unit/integration tests in last ledger build | 382 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -36,7 +36,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:directory` | `core.directory` | 3 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 28 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 12 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 236 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 247 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 2 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -52,7 +52,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `preparation:random-sample` | `core.random_sample` | 1 | 0/0 | not-tested |
 | `preparation:rank` | `core.rank` | 1 | 0/0 | not-tested |
 | `preparation:record-id` | `core.record_id` | 4 | 1/1 | partial |
-| `preparation:sample` | `core.sample` | 2 | 6/6 | partial |
+| `preparation:sample` | `core.sample` | 3 | 6/6 | partial |
 | `preparation:select` | `core.select` | 8 | 2/2 | partial |
 | `preparation:select-records` | `core.select_records` | 1 | 1/1 | partial |
 | `preparation:sort` | `core.sort` | 14 | 2/3 | failed |
@@ -137,7 +137,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `data-investigation:violin-plot` | `core.violin_plot` | 2 | 0/0 | not-tested |
 | `predictive:boosted-model` | `core.boosted_model` | 2 | 0/0 | not-tested |
 | `predictive:count-regression` | `core.count_regression` | 1 | 0/0 | not-tested |
-| `predictive:cross-validation` | `core.cross_validation` | 1 | 0/0 | not-tested |
+| `predictive:cross-validation` | `core.cross_validation` | 2 | 0/0 | not-tested |
 | `predictive:decision-tree` | `core.decision_tree` | 4 | 0/0 | not-tested |
 | `predictive:forest-model` | `core.forest_model` | 2 | 0/0 | not-tested |
 | `predictive:gamma-regression` | `core.gamma_regression` | 1 | 0/0 | not-tested |
@@ -211,6 +211,15 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `developer:test` | `core.test` | 1 | 0/0 | not-tested |
 | `developer:throttle` | `core.throttle` | 1 | 0/0 | not-tested |
 | `laboratory:json-build` | `core.json_build` | 1 | 0/0 | not-tested |
+| `machine-learning:assisted-modeling` | `core.assisted_modeling` | 2 | 0/0 | not-tested |
+| `machine-learning:build-features` | `core.build_features` | 2 | 0/0 | not-tested |
+| `machine-learning:classification` | `core.ml_classification` | 2 | 0/0 | not-tested |
+| `machine-learning:data-health` | `core.data_health` | 2 | 0/0 | not-tested |
+| `machine-learning:feature-types` | `core.ml_feature_types` | 1 | 0/0 | not-tested |
+| `machine-learning:fit` | `core.ml_fit` | 5 | 0/0 | not-tested |
+| `machine-learning:predict` | `core.ml_predict` | 4 | 0/0 | not-tested |
+| `machine-learning:regression` | `core.ml_regression` | 2 | 0/0 | not-tested |
+| `machine-learning:transformation` | `core.ml_transformation` | 3 | 0/0 | not-tested |
 
 ## By category
 
@@ -233,7 +242,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Interface | 18 | 2 | 0 | 17 | 0 |
 | Join | 7 | 7 | 5 | 7 | 0 |
 | Laboratory | 7 | 1 | 0 | 4 | 0 |
-| Machine Learning | 11 | 0 | 0 | 3 | 0 |
+| Machine Learning | 11 | 9 | 0 | 9 | 0 |
 | Parse | 4 | 4 | 4 | 4 | 0 |
 | Predictive | 25 | 23 | 0 | 23 | 0 |
 | Predictive Grouping | 9 | 9 | 0 | 9 | 0 |
