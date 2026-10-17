@@ -215,6 +215,10 @@ ENVIRONMENT_GATED_LEDGER_TESTS = {
 # AI's examples, not independent evidence that a tool behaves correctly.
 SELF_REFERENTIAL_LEDGER_TESTS = {
     'test_tool_examples.ToolExampleTests.test_every_stored_example_replays',
+    # Check that every tool has a specification (they look every tool up), not how tools behave.
+    'test_tool_specs.ContractTests.test_every_tool_has_a_contract_with_purpose_settings_and_execution',
+    'test_tool_specs.ContractTests.test_errors_are_read_from_the_kernel',
+    'test_tool_specs.ContractTests.test_formula_reference_lists_real_functions',
 }
 LEDGER_EXCLUDED_TESTS = ENVIRONMENT_GATED_LEDGER_TESTS | SELF_REFERENTIAL_LEDGER_TESTS
 
