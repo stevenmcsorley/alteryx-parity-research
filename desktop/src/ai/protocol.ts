@@ -49,7 +49,7 @@ export const AGENT_TOOLS: AgentToolDefinition[] = [
   { name: 'workflow.request_run', description: 'Run the current workflow. Review mode requests confirmation; Full Control may run ordinary local processing immediately. File writes, scripts, database writes and other external effects retain their scoped permission checks.', parameters: objectSchema() },
   { name: 'workflow.request_save', description: 'Save the active workflow. Full Control saves to the current authorized workflow path; choosing a new destination still uses the native file picker.', parameters: objectSchema() },
   { name: 'run.get_results', description: 'Read bounded previews from the most recent completed run. Results are shared only under the active data-routing consent.', parameters: objectSchema() },
-  { name: 'run.get_result_page', description: 'Read actual rows from one Browse output in the latest completed run. Use node_ref values from run.get_results and request the row range needed for the analysis.', parameters: objectSchema({ node_ref: { type: 'string' }, offset: { type: 'integer' }, limit: { type: 'integer' } }, ['node_ref', 'offset', 'limit']) },
+  { name: 'run.get_result_page', description: 'Read actual rows from one Browse output in the latest completed run. Use node_ref values from run.get_results, request the row range needed, and name the columns needed (empty string for all).', parameters: objectSchema({ node_ref: { type: 'string' }, offset: { type: 'integer' }, limit: { type: 'integer' }, columns: { type: 'string' } }, ['node_ref', 'offset', 'limit', 'columns']) },
 ];
 
 function objectSchema(properties: AgentToolDefinition['parameters']['properties'] = {}, required: string[] = []) {
@@ -67,7 +67,7 @@ export type AgentToolEnvironment = {
   requestRun?: () => unknown;
   requestSave?: () => unknown;
   getResults?: () => unknown;
-  getResultPage?: (nodeRef: string, offset: number, limit: number) => unknown;
+  getResultPage?: (nodeRef: string, offset: number, limit: number, columns: string) => unknown;
 };
 
 type ResultShape = { type: string; required?: Record<string, string>; optional?: Record<string, string>;
@@ -179,7 +179,7 @@ async function dispatchAgentToolUnchecked(
       if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(limit) || limit < 1)
         throw new Error('Result page offset must be nonnegative and limit must be positive');
       if (!environment.getResultPage) throw new Error('Run result paging is unavailable in this application context');
-      return environment.getResultPage(String(input.node_ref), offset, limit);
+      return environment.getResultPage(String(input.node_ref), offset, limit, String(input.columns));
     }
     default:
       throw new Error(`Unknown or unavailable agent tool: ${name}`);
