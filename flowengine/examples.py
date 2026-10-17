@@ -124,6 +124,22 @@ def replay(tool_id: str, example: dict, base_dir) -> str | None:
             return f'{anchor}: fields {got["fields"]} != {expected["fields"]}'
         if got['row_count'] != expected['row_count']:
             return f'{anchor}: {got["row_count"]} rows != {expected["row_count"]}'
-        if example.get('deterministic', True) and got['rows'] != expected['rows']:
+        if example.get('check', 'values') == 'values' and not _same_rows(got['rows'], expected['rows']):
             return f'{anchor}: first rows differ'
     return None
+
+
+def _same_cell(a, b) -> bool:
+    if a == b:
+        return True
+    try:
+        x, y = float(a), float(b)
+    except (TypeError, ValueError):
+        return False
+    return abs(x - y) <= 1e-9 + 1e-6 * max(abs(x), abs(y))
+
+
+def _same_rows(got, expected) -> bool:
+    """Equal rows, allowing last-digit differences in numbers between platforms' maths libraries."""
+    return len(got) == len(expected) and all(len(g) == len(e) and all(_same_cell(a, b) for a, b in zip(g, e))
+                                             for g, e in zip(got, expected))

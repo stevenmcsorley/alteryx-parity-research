@@ -40,10 +40,23 @@ def size(e: dict) -> tuple:
     return (thin, len(json.dumps(e['config'])), sum(rows), json.dumps(e, sort_keys=True))
 
 
+# Fitted models, optimisers and text and time-series models give results that differ in the last
+# digits (or in ties) between platforms' numerical libraries; their examples are checked on schema
+# and row count. Everything else is compared value by value.
+NUMERIC_MODEL_CATEGORIES = {'Machine Learning', 'Predictive', 'Predictive Grouping', 'Prescriptive', 'Text Mining', 'Time Series'}
+
+
+def check_for(tool, categories) -> str:
+    cats = {categories.get(c) for c in tool.manifest.catalog_ids}
+    return 'schema' if not tool.manifest.deterministic or cats & NUMERIC_MODEL_CATEGORIES else 'values'
+
+
 def select(entries: list[dict]) -> dict:
+    from flowengine import catalog
     from flowengine.examples import replay
     from flowengine.plugin import default_registry
     reg = default_registry()
+    categories = {e['id']: e['category'] for e in catalog.entries()}
     by_tool: dict[str, list[dict]] = {}
     for e in entries:
         try:
@@ -65,7 +78,7 @@ def select(entries: list[dict]) -> dict:
                 continue
             seen_configs.add(key)
             example = {'config': e['config'], 'inputs': e['inputs'], 'expected_outputs': e['outputs'],
-                       'deterministic': tool.manifest.deterministic}
+                       'check': check_for(tool, categories)}
             with tempfile.TemporaryDirectory() as tmp:
                 if replay(tool_id, example, tmp) is not None:
                     continue  # keep only examples that reproduce from their stored inputs
