@@ -174,7 +174,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         return new Promise((resolve) => { resolveSaveApproval = resolve; });
       },
       getResults: () => safeRunResults(),
-      getResultPage: (nodeRef: string, offset: number, limit: number) => safeRunResultPage(nodeRef, offset, limit),
+      getResultPage: (nodeRef: string, offset: number, limit: number, columns: string) => safeRunResultPage(nodeRef, offset, limit, columns),
     };
   }
   function fullControlForCurrentWorkspace() {
@@ -518,22 +518,37 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   </aside>;
 }
 
+// The model sees every tool result on every later request in the turn, so results stay bounded:
+// a page holds at most 100 rows and 60 fields (the model can name the columns it wants), long text
+// is shortened, and blob cells (images, charts) become a size note.
+export const RESULT_PAGE_MAX_ROWS = 100;
+export const RESULT_CELL_MAX_CHARS = 2000;
+export const RESULT_MAX_FIELDS = 60;
+
+export function modelCell(value: string | null, type: string): string | null {
+  if (value === null) return null;
+  if (type.toLowerCase() === 'blob') return `[blob, ${Math.floor(value.length / 2)} bytes]`;
+  return value.length > RESULT_CELL_MAX_CHARS
+    ? `${value.slice(0, RESULT_CELL_MAX_CHARS)}… [${value.length - RESULT_CELL_MAX_CHARS} more characters]`
+    : value;
+}
+
 function safeRunResults() {
   const run = useEditor.getState().run;
   if (run.status !== 'succeeded' || !run.result) return { status: run.status, outputs: [] };
   const allOutputs = Object.entries(run.result.browse ?? {});
   const outputs = allOutputs.map(([nodeId, preview]) => ({
     node_ref: `node_${useEditor.getState().nodes.findIndex((node) => node.id === nodeId) + 1}`,
-    fields: preview.fields.map((field) => ({ name: field.name, type: field.type })),
-    fields_truncated: false,
+    fields: preview.fields.slice(0, RESULT_MAX_FIELDS).map((field) => ({ name: field.name, type: field.type })),
+    fields_truncated: preview.fields.length > RESULT_MAX_FIELDS,
     total_rows: preview.total_rows,
     available_rows: preview.rows.length,
-    rows: preview.rows.slice(0, 1),
+    rows: preview.rows.slice(0, 1).map((row) => row.slice(0, RESULT_MAX_FIELDS).map((cell, i) => modelCell(cell, preview.fields[i].type))),
   }));
   return { status: 'succeeded', outputs, outputs_truncated: false };
 }
 
-function safeRunResultPage(nodeRef: string, offset: number, limit: number) {
+function safeRunResultPage(nodeRef: string, offset: number, limit: number, columns = '') {
   const run = useEditor.getState().run;
   if (run.status !== 'succeeded' || !run.result) throw new Error('No successful workflow result is available');
   const index = Number(nodeRef.match(/^node_(\d+)$/)?.[1] ?? 0) - 1;
@@ -543,13 +558,16 @@ function safeRunResultPage(nodeRef: string, offset: number, limit: number) {
   if (!preview) throw new Error('The selected node has no Browse output in the latest run');
   const safeFields = preview.fields.map((field, i) => ({ field, i })).filter(({ field }) =>
     !/password|passwd|secret|token|credential|api.?key|access.?key/i.test(field.name));
-  const keep = safeFields;
+  const wanted = columns.split(',').map((name) => name.trim().toLowerCase()).filter(Boolean);
+  const unknown = wanted.filter((name) => !safeFields.some(({ field }) => field.name.toLowerCase() === name));
+  if (unknown.length) throw new Error(`Unknown column(s): ${unknown.join(', ')}. Use field names from run.get_results.`);
+  const chosen = wanted.length ? safeFields.filter(({ field }) => wanted.includes(field.name.toLowerCase())) : safeFields;
+  const keep = chosen.slice(0, RESULT_MAX_FIELDS);
   return {
     node_ref: nodeRef, offset, total_rows: preview.total_rows, available_rows: preview.rows.length,
-    fields: keep.map(({ field }) => ({ name: field.name, type: field.type })), fields_truncated: safeFields.length > keep.length,
-    rows: preview.rows.slice(offset, offset + limit).map((row) => keep.map(({ i }) => {
-      return row[i];
-    })),
+    fields: keep.map(({ field }) => ({ name: field.name, type: field.type })), fields_truncated: chosen.length > keep.length,
+    rows: preview.rows.slice(offset, offset + Math.min(limit, RESULT_PAGE_MAX_ROWS)).map((row) =>
+      keep.map(({ field, i }) => modelCell(row[i], field.type))),
   };
 }
 

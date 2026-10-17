@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useEditor } from '../state/store';
-import { AiSidebar } from './AiSidebar';
+import { AiSidebar, modelCell, RESULT_CELL_MAX_CHARS } from './AiSidebar';
 import { resetListenerForTests, useAiConversation } from './conversation';
 import { workflowRevision } from './workflowPatch';
 import { setTransport } from '../state/engineActions';
@@ -434,5 +434,14 @@ describe('Flowbench AI conversation', () => {
     expect(await screen.findByText('Response stopped')).toBeTruthy();
     await waitFor(() => expect((screen.getByLabelText('Message Flowbench AI') as HTMLTextAreaElement).disabled).toBe(false));
     expect(useAiConversation.getState().status).toBe('cancelled');
+  });
+});
+
+describe('model-facing result cells', () => {
+  it('reduces blobs to a size note and cuts long text', () => {
+    expect(modelCell('ab'.repeat(5000), 'blob')).toBe('[blob, 5000 bytes]');
+    expect(modelCell('x'.repeat(RESULT_CELL_MAX_CHARS + 10), 'v_wstring')).toBe(`${'x'.repeat(RESULT_CELL_MAX_CHARS)}… [10 more characters]`);
+    expect(modelCell('short', 'v_wstring')).toBe('short');
+    expect(modelCell(null, 'blob')).toBeNull();
   });
 });
