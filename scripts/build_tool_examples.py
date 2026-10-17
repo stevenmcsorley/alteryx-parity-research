@@ -40,10 +40,12 @@ def size(e: dict) -> tuple:
     return (thin, len(json.dumps(e['config'])), sum(rows), json.dumps(e, sort_keys=True))
 
 
-# Fitted models, optimisers and text and time-series models give results that differ in the last
-# digits (or in ties) between platforms' numerical libraries; their examples are checked on schema
-# and row count. Everything else is compared value by value.
-NUMERIC_MODEL_CATEGORIES = {'Machine Learning', 'Predictive', 'Predictive Grouping', 'Prescriptive', 'Text Mining', 'Time Series'}
+# Fitted models, optimisers, text and time-series models, and spatial geometry (GEOS versions differ
+# in vertex placement) give results that differ in the last digits, ties or vertex counts between
+# platforms; their examples are checked on schema and row count. Everything else is compared value
+# by value.
+NUMERIC_MODEL_CATEGORIES = {'Machine Learning', 'Predictive', 'Predictive Grouping', 'Prescriptive', 'Text Mining',
+                            'Time Series', 'Spatial'}
 
 
 def check_for(tool, categories) -> str:
