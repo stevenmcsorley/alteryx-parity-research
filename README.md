@@ -67,6 +67,8 @@ Each one bundles its own Python engine. The builds are not code-signed yet:
 - On Windows, choose *More info → Run anyway* when SmartScreen warns.
 - On macOS, run `xattr -dr com.apple.quarantine /Applications/Flowbench.app` after copying the app across.
 
+The **Flowbench AI** panel works with ChatGPT or a local model (Ollama, LM Studio, or any OpenAI-compatible server); see [docs/FLOWBENCH_AI.md](docs/FLOWBENCH_AI.md).
+
 To cut a release, bump the version in `desktop/package.json`, `desktop/src-tauri/tauri.conf.json` and `desktop/src-tauri/Cargo.toml`. Next, create a draft release (`gh release create vX.Y.Z --draft`) and push the matching `vX.Y.Z` tag. CI attaches the installers to the draft; publish it once all three platforms have uploaded.
 
 ## Start here (Windows PowerShell)

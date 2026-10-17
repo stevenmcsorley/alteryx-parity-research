@@ -37,9 +37,10 @@ async function ready() {
   });
   render(<AiSidebar close={() => undefined} />);
   await screen.findByRole('option', { name: 'Available model' });
-  fireEvent.click(screen.getByText('•••'));
+  fireEvent.click(screen.getByRole('button', { name: 'AI settings' }));
   fireEvent.click(screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }));
   await waitFor(() => expect((screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }) as HTMLInputElement).checked).toBe(true));
+  fireEvent.click(screen.getByRole('button', { name: 'AI settings' }));
 }
 
 describe('Flowbench AI conversation', () => {
@@ -96,7 +97,7 @@ describe('Flowbench AI conversation', () => {
       { op: 'add', ref: 'input', tool_id: 'core.input_data', config: { type_inference: 'flowbench' }, position: { x: 0, y: 0 } },
     ] });
     await ready();
-    fireEvent.click(screen.getByText('•••'));
+    fireEvent.click(screen.getByRole('button', { name: 'AI settings' }));
     fireEvent.click(screen.getByRole('checkbox', { name: /Full Control for this workspace/ }));
     expect(confirm).toHaveBeenCalledOnce();
     expect((screen.getByRole('checkbox', { name: /Full Control for this workspace/ }) as HTMLInputElement).checked).toBe(true);
@@ -135,7 +136,7 @@ describe('Flowbench AI conversation', () => {
   it('keeps connection and privacy settings out of the conversation body', async () => {
     render(<AiSidebar close={() => undefined} />);
     expect(await screen.findByText('What would you like to analyse?')).toBeTruthy();
-    expect(screen.getByText('•••')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'AI settings' })).toBeTruthy();
     expect(screen.queryByLabelText('Local read-only agent actions')).toBeNull();
   });
 
@@ -159,7 +160,7 @@ describe('Flowbench AI conversation', () => {
     });
     render(<AiSidebar close={() => undefined} />);
     await screen.findByRole('option', { name: 'Available model' });
-    fireEvent.click(screen.getByText('•••'));
+    fireEvent.click(screen.getByRole('button', { name: 'AI settings' }));
     fireEvent.click(screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }));
     await waitFor(() => expect((screen.getByRole('checkbox', { name: /Allow prompts, workflow context and requested data results/ }) as HTMLInputElement).checked).toBe(true));
     const composer = screen.getByLabelText('Message Flowbench AI');
@@ -214,8 +215,10 @@ describe('Flowbench AI conversation', () => {
     fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'hello' } });
     fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     expect(await screen.findByText(/completed with reasoning output but no user-facing text/)).toBeTruthy();
-    fireEvent.click(screen.getByText('•••'));
+    fireEvent.click(screen.getByRole('button', { name: 'AI settings' }));
     fireEvent.click(screen.getByRole('button', { name: 'Show safe response diagnostics' }));
+    expect(await screen.findByText(/^Completed · /)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Show technical details' }));
     expect(await screen.findByText(/\"terminal_status\": \"completed\"/)).toBeTruthy();
   });
 
@@ -228,10 +231,10 @@ describe('Flowbench AI conversation', () => {
       if (command === 'ai_respond') return { turn_id: args?.turnId, message_id: 'msg_probe', cycle_id: args?.cycleId, text: 'Probe answer', calls: [] };
       return undefined;
     });
-    fireEvent.click(screen.getByText('•••'));
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Include Flowbench application tools in requests' }));
-    expect((screen.getByRole('checkbox', { name: 'Include Flowbench application tools in requests' }) as HTMLInputElement).checked).toBe(false);
-    fireEvent.click(screen.getByText('•••'));
+    fireEvent.click(screen.getByRole('button', { name: 'AI settings' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: /Include Flowbench application tools in requests/ }));
+    expect((screen.getByRole('checkbox', { name: /Include Flowbench application tools in requests/ }) as HTMLInputElement).checked).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: 'AI settings' }));
     fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'hello' } });
     fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     expect(await screen.findByText('Probe answer')).toBeTruthy();
@@ -443,5 +446,35 @@ describe('model-facing result cells', () => {
     expect(modelCell('x'.repeat(RESULT_CELL_MAX_CHARS + 10), 'v_wstring')).toBe(`${'x'.repeat(RESULT_CELL_MAX_CHARS)}… [10 more characters]`);
     expect(modelCell('short', 'v_wstring')).toBe('short');
     expect(modelCell(null, 'blob')).toBeNull();
+  });
+});
+
+describe('local model provider', () => {
+  it('connects to a local server, needs no consent on localhost and sends no reasoning effort', async () => {
+    let local = false;
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_status') return local
+        ? { provider: 'local', local: { kind: 'ollama', base_url: 'http://localhost:11434', context_tokens: 32768, loopback: true }, connected: true, plan_usage_authorized: true, data_routing_allowed: true }
+        : { provider: 'chatgpt', connected: false, plan_usage_authorized: false };
+      if (command === 'ai_set_provider') { local = true; return [{ slug: 'qwen2.5:7b', display_name: 'qwen2.5:7b' }]; }
+      if (command === 'ai_models') return local ? [{ slug: 'qwen2.5:7b', display_name: 'qwen2.5:7b', supported_efforts: [] }] : [];
+      if (command === 'ai_begin') return { turn_id: 't_local', assistant_message_id: 'm_local' };
+      if (command === 'ai_respond') return { turn_id: args?.turnId, message_id: 'm_local', cycle_id: args?.cycleId, text: 'Local answer', calls: [], usage: { input_tokens: 6400, output_tokens: 12 } };
+      return undefined;
+    });
+    render(<AiSidebar close={() => undefined} />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Use a local model' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Local model' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Connect' }));
+    expect(await screen.findByRole('option', { name: 'qwen2.5:7b' })).toBeTruthy();
+    expect(tauriMock.invoke.mock.calls.find(([c]) => c === 'ai_set_provider')?.[1]).toMatchObject({ provider: 'local', kind: 'ollama', baseUrl: 'http://localhost:11434', contextTokens: 32768 });
+    expect(screen.getByText('Ollama', { selector: '.ai-provider-badge' })).toBeTruthy();
+    expect(screen.queryByRole('combobox', { name: 'Reasoning effort' })).toBeNull();
+    expect(screen.getByText(/Data stays on this computer/)).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'hello' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    expect(await screen.findByText('Local answer')).toBeTruthy();
+    expect(tauriMock.invoke.mock.calls.find(([c]) => c === 'ai_respond')?.[1]).toMatchObject({ model: 'qwen2.5:7b', effort: null });
+    expect(screen.getByText('6.4k tokens this turn')).toBeTruthy();
   });
 });
