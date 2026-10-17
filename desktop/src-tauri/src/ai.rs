@@ -871,6 +871,16 @@ fn compact_old_tool_results(input: &mut [Value]) {
                 "note":"This earlier tool result was shortened to save context. Call the tool again if its details are still needed."}).to_string());
         }
     }
+    // The model's own earlier calls (large workflow patches, scripts) are history it does not need verbatim.
+    let calls: Vec<usize> = input.iter().enumerate()
+        .filter(|(_, item)| item.get("type").and_then(Value::as_str) == Some("function_call"))
+        .map(|(i, _)| i).collect();
+    for &i in calls.iter().rev().skip(KEEP_RECENT_TOOL_RESULTS) {
+        if input[i]["arguments"].as_str().is_some_and(|s| s.len() > OLD_TOOL_RESULT_MAX_BYTES) {
+            let size = input[i]["arguments"].as_str().map_or(0, str::len);
+            input[i]["arguments"] = json!(json!({"earlier_arguments_shortened": size}).to_string());
+        }
+    }
 }
 fn renderer_tool_observation(value: Value) -> Value {
     json!({
@@ -3202,6 +3212,17 @@ mod tests {
         assert_eq!(wrapped["source"], "Flowbench renderer application adapter");
         assert_eq!(wrapped["trust"], "untrusted_observation");
         assert_eq!(wrapped["data"]["node_count"], 2);
+    }
+
+    #[test]
+    fn old_large_call_arguments_are_shortened_too() {
+        let mut input: Vec<Value> = (0..8).map(|i| json!({"type":"function_call","call_id":format!("c{i}"),"name":"workflow_propose_patch",
+            "arguments":"p".repeat(if i == 0 { 10 } else { 6000 })})).collect();
+        compact_old_tool_results(&mut input);
+        assert_eq!(input[0]["arguments"], "pppppppppp");
+        assert_eq!(input[1]["arguments"], json!({"earlier_arguments_shortened":6000}).to_string());
+        assert!(input[2..].iter().all(|item| item["arguments"].as_str().unwrap().len() == 6000));
+        assert_eq!(input[1]["call_id"], "c1", "the call stays paired with its output");
     }
 
     #[test]
