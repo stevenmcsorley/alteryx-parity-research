@@ -160,9 +160,10 @@
     ]
   },
   "independent_tests": {
-    "count": 11,
-    "passing": 11,
+    "count": 12,
+    "passing": 12,
     "tests": [
+      "test_agent.DiscoveryTests.test_describe_lists_every_setting_and_notes",
       "test_data_correctness.DataCorrectnessTests.test_full_typed_csv_pipeline_roundtrip",
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",

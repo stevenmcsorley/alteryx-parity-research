@@ -11,6 +11,7 @@ export type ChatMessage = {
   retryMode?: 'continue';
   activity?: string[];
 };
+export type ActionApproval = { operation: string; permissions: string[]; detail: string };
 export type TurnState = 'idle' | 'submitting' | 'streaming' | 'tool-running' | 'completed' | 'failed' | 'cancelled';
 type ConversationState = {
   fullControlScope: string | null;
@@ -23,6 +24,8 @@ type ConversationState = {
   proposal: WorkflowProposal | null;
   runApprovalRequested: boolean;
   saveApprovalRequested: boolean;
+  actionApproval: ActionApproval | null;
+  requestActionApproval(request: ActionApproval | null): void;
   setFullControl(scope: string | null): void;
   setStatus(status: TurnState): void;
   begin(user: ChatMessage, assistant: ChatMessage): void;
@@ -39,7 +42,7 @@ type ConversationState = {
 };
 
 export const useAiConversation = create<ConversationState>((set) => ({
-  fullControlScope: null, messages: [], status: 'idle', turnId: null, assistantMessageId: null, cycleId: null, roundPrefix: '', proposal: null, runApprovalRequested: false, saveApprovalRequested: false,
+  fullControlScope: null, messages: [], status: 'idle', turnId: null, assistantMessageId: null, cycleId: null, roundPrefix: '', proposal: null, runApprovalRequested: false, saveApprovalRequested: false, actionApproval: null,
   setStatus: (status) => set({ status }),
   begin: (user, assistant) => set((s) => ({ messages: [...s.messages, user, assistant], status: 'submitting', turnId: user.turnId, assistantMessageId: assistant.id, cycleId: null, roundPrefix: '' })),
   responseStart: (turnId, cycleId) => set((s) => s.turnId === turnId ? { status: 'streaming', cycleId, roundPrefix: s.messages.find((m) => m.id === s.assistantMessageId)?.text ?? '' } : s),
@@ -68,11 +71,12 @@ export const useAiConversation = create<ConversationState>((set) => ({
       : [m]);
     return { messages, status, turnId: null, assistantMessageId: null, cycleId: null, roundPrefix: '' };
   }),
-  reset: () => set({ messages: [], status: 'idle', turnId: null, assistantMessageId: null, cycleId: null, roundPrefix: '', proposal: null, runApprovalRequested: false, saveApprovalRequested: false }),
+  reset: () => set({ messages: [], status: 'idle', turnId: null, assistantMessageId: null, cycleId: null, roundPrefix: '', proposal: null, runApprovalRequested: false, saveApprovalRequested: false, actionApproval: null }),
   setFullControl: (fullControlScope) => set({ fullControlScope }),
   setProposal: (proposal) => set({ proposal }),
   requestRunApproval: () => set({ runApprovalRequested: true }),
   requestSaveApproval: () => set({ saveApprovalRequested: true }),
+  requestActionApproval: (request) => set({ actionApproval: request }),
 }));
 
 let listener: Promise<() => void> | undefined;

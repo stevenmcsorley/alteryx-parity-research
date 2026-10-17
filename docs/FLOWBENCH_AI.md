@@ -37,21 +37,39 @@ Under **Permissions**:
 - **Review mode** (the default): the AI asks before every workflow edit, run and save. Each edit is shown as a preview first.
 - **Full Control**: the AI works without asking, until Flowbench closes. Every edit can still be undone. Running code and writing to databases are still confirmed separately.
 
-## Data and files
+## How the AI works: Flowbench does the computing
 
-The AI works with files already on the computer. It cannot browse the web or download data. Download the data first, then use **Add files** (📎) beside the message box: the file paths go into your message, so the AI can build Input Data nodes from them.
+The AI is the orchestrator; Flowbench is the worker. For anything beyond an ordinary question, the AI:
 
-To keep answers accurate and requests small, the AI is told to calculate counts, totals and statistics with workflow tools such as Summarize and Formula, then read the small result. When it does read rows:
+1. finds tools with **find_tools** (search by task, such as "average by group" or "download csv") and reads their full specification with **describe_tool**;
+2. locates data with **list_files** and **profile_file** (Flowbench reads the file and returns fields, suggested types, null counts and ranges), or fetches public data with **download_file**, which saves the file under `data/` with a `<file>.source.json` provenance record (URL, time, size, SHA-256);
+3. builds the workflow on the canvas, validates it and runs it, exactly as you would;
+4. inspects outputs with **query_results**, which computes group-bys and aggregates over the full run output inside Flowbench;
+5. reports with **run_evidence**: workflow digest, tool versions, row counts, output digests and input file hashes.
 
-- each read returns at most 100 rows and 60 columns; it can ask for the exact columns it needs;
-- text longer than 2,000 characters is shortened, and image or chart cells are described by their size;
-- a single result is limited to 48 KB.
+If a run fails, the AI receives the engine's error code, message and failing node, so it can repair the workflow and run it again. When no native tool fits, it uses the Python or Run Command tools inside the workflow, so that step is recorded too.
 
-Results older than the last six are shortened when the conversation is resent. The AI can read them again if it needs them.
+These operations come from one registry: the same tool manifests drive the editor's configuration panels, the engine's validation and the AI's discovery. Nothing is reimplemented for the AI.
+
+Results reach the AI in full. Image and chart cells are described by their size, because the raw bytes are of no use to a language model. Results older than the last six are shortened when the conversation is resent; the AI can call the tool again if it needs one.
+
+### Permissions
+
+Downloads and file writes need permission. In **Full Control** they are granted for the workspace. In **Review mode** the panel shows each request (for example, "Download https://… into data/") with **Allow** and **Decline**. The engine itself refuses these operations without the grant, so this does not depend on the model following instructions.
+
+### Using Flowbench from other AI clients (MCP)
+
+The same operations are available to any Model Context Protocol client over stdio:
+
+```
+python -m flowengine mcp --workspace path/to/project --allow network,file_writes
+```
+
+Besides the operations above, the server offers **validate_workflow** and **run_workflow** for `.flow.json` files in the workspace. Permissions are granted for the session with `--allow` (`network`, `file_writes`, `processes`, `database_writes`, `remote_writes`); anything not granted returns a structured `permission-required` error.
 
 ## Usage
 
-Every step of a turn resends the conversation, so long tasks add up. The token count for the current turn shows beside the message box, and turns over 200k tokens are highlighted. **Usage** in settings shows the conversation's totals. With a local model, the count warns when the conversation nears the model's context length.
+Every step of a turn resends the conversation, so keeping data in Flowbench (rather than reading rows into the conversation) is what keeps usage low. The token count for the current turn shows beside the message box, and turns over 200k tokens are highlighted. **Usage** in settings shows the conversation's totals. With a local model, the count warns when the conversation nears the model's context length.
 
 For long tasks:
 - use a new conversation for each task;

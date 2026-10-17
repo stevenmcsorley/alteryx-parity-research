@@ -68,6 +68,8 @@ export type AgentToolEnvironment = {
   requestSave?: () => unknown;
   getResults?: () => unknown;
   getResultPage?: (nodeRef: string, offset: number, limit: number, columns: string) => unknown;
+  /** Engine agent operations (find_tools, profile_file, query_results, download_file, ...). */
+  callAgentOperation?: (operation: string, args: Record<string, unknown>) => Promise<unknown>;
 };
 
 type ResultShape = { type: string; required?: Record<string, string>; optional?: Record<string, string>;
@@ -90,6 +92,11 @@ export async function dispatchAgentTool(
   name: string,
   args: unknown = {},
 ): Promise<unknown> {
+  if (name.startsWith('agent.')) {
+    if (!environment.callAgentOperation) throw new Error('Engine operations are unavailable in this application context');
+    if (!args || typeof args !== 'object' || Array.isArray(args)) throw new Error('Tool arguments must be an object');
+    return environment.callAgentOperation(name.slice('agent.'.length), args as Record<string, unknown>);
+  }
   const result = await dispatchAgentToolUnchecked(environment, name, args);
   const violation = agentResultContractError(name, result);
   if (violation) throw new Error(`Flowbench result contract violation for ${name} at ${violation}`);

@@ -4,7 +4,7 @@ import { useEditor } from '../state/store';
 import { cancelRun, validateNow } from '../state/engineActions';
 import { ensureAiStreamListener, useAiConversation, type ChatMessage } from './conversation';
 import { prepareWorkflowProposal, workflowRevision } from './workflowPatch';
-import { runWorkflow } from '../state/engineActions';
+import { engine, runWorkflow } from '../state/engineActions';
 import { doSave } from '../panels/Toolbar';
 import { activityLabel, addUsage, diagnosticSummary, NO_USAGE, tokens, type Usage } from './panelText';
 import { ProviderSettings, providerLabel, type LocalProvider } from './ProviderSettings';
@@ -47,6 +47,11 @@ const quickActions: Entry[] = [
 let resolveRunApproval: ((value: unknown) => void) | null = null;
 let resolvePatchApproval: ((value: unknown) => void) | null = null;
 let resolveSaveApproval: ((value: unknown) => void) | null = null;
+let resolveActionApproval: ((approved: boolean) => void) | null = null;
+function describeOperation(operation: string, args: Record<string, unknown>) {
+  if (operation === 'download_file') return `Download ${String(args.url ?? '')} into ${String(args.folder ?? 'data')}/`;
+  return `${operation.replaceAll('_', ' ')} ${JSON.stringify(args).slice(0, 300)}`;
+}
 
 async function native<T>(command: string, args?: Record<string, unknown>): Promise<T> {
   const { invoke } = await import('@tauri-apps/api/core');
@@ -88,6 +93,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   const proposal = useAiConversation((s) => s.proposal);
   const runApprovalRequested = useAiConversation((s) => s.runApprovalRequested);
   const saveApprovalRequested = useAiConversation((s) => s.saveApprovalRequested);
+  const actionApproval = useAiConversation((s) => s.actionApproval);
   const fullControlScope = useAiConversation((s) => s.fullControlScope);
   const status = useAiConversation((s) => s.status);
   const chatScroll = useRef<HTMLDivElement>(null);
@@ -191,7 +197,25 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       },
       getResults: () => safeRunResults(),
       getResultPage: (nodeRef: string, offset: number, limit: number, columns: string) => safeRunResultPage(nodeRef, offset, limit, columns),
+      callAgentOperation: (operation: string, args: Record<string, unknown>) => callAgentOperation(operation, args),
     };
+  }
+  /** Runs an engine operation. Network and file-writing operations are granted under Full Control
+   *  and otherwise approved by the user for that call; the engine refuses them without the grant. */
+  async function callAgentOperation(operation: string, args: Record<string, unknown>) {
+    const call = (permissions: string[]) => engine().request<unknown>('agent.call',
+      { name: operation, arguments: args, base_dir: useEditor.getState().baseDir, permissions });
+    const first = await call(fullControlForCurrentWorkspace() ? ['network', 'file_writes'] : []) as
+      { ok: boolean; error?: { code: string; permissions?: string[] } };
+    if (first.ok || first.error?.code !== 'permission-required') return first;
+    const needed = first.error.permissions ?? [];
+    const approved = await new Promise<boolean>((resolve) => {
+      if (resolveActionApproval) { resolve(false); return; }
+      resolveActionApproval = resolve;
+      useAiConversation.getState().requestActionApproval({ operation, permissions: needed, detail: describeOperation(operation, args) });
+    });
+    if (!approved) return { ok: false, operation, error: { code: 'permission-declined', message: `The user declined ${needed.join(' and ')} for ${operation}. Ask before trying again, or continue another way.` } };
+    return call(needed);
   }
   function fullControlForCurrentWorkspace() {
     const state = useEditor.getState();
@@ -403,6 +427,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     resolvePatchApproval?.({ status: 'cancelled', operation_count: 0, valid: false, problem_codes: [] }); resolvePatchApproval = null;
     resolveSaveApproval?.({ status: 'cancelled', path_selected: false }); resolveSaveApproval = null;
     resolveRunApproval?.({ status: 'cancelled', outputs: [] }); resolveRunApproval = null;
+    resolveActionApproval?.(false); resolveActionApproval = null; useAiConversation.getState().requestActionApproval(null);
     if (useEditor.getState().run.status === 'running') await cancelRun().catch(() => undefined);
     try { await native('ai_cancel'); } catch { /* request may already have ended */ }
   }
@@ -531,7 +556,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           <div className="ai-orb" aria-hidden="true">✦</div>
           <h2>What would you like to analyse?</h2>
           <p>{fullControl ? 'Flowbench AI can build, validate and run workflows in this workspace.' : 'Flowbench AI can build and validate workflows, asking before each change. Turn on Full Control in settings to let it work without prompts.'}</p>
-          <p className="ai-empty-note">It works with files on this computer and can’t browse the web. Download your data first, then use <b>Add files</b> so it knows where the files are.</p>
+          <p className="ai-empty-note">Describe the analysis. Flowbench AI finds or downloads the data, builds the workflow on the canvas, runs it and reports what Flowbench computed. Use <b>Add files</b> to point it at your own data.</p>
           {!authorized && <div className="ai-connect-inline">
             <span>{sessionRecovery ? 'Reconnect your protected ChatGPT session to continue.' : connected ? 'ChatGPT plan usage is not authorised yet.' : 'Connect a ChatGPT account, or use a local model with Ollama or LM Studio.'}</span>
             <div className="ai-settings-row center">
@@ -566,6 +591,13 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           <div><button className="primary" onClick={() => void approveSave()}>Choose destination and save</button>
             <button onClick={rejectSave}>Cancel</button></div>
         </section>}
+        {actionApproval && <section className="ai-proposal-card" aria-label="Permission request">
+          <strong>Allow {actionApproval.permissions.map((p) => p === 'network' ? 'internet access' : p === 'file_writes' ? 'saving files' : p).join(' and ')}?</strong>
+          <p>{actionApproval.detail}</p>
+          <small className="ai-menu-note">Turn on Full Control in settings to allow this for the workspace without asking.</small>
+          <div><button className="primary" onClick={() => { useAiConversation.getState().requestActionApproval(null); resolveActionApproval?.(true); resolveActionApproval = null; }}>Allow</button>
+            <button onClick={() => { useAiConversation.getState().requestActionApproval(null); resolveActionApproval?.(false); resolveActionApproval = null; }}>Decline</button></div>
+        </section>}
         {error && <div className="ai-inline-error" role="alert">{error}<button onClick={() => setError('')}>Dismiss</button></div>}
         {lastProblem?.problem && !streaming && messages.some((m) => m.state === 'failed') && <div className="ai-inline-hint">{lastProblem.text}</div>}
       </div>
@@ -592,34 +624,34 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   </aside>;
 }
 
-// The model sees every tool result on every later request in the turn, so results stay bounded:
-// a page holds at most 100 rows and 60 fields (the model can name the columns it wants), long text
-// is shortened, and blob cells (images, charts) become a size note.
-export const RESULT_PAGE_MAX_ROWS = 100;
-export const RESULT_CELL_MAX_CHARS = 2000;
-export const RESULT_MAX_FIELDS = 60;
-
+// Results reach the model in full. Blob cells (images, charts) are described by size: hex bytes are of
+// no use to the model. Use query_results to compute on full outputs inside Flowbench.
 export function modelCell(value: string | null, type: string): string | null {
   if (value === null) return null;
   if (type.toLowerCase() === 'blob') return `[blob, ${Math.floor(value.length / 2)} bytes]`;
-  return value.length > RESULT_CELL_MAX_CHARS
-    ? `${value.slice(0, RESULT_CELL_MAX_CHARS)}… [${value.length - RESULT_CELL_MAX_CHARS} more characters]`
-    : value;
+  return value;
 }
 
 function safeRunResults() {
   const run = useEditor.getState().run;
-  if (run.status !== 'succeeded' || !run.result) return { status: run.status, outputs: [] };
+  const ids = run.runId ? { run_id: run.runId } : {};
+  if (run.status !== 'succeeded' || !run.result) {
+    const failure = (run.result as { error?: { code?: string; message?: string; node_id?: string } } | null)?.error;
+    const nodes = useEditor.getState().nodes;
+    const ref = (id?: string) => { const i = nodes.findIndex((n) => n.id === id); return i >= 0 ? `node_${i + 1}` : undefined; };
+    return { status: run.status, outputs: [], ...ids, ...(failure ? { error: { code: failure.code, message: failure.message, node_id: failure.node_id, node_ref: ref(failure.node_id) } } : {}) };
+  }
   const allOutputs = Object.entries(run.result.browse ?? {});
   const outputs = allOutputs.map(([nodeId, preview]) => ({
     node_ref: `node_${useEditor.getState().nodes.findIndex((node) => node.id === nodeId) + 1}`,
-    fields: preview.fields.slice(0, RESULT_MAX_FIELDS).map((field) => ({ name: field.name, type: field.type })),
-    fields_truncated: preview.fields.length > RESULT_MAX_FIELDS,
+    node_id: nodeId,
+    fields: preview.fields.map((field) => ({ name: field.name, type: field.type })),
+    fields_truncated: false,
     total_rows: preview.total_rows,
     available_rows: preview.rows.length,
-    rows: preview.rows.slice(0, 1).map((row) => row.slice(0, RESULT_MAX_FIELDS).map((cell, i) => modelCell(cell, preview.fields[i].type))),
+    rows: preview.rows.slice(0, 1).map((row) => row.map((cell, i) => modelCell(cell, preview.fields[i].type))),
   }));
-  return { status: 'succeeded', outputs, outputs_truncated: false };
+  return { status: 'succeeded', outputs, outputs_truncated: false, ...ids };
 }
 
 function safeRunResultPage(nodeRef: string, offset: number, limit: number, columns = '') {
@@ -636,11 +668,11 @@ function safeRunResultPage(nodeRef: string, offset: number, limit: number, colum
   const unknown = wanted.filter((name) => !safeFields.some(({ field }) => field.name.toLowerCase() === name));
   if (unknown.length) throw new Error(`Unknown column(s): ${unknown.join(', ')}. Use field names from run.get_results.`);
   const chosen = wanted.length ? safeFields.filter(({ field }) => wanted.includes(field.name.toLowerCase())) : safeFields;
-  const keep = chosen.slice(0, RESULT_MAX_FIELDS);
+  const keep = chosen;
   return {
     node_ref: nodeRef, offset, total_rows: preview.total_rows, available_rows: preview.rows.length,
     fields: keep.map(({ field }) => ({ name: field.name, type: field.type })), fields_truncated: chosen.length > keep.length,
-    rows: preview.rows.slice(offset, offset + Math.min(limit, RESULT_PAGE_MAX_ROWS)).map((row) =>
+    rows: preview.rows.slice(offset, offset + limit).map((row) =>
       keep.map(({ field, i }) => modelCell(row[i], field.type))),
   };
 }

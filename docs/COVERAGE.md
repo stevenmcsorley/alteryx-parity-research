@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 427 run, 0 failed |
+| Unit/integration tests in last ledger build | 436 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -34,11 +34,11 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:browse` | `core.browse` | 32 | 0/0 | not-tested |
 | `in-out:date-time-now` | `core.date_time_now` | 1 | 0/0 | not-tested |
 | `in-out:directory` | `core.directory` | 3 | 0/0 | not-tested |
-| `in-out:input-data` | `core.input_data` | 28 | 0/0 | not-tested |
+| `in-out:input-data` | `core.input_data` | 32 | 0/0 | not-tested |
 | `in-out:map-input` | `core.map_input` | 1 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 12 | 0/0 | not-tested |
 | `in-out:text-input` | `core.text_input` | 273 | 0/0 | not-tested |
-| `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
+| `preparation:auto-field` | `core.auto_field` | 5 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 2 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
 | `preparation:data-cleansing` | `core.data_cleansing` | 3 | 0/0 | not-tested |
@@ -75,7 +75,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `transform:cross-tab` | `core.cross_tab` | 1 | 3/3 | partial |
 | `transform:make-columns` | `core.make_columns` | 1 | 1/1 | partial |
 | `transform:running-total` | `core.running_total` | 1 | 1/1 | partial |
-| `transform:summarize` | `core.summarize` | 11 | 4/4 | partial |
+| `transform:summarize` | `core.summarize` | 12 | 4/4 | partial |
 | `transform:transpose` | `core.transpose` | 1 | 1/1 | partial |
 | `transform:weighted-average` | `core.weighted_average` | 1 | 1/1 | partial |
 | `in-database:browse-in-db` | `core.browse_indb` | 1 | 0/0 | not-tested |
