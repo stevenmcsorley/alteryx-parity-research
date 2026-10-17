@@ -322,3 +322,21 @@ table.grid td.rownum { color: var(--text-3); text-align: right; background: var(
 .engine-down { position: absolute; inset: 0; display: grid; place-items: center; background: var(--canvas); z-index: 4; }
 .engine-down .card { max-width: 480px; padding: 18px; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); box-shadow: var(--shadow); }
 .engine-down code { font-family: var(--mono); font-size: 12px; background: var(--panel-2); padding: 1px 4px; border-radius: 4px; }
+
+/* Chart cells and the chart viewer */
+table.grid td.chart-cell { max-width: none; padding: 6px 8px; white-space: normal; vertical-align: top; }
+.chart-thumb { position: relative; width: clamp(240px, 45vw, 760px); }
+.chart-thumb-image { display: block; width: 100%; padding: 0; border: 1px solid var(--border); border-radius: 6px; background: #fff; cursor: zoom-in; overflow: hidden; }
+.chart-thumb-image img { display: block; width: 100%; height: auto; max-height: clamp(160px, 34vh, 420px); object-fit: contain; }
+.chart-thumb-actions { position: absolute; top: 6px; right: 6px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.12s; }
+.chart-thumb:hover .chart-thumb-actions, .chart-thumb:focus-within .chart-thumb-actions { opacity: 1; }
+.chart-thumb-actions button { font-size: 11px; padding: 2px 6px; background: var(--panel); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; }
+.chart-viewer { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; background: rgba(10, 15, 25, 0.88); }
+.chart-viewer-bar { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: var(--panel); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.chart-viewer-bar strong { flex: 1; min-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chart-viewer-tools { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.chart-viewer-tools .sep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
+.chart-zoom { min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
+.chart-viewer-stage { position: relative; flex: 1; overflow: hidden; cursor: grab; touch-action: none; }
+.chart-viewer-stage:active { cursor: grabbing; }
+.chart-viewer-stage img { background: #fff; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35); user-select: none; max-width: none; }

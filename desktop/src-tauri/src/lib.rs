@@ -1,4 +1,5 @@
 mod ai;
+mod charts;
 mod engine;
 
 use engine::{engine_root, Engine};
@@ -36,6 +37,8 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             engine_request,
+            charts::chart_save,
+            charts::chart_open,
             ai::ai_status,
             ai::ai_sign_in,
             ai::ai_models,

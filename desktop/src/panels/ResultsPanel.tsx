@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useReactFlow } from '@xyflow/react';
 import { useEditor } from '../state/store';
 import { exportRunResult } from '../state/engineActions';
 import { ProblemRow } from './Inspector';
 import { notify } from '../ui/toast';
 import { promptPath } from '../ui/dialogs';
+import { ChartViewer, chartTitle, saveChart, svgDataUrl } from './ChartViewer';
 
 export function ResultsPanel() {
   const tab = useEditor((s) => s.bottomTab);
@@ -250,9 +252,17 @@ export function isChartSvg(value: string): boolean {
 }
 
 export function ChartImage({ svg }: { svg: string }) {
-  const src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  const title = /<title>([^<]*)<\/title>/.exec(svg)?.[1] ?? 'Chart';
-  return <a href={src} download={`${title.replace(/[^A-Za-z0-9 _-]+/g, '').trim() || 'chart'}.svg`} title="Download SVG">
-    <img src={src} alt={title} style={{ maxWidth: '100%', maxHeight: 460, display: 'block', background: '#fff' }} />
-  </a>;
+  const [open, setOpen] = useState(false);
+  const title = chartTitle(svg);
+  return <div className="chart-thumb">
+    <button className="chart-thumb-image" onClick={() => setOpen(true)} title="Open the chart viewer to zoom, save or open it">
+      <img src={svgDataUrl(svg)} alt={title} />
+    </button>
+    <div className="chart-thumb-actions">
+      <button onClick={() => setOpen(true)} aria-label={`Enlarge ${title}`} title="Enlarge">⤢</button>
+      <button onClick={() => void saveChart(svg, 'png')} aria-label="Save as PNG" title="Save as PNG">PNG</button>
+      <button onClick={() => void saveChart(svg, 'svg')} aria-label="Save as SVG" title="Save as SVG">SVG</button>
+    </div>
+    {open && createPortal(<ChartViewer svg={svg} onClose={() => setOpen(false)} />, document.body)}
+  </div>;
 }
