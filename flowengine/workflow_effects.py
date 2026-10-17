@@ -17,9 +17,9 @@ MACRO_TOOLS = {'flowengine.macro', 'flowengine.batch_macro', 'flowengine.iterati
 DB_WRITE_TOOLS = {'core.db_output', 'core.write_indb', 'core.data_stream_in'}
 FILE_WRITE_TOOLS = {'core.blob_output'}
 # Outbound requests that can carry record data; database tools keep their connection semantics.
-NETWORK_TOOLS = {'core.download', 'core.github_last_commit', 'core.github_commit'}
+NETWORK_TOOLS = {'core.download', 'core.github_last_commit', 'core.github_commit', 'core.email'}
 # Changes made outside this computer (in addition to the network request itself).
-REMOTE_WRITE_TOOLS = {'core.github_commit'}
+REMOTE_WRITE_TOOLS = {'core.github_commit', 'core.email'}
 
 
 def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dict:

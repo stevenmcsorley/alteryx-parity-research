@@ -121,8 +121,8 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
   const remoteWriters = effects.remote_writes ?? [];
   let allowRemoteWrites = false;
   if (remoteWriters.length) {
-    allowRemoteWrites = window.confirm(`This workflow pushes changes to a remote service (${remoteWriters.map(effectLocation).join(', ')}). `
-      + 'Check the target repository and branch. Allow remote writes for this run?')
+    allowRemoteWrites = window.confirm(`This workflow pushes changes or sends email to a remote service (${remoteWriters.map(effectLocation).join(', ')}). `
+      + 'Check the targets (repository and branch, or email recipients). Allow remote writes for this run?')
       && effects.complete;
     if (!allowRemoteWrites) return;
   }

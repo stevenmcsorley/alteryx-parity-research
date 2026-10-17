@@ -147,9 +147,21 @@
     ]
   },
   "independent_tests": {
-    "count": 247,
-    "passing": 247,
+    "count": 259,
+    "passing": 259,
     "tests": [
+      "test_batch10.APIOutputTests.test_quoted_csv_messages",
+      "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
+      "test_batch10.EmailTests.test_nothing_is_sent_when_any_record_is_invalid",
+      "test_batch10.EmailTests.test_one_message_per_record_with_placeholders_bcc_and_attachment",
+      "test_batch10.EmailTests.test_saved_smtp_connection_logs_in",
+      "test_batch10.EmailTests.test_text_templates_keep_unknown_placeholders",
+      "test_batch10.JupyterFlowTests.test_markers_map_connections_and_outputs",
+      "test_batch10.JupyterFlowTests.test_needs_permission_and_connected_inputs",
+      "test_batch10.MapInputTests.test_draw_and_select",
+      "test_batch10.TransposeInDBTests.test_union_of_casts_with_parameters_in_marker_order",
+      "test_batch10.VisualLayoutTests.test_bad_placement_is_reported",
+      "test_batch10.VisualLayoutTests.test_rows_place_elements_side_by_side",
       "test_batch5.GeometryEditingTests.test_generalize_uses_metric_tolerance",
       "test_batch5.GeometryEditingTests.test_heat_map_density_integrates_to_point_count",
       "test_batch5.GeometryEditingTests.test_poly_split_and_build",

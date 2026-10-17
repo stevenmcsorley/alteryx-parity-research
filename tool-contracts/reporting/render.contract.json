@@ -172,9 +172,10 @@
     ]
   },
   "independent_tests": {
-    "count": 7,
-    "passing": 7,
+    "count": 8,
+    "passing": 8,
     "tests": [
+      "test_batch10.VisualLayoutTests.test_rows_place_elements_side_by_side",
       "test_batch5.MapReportExampleTests.test_uk_map_report_example",
       "test_batch5.ReportFurnitureTests.test_header_and_footer_on_every_pdf_page",
       "test_batch5.ReportFurnitureTests.test_overlay_places_elements_over_a_chart",

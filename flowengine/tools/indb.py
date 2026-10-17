@@ -614,6 +614,49 @@ class SampleInDB(_InDB):
         return {'output': Stream(s.conn_id, sql, params, s.fields, s.steps + [step]).table()}
 
 
+class TransposeInDB(_InDB):
+    manifest = ToolManifest(
+        tool_id='core.transpose_indb', version='1.0.0', display_name='Transpose In-DB',
+        catalog_ids=('laboratory:transpose-in-db',),
+        inputs=(Anchor('input', 'In-DB'),), outputs=(Anchor('output', 'In-DB'),),
+        description='Pivot data fields into rows inside the database (UNION ALL of one SELECT per data field). The '
+                    'key fields repeat on each row, followed by Name (the field name) and Value (the field converted '
+                    'to text by the database, so number and date text follows the database\'s own format). Each '
+                    'source record gives one row per data field. Blob fields are not supported.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['data_fields'], 'properties': {
+            'key_fields': {'type': 'array', 'uniqueItems': True, 'items': {'type': 'string', 'minLength': 1}, 'default': []},
+            'data_fields': {'type': 'array', 'uniqueItems': True, 'minItems': 1, 'items': {'type': 'string', 'minLength': 1}}}})
+
+    def run(self, ctx, cfg, inputs):
+        from .database import sql_type
+        s = Stream.read(inputs['input'])
+        _, d = s.dialect()
+        require_fields(s.schema, cfg['key_fields'] + cfg['data_fields'])
+        overlap = set(cfg['key_fields']) & set(cfg['data_fields'])
+        if overlap:
+            raise ConfigError(f'Field(s) {sorted(overlap)} cannot be both key and data fields')
+        clash = {'Name', 'Value'} & set(cfg['key_fields'])
+        if clash:
+            raise ConfigError(f'Key field(s) {sorted(clash)} clash with the Name and Value output fields')
+        blobs = [n for n in cfg['data_fields'] if s.schema.field(n).type is FieldType.BLOB]
+        if blobs:
+            raise SchemaError(f'Transpose In-DB does not support blob fields {blobs}')
+        name_f = Field('Name', FieldType.V_WSTRING, 255)
+        value_f = Field('Value', FieldType.V_WSTRING, TEXT)
+        name_t, value_t = sql_type(d.name, name_f), sql_type(d.name, value_f)
+        a = _alias(s)
+        keys = ''.join(f'{a}.{d.quote(k)} AS {d.quote(k)}, ' for k in cfg['key_fields'])
+        parts, params = [], []
+        for n in cfg['data_fields']:
+            parts.append(f'SELECT {keys}CAST(%s AS {name_t}) AS {d.quote("Name")}, '
+                         f'CAST({a}.{d.quote(n)} AS {value_t}) AS {d.quote("Value")} FROM ({s.sql}) {a}')
+            params += [n] + s.params
+        sql = f'SELECT * FROM ({" UNION ALL ".join(parts)}) {_alias(s, "t")}'
+        fields = [s.schema.field(k) for k in cfg['key_fields']] + [name_f, value_f]
+        step = f'transpose {len(cfg["data_fields"])} field(s)' + (f' by {", ".join(cfg["key_fields"])}' if cfg['key_fields'] else '')
+        return {'output': Stream(s.conn_id, sql, params, fields, s.steps + [step]).table()}
+
+
 class DynamicInputInDB(Tool):
     manifest = ToolManifest(
         tool_id='core.dynamic_input_indb', version='1.0.0', display_name='Dynamic Input In-DB',
@@ -726,4 +769,4 @@ class MacroOutputInDB(Tool):
 
 
 TOOLS = [ConnectInDB, DataStreamOut, BrowseInDB, DataStreamIn, WriteDataInDB, SelectInDB, FilterInDB, FormulaInDB,
-         SummarizeInDB, JoinInDB, UnionInDB, SampleInDB, DynamicInputInDB, DynamicOutputInDB, MacroInputInDB, MacroOutputInDB]
+         SummarizeInDB, JoinInDB, UnionInDB, SampleInDB, TransposeInDB, DynamicInputInDB, DynamicOutputInDB, MacroInputInDB, MacroOutputInDB]

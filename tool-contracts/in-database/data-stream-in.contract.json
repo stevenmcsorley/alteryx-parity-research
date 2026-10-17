@@ -108,9 +108,10 @@
     ]
   },
   "independent_tests": {
-    "count": 8,
-    "passing": 8,
+    "count": 9,
+    "passing": 9,
     "tests": [
+      "test_batch10.TransposeInDBTests.test_union_of_casts_with_parameters_in_marker_order",
       "test_indb.CompositionTests.test_join_union_and_sample",
       "test_indb.CompositionTests.test_parameters_follow_their_markers_in_sql_order",
       "test_indb.CompositionTests.test_pipeline_wraps_queries_and_keeps_parameters_in_order",

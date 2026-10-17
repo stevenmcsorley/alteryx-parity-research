@@ -125,9 +125,10 @@
     ]
   },
   "independent_tests": {
-    "count": 6,
-    "passing": 6,
+    "count": 7,
+    "passing": 7,
     "tests": [
+      "test_batch10.VisualLayoutTests.test_rows_place_elements_side_by_side",
       "test_batch5.ReportFurnitureTests.test_overlay_places_elements_over_a_chart",
       "test_reporting.ElementTests.test_report_text_placeholders",
       "test_reporting.RenderTests.test_fuel_report_example",

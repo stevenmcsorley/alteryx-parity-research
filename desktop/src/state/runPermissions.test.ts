@@ -41,7 +41,7 @@ describe('run permissions', () => {
     vi.stubGlobal('window', { ...window, confirm, alert: vi.fn() });
     const calls = stubEngine(effects(1, true, 1));
     await runWorkflow();
-    expect(confirm).toHaveBeenCalledWith(expect.stringContaining('pushes changes to a remote service (gh0)'));
+    expect(confirm).toHaveBeenCalledWith(expect.stringContaining('pushes changes or sends email to a remote service (gh0)'));
     expect(calls.find((c) => c.method === 'run.start')?.params).toMatchObject({ allow_network: true, allow_remote_writes: true });
     useEditor.getState().newWorkflow();
     const declineRemote = vi.fn((text: string) => !text.includes('remote service'));

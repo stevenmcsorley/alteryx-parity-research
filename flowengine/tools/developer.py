@@ -1349,5 +1349,196 @@ class RunCommand(Tool):
         return {'output': Table.from_rows([Field(n, FieldType.V_WSTRING, TEXT) for n in names], rows[1:])}
 
 
+# =========================================================================== API Output
+
+def _api_cell(v, f):
+    if v is None:
+        return '""'
+    if f.type is FieldType.BLOB:
+        text = f'{len(v)} Bytes'
+    else:
+        text = format_value(v)
+    return '"' + text.replace('"', '""') + '"'
+
+
+class APIOutput(Tool):
+    manifest = ToolManifest(
+        tool_id='core.api_output', version='1.0.0', display_name='API Output', catalog_ids=('developer:api-output',),
+        inputs=(Anchor('input', 'Input'),), outputs=(),
+        description='Write the stream to the run messages as comma-delimited, quote-qualified text. The first message '
+                    'holds the field names and each record follows as one message, cut to 255 characters. Embedded '
+                    'quotes are doubled, and blobs show their size (for example "14 Bytes").',
+        config_schema={'type': 'object', 'additionalProperties': False, 'properties': {}})
+
+    def infer(self, ctx, cfg, inputs):
+        return {}
+
+    def run(self, ctx, cfg, inputs):
+        table = inputs['input']
+        fields = list(table.schema)
+        ctx.info(','.join('"' + f.name.replace('"', '""') + '"' for f in fields)[:255])
+        for row in table.rows():
+            ctx.check_cancelled()
+            ctx.info(','.join(_api_cell(v, f) for v, f in zip(row, fields))[:255])
+        return {}
+
+
+# =========================================================================== Jupyter Flow
+
+_INPUT_MARK = re.compile(r'^\s*#\s*ayx_input\s*(?:=\s*#?\s*(\d+))?\s*$')
+_OUTPUT_MARK = re.compile(r'^\s*#\s*ayx_output\s*(?:=\s*#?\s*(\d+))?\s*$')
+_MAGIC = re.compile(r'^(\s*)[%!]')
+_FRAME_HELPER = (
+    'def _fb_frame(value, n):\n'
+    '    import pandas as pd\n'
+    '    if isinstance(value, pd.Series):\n'
+    '        return value.to_frame()\n'
+    '    if isinstance(value, pd.DataFrame):\n'
+    '        return value\n'
+    '    raise TypeError(f"Output {n} must be a pandas DataFrame, not {type(value).__name__}")\n')
+
+
+def _assignment(tree, line):
+    """The single-target assignment statement starting on ``line`` (1-based) of a cell."""
+    import ast
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Assign, ast.AnnAssign)) and node.lineno == line:
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            if len(targets) == 1 and isinstance(targets[0], ast.Name):
+                return node, targets[0].id
+    return None, None
+
+
+def notebook_script(notebook: dict):
+    """(script, inputs, outputs, notes): code cells joined, with #ayx_input / #ayx_output markers applied.
+
+    A marked input assignment is replaced by ``read_input(n, as_frame=True)``. A marked output
+    assignment is written to output n with the variable's value at the end of that cell. IPython
+    magics (lines starting with % or !) do not run outside Jupyter and are skipped.
+    """
+    import ast
+    if notebook.get('nbformat', 0) < 4:
+        raise DataError('Jupyter Flow needs a notebook in nbformat 4 or later')
+    parts, inputs, outputs, notes = [_FRAME_HELPER], set(), set(), []
+    for c, cell in enumerate(notebook.get('cells', []), 1):
+        if cell.get('cell_type') != 'code':
+            continue
+        source = cell.get('source', '')
+        lines = (''.join(source) if isinstance(source, list) else source).split('\n')
+        magics = 0
+        for k, line in enumerate(lines):
+            m = _MAGIC.match(line)
+            if m:
+                lines[k] = f'{m.group(1)}pass  # IPython magic skipped: {line.strip()[:60]}'
+                magics += 1
+        if magics:
+            notes.append(f'Cell {c}: skipped {magics} IPython magic line(s)')
+        text = '\n'.join(lines)
+        try:
+            tree = ast.parse(text)
+        except SyntaxError as e:
+            raise DataError(f'Cell {c} is not valid Python: {e.msg} (line {e.lineno})') from None
+        replace, writes = {}, []
+        for k, line in enumerate(lines):
+            for mark, kind in ((_INPUT_MARK, 'input'), (_OUTPUT_MARK, 'output')):
+                m = mark.match(line)
+                if not m:
+                    continue
+                n = int(m.group(1) or 1)
+                target = next((j for j in range(k + 1, len(lines)) if lines[j].strip() and not lines[j].strip().startswith('#')), None)
+                node, name = _assignment(tree, target + 1) if target is not None else (None, None)
+                if node is None:
+                    raise DataError(f'Cell {c}: #ayx_{kind} must be followed by an assignment to a variable, like "df = ..."')
+                if kind == 'input':
+                    indent = lines[target][:len(lines[target]) - len(lines[target].lstrip())]
+                    replace[target] = (node.end_lineno - 1, f'{indent}{name} = read_input({n}, as_frame=True)')
+                    inputs.add(n)
+                else:
+                    if not 1 <= n <= 5:
+                        raise DataError(f'Cell {c}: #ayx_output={n}; outputs are numbered 1 to 5')
+                    writes.append(f'write_output({n}, _fb_frame({name}, {n}))')
+                    outputs.add(n)
+        out, k = [], 0
+        while k < len(lines):
+            if k in replace:
+                end, new = replace[k]
+                out.append(new)
+                k = end + 1
+                continue
+            out.append(lines[k])
+            k += 1
+        parts.append(f'# --- cell {c}\n' + '\n'.join(out) + ('\n' + '\n'.join(writes) if writes else ''))
+    if not outputs:
+        notes.append('The notebook marks no outputs (#ayx_output); every output will be empty')
+    return '\n\n'.join(parts) + '\n', inputs, outputs, notes
+
+
+class JupyterFlow(Tool):
+    manifest = ToolManifest(
+        tool_id='core.jupyter_flow', version='1.0.0', display_name='Jupyter Flow', catalog_ids=('laboratory:jupyter-flow',),
+        inputs=(Anchor('inputs', 'Input', required=False, multiple=True, description='Connections #1, #2, ... in order'),),
+        outputs=tuple(Anchor(f'output{i}', str(i)) for i in range(1, 6)),
+        side_effects='process', deterministic=False,
+        description='Run a Jupyter notebook (.ipynb) as part of the workflow, in an isolated Python process. In the '
+                    'notebook, a "#ayx_input" or "#ayx_input=#2" comment before an assignment replaces its value '
+                    'with input connection #1 or #2 as a pandas DataFrame. "#ayx_output" or "#ayx_output=3" sends '
+                    'the assigned DataFrame (its value at the end of that cell) to output 1 or 3. Code cells run in '
+                    'order, with the notebook folder as the working directory. IPython magics are skipped. '
+                    'packages_path adds a site-packages folder or a .pyz/.zip of packages. Needs permission to '
+                    'run processes.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'required': ['notebook'], 'properties': {
+            'notebook': {'type': 'string', 'minLength': 1},
+            'packages_path': {'type': ['string', 'null'], 'default': None},
+            'environment': {'type': 'string', 'default': 'default'},
+            'timeout_seconds': {'type': 'integer', 'minimum': 1, 'default': 600}}})
+
+    def infer(self, ctx, cfg, inputs):
+        return None
+
+    def _path(self, ctx, value):
+        p = Path(value)
+        return p if p.is_absolute() else Path(ctx.base_dir) / p
+
+    def run(self, ctx, cfg, inputs):
+        nb_path = self._path(ctx, cfg['notebook'])
+        if nb_path.suffix.lower() != '.ipynb' or not nb_path.is_file():
+            raise ConfigError(f'Notebook {str(nb_path)!r} was not found (a .ipynb file)')
+        try:
+            notebook = json.loads(nb_path.read_text(encoding='utf-8'))
+        except ValueError:
+            raise DataError(f'{nb_path.name} is not a valid notebook file') from None
+        script, used, _, notes = notebook_script(notebook)
+        connected = inputs.get('inputs') or []
+        missing_inputs = sorted(n for n in used if n > len(connected))
+        if missing_inputs:
+            raise DataError(f'The notebook reads input(s) {missing_inputs} but {len(connected)} connection(s) are attached')
+        for note in notes:
+            ctx.warn(note)
+        prelude = 'import sys\n'
+        if cfg['packages_path']:
+            packages = self._path(ctx, cfg['packages_path'])
+            if not packages.exists():
+                raise ConfigError(f'Packages path {str(packages)!r} was not found')
+            prelude += f'sys.path.insert(0, {str(packages)!r})\n'
+        prelude += 'from flowbench_io import read_input, write_output\n'
+        _require_processes(ctx, 'Jupyter Flow')
+        from ..runtimes import interpreter
+        exe = interpreter(cfg['environment'])
+        with tempfile.TemporaryDirectory(prefix='flowbench-nb-') as d:
+            d = Path(d)
+            (d / 'flowbench_io.py').write_text(_EXCHANGE_HELPER, encoding='utf-8')
+            for k, t in enumerate(connected):
+                _write_exchange(d / f'in{k + 1}.jsonl', t)
+            (d / 'notebook.py').write_text(prelude + script, encoding='utf-8')
+            _run_process(ctx, [exe, '-I', '-X', 'utf8', '-c',
+                               f'import sys; sys.path.insert(0, {str(d)!r}); '
+                               f'exec(compile(open({str(d / "notebook.py")!r}, encoding="utf-8").read(), '
+                               f'{nb_path.name!r}, "exec"), {{"__name__": "__main__"}})'],
+                         nb_path.parent, cfg['timeout_seconds'])
+            return {f'output{i}': (_read_exchange(d / f'out{i}.jsonl', ctx) if (d / f'out{i}.jsonl').is_file()
+                                   else Table([], [])) for i in range(1, 6)}
+
+
 TOOLS = [FieldInfo, JSONSchemaTool, JSONParse, JSONBuild, DynamicRename, DynamicSelect, DynamicReplace, BlobInput, BlobOutput, BlobConvert, Base64Encoder, Message, TestTool,
-         BlockUntilDone, ControlContainer, Runner, Detour, DetourEnd, ExpectEquals, Throttle, PythonTool, RTool, RunCommand]
+         BlockUntilDone, ControlContainer, Runner, Detour, DetourEnd, ExpectEquals, Throttle, PythonTool, RTool, RunCommand,
+         APIOutput, JupyterFlow]

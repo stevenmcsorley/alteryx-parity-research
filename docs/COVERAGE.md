@@ -10,9 +10,9 @@
 | Distinct tool names | 321 |
 | Public help URL resolved (official tool list sync) | 323 |
 | Machine-readable contracts generated | 323 |
-| Entries with known anchors (manifest, reference-observed or public-doc) | 245 |
+| Entries with known anchors (manifest, reference-observed or public-doc) | 247 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 188 |
+| Independent kernels implemented and passing tests | 194 |
 | Independently implemented application adapters (in progress) | 14 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 382 run, 0 failed |
+| Unit/integration tests in last ledger build | 394 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -35,8 +35,9 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:date-time-now` | `core.date_time_now` | 1 | 0/0 | not-tested |
 | `in-out:directory` | `core.directory` | 3 | 0/0 | not-tested |
 | `in-out:input-data` | `core.input_data` | 28 | 0/0 | not-tested |
+| `in-out:map-input` | `core.map_input` | 1 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 12 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 247 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 259 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 2 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -79,7 +80,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `transform:weighted-average` | `core.weighted_average` | 1 | 1/1 | partial |
 | `in-database:browse-in-db` | `core.browse_indb` | 1 | 0/0 | not-tested |
 | `in-database:connect-in-db` | `core.connect_indb` | 1 | 0/0 | not-tested |
-| `in-database:data-stream-in` | `core.data_stream_in` | 8 | 0/0 | not-tested |
+| `in-database:data-stream-in` | `core.data_stream_in` | 9 | 0/0 | not-tested |
 | `in-database:data-stream-out` | `core.data_stream_out` | 1 | 0/0 | not-tested |
 | `in-database:dynamic-input-in-db` | `core.dynamic_input_indb` | 1 | 0/0 | not-tested |
 | `in-database:dynamic-output-in-db` | `core.dynamic_output_indb` | 2 | 0/0 | not-tested |
@@ -93,17 +94,18 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-database:summarize-in-db` | `core.summarize_indb` | 1 | 0/0 | not-tested |
 | `in-database:union-in-db` | `core.union_indb` | 1 | 0/0 | not-tested |
 | `in-database:write-data-in-db` | `core.write_indb` | 1 | 0/0 | not-tested |
+| `reporting:email` | `core.email` | 5 | 0/0 | not-tested |
 | `reporting:image` | `core.report_image` | 4 | 0/0 | not-tested |
 | `reporting:interactive-chart` | `core.interactive_chart` | 5 | 0/0 | not-tested |
 | `reporting:layout` | `core.report_layout` | 5 | 0/0 | not-tested |
 | `reporting:map-legend-builder` | `core.map_legend_builder` | 1 | 0/0 | not-tested |
 | `reporting:map-legend-splitter` | `core.map_legend_splitter` | 1 | 0/0 | not-tested |
 | `reporting:overlay` | `core.report_overlay` | 1 | 0/0 | not-tested |
-| `reporting:render` | `core.render` | 7 | 0/0 | not-tested |
+| `reporting:render` | `core.render` | 8 | 0/0 | not-tested |
 | `reporting:report-footer` | `core.report_footer` | 2 | 0/0 | not-tested |
 | `reporting:report-header` | `core.report_header` | 2 | 0/0 | not-tested |
 | `reporting:report-map` | `core.report_map` | 2 | 0/0 | not-tested |
-| `reporting:report-text` | `core.report_text` | 6 | 0/0 | not-tested |
+| `reporting:report-text` | `core.report_text` | 7 | 0/0 | not-tested |
 | `reporting:table` | `core.report_table` | 6 | 0/0 | not-tested |
 | `spatial:buffer` | `core.buffer` | 3 | 0/0 | not-tested |
 | `spatial:create-points` | `core.create_points` | 3 | 0/0 | not-tested |
@@ -184,6 +186,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `prescriptive:simulation-sampling` | `core.simulation_sampling` | 1 | 0/0 | not-tested |
 | `prescriptive:simulation-scoring` | `core.simulation_scoring` | 1 | 0/0 | not-tested |
 | `prescriptive:simulation-summary` | `core.simulation_summary` | 1 | 0/0 | not-tested |
+| `developer:api-output` | `core.api_output` | 1 | 0/0 | not-tested |
 | `developer:base64-encoder` | `core.base64_encoder` | 1 | 0/0 | not-tested |
 | `developer:blob-convert` | `core.blob_convert` | 3 | 0/0 | not-tested |
 | `developer:blob-input` | `core.blob_input` | 2 | 0/0 | not-tested |
@@ -211,6 +214,9 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `developer:test` | `core.test` | 1 | 0/0 | not-tested |
 | `developer:throttle` | `core.throttle` | 1 | 0/0 | not-tested |
 | `laboratory:json-build` | `core.json_build` | 1 | 0/0 | not-tested |
+| `laboratory:jupyter-flow` | `core.jupyter_flow` | 2 | 0/0 | not-tested |
+| `laboratory:transpose-in-db` | `core.transpose_indb` | 1 | 0/0 | not-tested |
+| `laboratory:visual-layout` | `core.visual_layout` | 2 | 0/0 | not-tested |
 | `machine-learning:assisted-modeling` | `core.assisted_modeling` | 2 | 0/0 | not-tested |
 | `machine-learning:build-features` | `core.build_features` | 2 | 0/0 | not-tested |
 | `machine-learning:classification` | `core.ml_classification` | 2 | 0/0 | not-tested |
@@ -235,20 +241,20 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Connectors | 44 | 0 | 0 | 1 | 44 |
 | Data Investigation | 14 | 14 | 0 | 14 | 0 |
 | Demographic Analysis | 4 | 0 | 0 | 0 | 4 |
-| Developer | 30 | 26 | 4 | 29 | 0 |
+| Developer | 30 | 27 | 4 | 29 | 0 |
 | Documentation | 3 | 0 | 0 | 1 | 0 |
 | In-Database | 16 | 16 | 0 | 16 | 0 |
-| In/Out | 8 | 6 | 0 | 7 | 0 |
+| In/Out | 8 | 7 | 0 | 7 | 0 |
 | Interface | 18 | 2 | 0 | 17 | 0 |
 | Join | 7 | 7 | 5 | 7 | 0 |
-| Laboratory | 7 | 1 | 0 | 4 | 0 |
+| Laboratory | 7 | 4 | 0 | 5 | 0 |
 | Machine Learning | 11 | 9 | 0 | 9 | 0 |
 | Parse | 4 | 4 | 4 | 4 | 0 |
 | Predictive | 25 | 23 | 0 | 23 | 0 |
 | Predictive Grouping | 9 | 9 | 0 | 9 | 0 |
 | Preparation | 21 | 21 | 12 | 21 | 0 |
 | Prescriptive | 4 | 4 | 0 | 4 | 0 |
-| Reporting | 13 | 12 | 0 | 12 | 0 |
+| Reporting | 13 | 13 | 0 | 13 | 0 |
 | SDK Examples | 1 | 0 | 0 | 0 | 0 |
 | Spatial | 15 | 14 | 0 | 14 | 0 |
 | Text Mining | 9 | 0 | 0 | 9 | 0 |
