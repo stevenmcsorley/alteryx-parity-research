@@ -553,11 +553,13 @@ fn response_failure(kind: &str, code: &str) -> Option<String> {
         "response.failed" | "error"
             if code.contains("usage")
                 || code.contains("rate_limit")
+                || code.contains("quota")
                 || code.contains("subscription_sharing_usage") =>
         {
             Some("ChatGPT usage limit reached; check your plan limits".into())
         }
         "response.failed" => Some("ChatGPT could not complete this response".into()),
+        "error" if code.contains("context_length") => Some("This conversation is too long for the model; start a new chat".into()),
         "error" => Some("ChatGPT returned a stream error".into()),
         "response.incomplete" => Some("ChatGPT response was incomplete".into()),
         _ => None,
@@ -739,6 +741,14 @@ fn exact_keys(value: &Value, keys: &[&str]) -> bool {
     value
         .as_object()
         .is_some_and(|o| o.keys().all(|k| keys.contains(&k.as_str())))
+}
+fn within_result_budget(name: &str, value: Value) -> Value {
+    let size = serde_json::to_string(&value).map(|s| s.len()).unwrap_or(usize::MAX);
+    if size <= TOOL_RESULT_MAX_BYTES { return value; }
+    let advice = if name == "run.get_result_page" { "Request fewer rows with a smaller limit." }
+        else { "Narrow the request, for example with a more specific catalogue query." };
+    json!({"code":"result_too_large","executed":true,"bytes":size,"limit_bytes":TOOL_RESULT_MAX_BYTES,
+        "error":format!("The result was not returned because it is larger than the per-call budget. {advice}")})
 }
 fn renderer_tool_observation(value: Value) -> Value {
     json!({
@@ -1076,6 +1086,23 @@ fn safe_agent_tool_error(message: &str) -> bool {
     })
 }
 
+// Every tool result is resent on each later request in the turn, so results are bounded here
+// as well as in the renderer: at most RESULT_PAGE_MAX_ROWS rows and RESULT_MAX_FIELDS fields, RESULT_CELL_MAX_CHARS per text
+// cell, blob cells (images, charts) reduced to a size note, and TOOL_RESULT_MAX_BYTES overall.
+const RESULT_PAGE_MAX_ROWS: usize = 25;
+const RESULT_CELL_MAX_CHARS: usize = 500;
+const RESULT_MAX_FIELDS: usize = 60;
+const TOOL_RESULT_MAX_BYTES: usize = 48 * 1024;
+fn bounded_cell(text: &str, kind: &str) -> Value {
+    if kind.eq_ignore_ascii_case("blob") {
+        if text.starts_with("[blob, ") { return json!(text); }
+        return json!(format!("[blob, {} bytes]", text.len() / 2));
+    }
+    let count = text.chars().count();
+    if count <= RESULT_CELL_MAX_CHARS + 40 { return json!(text); }
+    let kept: String = text.chars().take(RESULT_CELL_MAX_CHARS).collect();
+    json!(format!("{kept}… [{} more characters]", count - RESULT_CELL_MAX_CHARS))
+}
 fn project_run_results(value: Value) -> Option<Value> {
     if !exact_keys(&value, &["status", "outputs", "outputs_truncated"])
         || !value.get("status").is_some_and(Value::is_string)
@@ -1103,29 +1130,31 @@ fn project_run_results(value: Value) -> Option<Value> {
         let rows = output["rows"].as_array()?;
         let mut keep = Vec::new();
         let mut safe_fields = Vec::new();
+        let mut dropped = false;
         for (i, field) in fields.iter().enumerate() {
             if !exact_keys(field, &["name", "type"]) { return None; }
             let name = field["name"].as_str()?;
             let kind = field["type"].as_str()?;
             let lower = name.to_ascii_lowercase();
             if ["password", "passwd", "secret", "token", "credential", "api_key", "access_key"].iter().any(|needle| lower.contains(needle)) { continue; }
-            keep.push(i);
+            if keep.len() == RESULT_MAX_FIELDS { dropped = true; continue; }
+            keep.push((i, kind));
             safe_fields.push(json!({"name":name,"type":kind}));
         }
         let mut safe_rows = Vec::new();
-        for row in rows {
+        for row in rows.iter().take(RESULT_PAGE_MAX_ROWS) {
             let cells = row.as_array()?;
             if cells.len() != fields.len() { return None; }
             let mut safe = Vec::new();
-            for i in &keep {
+            for (i, kind) in &keep {
                 let cell = &cells[*i];
                 if cell.is_null() || cell.is_boolean() || cell.is_number() { safe.push(cell.clone()); }
-                else if let Some(s) = cell.as_str() { safe.push(json!(s)); }
+                else if let Some(s) = cell.as_str() { safe.push(bounded_cell(s, kind)); }
                 else { return None; }
             }
             safe_rows.push(Value::Array(safe));
         }
-        projected.push(json!({"node_ref":output["node_ref"],"fields":safe_fields,"fields_truncated":output["fields_truncated"],"total_rows":output["total_rows"],"available_rows":output["available_rows"],"rows":safe_rows}));
+        projected.push(json!({"node_ref":output["node_ref"],"fields":safe_fields,"fields_truncated":dropped || output["fields_truncated"] == true,"total_rows":output["total_rows"],"available_rows":output["available_rows"],"rows":safe_rows}));
     }
     Some(json!({"status":"succeeded","outputs":projected,"outputs_truncated":value.get("outputs_truncated").cloned().unwrap_or(Value::Bool(false))}))
 }
@@ -1141,28 +1170,30 @@ fn project_result_page(value: Value) -> Option<Value> {
     let rows = value["rows"].as_array()?;
     let mut keep = Vec::new();
     let mut clean_fields = Vec::new();
+    let mut dropped = false;
     for (i, field) in fields.iter().enumerate() {
         if !exact_keys(field, &["name", "type"]) { return None; }
         let name = field["name"].as_str().filter(|s| !s.is_empty())?;
         let kind = field["type"].as_str().filter(|s| !s.is_empty())?;
         if ["password", "passwd", "secret", "token", "credential", "api_key", "access_key"].iter().any(|needle| name.to_ascii_lowercase().contains(needle)) { continue; }
-        keep.push(i);
+        if keep.len() == RESULT_MAX_FIELDS { dropped = true; continue; }
+        keep.push((i, kind));
         clean_fields.push(json!({"name":name,"type":kind}));
     }
     let mut clean_rows = Vec::new();
-    for row in rows {
+    for row in rows.iter().take(RESULT_PAGE_MAX_ROWS) {
         let cells = row.as_array()?;
         if cells.len() != fields.len() { return None; }
         let mut clean = Vec::new();
-        for i in &keep {
+        for (i, kind) in &keep {
             let cell = &cells[*i];
             if cell.is_null() || cell.is_boolean() || cell.is_number() { clean.push(cell.clone()); }
-            else if let Some(text) = cell.as_str() { clean.push(json!(text)); }
+            else if let Some(text) = cell.as_str() { clean.push(bounded_cell(text, kind)); }
             else { return None; }
         }
         clean_rows.push(Value::Array(clean));
     }
-    Some(json!({"node_ref":value["node_ref"],"offset":value["offset"],"total_rows":value["total_rows"],"available_rows":value["available_rows"],"fields":clean_fields,"fields_truncated":value["fields_truncated"],"rows":clean_rows}))
+    Some(json!({"node_ref":value["node_ref"],"offset":value["offset"],"total_rows":value["total_rows"],"available_rows":value["available_rows"],"fields":clean_fields,"fields_truncated":dropped || value["fields_truncated"] == true,"rows":clean_rows}))
 }
 fn safe_problems(v: &Value) -> bool {
     exact_keys(v, &["count", "problems"])
@@ -2238,6 +2269,7 @@ pub async fn ai_respond(
                             .pointer("/response/error/code")
                             .and_then(Value::as_str),
                     )
+                    .or_else(|| safe_diagnostic_label(value.pointer("/error/code").and_then(Value::as_str)))
                     .or(Some("provider_response_failed".into()));
                     break;
                 }
@@ -2258,7 +2290,8 @@ pub async fn ai_respond(
                 }
                 "error" => {
                     terminal_status = "stream_error".into();
-                    error_code = safe_diagnostic_label(value.get("code").and_then(Value::as_str))
+                    error_code = ["/code", "/error/code", "/error/type", "/response/error/code"].iter()
+                        .find_map(|path| safe_diagnostic_label(value.pointer(path).and_then(Value::as_str)))
                         .or(Some("provider_stream_error".into()));
                     break;
                 }
@@ -2469,7 +2502,7 @@ pub async fn ai_submit_tool_result(
     // Rust validates the privacy projection, but the live editor state is
     // renderer-owned and cannot be factually attested by this native layer.
     // Preserve that provenance in the model transcript.
-    let observation = renderer_tool_observation(safe);
+    let observation = renderer_tool_observation(within_result_budget(&name, safe));
     let encoded = serde_json::to_string(&observation).map_err(|_| "Tool result was invalid")?;
     pending.remove(&call_id);
     drop(pending);
@@ -2836,6 +2869,22 @@ mod tests {
         assert_eq!(wrapped["source"], "Flowbench renderer application adapter");
         assert_eq!(wrapped["trust"], "untrusted_observation");
         assert_eq!(wrapped["data"]["node_count"], 2);
+    }
+
+    #[test]
+    fn result_pages_are_bounded_for_the_model() {
+        let fields: Vec<Value> = (0..70).map(|i| json!({"name":format!("f{i}"),"type":if i == 1 { "Blob" } else { "V_WString" }})).collect();
+        let row: Vec<Value> = (0..70).map(|i| json!(match i { 0 => "x".repeat(2000), 1 => "ab".repeat(30000), _ => "v".into() })).collect();
+        let page = project_result_page(json!({"node_ref":"node_1","offset":0,"total_rows":300,"available_rows":100,
+            "fields":fields,"fields_truncated":false,"rows":vec![Value::Array(row); 100]})).unwrap();
+        assert_eq!(page["rows"].as_array().unwrap().len(), RESULT_PAGE_MAX_ROWS);
+        assert_eq!(page["fields"].as_array().unwrap().len(), RESULT_MAX_FIELDS);
+        assert_eq!(page["fields_truncated"], true);
+        assert_eq!(page["rows"][0][1], "[blob, 30000 bytes]");
+        assert!(page["rows"][0][0].as_str().unwrap().ends_with("… [1500 more characters]"));
+        let big = json!({"rows":"x".repeat(TOOL_RESULT_MAX_BYTES)});
+        assert_eq!(within_result_budget("run.get_result_page", big)["code"], "result_too_large");
+        assert_eq!(within_result_budget("x", json!({"a":1})), json!({"a":1}));
     }
 
     #[test]
