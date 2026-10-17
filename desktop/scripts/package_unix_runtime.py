@@ -56,6 +56,29 @@ def stage():
         subprocess.run([str(moved / 'bin/python3'), '-m', 'flowengine', 'run',
                         'examples/sales/monthly_sales.flow.json', '--clock', '2026-01-15T09:30:00'],
                        cwd=ROOT, check=True)
+        check_user_site_isolation(moved / 'bin/python3')
+
+
+def check_user_site_isolation(python: Path) -> None:
+    """A broken NumPy in the user's site-packages must not reach the engine as the desktop app starts it.
+
+    Plants a NumPy that raises on import in a throwaway user base, confirms the runtime would load it by
+    default (so the check is meaningful), then runs the ML example with the desktop app's environment."""
+    with tempfile.TemporaryDirectory(prefix='flowbench-usersite-') as base:
+        env = {**os.environ, 'PYTHONUSERBASE': base}
+        site_dir = Path(subprocess.check_output([str(python), '-c', 'import site; print(site.getusersitepackages())'],
+                                                env=env, text=True).strip())
+        (site_dir / 'numpy').mkdir(parents=True)
+        (site_dir / 'numpy' / '__init__.py').write_text("raise ImportError('user-site numpy was imported')\n")
+        shadowed = subprocess.run([str(python), '-c', 'import numpy'], env=env, capture_output=True, text=True)
+        assert 'user-site numpy was imported' in shadowed.stderr, 'the planted user-site NumPy was not visible; the check proves nothing'
+        desktop = {**env, 'PYTHONNOUSERSITE': '1', 'FLOWBENCH_DESKTOP': '1'}
+        desktop.pop('PYTHONPATH', None)
+        where = subprocess.check_output([str(python), '-c', 'import numpy, sklearn; print(numpy.__file__)'], env=desktop, text=True).strip()
+        assert str(python.parent.parent) in where, f'NumPy came from {where}, not the bundled runtime'
+        subprocess.run([str(python), '-m', 'flowengine', 'run', 'examples/machine_learning/churn_model.flow.json'],
+                       cwd=ROOT, env=desktop, check=True)
+        print('user-site isolation check passed')
 
 
 if __name__ == '__main__':

@@ -111,5 +111,6 @@ def clean_env(extra: dict | None = None) -> dict:
             'LOCALAPPDATA', 'APPDATA', 'R_LIBS_USER')
     env = {k: v for k, v in os.environ.items() if k.upper() in keep}
     env['PYTHONIOENCODING'] = 'utf-8'
+    env['PYTHONNOUSERSITE'] = '1'  # never let ~/.local packages shadow the environment's own
     env.update(extra or {})
     return env

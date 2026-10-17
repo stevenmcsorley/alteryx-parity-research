@@ -37,6 +37,12 @@ Under **Permissions**:
 - **Review mode** (the default): the AI asks before every workflow edit, run and save. Each edit is shown as a preview first.
 - **Full Control**: the AI works without asking, until Flowbench closes. Every edit can still be undone. Running code and writing to databases are still confirmed separately.
 
+## Workspace and Python runtime
+
+The workspace is the folder that holds the open workflow. Untitled workflows in the desktop app use `~/Flowbench` (`%USERPROFILE%\Flowbench` on Windows), never the install folder; set `FLOWBENCH_WORKSPACE` to choose another. The AI's file writes and saves stay inside the workspace.
+
+The engine, the Python tool, run_python and every program the AI runs use only Flowbench's bundled Python packages, or a managed environment made with install_python_packages. Packages in your own `~/.local` site-packages and `PYTHONPATH` are ignored. An older NumPy installed for your user (for example 1.26) used to shadow the bundled NumPy 2 and broke model fitting. The packaging checks now fail if that can happen.
+
 ## How the AI works: Flowbench does the computing
 
 The AI is the orchestrator; Flowbench is the worker. For anything beyond an ordinary question, the AI:
