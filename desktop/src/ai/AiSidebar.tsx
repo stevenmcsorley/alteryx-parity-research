@@ -364,7 +364,8 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     let internalSteps = 0;
     try {
       await ensureAiStreamListener();
-      const started = await native<{ turn_id: string; assistant_message_id: string; task?: AgentTask }>('ai_begin', { prompt: text });
+      const started = await native<{ turn_id: string; assistant_message_id: string; task?: AgentTask }>('ai_begin',
+        { prompt: text, workspace: useEditor.getState().baseDir || null });
       turnId = started.turn_id;
       if (started.task) useAiConversation.getState().setTask(started.task);
       pausedRef.current = false; setPaused(false);
@@ -466,7 +467,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   }
   async function openTasks() {
     setView('task');
-    try { setRecentTasks(await native<AgentTask[]>('ai_recent_tasks')); } catch { setRecentTasks([]); }
+    try {
+      const tasks = await native<AgentTask[] | null>('ai_recent_tasks');
+      setRecentTasks(Array.isArray(tasks) ? tasks : []);
+    } catch { setRecentTasks([]); }
   }
   async function cancel() {
     cancelled.current = true;
@@ -564,6 +568,8 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         <small className="ai-menu-note">{local ? 'Local models cost nothing per token, but a long conversation can outgrow the context length.'
           : 'Each step of a turn resends the conversation, so long tasks add up. Lower reasoning effort and a new conversation per task keep usage down.'}</small>
       </section>
+
+      <WebSearchSettings disabled={busy || streaming} />
 
       <section className="ai-settings-section" aria-label="Troubleshooting">
         <h3>Troubleshooting</h3>
@@ -753,6 +759,7 @@ function Message({ message, onRetry }: { message: ChatMessage; onRetry: () => vo
       {message.activity.length > 1 && <ul>{message.activity.map((activity, i) => <li key={`${i}_${activity}`}>{activity}</li>)}</ul>}</details>}
     {message.verification?.status === 'verified' && <div className="ai-verification ok" title={message.verification.runIds?.length ? `Run ${message.verification.runIds.join(', ')}` : undefined}>✓ Backed by a Flowbench run</div>}
     {message.verification?.status === 'unverified' && <div className="ai-verification warn" role="note">Not verified: no Flowbench run backs this answer. Treat its numbers as unconfirmed.</div>}
+    {message.verification?.status === 'incomplete' && <div className="ai-verification warn" role="note">Incomplete: {message.verification.missing?.length ? `missing ${message.verification.missing.join('; ')}` : 'some requested deliverables are missing'}. See the Task tab.</div>}
     {message.verification?.status === 'answered_without_execution' && <div className="ai-verification" role="note">Answered without running Flowbench{message.verification.note ? `: ${message.verification.note}` : ''}</div>}
     {message.error && <div className="ai-message-error" role="alert">{message.error}<button onClick={onRetry}>Retry</button></div>}
     {message.state === 'cancelled' && <div className="ai-message-error">Response stopped</div>}
@@ -773,12 +780,47 @@ function inlineMarkdown(line: string) {
   return parts.map((part, i) => part.startsWith('`') && part.endsWith('`') ? <code key={i}>{part.slice(1, -1)}</code> :
     part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : part);
 }
-type TaskRecord = { verification?: Verification['status']; classified_as_question?: string | null; evidence?: Array<{ run_id?: string | null }> };
+type TaskRecord = { verification?: Verification['status']; classified_as_question?: string | null; evidence?: Array<{ run_id?: string | null }>; missing?: string[] };
 function verificationOf(task: TaskRecord | null | undefined): Verification | undefined {
   if (!task?.verification) return undefined;
   const runIds = [...new Set((task.evidence ?? []).map((e) => e.run_id).filter((id): id is string => Boolean(id)))];
-  return { status: task.verification, note: task.classified_as_question ?? undefined, runIds };
+  return { status: task.verification, note: task.classified_as_question ?? undefined, runIds, missing: task.missing ?? [] };
 }
+/** Where the AI's web_search goes: the user's SearXNG instance, else DuckDuckGo. Stored by the engine. */
+function WebSearchSettings({ disabled }: { disabled: boolean }) {
+  const [url, setUrl] = useState('');
+  const [note, setNote] = useState<{ text: string; ok: boolean } | null>(null);
+  const [working, setWorking] = useState(false);
+  useEffect(() => {
+    engine().request<{ searxng_url: string | null }>('agent.search_settings', {})
+      .then((s) => setUrl(s.searxng_url ?? '')).catch(() => undefined);
+  }, []);
+  async function save(test: boolean) {
+    setWorking(true); setNote(null);
+    try {
+      const s = await engine().request<{ searxng_url: string | null; test?: { results: number; unresponsive_engines: unknown[] } }>(
+        'agent.search_settings', { searxng_url: url.trim() || null, test });
+      setNote(!s.searxng_url ? { text: 'Web search uses DuckDuckGo.', ok: true }
+        : s.test ? { text: `SearXNG answered with ${s.test.results} result(s)${s.test.unresponsive_engines.length ? `; engines not responding: ${s.test.unresponsive_engines.map((e) => (e as string[])[0]).join(', ')}` : ''}.`, ok: s.test.results > 0 }
+        : { text: 'Saved.', ok: true });
+    } catch (e) { setNote({ text: messageOf(e), ok: false }); }
+    finally { setWorking(false); }
+  }
+  return <section className="ai-settings-section" aria-label="Web search">
+    <h3>Web search</h3>
+    <div className="ai-settings-body">
+      <label>SearXNG address
+        <input value={url} placeholder="http://localhost:8888" onChange={(e) => setUrl(e.target.value)} disabled={disabled || working} spellCheck={false} /></label>
+      <small className="ai-menu-note">Your own SearXNG instance (JSON output enabled). Leave empty to use DuckDuckGo. Official statistics are also found through GOV.UK and data.gov.uk search.</small>
+      <div className="ai-settings-row wrap">
+        <button onClick={() => void save(true)} disabled={disabled || working || !url.trim()}>{working ? 'Testing…' : 'Save and test'}</button>
+        <button onClick={() => void save(false)} disabled={disabled || working}>Save</button>
+      </div>
+    </div>
+    {note && <p className={`ai-settings-note ${note.ok ? 'ok' : 'err'}`} role={note.ok ? 'status' : 'alert'}>{note.text}</p>}
+  </section>;
+}
+
 function safeToolFailure(tool: string, error: unknown) {
   const text = error instanceof Error ? error.message : '';
   const contract = text.match(/Flowbench result contract violation for [a-z0-9_.-]+ at (\$[a-z0-9_.$-]+)/i);

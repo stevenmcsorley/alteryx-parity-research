@@ -566,7 +566,7 @@ test('Flowbench AI workspace exposes bounded local tools and honest provider sta
   await expect(settings.getByRole('radio', { name: 'ChatGPT' })).toHaveAttribute('aria-checked', 'true');
   await expect(sidebar.getByRole('button', { name: 'Continue with ChatGPT' }).first()).toBeEnabled();
   await settings.getByRole('radio', { name: 'Local model' }).click();
-  await expect(settings.getByLabel('Address')).toHaveValue('http://localhost:11434');
+  await expect(settings.getByLabel('Address', { exact: true })).toHaveValue('http://localhost:11434');
   await page.getByRole('tab', { name: 'Inspector' }).click();
   await expect(page.getByTestId('inspector')).toBeVisible();
   await page.getByRole('tab', { name: 'Flowbench AI' }).click();

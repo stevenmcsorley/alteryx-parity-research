@@ -56,6 +56,8 @@ const API_TOOL_NAMES: &[(&str, &str)] = &[
     ("run.get_results", "run_get_results"),
     ("run.get_result_page", "run_get_result_page"),
     ("task.classify", "task_classify"),
+    ("task.plan", "task_plan"),
+    ("task.deliver", "task_deliver"),
 ];
 
 fn internal_tool_name(api_name: &str) -> Option<&'static str> {
@@ -669,6 +671,7 @@ fn native_tool_definitions() -> Value {
     let mut tools = editor_tool_definitions();
     if let Some(list) = tools.as_array_mut() {
         list.push(task::classify_tool_definition());
+        list.extend(task::plan_tool_definitions());
         list.extend(agent_operations().iter().map(|op| op.definition.clone()));
     }
     tools
@@ -732,6 +735,8 @@ fn valid_tool_arguments(name: &str, args: &Value) -> bool {
         "workflow.request_run" | "workflow.request_save" | "run.get_results" => obj.is_empty(),
         // The engine validates operation arguments against the operation's JSON Schema.
         _ if name.starts_with("agent.") => true,
+        "task.plan" => obj.len() == 1 && obj.get("deliverables").is_some_and(Value::is_array),
+        "task.deliver" => obj.len() == 2 && obj.get("id").is_some_and(Value::is_string) && obj.get("artifact").is_some_and(Value::is_object),
         "task.classify" => obj.get("kind").and_then(Value::as_str).is_some_and(|k| k == "question" || k == "execution")
             && obj.get("reason").is_some_and(Value::is_string) && obj.len() == 2,
         _ => false,
@@ -2083,7 +2088,7 @@ pub async fn ai_cancel(state: tauri::State<'_, AiService>) -> Result<(), String>
 }
 
 #[tauri::command]
-pub async fn ai_begin(app: tauri::AppHandle, state: tauri::State<'_, AiService>, prompt: String) -> Result<Value, String> {
+pub async fn ai_begin(app: tauri::AppHandle, state: tauri::State<'_, AiService>, prompt: String, workspace: Option<String>) -> Result<Value, String> {
     if state.running.load(Ordering::SeqCst) {
         return Err("A response is already running".into());
     }
@@ -2102,7 +2107,8 @@ pub async fn ai_begin(app: tauri::AppHandle, state: tauri::State<'_, AiService>,
     };
     drop(conversation);
     state.cancel.store(false, Ordering::SeqCst);
-    let new_task = task::Task::new(&turn.id, prompt.trim());
+    let mut new_task = task::Task::new(&turn.id, prompt.trim());
+    new_task.workspace = workspace.filter(|w| !w.is_empty()).map(std::path::PathBuf::from);
     let mut value = json!({"turn_id":turn.id,"assistant_message_id":turn.assistant_message_id});
     value["task"] = new_task.public();
     task::save(&state.data_dir, &new_task);
@@ -2256,9 +2262,11 @@ pub async fn ai_respond(
     let instructions_text = concat!(
         "You are Flowbench AI, the orchestrator of the Flowbench analytics application. Flowbench does the work; you direct it. ",
         "Answer ordinary questions directly. For any analysis, data preparation, calculation, chart or report, operate Flowbench: ",
-        "find the tools with find_tools and read their specifications with describe_tool; locate data with list_files and profile_file, ",
-        "or fetch public data with download_file; build the workflow on the canvas with workflow_propose_patch; validate it; run it with workflow_request_run; ",
-        "inspect outputs with query_results (aggregates are computed by Flowbench) and run_get_result_page; and cite run_evidence when you report results. ",
+        "first list the deliverables the request asks for with task_plan; find the tools with find_tools and read their specifications with describe_tool; ",
+        "find data yourself: search_datasets for official statistics, web_search, fetch_page and find_data_files for pages and their files, inspect_api and fetch_api for APIs; ",
+        "download with download_file; check files with list_files, profile_file and inspect_spreadsheet; build the workflow on the canvas with workflow_propose_patch; validate it; run it with workflow_request_run; ",
+        "inspect outputs with query_results (aggregates are computed by Flowbench) and run_get_result_page; link each deliverable to its artifact with task_deliver; and cite run_evidence when you report results. ",
+        "The computer is available too: inspect_environment, run_python (install_python_packages for missing libraries), run_r, run_command, start_process, docker, and file operations in the workspace. ",
         "Do not calculate results yourself from rows you have read, and never present numbers that no Flowbench run produced. ",
         "If a run fails, read its error, repair the workflow and run again without repeating steps that already succeeded. ",
         "When no native tool fits, use the Python or Run Command tools inside the workflow so the step is recorded. ",
@@ -2675,7 +2683,7 @@ async fn register_output(state: &AiService, app: &tauri::AppHandle, turn: &AiTur
     let mut validated_calls: Vec<(String, String, Value)> = Vec::new();
     let mut rejections = HashMap::new();
     let mut call_ids = HashSet::new();
-    let mut internal_outputs: Vec<(String, Value)> = Vec::new();
+    let mut internal_outputs: Vec<(String, String, Value)> = Vec::new();
     let mut pending = state.pending_calls.lock().await;
     for item in items {
         if item.get("type").and_then(Value::as_str) != Some("function_call") { continue; }
@@ -2691,8 +2699,8 @@ async fn register_output(state: &AiService, app: &tauri::AppHandle, turn: &AiTur
         }
         let name = internal_tool_name(wire_name).unwrap();
         let args: Value = serde_json::from_str(raw_args).unwrap();
-        if name == "task.classify" {
-            internal_outputs.push((call_id.to_owned(), args));
+        if name.starts_with("task.") {
+            internal_outputs.push((call_id.to_owned(), name.to_owned(), args));
             continue;
         }
         validated_calls.push((call_id.to_owned(), name.to_owned(), args));
@@ -2719,16 +2727,24 @@ async fn register_output(state: &AiService, app: &tauri::AppHandle, turn: &AiTur
     }
     drop(pending);
     let mut answers = Vec::new();
-    for (_, args) in &internal_outputs {
+    for (_, name, args) in &internal_outputs {
         let mut answer = Value::Null;
-        update_task(state, Some(app), |t| { t.call_started("task.classify", args); answer = task::apply_classification(t, args); t.call_finished("task.classify", &answer); }).await;
+        update_task(state, Some(app), |t| {
+            t.call_started(name, args);
+            answer = match name.as_str() {
+                "task.plan" => t.plan(args),
+                "task.deliver" => t.deliver(args),
+                _ => task::apply_classification(t, args),
+            };
+            t.call_finished(name, &answer);
+        }).await;
         answers.push(answer);
     }
     update_task(state, Some(app), |t| for (name, args) in &started { t.call_started(name, args); }).await;
     {
         let mut history = state.conversation.lock().await;
         append_completed_output(&mut history, items);
-        for ((id, _), answer) in internal_outputs.iter().zip(answers) {
+        for ((id, _, _), answer) in internal_outputs.iter().zip(answers) {
             history.push(json!({"type":"function_call_output","call_id":id,"output":answer.to_string()}));
         }
     }

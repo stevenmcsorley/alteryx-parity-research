@@ -483,6 +483,7 @@ describe('engine operations', () => {
   it('asks before a download in Review mode and sends the grant only after approval', async () => {
     const requests: Array<{ method: string; params: any }> = [];
     setTransport({ request: async (method: string, params: any) => {
+      if (method !== 'agent.call') return { searxng_url: null };
       requests.push({ method, params });
       if (!params.permissions.length) return { ok: false, operation: 'download_file', error: { code: 'permission-required', message: 'x', permissions: ['network', 'file_writes'] } };
       return { ok: true, operation: 'download_file', result: { path: '/w/data/fuel.csv', sha256: 'f'.repeat(64) } };
@@ -644,7 +645,8 @@ describe('manual and AI editing on one canvas (Test C)', () => {
 describe('permissions last for the task', () => {
   it('asks once before running programs and reuses the grant for later steps of the same task', async () => {
     const requests: any[] = [];
-    setTransport({ request: async (_m: string, params: any) => {
+    setTransport({ request: async (method: string, params: any) => {
+      if (method !== 'agent.call') return { searxng_url: null };
       requests.push(params);
       if (!params.permissions.includes('processes')) return { ok: false, operation: 'run_python', error: { code: 'permission-required', message: 'x', permissions: ['processes'] } };
       return { ok: true, operation: 'run_python', result: { exit_code: 0, stdout: '', stderr: '', files_written: [] } };
@@ -672,5 +674,48 @@ describe('permissions last for the task', () => {
     expect(await screen.findByText('Both scripts ran.')).toBeTruthy();
     expect(screen.queryByRole('region', { name: 'Permission request' })).toBeNull();
     expect(requests.map((r) => r.permissions.includes('processes'))).toEqual([false, true, true]);
+  });
+});
+
+describe('deliverables and web search settings', () => {
+  it('lists deliverables and what is missing, and labels an incomplete answer', async () => {
+    await ready();
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_status') return { connected: true, plan_usage_authorized: true };
+      if (command === 'ai_models') return [{ slug: 'model-a', display_name: 'Available model' }];
+      if (command === 'ai_begin') return { turn_id: 't_dv', assistant_message_id: 'm_dv' };
+      if (command === 'ai_respond') return { turn_id: args?.turnId, message_id: 'm_dv', cycle_id: args?.cycleId, text: 'Here is one chart.', calls: [] };
+      if (command === 'ai_finish_turn') return { verification: 'incomplete', evidence: [{ run_id: 'r1' }], missing: ['2 verified chart(s) requested, 1 delivered'] };
+      return undefined;
+    });
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: 'Make two charts of fuel prices.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    expect(await screen.findByText(/Incomplete: missing 2 verified chart\(s\) requested, 1 delivered/)).toBeTruthy();
+    expect(tauriMock.invoke.mock.calls.find(([c]) => c === 'ai_begin')?.[1]).toHaveProperty('workspace');
+    useAiConversation.getState().setTask({ id: 't_dv', objective: 'Make two charts', kind: 'execution', phase: 'inspect', status: 'incomplete',
+      verification: 'incomplete', actions: [], runs: [], artifacts: [], revisions: [], errors: [], evidence: [], started_at: 1,
+      deliverables: [{ id: 'c1', kind: 'chart', description: 'Price chart', artifact: { path: 'out/prices.html' }, status: 'verified' },
+                     { id: 'c2', kind: 'chart', description: 'Premium chart', artifact: { path: 'out/x.txt' }, status: 'failed', problem: 'A chart must be an image, SVG, HTML or PDF file, not .txt' }],
+      missing: ['c2 (chart): A chart must be an image, SVG, HTML or PDF file, not .txt'] } as any);
+    fireEvent.click(screen.getByRole('tab', { name: /Task/ }));
+    const list = await screen.findByRole('list', { name: 'Deliverables' });
+    expect(list.children).toHaveLength(2);
+    expect(list.textContent).toContain('out/prices.html');
+    expect(list.closest('section')!.textContent).toContain('Finished with deliverables missing');
+    expect(list.closest('section')!.textContent).toContain('some requested deliverables are missing');
+  });
+
+  it('saves and tests a SearXNG address through the engine', async () => {
+    const calls: any[] = [];
+    setTransport({ request: async (method: string, params: any) => {
+      calls.push({ method, params });
+      return params.searxng_url ? { searxng_url: params.searxng_url, test: { results: 10, unresponsive_engines: [['google', 'access denied']] } } : { searxng_url: null };
+    }, subscribe: () => () => {} } as any);
+    await ready();
+    fireEvent.click(screen.getByRole('button', { name: 'AI settings' }));
+    fireEvent.change(screen.getByLabelText('SearXNG address'), { target: { value: 'http://localhost:8888' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save and test' }));
+    expect(await screen.findByText(/SearXNG answered with 10 result\(s\); engines not responding: google/)).toBeTruthy();
+    expect(calls[calls.length - 1]).toEqual({ method: 'agent.search_settings', params: { searxng_url: 'http://localhost:8888', test: true } });
   });
 });
