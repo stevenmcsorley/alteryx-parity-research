@@ -144,9 +144,10 @@
     ]
   },
   "independent_tests": {
-    "count": 30,
-    "passing": 30,
+    "count": 31,
+    "passing": 31,
     "tests": [
+      "test_batch12.InputOutputTests.test_output_writes_named_files_with_permission",
       "test_batch5.MapReportExampleTests.test_uk_map_report_example",
       "test_batch8.ExampleTests.test_diesel_forecast_example",
       "test_fe_executor.EndToEndTests.test_golden_outputs",

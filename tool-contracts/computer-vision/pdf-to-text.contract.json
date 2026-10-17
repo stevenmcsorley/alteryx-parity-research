@@ -6,52 +6,125 @@
   "xml_tool_name": "PDFToText",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/pdf-to-text.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
       "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "input",
+      "name": "template",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Text Extraction Options",
-      "Read Text and Image Content",
-      "Read Text Content Only",
-      "Output Options",
-      "T Input Anchor (Optional)"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "path": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "path_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "mode": {
+        "enum": [
+          "text_only",
+          "text_and_ocr"
+        ],
+        "default": "text_only"
+      },
+      "formats": {
+        "type": "array",
+        "uniqueItems": true,
+        "minItems": 1,
+        "items": {
+          "enum": [
+            "string",
+            "lines",
+            "pipe_table",
+            "table"
+          ]
+        },
+        "default": [
+          "string"
+        ]
+      },
+      "start_page": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 1,
+        "default": null
+      },
+      "end_page": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 1,
+        "default": null
+      },
+      "risk_score": {
+        "type": "boolean",
+        "default": false
+      },
+      "page_image": {
+        "type": "boolean",
+        "default": false
+      },
+      "first_page_template_for_all": {
+        "type": "boolean",
+        "default": true
+      },
+      "dpi": {
+        "type": "integer",
+        "minimum": 36,
+        "maximum": 600,
+        "default": 150
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-cv-runtime (image/OCR)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.pdf_to_text",
+    "version": "1.0.0",
+    "module": "flowengine.tools.vision",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -87,9 +160,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch12.PDFAndTemplateTests.test_formats_page_range_and_risk",
+      "test_batch12.PDFAndTemplateTests.test_template_regions_scale_to_the_page"
+    ]
   },
   "sources": [
     {
@@ -105,6 +181,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

@@ -15,7 +15,7 @@ from .plugin import CancelToken, RunContext, default_registry
 
 MACRO_TOOLS = {'flowengine.macro', 'flowengine.batch_macro', 'flowengine.iterative_macro'}
 DB_WRITE_TOOLS = {'core.db_output', 'core.write_indb', 'core.data_stream_in'}
-FILE_WRITE_TOOLS = {'core.blob_output'}
+FILE_WRITE_TOOLS = {'core.blob_output', 'core.image_output'}
 # Outbound requests that can carry record data; database tools keep their connection semantics.
 NETWORK_TOOLS = {'core.download', 'core.github_last_commit', 'core.github_commit', 'core.email'}
 # Changes made outside this computer (in addition to the network request itself).

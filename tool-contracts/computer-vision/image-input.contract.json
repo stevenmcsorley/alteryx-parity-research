@@ -6,41 +6,91 @@
   "xml_tool_name": "PDFInput",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-input.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "path": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "path_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "file_types": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "enum": [
+            "bmp",
+            "jpeg",
+            "png",
+            "tiff",
+            "pdf"
+          ]
+        },
+        "default": [
+          "bmp",
+          "jpeg",
+          "png",
+          "tiff",
+          "pdf"
+        ]
+      },
+      "recursive": {
+        "type": "boolean",
+        "default": false
+      },
+      "pdf_dpi": {
+        "type": "integer",
+        "minimum": 36,
+        "maximum": 600,
+        "default": 200
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-cv-runtime (image/OCR)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.image_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.vision",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -66,9 +116,17 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 7,
+    "passing": 7,
+    "tests": [
+      "test_batch12.BarcodeTests.test_generate_then_read_round_trip",
+      "test_batch12.InputOutputTests.test_folder_input_renders_pdf_pages_and_filters_types",
+      "test_batch12.InputOutputTests.test_output_writes_named_files_with_permission",
+      "test_batch12.ProcessingTests.test_shift_realigns_to_a_template_anchor",
+      "test_batch12.ProcessingTests.test_steps",
+      "test_batch12.ProfileTests.test_base_and_summary_statistics",
+      "test_batch12.ProfileTests.test_exif_gps"
+    ]
   },
   "sources": [
     {
@@ -84,6 +142,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }
