@@ -1,0 +1,1451 @@
+{
+  "format": "flowengine.workflow",
+  "formatVersion": 1,
+  "name": "Detect unusual earthquake swarms",
+  "nodes": [
+    {
+      "id": "input_data_1",
+      "tool": "core.input_data",
+      "config": {
+        "path": "/home/dev/Downloads/all_month.csv",
+        "type_inference": "flowbench"
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "browse_2",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 250,
+        "y": 250
+      }
+    },
+    {
+      "id": "basic_data_profile_1",
+      "tool": "core.basic_data_profile",
+      "config": {
+        "top_values": 5
+      },
+      "position": {
+        "x": 250,
+        "y": -300
+      }
+    },
+    {
+      "id": "browse_1",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 500,
+        "y": -300
+      }
+    },
+    {
+      "id": "filter_1",
+      "tool": "core.filter",
+      "config": {
+        "expression": "[type] = 'earthquake' AND !IsNull([latitude]) AND !IsNull([longitude]) AND [latitude] >= -90 AND [latitude] <= 90 AND [longitude] >= -180 AND [longitude] <= 180 AND !IsEmpty([time])"
+      },
+      "position": {
+        "x": 250,
+        "y": 0
+      }
+    },
+    {
+      "id": "browse_3",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 500,
+        "y": 180
+      }
+    },
+    {
+      "id": "formula_1",
+      "tool": "core.formula",
+      "config": {
+        "formulas": [
+          {
+            "field": "LatBin",
+            "expression": "Floor(([latitude]+90)/2)*2-90",
+            "type": "double"
+          },
+          {
+            "field": "LonBin",
+            "expression": "Floor(([longitude]+180)/2)*2-180",
+            "type": "double"
+          },
+          {
+            "field": "DayUTC",
+            "expression": "Left([time],10)",
+            "type": "v_wstring",
+            "size": 10
+          },
+          {
+            "field": "HourUTC",
+            "expression": "Left([time],13)",
+            "type": "v_wstring",
+            "size": 13
+          },
+          {
+            "field": "DepthClass",
+            "expression": "IF IsNull([depth]) THEN 'unknown' ELSEIF [depth] < 0 THEN 'negative' ELSEIF [depth] < 70 THEN 'shallow_0_70' ELSEIF [depth] < 300 THEN 'intermediate_70_300' ELSE 'deep_300plus' ENDIF",
+            "type": "v_wstring",
+            "size": 30
+          },
+          {
+            "field": "M25",
+            "expression": "IF [mag] >= 2.5 THEN 1 ELSE 0 ENDIF",
+            "type": "int32"
+          },
+          {
+            "field": "M45",
+            "expression": "IF [mag] >= 4.5 THEN 1 ELSE 0 ENDIF",
+            "type": "int32"
+          }
+        ]
+      },
+      "position": {
+        "x": 500,
+        "y": 0
+      }
+    },
+    {
+      "id": "create_points_1",
+      "tool": "core.create_points",
+      "config": {
+        "x_field": "longitude",
+        "y_field": "latitude",
+        "crs": "EPSG:4326",
+        "format": "wkt",
+        "output_field": "Epicenter"
+      },
+      "position": {
+        "x": 750,
+        "y": 0
+      }
+    },
+    {
+      "id": "browse_4",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1000,
+        "y": 0
+      }
+    },
+    {
+      "id": "summarize_1",
+      "tool": "core.summarize",
+      "config": {
+        "actions": [
+          {
+            "field": "LatBin",
+            "op": "group_by"
+          },
+          {
+            "field": "LonBin",
+            "op": "group_by"
+          },
+          {
+            "field": "id",
+            "op": "count",
+            "output": "Events"
+          },
+          {
+            "field": "latitude",
+            "op": "avg",
+            "output": "MeanLat"
+          },
+          {
+            "field": "longitude",
+            "op": "avg",
+            "output": "MeanLon"
+          },
+          {
+            "field": "time",
+            "op": "min",
+            "output": "StartUTC"
+          },
+          {
+            "field": "time",
+            "op": "max",
+            "output": "EndUTC"
+          },
+          {
+            "field": "mag",
+            "op": "min",
+            "output": "MinMag"
+          },
+          {
+            "field": "mag",
+            "op": "max",
+            "output": "MaxMag"
+          },
+          {
+            "field": "mag",
+            "op": "median",
+            "output": "MedianMag"
+          },
+          {
+            "field": "depth",
+            "op": "median",
+            "output": "MedianDepth"
+          },
+          {
+            "field": "depth",
+            "op": "min",
+            "output": "MinDepth"
+          },
+          {
+            "field": "depth",
+            "op": "max",
+            "output": "MaxDepth"
+          },
+          {
+            "field": "M25",
+            "op": "sum",
+            "output": "N_M25"
+          },
+          {
+            "field": "M45",
+            "op": "sum",
+            "output": "N_M45"
+          },
+          {
+            "field": "place",
+            "op": "mode",
+            "output": "TypicalPlace"
+          },
+          {
+            "field": "net",
+            "op": "mode",
+            "output": "MainNetwork"
+          }
+        ]
+      },
+      "position": {
+        "x": 1000,
+        "y": 300
+      }
+    },
+    {
+      "id": "sort_1",
+      "tool": "core.sort",
+      "config": {
+        "keys": [
+          {
+            "field": "Events",
+            "order": "desc"
+          }
+        ]
+      },
+      "position": {
+        "x": 1250,
+        "y": 300
+      }
+    },
+    {
+      "id": "browse_5",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1500,
+        "y": 300
+      }
+    },
+    {
+      "id": "summarize_2",
+      "tool": "core.summarize",
+      "config": {
+        "actions": [
+          {
+            "field": "LatBin",
+            "op": "group_by"
+          },
+          {
+            "field": "LonBin",
+            "op": "group_by"
+          },
+          {
+            "field": "DayUTC",
+            "op": "group_by"
+          },
+          {
+            "field": "id",
+            "op": "count",
+            "output": "Events"
+          },
+          {
+            "field": "mag",
+            "op": "max",
+            "output": "MaxMag"
+          },
+          {
+            "field": "mag",
+            "op": "median",
+            "output": "MedianMag"
+          },
+          {
+            "field": "depth",
+            "op": "median",
+            "output": "MedianDepth"
+          },
+          {
+            "field": "time",
+            "op": "min",
+            "output": "StartUTC"
+          },
+          {
+            "field": "time",
+            "op": "max",
+            "output": "EndUTC"
+          },
+          {
+            "field": "M25",
+            "op": "sum",
+            "output": "N_M25"
+          }
+        ]
+      },
+      "position": {
+        "x": 1000,
+        "y": 550
+      }
+    },
+    {
+      "id": "sort_2",
+      "tool": "core.sort",
+      "config": {
+        "keys": [
+          {
+            "field": "Events",
+            "order": "desc"
+          }
+        ]
+      },
+      "position": {
+        "x": 1250,
+        "y": 550
+      }
+    },
+    {
+      "id": "browse_6",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1500,
+        "y": 550
+      }
+    },
+    {
+      "id": "summarize_3",
+      "tool": "core.summarize",
+      "config": {
+        "actions": [
+          {
+            "field": "LatBin",
+            "op": "group_by"
+          },
+          {
+            "field": "LonBin",
+            "op": "group_by"
+          },
+          {
+            "field": "HourUTC",
+            "op": "group_by"
+          },
+          {
+            "field": "id",
+            "op": "count",
+            "output": "Events"
+          },
+          {
+            "field": "mag",
+            "op": "max",
+            "output": "MaxMag"
+          },
+          {
+            "field": "depth",
+            "op": "median",
+            "output": "MedianDepth"
+          },
+          {
+            "field": "time",
+            "op": "min",
+            "output": "StartUTC"
+          },
+          {
+            "field": "time",
+            "op": "max",
+            "output": "EndUTC"
+          }
+        ]
+      },
+      "position": {
+        "x": 1000,
+        "y": 800
+      }
+    },
+    {
+      "id": "sort_3",
+      "tool": "core.sort",
+      "config": {
+        "keys": [
+          {
+            "field": "Events",
+            "order": "desc"
+          }
+        ]
+      },
+      "position": {
+        "x": 1250,
+        "y": 800
+      }
+    },
+    {
+      "id": "browse_7",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1500,
+        "y": 800
+      }
+    },
+    {
+      "id": "summarize_4",
+      "tool": "core.summarize",
+      "config": {
+        "actions": [
+          {
+            "field": "DepthClass",
+            "op": "group_by"
+          },
+          {
+            "field": "id",
+            "op": "count",
+            "output": "Events"
+          },
+          {
+            "field": "mag",
+            "op": "min",
+            "output": "MinMag"
+          },
+          {
+            "field": "mag",
+            "op": "max",
+            "output": "MaxMag"
+          },
+          {
+            "field": "mag",
+            "op": "median",
+            "output": "MedianMag"
+          },
+          {
+            "field": "depth",
+            "op": "median",
+            "output": "MedianDepth"
+          },
+          {
+            "field": "M25",
+            "op": "sum",
+            "output": "N_M25"
+          },
+          {
+            "field": "M45",
+            "op": "sum",
+            "output": "N_M45"
+          }
+        ]
+      },
+      "position": {
+        "x": 1000,
+        "y": 1050
+      }
+    },
+    {
+      "id": "browse_8",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1250,
+        "y": 1050
+      }
+    },
+    {
+      "id": "sort_4",
+      "tool": "core.sort",
+      "config": {
+        "keys": [
+          {
+            "field": "mag",
+            "order": "desc"
+          }
+        ]
+      },
+      "position": {
+        "x": 1000,
+        "y": 1300
+      }
+    },
+    {
+      "id": "sample_1",
+      "tool": "core.sample",
+      "config": {
+        "mode": "first",
+        "n": 10
+      },
+      "position": {
+        "x": 1250,
+        "y": 1300
+      }
+    },
+    {
+      "id": "browse_9",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1500,
+        "y": 1300
+      }
+    },
+    {
+      "id": "interactive_chart_1",
+      "tool": "core.interactive_chart",
+      "config": {
+        "chart_type": "histogram",
+        "x_field": "mag",
+        "bins": 45,
+        "title": "Reported earthquake magnitudes — mixed scales and completeness"
+      },
+      "position": {
+        "x": 1000,
+        "y": -300
+      }
+    },
+    {
+      "id": "browse_10",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1250,
+        "y": -300
+      }
+    },
+    {
+      "id": "interactive_chart_2",
+      "tool": "core.interactive_chart",
+      "config": {
+        "chart_type": "histogram",
+        "x_field": "depth",
+        "bins": 70,
+        "title": "Reported depths (km); fixed-depth defaults and uncertainty apply"
+      },
+      "position": {
+        "x": 1000,
+        "y": -550
+      }
+    },
+    {
+      "id": "browse_11",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1250,
+        "y": -550
+      }
+    },
+    {
+      "id": "interactive_chart_3",
+      "tool": "core.interactive_chart",
+      "config": {
+        "chart_type": "scatter",
+        "x_field": "depth",
+        "y_fields": [
+          "mag"
+        ],
+        "series_field": "DepthClass",
+        "title": "Magnitude versus depth — observed catalogue"
+      },
+      "position": {
+        "x": 1000,
+        "y": -800
+      }
+    },
+    {
+      "id": "browse_12",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1250,
+        "y": -800
+      }
+    },
+    {
+      "id": "interactive_chart_4",
+      "tool": "core.interactive_chart",
+      "config": {
+        "chart_type": "scatter",
+        "x_field": "longitude",
+        "y_fields": [
+          "latitude"
+        ],
+        "title": "Epicenters (lon/lat scatter; not a metric projection)"
+      },
+      "position": {
+        "x": 1000,
+        "y": -1050
+      }
+    },
+    {
+      "id": "browse_13",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1250,
+        "y": -1050
+      }
+    },
+    {
+      "id": "find_nearest_1",
+      "tool": "core.find_nearest",
+      "config": {
+        "target_geometry_field": "Epicenter",
+        "universe_geometry_field": "Epicenter",
+        "crs": "EPSG:4326",
+        "units": "km",
+        "max_distance": 200,
+        "max_matches": 1000,
+        "ignore_identical": true
+      },
+      "position": {
+        "x": 1750,
+        "y": 1300
+      }
+    },
+    {
+      "id": "browse_14",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 2000,
+        "y": 1300
+      }
+    },
+    {
+      "id": "formula_2",
+      "tool": "core.formula",
+      "config": {
+        "formulas": [
+          {
+            "field": "LatRadSquared",
+            "expression": "([LatBin]+1)*([LatBin]+1)*0.000304617419786709",
+            "type": "double"
+          },
+          {
+            "field": "ApproxAreaKm2",
+            "expression": "49454.73*(1-[LatRadSquared]/2+[LatRadSquared]*[LatRadSquared]/24-[LatRadSquared]*[LatRadSquared]*[LatRadSquared]/720+[LatRadSquared]*[LatRadSquared]*[LatRadSquared]*[LatRadSquared]/40320)",
+            "type": "double"
+          },
+          {
+            "field": "EventsPer1000Km2",
+            "expression": "1000*[Events]/[ApproxAreaKm2]",
+            "type": "double"
+          },
+          {
+            "field": "M45Per1000Km2",
+            "expression": "1000*[N_M45]/[ApproxAreaKm2]",
+            "type": "double"
+          }
+        ]
+      },
+      "position": {
+        "x": 1250,
+        "y": 1550
+      }
+    },
+    {
+      "id": "sort_5",
+      "tool": "core.sort",
+      "config": {
+        "keys": [
+          {
+            "field": "EventsPer1000Km2",
+            "order": "desc"
+          }
+        ]
+      },
+      "position": {
+        "x": 1500,
+        "y": 1550
+      }
+    },
+    {
+      "id": "browse_15",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1750,
+        "y": 1550
+      }
+    },
+    {
+      "id": "sort_6",
+      "tool": "core.sort",
+      "config": {
+        "keys": [
+          {
+            "field": "N_M45",
+            "order": "desc"
+          }
+        ]
+      },
+      "position": {
+        "x": 1500,
+        "y": 1800
+      }
+    },
+    {
+      "id": "browse_16",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1750,
+        "y": 1800
+      }
+    },
+    {
+      "id": "summarize_5",
+      "tool": "core.summarize",
+      "config": {
+        "actions": [
+          {
+            "field": "LatBin",
+            "op": "group_by"
+          },
+          {
+            "field": "LonBin",
+            "op": "group_by"
+          },
+          {
+            "field": "DepthClass",
+            "op": "group_by"
+          },
+          {
+            "field": "id",
+            "op": "count",
+            "output": "Events"
+          },
+          {
+            "field": "mag",
+            "op": "median",
+            "output": "MedianMag"
+          },
+          {
+            "field": "mag",
+            "op": "max",
+            "output": "MaxMag"
+          },
+          {
+            "field": "depth",
+            "op": "median",
+            "output": "MedianDepth"
+          },
+          {
+            "field": "M45",
+            "op": "sum",
+            "output": "N_M45"
+          }
+        ]
+      },
+      "position": {
+        "x": 1000,
+        "y": 2050
+      }
+    },
+    {
+      "id": "sort_7",
+      "tool": "core.sort",
+      "config": {
+        "keys": [
+          {
+            "field": "Events",
+            "order": "desc"
+          }
+        ]
+      },
+      "position": {
+        "x": 1250,
+        "y": 2050
+      }
+    },
+    {
+      "id": "browse_17",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1500,
+        "y": 2050
+      }
+    },
+    {
+      "id": "formula_3",
+      "tool": "core.formula",
+      "config": {
+        "formulas": [
+          {
+            "field": "Lat1",
+            "expression": "Floor([latitude])",
+            "type": "double"
+          },
+          {
+            "field": "Lon1",
+            "expression": "Floor([longitude])",
+            "type": "double"
+          },
+          {
+            "field": "ShiftLat2",
+            "expression": "Floor(([latitude]+89)/2)*2-89",
+            "type": "double"
+          },
+          {
+            "field": "ShiftLon2",
+            "expression": "Floor(([longitude]+179)/2)*2-179",
+            "type": "double"
+          }
+        ]
+      },
+      "position": {
+        "x": 1000,
+        "y": 2300
+      }
+    },
+    {
+      "id": "summarize_6",
+      "tool": "core.summarize",
+      "config": {
+        "actions": [
+          {
+            "field": "Lat1",
+            "op": "group_by"
+          },
+          {
+            "field": "Lon1",
+            "op": "group_by"
+          },
+          {
+            "field": "id",
+            "op": "count",
+            "output": "Events"
+          },
+          {
+            "field": "mag",
+            "op": "max",
+            "output": "MaxMag"
+          },
+          {
+            "field": "M25",
+            "op": "sum",
+            "output": "N_M25"
+          },
+          {
+            "field": "M45",
+            "op": "sum",
+            "output": "N_M45"
+          }
+        ]
+      },
+      "position": {
+        "x": 1250,
+        "y": 2300
+      }
+    },
+    {
+      "id": "sort_8",
+      "tool": "core.sort",
+      "config": {
+        "keys": [
+          {
+            "field": "Events",
+            "order": "desc"
+          }
+        ]
+      },
+      "position": {
+        "x": 1500,
+        "y": 2300
+      }
+    },
+    {
+      "id": "browse_18",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1750,
+        "y": 2300
+      }
+    },
+    {
+      "id": "summarize_7",
+      "tool": "core.summarize",
+      "config": {
+        "actions": [
+          {
+            "field": "ShiftLat2",
+            "op": "group_by"
+          },
+          {
+            "field": "ShiftLon2",
+            "op": "group_by"
+          },
+          {
+            "field": "id",
+            "op": "count",
+            "output": "Events"
+          },
+          {
+            "field": "mag",
+            "op": "max",
+            "output": "MaxMag"
+          },
+          {
+            "field": "M25",
+            "op": "sum",
+            "output": "N_M25"
+          },
+          {
+            "field": "M45",
+            "op": "sum",
+            "output": "N_M45"
+          }
+        ]
+      },
+      "position": {
+        "x": 1250,
+        "y": 2550
+      }
+    },
+    {
+      "id": "sort_9",
+      "tool": "core.sort",
+      "config": {
+        "keys": [
+          {
+            "field": "Events",
+            "order": "desc"
+          }
+        ]
+      },
+      "position": {
+        "x": 1500,
+        "y": 2550
+      }
+    },
+    {
+      "id": "browse_19",
+      "tool": "core.browse",
+      "config": {},
+      "position": {
+        "x": 1750,
+        "y": 2550
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": {
+        "node": "input_data_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_2",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "input_data_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "basic_data_profile_1",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "basic_data_profile_1",
+        "anchor": "profile"
+      },
+      "to": {
+        "node": "browse_1",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "input_data_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "filter_1",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "filter_1",
+        "anchor": "false"
+      },
+      "to": {
+        "node": "browse_3",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "filter_1",
+        "anchor": "true"
+      },
+      "to": {
+        "node": "formula_1",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "formula_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "create_points_1",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_4",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "summarize_1",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "summarize_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "sort_1",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "sort_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_5",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "summarize_2",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "summarize_2",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "sort_2",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "sort_2",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_6",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "summarize_3",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "summarize_3",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "sort_3",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "sort_3",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_7",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "summarize_4",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "summarize_4",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_8",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "sort_4",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "sort_4",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "sample_1",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "sample_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_9",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "interactive_chart_1",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "interactive_chart_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_10",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "interactive_chart_2",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "interactive_chart_2",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_11",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "interactive_chart_3",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "interactive_chart_3",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_12",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "interactive_chart_4",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "interactive_chart_4",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_13",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "sample_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "find_nearest_1",
+        "anchor": "targets"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "find_nearest_1",
+        "anchor": "universe"
+      }
+    },
+    {
+      "from": {
+        "node": "find_nearest_1",
+        "anchor": "matched"
+      },
+      "to": {
+        "node": "browse_14",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "summarize_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "formula_2",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "formula_2",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "sort_5",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "sort_5",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_15",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "formula_2",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "sort_6",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "sort_6",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_16",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "summarize_5",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "summarize_5",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "sort_7",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "sort_7",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_17",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "create_points_1",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "formula_3",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "formula_3",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "summarize_6",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "summarize_6",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "sort_8",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "sort_8",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_18",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "formula_3",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "summarize_7",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "summarize_7",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "sort_9",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "sort_9",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "browse_19",
+        "anchor": "input"
+      }
+    }
+  ],
+  "metadata": {
+    "ui": {
+      "containers": [],
+      "comments": [],
+      "ownDisabled": {},
+      "applicationActions": [],
+      "applicationConditions": [],
+      "applicationErrors": []
+    },
+    "profile": "ayx-2026.2-e1"
+  }
+}

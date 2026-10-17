@@ -59,6 +59,16 @@ Linux/macOS desktop packaging and native verification: [docs/CROSS_PLATFORM_UPDA
 - [`docs/RIGHTS_AND_BOUNDARIES.md`](docs/RIGHTS_AND_BOUNDARIES.md) — restrictions, separation and review gates
 - [`docs/IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md) — delivery programme (full scope preserved)
 
+## Download the desktop app
+
+Installers for each release are on the [Releases page](https://github.com/stevenmcsorley/alteryx-parity-research/releases):
+`Flowbench_*_x64-setup.exe` (Windows), `Flowbench_*_aarch64.dmg` (macOS on Apple silicon), and `.AppImage` or `.deb` (Linux x86-64).
+Each one bundles its own Python engine. The builds are not code-signed yet:
+- On Windows, choose *More info → Run anyway* when SmartScreen warns.
+- On macOS, run `xattr -dr com.apple.quarantine /Applications/Flowbench.app` after copying the app across.
+
+To cut a release, bump the version in `desktop/package.json`, `desktop/src-tauri/tauri.conf.json` and `desktop/src-tauri/Cargo.toml`. Next, create a draft release (`gh release create vX.Y.Z --draft`) and push the matching `vX.Y.Z` tag. CI attaches the installers to the draft; publish it once all three platforms have uploaded.
+
 ## Start here (Windows PowerShell)
 
 ```powershell
