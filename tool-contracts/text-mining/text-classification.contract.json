@@ -6,50 +6,153 @@
   "xml_tool_name": "TextClassification",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/text-classification.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "input",
+      "name": "train",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "input",
+      "name": "validation",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "output",
+      "name": "model",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "output",
+      "name": "evaluation",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Advanced Options",
-      "Auto Mode",
-      "Multinomial Naïve Bayes",
-      "Linear SVC"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "text_field",
+      "label_field"
+    ],
+    "properties": {
+      "text_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "label_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "validation_text_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "validation_label_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "algorithm": {
+        "enum": [
+          "auto",
+          "naive_bayes",
+          "linear_svc"
+        ],
+        "default": "auto"
+      },
+      "alpha_from": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "default": 0.01
+      },
+      "alpha_to": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "default": 1.0
+      },
+      "alpha_steps": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 50,
+        "default": 5
+      },
+      "c_log_from": {
+        "type": "number",
+        "minimum": -6,
+        "maximum": 6,
+        "default": -2
+      },
+      "c_log_to": {
+        "type": "number",
+        "minimum": -6,
+        "maximum": 6,
+        "default": 2
+      },
+      "c_steps": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 50,
+        "default": 5
+      },
+      "penalty": {
+        "enum": [
+          "l1",
+          "l2"
+        ],
+        "default": "l2"
+      },
+      "folds": {
+        "type": "integer",
+        "minimum": 2,
+        "maximum": 20,
+        "default": 3
+      },
+      "analyzer": {
+        "enum": [
+          "word",
+          "char"
+        ],
+        "default": "word"
+      },
+      "min_df": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 1
+      },
+      "seed": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 1
+      },
+      "model_name": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-nlp-runtime",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -57,7 +160,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.text_classification",
+    "version": "1.0.0",
+    "module": "flowengine.tools.text_mining",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -97,9 +206,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch11.TextClassificationTests.test_needs_enough_texts_per_label",
+      "test_batch11.TextClassificationTests.test_trains_evaluates_and_predicts"
+    ]
   },
   "sources": [
     {
@@ -115,6 +227,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

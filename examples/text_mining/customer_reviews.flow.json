@@ -1,0 +1,340 @@
+{
+  "format": "flowengine.workflow",
+  "formatVersion": 1,
+  "name": "Customer review text mining",
+  "description": "Score review sentiment, find themes with topic modelling and draw a word cloud. Synthetic reviews.",
+  "nodes": [
+    {
+      "id": "reviews",
+      "tool": "core.text_input",
+      "config": {
+        "fields": [
+          {
+            "name": "review_id",
+            "type": "v_wstring"
+          },
+          {
+            "name": "review",
+            "type": "v_wstring"
+          }
+        ],
+        "rows": [
+          [
+            "R001",
+            "Delivery was late and the box was damaged"
+          ],
+          [
+            "R002",
+            "Brilliant customer service, quick refund"
+          ],
+          [
+            "R003",
+            "The zip broke after two days, poor quality"
+          ],
+          [
+            "R004",
+            "Fast delivery and the jacket fits perfectly"
+          ],
+          [
+            "R005",
+            "Lovely soft fabric, great value for money"
+          ],
+          [
+            "R006",
+            "Boots are too small and the refund took weeks"
+          ],
+          [
+            "R007",
+            "Lovely soft fabric, great value for money"
+          ],
+          [
+            "R008",
+            "Delivery was late and the box was damaged"
+          ],
+          [
+            "R009",
+            "Colour faded after one wash, really disappointed"
+          ],
+          [
+            "R010",
+            "Fast delivery and the jacket fits perfectly"
+          ],
+          [
+            "R011",
+            "Boots are too small and the refund took weeks"
+          ],
+          [
+            "R012",
+            "The boots are comfortable and really well made"
+          ],
+          [
+            "R013",
+            "Fast delivery and the jacket fits perfectly"
+          ],
+          [
+            "R014",
+            "Lovely soft fabric, great value for money"
+          ],
+          [
+            "R015",
+            "The zip broke after two days, poor quality"
+          ],
+          [
+            "R016",
+            "The zip broke after two days, poor quality"
+          ],
+          [
+            "R017",
+            "Lovely soft fabric, great value for money"
+          ],
+          [
+            "R018",
+            "The boots are comfortable and really well made"
+          ],
+          [
+            "R019",
+            "Lovely soft fabric, great value for money"
+          ],
+          [
+            "R020",
+            "Boots are too small and the refund took weeks"
+          ],
+          [
+            "R021",
+            "The zip broke after two days, poor quality"
+          ],
+          [
+            "R022",
+            "Fast delivery and the jacket fits perfectly"
+          ],
+          [
+            "R023",
+            "Colour faded after one wash, really disappointed"
+          ],
+          [
+            "R024",
+            "Lovely soft fabric, great value for money"
+          ],
+          [
+            "R025",
+            "The boots are comfortable and really well made"
+          ],
+          [
+            "R026",
+            "Colour faded after one wash, really disappointed"
+          ],
+          [
+            "R027",
+            "Fast delivery and the jacket fits perfectly"
+          ],
+          [
+            "R028",
+            "Colour faded after one wash, really disappointed"
+          ],
+          [
+            "R029",
+            "Colour faded after one wash, really disappointed"
+          ],
+          [
+            "R030",
+            "The zip broke after two days, poor quality"
+          ],
+          [
+            "R031",
+            "Fast delivery and the jacket fits perfectly"
+          ],
+          [
+            "R032",
+            "The boots are comfortable and really well made"
+          ],
+          [
+            "R033",
+            "Fast delivery and the jacket fits perfectly"
+          ],
+          [
+            "R034",
+            "Boots are too small and the refund took weeks"
+          ],
+          [
+            "R035",
+            "Brilliant customer service, quick refund"
+          ],
+          [
+            "R036",
+            "Great colour, exactly as pictured, very happy"
+          ],
+          [
+            "R037",
+            "The zip broke after two days, poor quality"
+          ],
+          [
+            "R038",
+            "Brilliant customer service, quick refund"
+          ],
+          [
+            "R039",
+            "Boots are too small and the refund took weeks"
+          ],
+          [
+            "R040",
+            "Lovely soft fabric, great value for money"
+          ],
+          [
+            "R041",
+            "Colour faded after one wash, really disappointed"
+          ],
+          [
+            "R042",
+            "Great colour, exactly as pictured, very happy"
+          ],
+          [
+            "R043",
+            "Boots are too small and the refund took weeks"
+          ],
+          [
+            "R044",
+            "Brilliant customer service, quick refund"
+          ],
+          [
+            "R045",
+            "Lovely soft fabric, great value for money"
+          ],
+          [
+            "R046",
+            "Colour faded after one wash, really disappointed"
+          ],
+          [
+            "R047",
+            "Colour faded after one wash, really disappointed"
+          ],
+          [
+            "R048",
+            "The boots are comfortable and really well made"
+          ],
+          [
+            "R049",
+            "Delivery was late and the box was damaged"
+          ],
+          [
+            "R050",
+            "Lovely soft fabric, great value for money"
+          ],
+          [
+            "R051",
+            "Boots are too small and the refund took weeks"
+          ],
+          [
+            "R052",
+            "Lovely soft fabric, great value for money"
+          ],
+          [
+            "R053",
+            "Colour faded after one wash, really disappointed"
+          ],
+          [
+            "R054",
+            "Fast delivery and the jacket fits perfectly"
+          ],
+          [
+            "R055",
+            "Colour faded after one wash, really disappointed"
+          ],
+          [
+            "R056",
+            "The boots are comfortable and really well made"
+          ],
+          [
+            "R057",
+            "Customer service never replied to my email"
+          ],
+          [
+            "R058",
+            "Boots are too small and the refund took weeks"
+          ],
+          [
+            "R059",
+            "The zip broke after two days, poor quality"
+          ],
+          [
+            "R060",
+            "Delivery was late and the box was damaged"
+          ]
+        ]
+      },
+      "position": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "sentiment",
+      "tool": "core.sentiment_analysis",
+      "config": {
+        "text_field": "review",
+        "categorical": true
+      },
+      "position": {
+        "x": 250,
+        "y": 0
+      }
+    },
+    {
+      "id": "topics",
+      "tool": "core.topic_modeling",
+      "config": {
+        "text_field": "review",
+        "topics": 3,
+        "min_frequency": 2
+      },
+      "position": {
+        "x": 250,
+        "y": 150
+      }
+    },
+    {
+      "id": "cloud",
+      "tool": "core.word_cloud",
+      "config": {
+        "text_field": "review",
+        "generate_phrases": true,
+        "title": "What customers say"
+      },
+      "position": {
+        "x": 250,
+        "y": 300
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": {
+        "node": "reviews",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "sentiment",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "reviews",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "topics",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "reviews",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "cloud",
+        "anchor": "input"
+      }
+    }
+  ]
+}
