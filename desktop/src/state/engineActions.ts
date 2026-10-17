@@ -4,6 +4,7 @@ import type { CatalogEntry, HistoryEntry, Profile, RunPayload, ToolManifest, Val
 import { fromDocument, toDocument } from '../model/workflow';
 import { graphOf, useEditor } from './store';
 import { promptApplication } from '../ui/dialogs';
+import { notify } from '../ui/toast';
 
 let transport: EngineTransport | null = null;
 let unsubscribe: (() => void) | null = null;
@@ -86,6 +87,7 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
   } catch {
     // Fail closed. A failed preflight cannot authorize any workflow-wide capability.
   }
+  if (!(await offerDownloads(effects.downloads ?? []))) return;
   const codeTools = effects.processes;
   let allow = false;
   if (codeTools.length) {
@@ -157,7 +159,29 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
   }
 }
 
+type Download = { id: string; title: string; size_mb: number; source: string; nodes: string[] };
+
+/** Components that download on first use: ask once, install, then let the run continue. */
+async function offerDownloads(downloads: Download[]): Promise<boolean> {
+  if (!downloads.length) return true;
+  const total = downloads.reduce((sum, d) => sum + d.size_mb, 0);
+  const ok = window.confirm('This workflow needs components that download on first use:\n'
+    + downloads.map((d) => `• ${d.title}: about ${d.size_mb} MB from ${d.source} (for ${d.nodes.join(', ')})`).join('\n')
+    + `\n\nAbout ${total} MB in total. They are installed once in your Flowbench folder and reused. Download now?`);
+  if (!ok) return false;
+  notify(`Downloading ${downloads.length} component(s), about ${total} MB. This can take a few minutes…`);
+  try {
+    await engine().request('addons.install', { components: downloads.map((d) => d.id) });
+    notify('Components installed.');
+    return true;
+  } catch (e) {
+    notify(`Download failed: ${describe(e)}`);
+    return false;
+  }
+}
+
 type WorkflowEffects = {
+  downloads?: Download[];
   complete: boolean;
   file_writes: Array<{ node_id: string; tool_id: string; path: string[] }>;
   database_writes: Array<{ node_id: string; tool_id: string; path: string[] }>;

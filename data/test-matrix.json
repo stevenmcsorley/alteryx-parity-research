@@ -187,7 +187,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 267,
+      "independent_tests": 271,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:text-input)"
@@ -7027,7 +7027,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 6,
+      "independent_tests": 7,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for machine-learning:predict)"
@@ -7097,9 +7097,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for text-mining:named-entity-recognition)"
@@ -7121,9 +7121,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for text-mining:part-of-speech-tagger)"
@@ -7193,9 +7193,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for text-mining:text-pre-processing)"
@@ -7289,9 +7289,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for text-mining:zero-shot-text-classification)"

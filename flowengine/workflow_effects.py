@@ -28,6 +28,7 @@ def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dic
     import datetime as dt
 
     found = {'file_writes': [], 'database_writes': [], 'processes': [], 'network_requests': [], 'remote_writes': [], 'unresolved': []}
+    needs: dict[str, list[str]] = {}  # component -> node ids that need it (downloads on first use)
     visited: set[str] = set()
 
     def visit(doc, directory: Path, stack: tuple[str, ...], depth: int):
@@ -60,6 +61,13 @@ def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dic
                     found['network_requests'].append(record)
                 if tool_id in REMOTE_WRITE_TOOLS:
                     found['remote_writes'].append(record)
+                downloads = getattr(tool, 'downloads', None)
+                if callable(downloads):
+                    try:
+                        for component in downloads(node.get('config') or {}):
+                            needs.setdefault(component, []).append(node_id)
+                    except Exception:
+                        found['unresolved'].append({'path': list(path), 'reason': 'downloads could not be determined'})
             if tool_id not in MACRO_TOOLS:
                 continue
             cfg = node.get('config') or {}
@@ -87,5 +95,10 @@ def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dic
         for item in found[key]:
             unique[tuple(item['path'])] = item
         found[key] = list(unique.values())
+    from . import addons
+    found['downloads'] = []
+    for item in addons.missing(list(needs)):
+        users = [n for c, nodes in needs.items() if item['id'] in addons.with_requirements([c]) for n in nodes]
+        found['downloads'].append({**item, 'nodes': list(dict.fromkeys(users))})
     found['complete'] = not found['unresolved']
     return found

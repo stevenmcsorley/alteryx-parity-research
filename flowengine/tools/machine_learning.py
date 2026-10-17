@@ -628,7 +628,8 @@ class Predict(Tool):
         outputs=(Anchor('output', 'Output'),),
         description='Apply a trained model to new records. Classification (including Text Classification) adds one '
                     'Probability_<class> field per class and Prediction (the most probable class). Regression adds '
-                    'Prediction. Topic Modeling models add topic_1 … topic_k shares. The pipeline\'s '
+                    'Prediction. Topic Modeling models add topic_1 … topic_k shares, and Named Entity Recognition models add '
+                    'entities and entity_diagram. The pipeline\'s '
                     'preparation is applied first. Records that cannot be prepared (a missing value with no '
                     'clean-up) get null predictions.',
         config_schema={'type': 'object', 'additionalProperties': False, 'properties': {}})
@@ -646,6 +647,9 @@ class Predict(Tool):
         data, _ = ml.read_stream(inputs['input'])
         if info.get('family') == 'topic_model':
             return {'output': self._topics(info, payload, data)}
+        if info.get('family') == 'ner':
+            from .text_nlp import ner_apply
+            return {'output': ner_apply(ctx, info, data, 'Predict')}
         res = modeling.predict(info, payload, data)
         if res['unseen']:
             ctx.warn(f"{res['unseen']} value(s) were categories the model did not see in training")

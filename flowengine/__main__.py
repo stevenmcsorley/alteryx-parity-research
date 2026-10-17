@@ -123,6 +123,13 @@ def main(argv=None) -> int:
     ec.add_argument('--python', help='Interpreter used to create the environment (default: this one)')
     en_sub.add_parser('list')
     en_sub.add_parser('rscript', help='Show the R installation the R tool would use')
+    ad = sub.add_parser('addons', help='Components that download on first use (language pack, models)')
+    ad_sub = ad.add_subparsers(dest='addons_cmd', required=True)
+    ad_sub.add_parser('list')
+    ai = ad_sub.add_parser('install', help='e.g. language-pack spacy-model:english neural-runtime zero-shot-model')
+    ai.add_argument('components', nargs='+')
+    ar = ad_sub.add_parser('remove')
+    ar.add_argument('component')
     h = sub.add_parser('history', help='List or show recorded runs')
     h.add_argument('--db', type=Path, required=True)
     h.add_argument('run_id', nargs='?')
@@ -167,6 +174,18 @@ def main(argv=None) -> int:
                     print(f"{e['name']:<20} Python {e['python']:<8} {e['path']}")
             else:
                 print(runtimes.find_rscript() or 'No R installation found (install R from CRAN or set FLOWENGINE_RSCRIPT)')
+            return 0
+        if args.cmd == 'addons':
+            from . import addons
+            if args.addons_cmd == 'list':
+                for c in addons.status():
+                    print(f"{'installed' if c['installed'] else 'available':<10} {c['id']:<22} {c['size_mb']:>4} MB  {c['title']}")
+            elif args.addons_cmd == 'install':
+                done = addons.install(args.components, log=lambda m: print(m) if m.startswith('Installing') else None)
+                print(f"installed {', '.join(done)}" if done else 'already installed')
+            else:
+                addons.remove(args.component)
+                print(f'removed {args.component}')
             return 0
         if args.cmd == 'history':
             from .history import RunHistory

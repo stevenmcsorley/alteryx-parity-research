@@ -99,6 +99,12 @@ class EngineService:
         if method == 'workflow.permissions':
             from .workflow_effects import workflow_effects
             return workflow_effects(params['workflow'], self._base(params), registry=reg)
+        if method == 'addons.list':
+            from . import addons
+            return addons.status()
+        if method == 'addons.install':
+            from . import addons
+            return {'installed': addons.install(list(params.get('components') or []))}
         if method == 'profiles.list':
             return [p.to_dict() for p in PROFILES.values()]
         if method.startswith('database.'):

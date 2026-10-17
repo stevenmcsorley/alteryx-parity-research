@@ -64,11 +64,12 @@
     "section_headings": []
   },
   "independent_tests": {
-    "count": 6,
-    "passing": 6,
+    "count": 7,
+    "passing": 7,
     "tests": [
       "test_batch11.TextClassificationTests.test_trains_evaluates_and_predicts",
       "test_batch11.TopicModelingTests.test_recovers_themes_and_predict_reproduces_shares",
+      "test_batch11b.ToolPlumbingTests.test_ner_custom_entities_and_predict",
       "test_batch9.AssistedModelingTests.test_compares_algorithms_and_returns_a_usable_model",
       "test_batch9.PipelineTests.test_classification_pipeline_matches_a_direct_scikit_learn_fit",
       "test_batch9.PipelineTests.test_missing_values_need_a_clean_up_and_the_training_median_is_reused",
