@@ -19,6 +19,7 @@ from typing import Callable
 
 from . import __version__, catalog
 from .errors import EngineError
+from .examples import examples_for
 from .plugin import default_registry
 
 SPEC_VERSION = '1'
@@ -141,7 +142,16 @@ def _setting(name: str, schema: dict, required: bool) -> dict:
     return out
 
 
-def describe_tool(ctx: Context, tool_id: str) -> dict:
+def _example_view(example: dict, full: bool) -> dict:
+    inputs = {}
+    for anchor, table in example['inputs'].items():
+        rows = table['rows'] if full else table['rows'][:5]
+        inputs[anchor] = {'fields': table['fields'], 'rows': rows, 'row_count': len(table['rows'])}
+    return {'config': example['config'], 'inputs': inputs, 'expected_outputs': example['expected_outputs'],
+            'checked': 'replayed against this kernel by tests/test_tool_examples.py'}
+
+
+def describe_tool(ctx: Context, tool_id: str, full: bool = False) -> dict:
     reg = default_registry()
     try:
         tool = reg.get(tool_id)
@@ -163,9 +173,18 @@ def describe_tool(ctx: Context, tool_id: str) -> dict:
         'execution': {'side_effects': m.side_effects, 'deterministic': m.deterministic,
                       'dependencies': list(m.dependencies or [])},
         'usage_notes': USAGE_NOTES.get(m.tool_id, []),
+        'examples': [_example_view(e, full) for e in examples_for(m.tool_id)],
+        'related_tools': _related(reg, m, names),
         'node_example': {'tool_id': m.tool_id, 'config': {k: _placeholder(schema['properties'][k]) for k in required
                                                          if k in schema.get('properties', {})}},
     }
+
+
+def _related(reg, manifest, names) -> list[str]:
+    categories = {names[c]['category'] for c in manifest.catalog_ids if c in names}
+    cmap = reg.catalog_map()
+    return sorted({cmap[e['id']] for e in names.values() if e['category'] in categories and e['id'] in cmap
+                   and cmap[e['id']] != manifest.tool_id})
 
 
 def _placeholder(schema: dict):
@@ -366,8 +385,8 @@ def _filename(response, url: str) -> str:
 OPS: dict[str, Op] = {op.name: op for op in [
     Op('find_tools', 'Search the installed Flowbench tools by task, method, data type or name, for example "average by group", "download csv", "join two tables". Returns tool ids with a one-line purpose.',
        _obj({'query': {'type': 'string', 'minLength': 1}, 'limit': {'type': 'integer', 'minimum': 1, 'maximum': 30}}, ['query']), find_tools),
-    Op('describe_tool', 'Full specification of one tool: purpose, input and output anchors, every setting with type, default and allowed values, side effects and usage notes. Call before adding a tool to a workflow.',
-       _obj({'tool_id': {'type': 'string', 'minLength': 1}}, ['tool_id']), describe_tool),
+    Op('describe_tool', 'Full specification of one tool: purpose, input and output anchors, every setting with type, default and allowed values, side effects, usage notes, related tools and tested examples (configuration, input and the output it produces). Call before adding a tool to a workflow. Examples show the first five input rows; pass full true for all of them.',
+       _obj({'tool_id': {'type': 'string', 'minLength': 1}, 'full': {'type': 'boolean'}}, ['tool_id']), describe_tool),
     Op('list_files', 'List files in the workspace folder or a sub-folder (relative paths resolve against the workspace).',
        _obj({'path': {'type': 'string'}, 'pattern': {'type': 'string'}}), list_files),
     Op('inspect_spreadsheet', 'Show every worksheet of an Excel (.xlsx/.xlsm) or OpenDocument (.ods) file with its size and first rows, so you can choose the sheet and where the table starts. Published statistics usually have notes and multi-row headers above the data.',
