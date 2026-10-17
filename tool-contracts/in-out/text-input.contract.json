@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 267,
-    "passing": 267,
+    "count": 271,
+    "passing": 271,
     "tests": [
       "test_batch10.APIOutputTests.test_quoted_csv_messages",
       "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
@@ -170,6 +170,10 @@
       "test_batch11.TopicModelingTests.test_chart_report",
       "test_batch11.TopicModelingTests.test_recovers_themes_and_predict_reproduces_shares",
       "test_batch11.WordCloudTests.test_tool_counts_words_and_phrases",
+      "test_batch11b.ComponentTests.test_tools_stop_with_addon_missing",
+      "test_batch11b.ToolPlumbingTests.test_ner_custom_entities_and_predict",
+      "test_batch11b.ToolPlumbingTests.test_preprocessing_merges_stop_word_sources",
+      "test_batch11b.ToolPlumbingTests.test_zero_shot_columns_and_top_label",
       "test_batch5.GeometryEditingTests.test_generalize_uses_metric_tolerance",
       "test_batch5.GeometryEditingTests.test_heat_map_density_integrates_to_point_count",
       "test_batch5.GeometryEditingTests.test_poly_split_and_build",

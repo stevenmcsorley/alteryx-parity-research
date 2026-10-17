@@ -22,6 +22,27 @@ function stubEngine(scan: unknown) {
 describe('run permissions', () => {
   afterEach(() => { vi.unstubAllGlobals(); useEditor.getState().newWorkflow(); });
 
+  it('offers first-use downloads, installs them, then runs', async () => {
+    for (const answer of [true, false]) {
+      useEditor.getState().newWorkflow();
+      const confirm = vi.fn(() => answer);
+      vi.stubGlobal('window', { ...window, confirm, alert: vi.fn() });
+      const calls = stubEngine({ ...effects(0), downloads: [
+        { id: 'language-pack', title: 'Flowbench language pack', size_mb: 120, source: 'pypi.org', nodes: ['ner'] },
+        { id: 'spacy-model:english', title: 'English language model', size_mb: 13, source: 'github.com/explosion', nodes: ['ner'] }] });
+      await runWorkflow();
+      expect(confirm).toHaveBeenCalledWith(expect.stringContaining('About 133 MB in total'));
+      const install = calls.find((c) => c.method === 'addons.install');
+      if (answer) {
+        expect(install?.params.components).toEqual(['language-pack', 'spacy-model:english']);
+        expect(calls.findIndex((c) => c.method === 'addons.install')).toBeLessThan(calls.findIndex((c) => c.method === 'run.start'));
+      } else {
+        expect(install).toBeUndefined();
+        expect(calls.find((c) => c.method === 'run.start')).toBeUndefined();
+      }
+    }
+  });
+
   it('asks before network requests and passes the answer to the engine', async () => {
     for (const answer of [true, false]) {
       useEditor.getState().newWorkflow();

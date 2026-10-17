@@ -6,51 +6,89 @@
   "xml_tool_name": "NamedEntityRecognition",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/named-entity-recognition.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
       "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "entities",
+      "direction": "input",
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
       "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "output",
+      "name": "model",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Default Model Configuration",
-      "Configure the Tool",
-      "Default English Entity List",
-      "Custom Entity List Format",
-      "Configure the Tool",
-      "Train Model",
-      "Output",
-      "How to Parse JSON Output",
-      "FAQ",
-      "How is the hierarchy determined when I use a custom entity and label list?",
-      "Are the entities normalized? For example, can the NER tool recognize that Michael Jordan and Air Jordan are the same per",
-      "Does NER support mixed language?"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "text_field"
+    ],
+    "properties": {
+      "text_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "language": {
+        "enum": [
+          "english",
+          "french",
+          "german",
+          "italian",
+          "portuguese",
+          "spanish"
+        ],
+        "default": "english"
+      },
+      "train_new_entities": {
+        "type": "boolean",
+        "default": false
+      },
+      "entity_field": {
+        "type": "string",
+        "default": "Entity"
+      },
+      "label_field": {
+        "type": "string",
+        "default": "Label"
+      },
+      "case_sensitive": {
+        "type": "boolean",
+        "default": false
+      },
+      "model_name": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-nlp-runtime",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -58,7 +96,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.named_entity_recognition",
+    "version": "1.0.0",
+    "module": "flowengine.tools.text_nlp",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -100,9 +144,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch11b.ComponentTests.test_preflight_lists_downloads_once",
+      "test_batch11b.ToolPlumbingTests.test_ner_custom_entities_and_predict"
+    ]
   },
   "sources": [
     {
@@ -118,6 +165,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

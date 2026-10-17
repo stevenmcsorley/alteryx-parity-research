@@ -6,51 +6,97 @@
   "xml_tool_name": "TextPreProcessing",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/text-mining/text-pre-processing.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Green input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "Gray input",
+      "name": "stopwords",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Advanced Options",
-      "Text Normalization",
-      "Filter",
-      "Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "text_field"
+    ],
+    "properties": {
+      "text_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "language": {
+        "enum": [
+          "english",
+          "french",
+          "german",
+          "italian",
+          "portuguese",
+          "spanish"
+        ],
+        "default": "english"
+      },
+      "lemmatize": {
+        "type": "boolean",
+        "default": false
+      },
+      "filter_digits": {
+        "type": "boolean",
+        "default": true
+      },
+      "filter_punctuation": {
+        "type": "boolean",
+        "default": true
+      },
+      "filter_stopwords": {
+        "type": "boolean",
+        "default": true
+      },
+      "default_stopwords": {
+        "type": "boolean",
+        "default": true
+      },
+      "custom_stopwords": {
+        "type": "string",
+        "default": "",
+        "description": "Words separated by commas"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-nlp-runtime",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.text_preprocessing",
+    "version": "1.0.0",
+    "module": "flowengine.tools.text_nlp",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -85,9 +131,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch11b.ComponentTests.test_preflight_lists_downloads_once",
+      "test_batch11b.ToolPlumbingTests.test_preprocessing_merges_stop_word_sources"
+    ]
   },
   "sources": [
     {
@@ -103,6 +152,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }
