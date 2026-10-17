@@ -6,49 +6,77 @@
   "xml_tool_name": "VisualLayout",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/laboratory/visual-layout-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "inputs",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "many",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "LayoutFields",
-      "LayoutFields/AllowResizing",
-      "LayoutFields/CanJoin",
-      "LayoutFields/Document",
-      "LayoutFields/Layout",
-      "LayoutFields/NumDeletions",
-      "LayoutFields/NumIncomingConnections",
-      "LayoutFields/NumSnippetMoves",
-      "LayoutFields/NumSnippetRearrangements",
-      "LayoutFields/NumTinaToggleUses",
-      "LayoutFields/OriginalSnippets",
-      "LayoutFields/OriginalThumbnails",
-      "LayoutFields/TempFiles",
-      "LayoutFields/VisFolderPath"
-    ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Limitations"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "rows": {
+        "type": "array",
+        "default": [],
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "input"
+            ],
+            "properties": {
+              "input": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "record": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 1
+              }
+            }
+          }
+        }
+      },
+      "title": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "gap": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 200,
+        "default": 16
+      },
+      "report_field": {
+        "type": "string",
+        "default": "Report"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "experimental-in-reference",
     "alteryx-server (public-doc keyword signal; unreviewed)",
@@ -56,7 +84,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.visual_layout",
+    "version": "1.0.0",
+    "module": "flowengine.tools.reporting",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -100,9 +134,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch10.VisualLayoutTests.test_bad_placement_is_reported",
+      "test_batch10.VisualLayoutTests.test_rows_place_elements_side_by_side"
+    ]
   },
   "sources": [
     {
@@ -123,6 +160,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

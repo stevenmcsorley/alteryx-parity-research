@@ -435,6 +435,63 @@ class Layout(Tool):
         return {'output': Table.from_rows(Schema([REPORT]), [(doc,)])}
 
 
+class VisualLayout(Tool):
+    manifest = ToolManifest(
+        tool_id='core.visual_layout', version='1.0.0', display_name='Visual Layout', catalog_ids=('laboratory:visual-layout',),
+        inputs=(Anchor('inputs', 'Input', multiple=True, description='Report elements from Table, Chart, Text, Image, Map or Legend tools'),),
+        outputs=(Anchor('output', 'Report'),),
+        description='Place report elements on a page in rows. Each row lists elements by connection number and '
+                    'record number. One element fills the row, and several share it side by side. Rows stack top to '
+                    'bottom, and elements left out are reported. With no rows, every element is stacked in '
+                    'connection order. Connect the output to Render, which sets page size, orientation and margins.',
+        config_schema={'type': 'object', 'additionalProperties': False, 'properties': {
+            'rows': {'type': 'array', 'default': [], 'items': {'type': 'array', 'minItems': 1, 'items': {
+                'type': 'object', 'additionalProperties': False, 'required': ['input'],
+                'properties': {'input': {'type': 'integer', 'minimum': 1}, 'record': {'type': 'integer', 'minimum': 1, 'default': 1}}}}},
+            'title': {'type': ['string', 'null'], 'default': None},
+            'gap': {'type': 'integer', 'minimum': 0, 'maximum': 200, 'default': 16},
+            'report_field': {'type': 'string', 'default': 'Report'}}})
+
+    def infer(self, ctx, cfg, inputs):
+        for schema in inputs['inputs']:
+            require_fields(schema, [cfg['report_field']], 'report field')
+        return {'output': Schema([REPORT])}
+
+    def run(self, ctx, cfg, inputs):
+        elements = []
+        for table in inputs['inputs']:
+            require_fields(table.schema, [cfg['report_field']], 'report field')
+            items = []
+            for v in table.column(cfg['report_field']):
+                item = reports.parse(v)
+                item.pop('format', None)
+                items.append(item)
+            elements.append(items)
+        if not any(elements):
+            raise DataError('Visual Layout received no report elements')
+        rows = cfg['rows'] or [[{'input': i + 1, 'record': r + 1}] for i, items in enumerate(elements) for r in range(len(items))]
+        used, placed = set(), []
+        for n, row in enumerate(rows, 1):
+            cells = []
+            for cell in row:
+                i, r = cell['input'], cell.get('record', 1)
+                if i > len(elements) or r > len(elements[i - 1]):
+                    raise ConfigError(f'Row {n} places element #{i}:{r}, which does not exist '
+                                      f'({len(elements)} connection(s)); connection #{i} has '
+                                      f'{len(elements[i - 1]) if i <= len(elements) else 0} element(s)')
+                if (i, r) in used:
+                    raise ConfigError(f'Element #{i}:{r} is placed more than once')
+                used.add((i, r))
+                cells.append(elements[i - 1][r - 1])
+            placed.append(cells[0] if len(cells) == 1 else
+                          {'kind': 'layout', 'direction': 'horizontal', 'title': None, 'gap': cfg['gap'], 'items': cells})
+        unused = [f'#{i + 1}:{r + 1}' for i, items in enumerate(elements) for r in range(len(items)) if (i + 1, r + 1) not in used]
+        if unused:
+            ctx.warn(f'Element(s) {", ".join(unused)} are not placed in the layout')
+        doc = reports.element('layout', direction='vertical', title=cfg['title'], gap=cfg['gap'], items=placed)
+        return {'output': Table.from_rows(Schema([REPORT]), [(doc,)])}
+
+
 class Render(Tool):
     SCHEMA = Schema([Field('Path', FieldType.V_WSTRING, TEXT), Field('Format', FieldType.V_WSTRING, 8),
                      Field('Pages', FieldType.INT32), Field('Bytes', FieldType.INT64), Field('Elements', FieldType.INT32)])
@@ -740,5 +797,5 @@ class MapLegendSplitter(Tool):
         return {'output': Table.from_rows(self.SCHEMA, rows)}
 
 
-TOOLS = [ReportTable, InteractiveChart, ReportText, ReportImage, Layout, Render, ReportHeader, ReportFooter, Overlay,
+TOOLS = [ReportTable, InteractiveChart, ReportText, ReportImage, Layout, VisualLayout, Render, ReportHeader, ReportFooter, Overlay,
          ReportMap, MapLegendBuilder, MapLegendSplitter]

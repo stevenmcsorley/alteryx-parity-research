@@ -134,6 +134,24 @@ class InDBIntegrationTests(unittest.TestCase):
             return nodes, edges, check
         self.run_both(build)
 
+    def test_transpose_matches_the_local_engine(self):
+        def build(dialect, cid, _):
+            nodes = [self.connect('c', cid, dialect),
+                     {'id': 't', 'tool': 'core.transpose_indb', 'config': {'key_fields': ['seq'], 'data_fields': ['k', 'amount']}},
+                     {'id': 'o', 'tool': 'core.data_stream_out', 'config': {}}]
+            edges = [edge('c', 'output', 't', 'input'), edge('t', 'output', 'o', 'input')]
+
+            def check(r):
+                got = r.output('o').to_dicts()
+                self.assertEqual(len(got), 12)
+                self.assertEqual({x['Name'] for x in got}, {'k', 'amount'})
+                ks = sorted((x['seq'], x['Value']) for x in got if x['Name'] == 'k')
+                self.assertEqual([v for _, v in ks], ['A', 'a', None, None, 'É', 'é'])
+                amounts = {x['seq']: float(x['Value']) for x in got if x['Name'] == 'amount'}
+                self.assertEqual(sorted(amounts.values()), [1.25, 2.5, 3.75, 4.0, 5.25, 6.5])
+            return nodes, edges, check
+        self.run_both(build)
+
     def test_stream_in_dynamic_input_dynamic_output(self):
         def build(dialect, cid, _):
             s = SCHEMA[dialect]

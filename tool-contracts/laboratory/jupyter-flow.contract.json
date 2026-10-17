@@ -6,43 +6,85 @@
   "xml_tool_name": "JupyterFlow",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/laboratory/jupyter-flow.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Multi-input",
+      "name": "inputs",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "many",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output1",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "output2",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "output3",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "output4",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "output5",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Required Syntax",
-      "Input Data",
-      "Output Data",
-      "Manage Packages",
-      "Advanced",
-      "Data Cache Location",
-      "Back Up Data Cache",
-      "Enter Custom Path to Zip App",
-      "Share Workflows That Contain Zip Apps"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "notebook"
+    ],
+    "properties": {
+      "notebook": {
+        "type": "string",
+        "minLength": 1
+      },
+      "packages_path": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "environment": {
+        "type": "string",
+        "default": "default"
+      },
+      "timeout_seconds": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 600
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "experimental-in-reference",
     "python-runtime (public-doc keyword signal; unreviewed)",
@@ -50,7 +92,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.jupyter_flow",
+    "version": "1.0.0",
+    "module": "flowengine.tools.developer",
+    "side_effects": "process"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -85,9 +133,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch10.JupyterFlowTests.test_markers_map_connections_and_outputs",
+      "test_batch10.JupyterFlowTests.test_needs_permission_and_connected_inputs"
+    ]
   },
   "sources": [
     {
@@ -103,6 +154,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

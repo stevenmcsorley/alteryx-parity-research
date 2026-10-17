@@ -1,4 +1,4 @@
-"""Saved web-service credentials (Web/API and GitHub), the non-database part of the connection manager.
+"""Saved web-service credentials (Web/API, GitHub and SMTP email), the non-database part of the connection manager.
 
 Non-secret settings are stored as JSON at ``<FLOWENGINE_HOME or ~/.flowbench>/service_connections.json``.
 The token or password lives in the same OS credential vault as database passwords, under the
@@ -8,6 +8,10 @@ A credential is scoped to its ``base_url``: :meth:`ServiceConnection.authorize` 
 only for URLs with the same scheme, host and port whose path is under the base path. Tools must
 call it for every request, including each redirect target, so a workflow cannot send a saved
 token to another server.
+
+An SMTP connection's ``base_url`` is ``smtps://host:port`` (TLS from the start) or ``smtp://host:port``
+(STARTTLS, required except on localhost). It always uses a username and password, which the Email
+tool only sends over an encrypted connection (or to localhost).
 """
 from __future__ import annotations
 
@@ -23,7 +27,7 @@ from urllib.parse import unquote, urlsplit
 from .errors import ConfigError
 from .runtimes import home
 
-KINDS = ('web', 'github')
+KINDS = ('web', 'github', 'smtp')
 AUTH_MODES = ('bearer', 'basic', 'header')
 _HEADER = re.compile(r"^[!#$%&'*+.^_`|~0-9A-Za-z-]{1,128}$")
 _LOOPBACK = ('localhost', '127.0.0.1', '::1')
@@ -53,6 +57,8 @@ class ServiceConnection:
             raise ConfigError('Service connection name is required')
         if self.kind not in KINDS:
             raise ConfigError(f'Service connection kind must be one of {KINDS}')
+        if self.kind == 'smtp':
+            return self._validate_smtp()
         if self.auth not in AUTH_MODES or (self.kind == 'github' and self.auth != 'bearer'):
             raise ConfigError('GitHub connections use a token (bearer)' if self.kind == 'github'
                               else f'Authentication must be one of {AUTH_MODES}')
@@ -67,6 +73,25 @@ class ServiceConnection:
         if self.auth == 'header' and not _HEADER.match(self.header_name or ''):
             raise ConfigError('Header authentication needs a valid header name')
         return self
+
+    def _validate_smtp(self):
+        parts = urlsplit(self.base_url)
+        try:
+            port = parts.port
+        except ValueError:
+            port = None
+        if parts.scheme not in ('smtps', 'smtp') or not parts.hostname or parts.path not in ('', '/') or parts.query \
+                or parts.fragment or parts.username or parts.password or port is None:
+            raise ConfigError('SMTP server must be smtps://host:port (TLS) or smtp://host:port (STARTTLS), '
+                              'for example smtps://smtp.example.com:465')
+        if self.auth != 'basic' or not (self.username or '').strip():
+            raise ConfigError('SMTP connections need a username (and the password as the secret)')
+        return self
+
+    def smtp_server(self):
+        """(host, port, encryption) with encryption 'ssl' or 'starttls'."""
+        parts = urlsplit(self.base_url)
+        return parts.hostname, parts.port, 'ssl' if parts.scheme == 'smtps' else 'starttls'
 
     def public(self) -> dict:
         return asdict(self)

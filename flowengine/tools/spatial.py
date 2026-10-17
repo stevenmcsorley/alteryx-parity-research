@@ -1076,5 +1076,81 @@ class HeatMap(Tool):
         return {'output': Table.from_rows(self.SCHEMA, out)}
 
 
+class MapInput(Tool):
+    SCHEMA = Schema([Field('Label', FieldType.V_WSTRING, TEXT), Field('Type', FieldType.V_WSTRING, 32), _geom_field('SpatialObj')])
+    manifest = ToolManifest(
+        tool_id='core.map_input', version='1.0.0', display_name='Map Input', catalog_ids=('in-out:map-input',),
+        inputs=(Anchor('reference', 'Reference', required=False,
+                       description='Optional spatial records to select objects from (Select mode)'),),
+        outputs=(Anchor('output', 'Output', description='Label, geometry type and SpatialObj per object'),),
+        description='Use spatial objects you enter as a workflow input. In Draw mode, list points, lines and polygons '
+                    'as WKT or GeoJSON, each with a label. In Select mode, connect reference records and choose objects '
+                    'by label, by a bounding box, or both. Geometries are checked against the CRS (longitude/latitude '
+                    'ranges for EPSG:4326).',
+        config_schema={'type': 'object', 'additionalProperties': False, 'properties': {
+            'mode': {'enum': ['draw', 'select'], 'default': 'draw'},
+            'objects': {'type': 'array', 'default': [], 'items': {
+                'type': 'object', 'additionalProperties': False, 'required': ['geometry'],
+                'properties': {'label': {'type': ['string', 'null'], 'default': None}, 'geometry': {'type': 'string', 'minLength': 1}}}},
+            'geometry_field': {'type': ['string', 'null'], 'default': None},
+            'label_field': {'type': ['string', 'null'], 'default': None},
+            'labels': {'type': 'array', 'items': {'type': 'string'}, 'default': []},
+            'bbox': {'type': ['array', 'null'], 'items': {'type': 'number'}, 'minItems': 4, 'maxItems': 4, 'default': None,
+                     'description': 'min x, min y, max x, max y'},
+            'crs': _CRS, 'format': _FORMAT}})
+
+    def infer(self, ctx, cfg, inputs):
+        if cfg['mode'] == 'select':
+            ref = inputs.get('reference')
+            if ref is None:
+                raise ConfigError('Select mode needs reference records on the Reference input')
+            if not cfg['geometry_field']:
+                raise ConfigError('Select mode needs the geometry field of the reference records')
+            require_fields(ref, [cfg['geometry_field']] + ([cfg['label_field']] if cfg['label_field'] else []))
+            if cfg['labels'] and not cfg['label_field']:
+                raise ConfigError('Choosing objects by label needs the label field')
+        elif not cfg['objects']:
+            raise ConfigError('Add at least one object (WKT or GeoJSON)')
+        return {'output': self.SCHEMA}
+
+    def _check(self, geom, cfg, where):
+        if geom is None or geom.is_empty:
+            raise DataError(f'Empty geometry{where}')
+        if crs_info(cfg['crs'])[1]:
+            check_lonlat(geom, where)
+
+    def run(self, ctx, cfg, inputs):
+        self.infer(ctx, cfg, {k: v.schema for k, v in inputs.items() if v is not None})
+        rows = []
+        if cfg['mode'] == 'draw':
+            for i, obj in enumerate(cfg['objects'], 1):
+                geom = parse(obj['geometry'], 'error', f' in object {i}')
+                self._check(geom, cfg, f' in object {i}')
+                rows.append((obj.get('label') or f'Object {i}', geom.geom_type, dump(geom, cfg['format'])))
+            return {'output': Table.from_rows(self.SCHEMA, rows)}
+        import shapely
+        from shapely.geometry import box
+        ref = inputs['reference']
+        area = box(*cfg['bbox']) if cfg['bbox'] else None
+        wanted = set(cfg['labels'])
+        labels = ref.column(cfg['label_field']) if cfg['label_field'] else [None] * len(ref)
+        for i, (value, label) in enumerate(zip(ref.column(cfg['geometry_field']), labels), 1):
+            geom = parse(value, 'error', f' in reference record {i}')
+            if geom is None:
+                continue
+            text = None if label is None else str(label)
+            if wanted and text not in wanted:
+                continue
+            if area is not None and not shapely.intersects(geom, area):
+                continue
+            rows.append((text or f'Object {i}', geom.geom_type, dump(geom, cfg['format'])))
+        if wanted:
+            found = {r[0] for r in rows}
+            absent = sorted(wanted - found)
+            if absent:
+                ctx.warn(f'No reference object has label(s) {absent}')
+        return {'output': Table.from_rows(self.SCHEMA, rows)}
+
+
 TOOLS = [CreatePoints, Distance, Buffer, FindNearest, SpatialMatch, SpatialInfo, MakeGrid, Generalize, Smooth,
-         PolySplit, PolyBuild, TradeArea, SpatialProcess, HeatMap]
+         PolySplit, PolyBuild, TradeArea, SpatialProcess, HeatMap, MapInput]

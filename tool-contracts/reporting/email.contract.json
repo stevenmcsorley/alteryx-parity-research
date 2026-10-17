@@ -6,26 +6,177 @@
   "xml_tool_name": "PortfolioPluginsGui.Email.Email",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/reporting/email-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "SMTP Setup via DCM",
-      "SMTP Setup via Tool Configuration",
-      "Configure Email Message",
-      "OAuth Authentication",
-      "Notes and Limitations",
-      "Outlook Desktop Limitation",
-      "Email Tool and Alteryx Multi-threaded Processing (AMP)"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "default": true
+      },
+      "connection_id": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "x-flowbench-connection": "smtp",
+        "description": "Saved SMTP connection (Web & API in the toolbar) for servers that need a login"
+      },
+      "smtp_host": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "port": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 1,
+        "maximum": 65535,
+        "default": null
+      },
+      "encryption": {
+        "enum": [
+          "none",
+          "ssl",
+          "starttls"
+        ],
+        "default": "starttls"
+      },
+      "from": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "from_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "to": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "to_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "cc": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "cc_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "bcc": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "bcc_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "subject": {
+        "type": "string",
+        "default": ""
+      },
+      "subject_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "body": {
+        "type": "string",
+        "default": ""
+      },
+      "body_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "body_format": {
+        "enum": [
+          "text",
+          "html"
+        ],
+        "default": "text"
+      },
+      "attachments": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "default": []
+      },
+      "attachment_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 60
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "report-renderer (layout/PDF/image)",
     "credentials (public-doc keyword signal; unreviewed)",
@@ -33,7 +184,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.email",
+    "version": "1.0.0",
+    "module": "flowengine.tools.email_tool",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -54,9 +211,15 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 5,
+    "passing": 5,
+    "tests": [
+      "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
+      "test_batch10.EmailTests.test_nothing_is_sent_when_any_record_is_invalid",
+      "test_batch10.EmailTests.test_one_message_per_record_with_placeholders_bcc_and_attachment",
+      "test_batch10.EmailTests.test_saved_smtp_connection_logs_in",
+      "test_batch10.EmailTests.test_text_templates_keep_unknown_placeholders"
+    ]
   },
   "sources": [
     {
@@ -72,7 +235,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet."
   ]
 }
