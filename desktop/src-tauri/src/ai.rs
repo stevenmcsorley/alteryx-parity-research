@@ -693,7 +693,7 @@ fn editor_tool_definitions() -> Value {
       {"type":"function","name":"workflow_get_diagnostics","description":"Read sanitized validation codes and run status events.","parameters":object(json!({}),&[]),"strict":true},
       {"type":"function","name":"workflow_propose_patch","description":"Prepare and validate a graph edit. Review mode shows an approval preview; Full Control applies it as an atomic undoable transaction. Use installed tools and anchors. Never include secrets.","parameters":object(json!({"patch_json":{"type":"string","description":r#"JSON object with one operations array, for example {"operations":[{"op":"add","ref":"sales_in","tool_id":"core.input_data","config":{"path":"sales.csv"},"position":{"x":0,"y":0}}]}. Encode the object as a JSON string once. Operations: add {op,ref,tool_id,config,position}; configure {op,node_ref,config}; add_question {op,ref,question,config_path,position}; add_condition {op,ref,when,position}; add_error_message {op,ref,message,position}; configure_error_message {op,node_ref,message}; add_comment {op,ref,text,position}; configure_comment {op,node_ref,text}; configure_question {op,node_ref,question,config_path}; configure_condition {op,node_ref,when}; group {op,ref,node_refs,caption} groups top-level nodes in an editor Tool Container; configure_container {op,node_ref,caption,disabled,collapsed}; ungroup_container {op,node_ref}; connect {op,source_ref,source_anchor,target_ref,target_anchor}; connect_action {op,source_ref,target_ref}; connect_condition {op,source_ref,source_anchor,target_ref}; disconnect {op,source_ref,source_anchor,target_ref,target_anchor}; remove {op,node_ref}. Text-area questions accept multiline answers; Tree questions use configured leaf paths such as Sales > Online. Existing refs are node_N from workflow_get_snapshot. Tool configs must match installed manifests."#},"base_revision":{"type":"string","description":"base_revision exactly as returned by workflow_get_snapshot; stale revisions are rejected."}}),&["patch_json","base_revision"]),"strict":true},
       {"type":"function","name":"workflow_request_run","description":"Run the workflow. Full Control runs ordinary processing directly; external effects retain their scoped permission checks.","parameters":object(json!({}),&[]),"strict":true},
-      {"type":"function","name":"workflow_request_save","description":"Save to the current workflow path in Full Control; a new destination uses the native picker.","parameters":object(json!({}),&[]),"strict":true},
+      {"type":"function","name":"workflow_request_save","description":"Save the workflow as a .flow.json file. path is relative to the workspace (or absolute inside it), for example \"fuel/fuel_prices.flow.json\"; an empty path saves to the current file, or in Full Control to <workspace>/<workflow name>.flow.json. Review mode asks the user first.","parameters":object(json!({"path":{"type":"string"}}),&["path"]),"strict":true},
       {"type":"function","name":"run_get_results","description":"List Browse outputs with truncation markers; use run_get_result_page to inspect selected rows under active data-routing consent.","parameters":object(json!({}),&[]),"strict":true}
       ,{"type":"function","name":"run_get_result_page","description":"Read a page of rows (up to 100) from one Browse output listed by run_get_results. Rows are limited to those retained by the engine preview, and a page larger than the per-call budget returns fewer rows than requested. Text longer than 2000 characters is shortened and image/blob cells are summarised by size.","parameters":object(json!({"node_ref":{"type":"string"},"offset":{"type":"integer"},"limit":{"type":"integer"},"columns":{"type":"string","description":"Comma-separated field names to return, or an empty string for all fields (the first 60 when there are more)."}}),&["node_ref","offset","limit","columns"]),"strict":true}
     ])
@@ -732,7 +732,9 @@ fn valid_tool_arguments(name: &str, args: &Value) -> bool {
             && obj.get("node_ref").and_then(Value::as_str).is_some_and(|s| s.strip_prefix("node_").is_some_and(|n| !n.is_empty() && n.bytes().all(|b| b.is_ascii_digit())))
             && obj.get("offset").and_then(Value::as_u64).is_some()
             && obj.get("limit").and_then(Value::as_u64).is_some_and(|n| n >= 1),
-        "workflow.request_run" | "workflow.request_save" | "run.get_results" => obj.is_empty(),
+        "workflow.request_save" => obj.is_empty() || (obj.len() == 1 && obj.get("path").and_then(Value::as_str).is_some_and(|p| p.len() <= 1024
+            && (p.is_empty() || p.ends_with(".flow.json")))),
+        "workflow.request_run" | "run.get_results" => obj.is_empty(),
         // The engine validates operation arguments against the operation's JSON Schema.
         _ if name.starts_with("agent.") => true,
         "task.plan" => obj.len() == 1 && obj.get("deliverables").is_some_and(Value::is_array),
@@ -1180,7 +1182,11 @@ fn project_tool_result(name: &str, value: Value) -> Result<Value, String> {
             Ok(value)
         }
         "workflow.request_save" => {
-            if !exact_keys(&value, &["status", "path_selected"]) || !value["status"].as_str().is_some_and(|s| ["saved", "cancelled", "rejected", "save_failed"].contains(&s)) || !value["path_selected"].is_boolean() { return Err(bad()); }
+            let mut core = value.clone();
+            let path = core.as_object_mut().and_then(|m| m.remove("path"));
+            let error = core.as_object_mut().and_then(|m| m.remove("error"));
+            if !exact_keys(&core, &["status", "path_selected"]) || !core["status"].as_str().is_some_and(|s| ["saved", "cancelled", "rejected", "save_failed", "outside_workspace"].contains(&s)) || !core["path_selected"].is_boolean() { return Err(bad()); }
+            if path.as_ref().is_some_and(|p| !p.as_str().is_some_and(|p| p.len() <= 2048)) || error.as_ref().is_some_and(|e| !e.is_string()) { return Err(bad()); }
             Ok(value)
         }
         "run.get_results" => project_run_results(value).ok_or_else(bad),
@@ -3251,6 +3257,16 @@ mod tests {
             "result":{"rows":3,"nested":[{"api_key":"k","value":1}]}})).unwrap();
         assert_eq!(outcome["result"]["nested"][0], json!({"value":1}));
         assert!(project_agent_result("agent.profile_file", json!({"ok":true,"operation":"other"})).is_err());
+    }
+
+    #[test]
+    fn run_and_save_results_pass_the_native_projection() {
+        let run = project_tool_result("workflow.request_run", json!({"status":"succeeded","outputs":[],"outputs_truncated":false,"run_id":"r1"}));
+        assert!(run.is_ok(), "{run:?}");
+        assert!(project_tool_result("workflow.request_save", json!({"status":"saved","path_selected":true,"path":"/w/a.flow.json"})).is_ok());
+        assert!(valid_tool_arguments("workflow.request_save", &json!({"path":"fuel/a.flow.json"})));
+        assert!(valid_tool_arguments("workflow.request_save", &json!({"path":""})));
+        assert!(!valid_tool_arguments("workflow.request_save", &json!({"path":"a.exe"})));
     }
 
     #[test]

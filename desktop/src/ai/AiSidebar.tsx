@@ -4,7 +4,7 @@ import { useEditor } from '../state/store';
 import { cancelRun, validateNow } from '../state/engineActions';
 import { ensureAiStreamListener, useAiConversation, type ChatMessage, type Verification } from './conversation';
 import { prepareWorkflowProposal, workflowRevision } from './workflowPatch';
-import { engine, runWorkflow } from '../state/engineActions';
+import { engine, runWorkflow, saveWorkflow } from '../state/engineActions';
 import { doSave } from '../panels/Toolbar';
 import { activityLabel, addUsage, diagnosticSummary, NO_USAGE, tokens, type Usage } from './panelText';
 import { ProviderSettings, providerLabel, type LocalProvider } from './ProviderSettings';
@@ -51,6 +51,26 @@ let resolveRunApproval: ((value: unknown) => void) | null = null;
 let resolvePatchApproval: ((value: unknown) => void) | null = null;
 let resolveSaveApproval: ((value: unknown) => void) | null = null;
 let resolveActionApproval: ((approved: boolean) => void) | null = null;
+let pendingSavePath = '';
+/** Where an AI save goes: its path inside the workspace, the current file, or (Full Control) the workspace default. */
+export function agentSavePath(path: string, baseDir: string, filePath: string | null, defaultName: string | null): { path: string } | { outside: string } | null {
+  const sep = baseDir.includes('\\') ? '\\' : '/';
+  const base = baseDir.replace(/[\\/]+$/, '');
+  const norm = (p: string) => p.replace(/[\\/]+/g, '/').split('/').reduce<string[]>((out, part) => {
+    if (part === '..') out.pop(); else if (part !== '.' && part !== '') out.push(part);
+    return out;
+  }, []).join('/');
+  if (path.trim()) {
+    const absolute = /^([a-zA-Z]:[\\/]|[\\/])/.test(path);
+    const full = absolute ? path : `${base}${sep}${path}`;
+    const inside = base && ('/' + norm(full)).toLowerCase().startsWith('/' + norm(base).toLowerCase() + '/');
+    if (!inside) return { outside: path };
+    return { path: (/^[a-zA-Z]:/.test(full) ? '' : full.startsWith('/') || full.startsWith('\\') ? '/' : '') + norm(full).split('/').join(sep) };
+  }
+  if (filePath) return { path: filePath };
+  if (defaultName && base) return { path: `${base}${sep}${defaultName.replace(/[^\w-]+/g, '_') || 'workflow'}.flow.json` };
+  return null;
+}
 /** Permissions the user approved during the current task; cleared when a new request starts. */
 const taskGrants = new Set<string>();
 function describeOperation(operation: string, args: Record<string, unknown>) {
@@ -204,9 +224,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         useAiConversation.getState().requestRunApproval();
         return new Promise((resolve) => { resolveRunApproval = resolve; });
       },
-      requestSave: () => {
-        if (fullControlForCurrentWorkspace()) return saveForAgent();
+      requestSave: (path: string) => {
+        if (fullControlForCurrentWorkspace()) return saveForAgent(path, true);
         if (resolveSaveApproval) throw new Error('A workflow save is already awaiting approval');
+        pendingSavePath = path;
         useAiConversation.getState().requestSaveApproval();
         return new Promise((resolve) => { resolveSaveApproval = resolve; });
       },
@@ -323,9 +344,19 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
   }
-  async function saveForAgent() {
-    const outcome = await doSave();
-    return { status: outcome === 'failed' ? 'save_failed' : outcome, path_selected: outcome === 'saved' };
+  /** Saves where the AI asked, inside the workspace, without the file picker; or the current file. */
+  async function saveForAgent(path: string, useDefault: boolean) {
+    const s = useEditor.getState();
+    const target = agentSavePath(path, s.baseDir, s.filePath, useDefault ? s.name : null);
+    if (!target) {
+      const outcome = await doSave();
+      return { status: outcome === 'failed' ? 'save_failed' : outcome, path_selected: outcome === 'saved' };
+    }
+    if ('outside' in target) return { status: 'outside_workspace', path_selected: false, error: `${target.outside} is outside the workspace ${s.baseDir}` };
+    try {
+      await saveWorkflow(target.path);
+      return { status: 'saved', path_selected: true, path: useEditor.getState().filePath ?? target.path };
+    } catch (e) { return { status: 'save_failed', path_selected: false, error: messageOf(e).slice(0, 500) }; }
   }
   function rejectRun() {
     useAiConversation.setState({ runApprovalRequested: false });
@@ -333,8 +364,9 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   }
   async function approveSave() {
     useAiConversation.setState({ saveApprovalRequested: false });
-    const outcome = await doSave();
-    resolveSaveApproval?.({ status: outcome, path_selected: outcome === 'saved' });
+    const result = await saveForAgent(pendingSavePath, false);
+    pendingSavePath = '';
+    resolveSaveApproval?.(result);
     resolveSaveApproval = null;
   }
   function rejectSave() {
@@ -657,8 +689,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
             <button onClick={rejectRun}>Cancel</button></div>
         </section>}
         {saveApprovalRequested && <section className="ai-proposal-card" aria-label="Save approval">
-          <strong>Save this workflow?</strong><p>Flowbench will open its normal save destination prompt. The workflow is written only after you confirm the path.</p>
-          <div><button className="primary" onClick={() => void approveSave()}>Choose destination and save</button>
+          <strong>Save this workflow?</strong><p>{pendingSavePath
+            ? <>Flowbench AI wants to save it as <code>{pendingSavePath}</code> in the workspace.</>
+            : 'Flowbench will open its normal save destination prompt. The workflow is written only after you confirm the path.'}</p>
+          <div><button className="primary" onClick={() => void approveSave()}>{pendingSavePath ? 'Save' : 'Choose destination and save'}</button>
             <button onClick={rejectSave}>Cancel</button></div>
         </section>}
         {actionApproval && <section className="ai-proposal-card" aria-label="Permission request">

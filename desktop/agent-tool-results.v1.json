@@ -19,8 +19,8 @@
     "workflow.validate": { "type": "object", "required": { "count": "integer", "problems": "array" }, "optional": {}, "additionalProperties": false },
     "workflow.get_diagnostics": { "type": "object", "required": { "validating": "boolean", "problems": "object", "latest_run": "object" }, "optional": {}, "additionalProperties": false },
     "workflow.propose_patch": { "type": "object", "required": { "status": "string", "operation_count": "integer", "valid": "boolean", "problem_codes": "array" }, "optional": {}, "additionalProperties": false },
-    "workflow.request_run": { "type": "object", "required": { "status": "string" }, "optional": { "outputs": "array", "run_id": "string", "error": "object" }, "additionalProperties": false },
-    "workflow.request_save": { "type": "object", "required": { "status": "string", "path_selected": "boolean" }, "optional": {}, "additionalProperties": false },
+    "workflow.request_run": { "type": "object", "required": { "status": "string" }, "optional": { "outputs": "array", "outputs_truncated": "boolean", "run_id": "string", "error": "object" }, "additionalProperties": false },
+    "workflow.request_save": { "type": "object", "required": { "status": "string", "path_selected": "boolean" }, "optional": { "path": "string", "error": "string" }, "additionalProperties": false },
     "run.get_results": { "type": "object", "required": { "status": "string", "outputs": "array" }, "optional": { "outputs_truncated": "boolean", "run_id": "string", "error": "object" }, "additionalProperties": false },
     "run.get_result_page": { "type": "object", "required": { "node_ref": "string", "offset": "integer", "total_rows": "integer", "available_rows": "integer", "fields": "array", "fields_truncated": "boolean", "rows": "array" }, "optional": {}, "additionalProperties": false }
   }
