@@ -79,13 +79,47 @@ export function activityLabel(tool: string, args: Args = {}, state?: Pick<Editor
   }
 }
 
-export type Usage = { input: number; output: number; cached: number };
-export const NO_USAGE: Usage = { input: 0, output: 0, cached: 0 };
+/** Token use split by what it costs and why.
+ *  fresh: input that is new this step (the prompt, new tool results); an estimate from the growth since the
+ *         previous step of the same turn.
+ *  resent: earlier context sent again and billed at the full rate.
+ *  cached: input the provider served from its prompt cache (the repeated instructions and tool definitions),
+ *          billed at a reduced rate.
+ *  output: tokens the model generated, of which reasoning is the part spent thinking. */
+export type Usage = { input: number; output: number; cached: number; fresh: number; resent: number; reasoning: number;
+  steps: number; lastInput: number; lastOutput: number };
+export const NO_USAGE: Usage = { input: 0, output: 0, cached: 0, fresh: 0, resent: 0, reasoning: 0, steps: 0, lastInput: 0, lastOutput: 0 };
+export type StepUsage = { input_tokens?: number | null; output_tokens?: number | null; cached_tokens?: number | null; reasoning_tokens?: number | null };
 
-export function addUsage(total: Usage, usage: { input_tokens?: number | null; output_tokens?: number | null; cached_tokens?: number | null } | undefined): Usage {
-  return { input: total.input + (usage?.input_tokens ?? 0), output: total.output + (usage?.output_tokens ?? 0),
-    cached: total.cached + (usage?.cached_tokens ?? 0) };
+/** Adds one model step to a turn's running total; returns the new total and this step's own breakdown. */
+export function addStep(turn: Usage, usage: StepUsage | undefined): { total: Usage; step: Usage } {
+  const input = usage?.input_tokens ?? 0;
+  const output = usage?.output_tokens ?? 0;
+  const cached = Math.min(usage?.cached_tokens ?? 0, input);
+  const uncached = input - cached;
+  const carried = turn.steps ? turn.lastInput + turn.lastOutput : 0;
+  const fresh = Math.max(0, Math.min(uncached, input - carried));
+  const step: Usage = { input, output, cached, fresh, resent: uncached - fresh, reasoning: Math.min(usage?.reasoning_tokens ?? 0, output),
+    steps: 1, lastInput: input, lastOutput: output };
+  return { total: { ...sumUsage(turn, step), lastInput: input, lastOutput: output }, step };
 }
+
+export function sumUsage(a: Usage, b: Usage): Usage {
+  return { input: a.input + b.input, output: a.output + b.output, cached: a.cached + b.cached, fresh: a.fresh + b.fresh,
+    resent: a.resent + b.resent, reasoning: a.reasoning + b.reasoning, steps: a.steps + b.steps, lastInput: b.lastInput, lastOutput: b.lastOutput };
+}
+
+/** Kept for callers that only need totals. */
+export function addUsage(total: Usage, usage: StepUsage | undefined): Usage {
+  return addStep(total, usage).total;
+}
+
+export const USAGE_PARTS = [
+  { key: 'fresh', label: 'New input', note: 'Your message and new tool results (estimated)' },
+  { key: 'resent', label: 'Re-sent context', note: 'Earlier conversation sent again at the full rate' },
+  { key: 'cached', label: 'Cached', note: 'Repeated instructions and tool definitions, billed at a reduced rate' },
+  { key: 'output', label: 'Generated', note: 'Written by the model, including reasoning' },
+] as const;
 
 export function tokens(n: number): string {
   if (n < 1000) return `${n}`;

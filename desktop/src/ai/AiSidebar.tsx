@@ -6,7 +6,8 @@ import { ensureAiStreamListener, useAiConversation, type ChatMessage, type Verif
 import { prepareWorkflowProposal, workflowRevision } from './workflowPatch';
 import { engine, runWorkflow, saveWorkflow } from '../state/engineActions';
 import { doSave } from '../panels/Toolbar';
-import { activityLabel, addUsage, diagnosticSummary, NO_USAGE, tokens, type Usage } from './panelText';
+import { activityLabel, addStep, diagnosticSummary, NO_USAGE, sumUsage, tokens, USAGE_PARTS, type Usage } from './panelText';
+import { UsageBar, UsageBreakdown } from './UsageMeter';
 import { ProviderSettings, providerLabel, type LocalProvider } from './ProviderSettings';
 import { STATUS_TEXT, TaskView } from './TaskView';
 import type { AgentTask } from './conversation';
@@ -26,7 +27,7 @@ function effortFor(model: Model | undefined, preferred: string) {
 type ValueItem = { type?: string; name?: string; arguments?: string; call_id?: string; [key: string]: unknown };
 type NativeResponse = { turn_id: string; message_id: string; cycle_id: string; status?: 'retryable_stream_interruption'; needs_tool_correction?: boolean;
   needs_execution?: boolean; continue?: boolean; text?: string; text_source?: string; empty_reason?: string; calls?: ValueItem[];
-  usage?: { input_tokens?: number | null; output_tokens?: number | null; cached_tokens?: number | null } };
+  usage?: { input_tokens?: number | null; output_tokens?: number | null; cached_tokens?: number | null; reasoning_tokens?: number | null } };
 type AuthStatus = { provider?: 'chatgpt' | 'local'; local?: LocalProvider; chatgpt_connected?: boolean; connected: boolean; plan_usage_authorized: boolean;
   subject_hint?: string; session_recovery_required?: boolean; data_routing_allowed?: boolean };
 /** A turn above this many tokens is flagged: it is using a large share of a plan's limits. */
@@ -112,6 +113,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   const [turnUsage, setTurnUsage] = useState<Usage>(NO_USAGE);
   const [sessionUsage, setSessionUsage] = useState<Usage>(NO_USAGE);
   const [lastInputTokens, setLastInputTokens] = useState(0);
+  const turnUsageRef = useRef<Usage>(NO_USAGE);
   const [view, setView] = useState<'chat' | 'task'>('chat');
   const [recentTasks, setRecentTasks] = useState<AgentTask[]>([]);
   const [paused, setPaused] = useState(false);
@@ -389,7 +391,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     const text = (textOverride ?? draft).trim();
     if (!text || !model || streaming || !authorized || !routingConsent) return;
     stickToBottom.current = true;
-    setError(''); setDraft(''); cancelled.current = false; setTurnUsage(NO_USAGE); taskGrants.clear();
+    setError(''); setDraft(''); cancelled.current = false; setTurnUsage(NO_USAGE); turnUsageRef.current = NO_USAGE; taskGrants.clear();
     let turnId: string | undefined;
     let correctionAttempts = 0;
     let executionChecks = 0;
@@ -413,8 +415,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           useAiConversation.getState().responseStart(turnId, cycleId);
           response = await native<NativeResponse>('ai_respond', { model, effort: local ? null : effort, turnId, cycleId, toolsEnabled });
           if (response.usage) {
+            const { total, step } = addStep(turnUsageRef.current, response.usage);
+            turnUsageRef.current = total;
+            setTurnUsage(total); setSessionUsage((session) => sumUsage(session, step));
             const used = response.usage;
-            setTurnUsage((total) => addUsage(total, used)); setSessionUsage((total) => addUsage(total, used));
             if (used.input_tokens) setLastInputTokens(used.input_tokens);
           }
           if (response.turn_id !== turnId || response.message_id !== started.assistant_message_id || response.cycle_id !== cycleId) throw new Error('The response belonged to a different conversation turn.');
@@ -542,7 +546,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     } catch (e) { setError(messageOf(e)); }
   }
   async function providerChanged() {
-    useAiConversation.getState().reset(); setResult(null); setTurnUsage(NO_USAGE); setLastInputTokens(0);
+    useAiConversation.getState().reset(); setResult(null); setTurnUsage(NO_USAGE); turnUsageRef.current = NO_USAGE; setLastInputTokens(0);
     setModels([]); setModel('');
     await refreshAuth();
   }
@@ -601,7 +605,8 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
 
       <section className="ai-settings-section" aria-label="Usage">
         <h3>Usage</h3>
-        <p className="ai-usage-line">This conversation: <b>{tokens(sessionUsage.input)}</b> tokens sent{sessionUsage.cached ? <> (<b>{tokens(sessionUsage.cached)}</b> cached)</> : null} · <b>{tokens(sessionUsage.output)}</b> received</p>
+        {turnUsage.steps > 0 && <UsageBreakdown title="Last turn" usage={turnUsage} />}
+        <UsageBreakdown title="This conversation" usage={sessionUsage} />
         <small className="ai-menu-note">{local ? 'Local models cost nothing per token, but a long conversation can outgrow the context length.'
           : 'Each step of a turn resends the conversation, so long tasks add up. Lower reasoning effort and a new conversation per task keep usage down.'}</small>
       </section>
@@ -719,9 +724,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           <span title={name}>{name}</span><span>·</span><span>{nodes} nodes</span>
           <span className="ai-tools-mode" title={fullControl ? 'Full Control is on for this workspace until Flowbench closes' : 'The AI asks before edits, runs and saves'}>{fullControl ? 'Full Control' : toolsEnabled ? 'Review mode' : 'No tools'}</span>
           {turnTotal > 0 && <span className={`ai-usage ${turnTotal > HEAVY_TURN_TOKENS || nearContext ? 'heavy' : ''}`}
-            title={`This turn: ${turnUsage.input.toLocaleString()} tokens sent (${turnUsage.cached.toLocaleString()} of them cached), ${turnUsage.output.toLocaleString()} received. Cached tokens are the repeated instructions and tool definitions, which the provider bills at a reduced rate.`}>
+            title={[`This turn, ${turnUsage.steps} step(s):`, ...USAGE_PARTS.map((p) => `${p.label}: ${turnUsage[p.key].toLocaleString()}`),
+              `Conversation so far: ${(sessionUsage.input + sessionUsage.output).toLocaleString()}`, 'Details in AI settings > Usage.'].join('\n')}>
             {nearContext ? 'Near the context limit · start a new conversation'
-              : `${tokens(turnTotal)} tokens this turn${turnUsage.cached ? ` · ${Math.round(100 * turnUsage.cached / Math.max(1, turnUsage.input))}% cached` : ''}`}</span>}
+              : <><UsageBar usage={turnUsage} compact /> {tokens(turnTotal)} this turn · {tokens(sessionUsage.input + sessionUsage.output)} total</>}</span>}
         </div>
         {authorized && <form className="ai-compose" onSubmit={(e) => { e.preventDefault(); void send(); }}>
           <button type="button" className="icon ai-attach" aria-label="Add files" title="Add data files: their paths go into your message" onClick={() => void addFiles()} disabled={streaming}>📎</button>

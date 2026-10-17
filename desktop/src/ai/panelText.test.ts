@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { activityLabel, addUsage, diagnosticSummary, NO_USAGE, tokens } from './panelText';
+import { activityLabel, addStep, addUsage, diagnosticSummary, NO_USAGE, sumUsage, tokens } from './panelText';
 
 const state = { tools: { 'core.summarize': { display_name: 'Summarize' } }, nodes: [
   { id: 'a', data: { kind: 'tool', tool: 'core.input_data' } }, { id: 'b', data: { kind: 'tool', tool: 'core.summarize' } }] } as any;
@@ -20,7 +20,7 @@ describe('AI panel text', () => {
   });
 
   it('adds up token usage', () => {
-    expect(addUsage(addUsage(NO_USAGE, { input_tokens: 1000, output_tokens: 5 }), { input_tokens: null })).toEqual({ input: 1000, output: 5, cached: 0 });
+    expect(addUsage(addUsage(NO_USAGE, { input_tokens: 1000, output_tokens: 5 }), { input_tokens: null })).toMatchObject({ input: 1000, output: 5, cached: 0 });
     expect([tokens(999), tokens(1500), tokens(469_166), tokens(3_200_000)]).toEqual(['999', '1.5k', '469k', '3.2M']);
   });
 });
@@ -31,6 +31,21 @@ describe('engine operation labels', () => {
     expect(activityLabel('agent.download_file', { url: 'https://x/y.csv' })).toBe('Downloading https://x/y.csv…');
     expect(activityLabel('agent.search_datasets', { query: 'fuel prices' })).toBe('Searching dataset catalogues for “fuel prices”…');
     expect(activityLabel('task.plan', {})).toBe('Planning the deliverables…');
-    expect(addUsage(NO_USAGE, { input_tokens: 10000, output_tokens: 50, cached_tokens: 8000 })).toEqual({ input: 10000, output: 50, cached: 8000 });
+    expect(addUsage(NO_USAGE, { input_tokens: 10000, output_tokens: 50, cached_tokens: 8000 })).toMatchObject({ input: 10000, output: 50, cached: 8000 });
+  });
+});
+
+describe('token breakdown', () => {
+  it('splits each step into new input, re-sent context, cached and generated tokens', () => {
+    // Step 1: 10k in (9k cached: instructions and tools), 300 out.
+    const one = addStep(NO_USAGE, { input_tokens: 10000, cached_tokens: 9000, output_tokens: 300, reasoning_tokens: 100 });
+    expect(one.step).toMatchObject({ fresh: 1000, resent: 0, cached: 9000, output: 300, reasoning: 100 });
+    // Step 2: the 10.3k already seen plus 2k of new tool results; 9k cached again.
+    const two = addStep(one.total, { input_tokens: 12300, cached_tokens: 9000, output_tokens: 200 });
+    expect(two.step).toMatchObject({ fresh: 2000, resent: 1300, cached: 9000, output: 200 });
+    expect(two.total).toMatchObject({ input: 22300, fresh: 3000, resent: 1300, cached: 18000, output: 500, steps: 2 });
+    // A shrunk history (old results shortened) gives no negative new input.
+    expect(addStep(two.total, { input_tokens: 5000, cached_tokens: 4000, output_tokens: 10 }).step).toMatchObject({ fresh: 0, resent: 1000 });
+    expect(sumUsage(NO_USAGE, two.total).fresh + sumUsage(NO_USAGE, two.total).resent + two.total.cached).toBe(two.total.input);
   });
 });
