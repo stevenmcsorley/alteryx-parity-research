@@ -6,43 +6,152 @@
   "xml_tool_name": "BuildFeatures",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/build-features.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "inputs",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "many",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "1. Manage Relationships",
-      "2. Manage Primitives",
-      "Understand Primitives"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "table_names": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "items": {
+          "type": "string",
+          "pattern": "^[^.()]+$"
+        },
+        "default": null
+      },
+      "target_table": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 1
+      },
+      "target_key": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "relationships": {
+        "type": "array",
+        "default": [],
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "parent",
+            "parent_key",
+            "child",
+            "child_key"
+          ],
+          "properties": {
+            "parent": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "parent_key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "child": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "child_key": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      },
+      "primitives": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "enum": [
+            "count",
+            "sum",
+            "mean",
+            "min",
+            "max",
+            "std",
+            "skew",
+            "num_unique",
+            "mode",
+            "percent_true",
+            "year",
+            "month",
+            "day",
+            "weekday",
+            "hour",
+            "is_weekend",
+            "num_characters",
+            "num_words"
+          ]
+        },
+        "default": [
+          "count",
+          "sum",
+          "mean",
+          "min",
+          "max",
+          "std",
+          "skew",
+          "num_unique",
+          "mode",
+          "percent_true",
+          "year",
+          "month",
+          "day",
+          "weekday",
+          "num_characters",
+          "num_words"
+        ]
+      },
+      "depth": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 3,
+        "default": 2
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-ml-runtime",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.build_features",
+    "version": "1.0.0",
+    "module": "flowengine.tools.machine_learning",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -70,9 +179,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch9.BuildFeaturesTests.test_aggregations_transforms_and_stacked_features",
+      "test_batch9.BuildFeaturesTests.test_direct_features_from_a_parent"
+    ]
   },
   "sources": [
     {
@@ -88,6 +200,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

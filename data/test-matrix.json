@@ -187,7 +187,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 236,
+      "independent_tests": 247,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:text-input)"
@@ -571,7 +571,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 2,
+      "independent_tests": 3,
       "reference_cases": 6,
       "evidence_refs": [
         "tool-contracts (contract JSON for preparation:sample)"
@@ -3115,7 +3115,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 1,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for predictive:cross-validation)"
@@ -6833,9 +6833,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for machine-learning:assisted-modeling)"
@@ -6857,9 +6857,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for machine-learning:build-features)"
@@ -6881,9 +6881,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for machine-learning:classification)"
@@ -6905,9 +6905,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for machine-learning:data-health)"
@@ -6929,9 +6929,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for machine-learning:feature-types)"
@@ -6953,9 +6953,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 5,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for machine-learning:fit)"
@@ -7025,9 +7025,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 4,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for machine-learning:predict)"
@@ -7049,9 +7049,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for machine-learning:regression)"
@@ -7073,9 +7073,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 3,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for machine-learning:transformation)"

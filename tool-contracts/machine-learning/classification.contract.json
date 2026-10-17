@@ -6,25 +6,253 @@
   "xml_tool_name": "Classification",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/classification-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Select Algorithm",
-      "Configure Parameters",
-      "Logistic Regression",
-      "Decision Tree",
-      "Random Forest",
-      "XGBoost"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "target_field"
+    ],
+    "properties": {
+      "target_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "algorithm": {
+        "enum": [
+          "logistic_regression",
+          "decision_tree",
+          "random_forest",
+          "gradient_boosting"
+        ],
+        "default": "logistic_regression"
+      },
+      "features": {
+        "type": [
+          "array",
+          "null"
+        ],
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "default": null
+      },
+      "seed": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 10
+      },
+      "max_depth": {
+        "type": [
+          "integer",
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "A whole number, 'unlimited', or null for the algorithm's default"
+      },
+      "max_features": {
+        "type": [
+          "string",
+          "number",
+          "null"
+        ],
+        "default": null,
+        "description": "auto, none, sqrt, log2, a whole number or a fraction"
+      },
+      "max_leaf_nodes": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 1,
+        "default": null
+      },
+      "min_impurity_decrease": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "default": null
+      },
+      "min_samples_split": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "default": null
+      },
+      "min_weight_fraction_leaf": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "default": null
+      },
+      "n_estimators": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 1,
+        "default": null
+      },
+      "bootstrap": {
+        "type": [
+          "boolean",
+          "null"
+        ],
+        "default": null
+      },
+      "splitter": {
+        "enum": [
+          "best",
+          "random",
+          null
+        ],
+        "default": null
+      },
+      "C": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "exclusiveMinimum": 0,
+        "default": null
+      },
+      "penalty": {
+        "enum": [
+          "l1",
+          "l2",
+          null
+        ],
+        "default": null
+      },
+      "solver": {
+        "enum": [
+          "liblinear",
+          "sag",
+          "saga",
+          "lbfgs",
+          "newton-cg",
+          null
+        ],
+        "default": null
+      },
+      "dual": {
+        "type": [
+          "boolean",
+          "null"
+        ],
+        "default": null
+      },
+      "tol": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "default": null
+      },
+      "max_iter": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 1,
+        "default": null
+      },
+      "fit_intercept": {
+        "type": [
+          "boolean",
+          "null"
+        ],
+        "default": null
+      },
+      "intercept_scaling": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "default": null
+      },
+      "class_weight": {
+        "enum": [
+          "none",
+          "balanced",
+          null
+        ],
+        "default": null
+      },
+      "multiclass": {
+        "enum": [
+          "auto",
+          "multinomial",
+          "ovr",
+          null
+        ],
+        "default": null
+      },
+      "criterion": {
+        "enum": [
+          "gini",
+          "entropy",
+          "log_loss",
+          null
+        ],
+        "default": null
+      },
+      "learning_rate": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "exclusiveMinimum": 0,
+        "maximum": 1,
+        "default": null
+      },
+      "subsample": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "exclusiveMinimum": 0,
+        "maximum": 1,
+        "default": null
+      },
+      "colsample": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "exclusiveMinimum": 0,
+        "maximum": 1,
+        "default": null
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-ml-runtime",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -32,7 +260,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.ml_classification",
+    "version": "1.0.0",
+    "module": "flowengine.tools.machine_learning",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -52,9 +286,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch9.PipelineTests.test_classification_pipeline_matches_a_direct_scikit_learn_fit",
+      "test_batch9.PipelineTests.test_pipeline_survives_sampling_and_refits_in_cross_validation"
+    ]
   },
   "sources": [
     {
@@ -70,7 +307,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet."
   ]
 }

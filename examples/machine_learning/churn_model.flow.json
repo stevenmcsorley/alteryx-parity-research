@@ -1,0 +1,106 @@
+{
+  "format": "flowengine.workflow",
+  "formatVersion": 1,
+  "name": "Subscription churn model",
+  "description": "Check data health, let Assisted Modeling compare algorithms by cross-validation, then predict churn for new subscribers. Synthetic data.",
+  "nodes": [
+    {
+      "id": "subs",
+      "tool": "core.input_data",
+      "config": {
+        "path": "data/subscriptions.csv",
+        "type_inference": "flowbench"
+      },
+      "position": {
+        "x": 0,
+        "y": 100
+      }
+    },
+    {
+      "id": "health",
+      "tool": "core.data_health",
+      "config": {
+        "recommendations": true
+      },
+      "position": {
+        "x": 250,
+        "y": 0
+      }
+    },
+    {
+      "id": "auto",
+      "tool": "core.assisted_modeling",
+      "config": {
+        "target_field": "churned",
+        "metric": "auc"
+      },
+      "position": {
+        "x": 250,
+        "y": 200
+      }
+    },
+    {
+      "id": "new",
+      "tool": "core.input_data",
+      "config": {
+        "path": "data/new_subscriptions.csv",
+        "type_inference": "flowbench"
+      },
+      "position": {
+        "x": 250,
+        "y": 400
+      }
+    },
+    {
+      "id": "predict",
+      "tool": "core.ml_predict",
+      "config": {},
+      "position": {
+        "x": 500,
+        "y": 300
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": {
+        "node": "subs",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "health",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "subs",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "auto",
+        "anchor": "input"
+      }
+    },
+    {
+      "from": {
+        "node": "auto",
+        "anchor": "model"
+      },
+      "to": {
+        "node": "predict",
+        "anchor": "model"
+      }
+    },
+    {
+      "from": {
+        "node": "new",
+        "anchor": "output"
+      },
+      "to": {
+        "node": "predict",
+        "anchor": "input"
+      }
+    }
+  ]
+}

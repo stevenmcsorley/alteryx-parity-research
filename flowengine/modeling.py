@@ -185,6 +185,9 @@ def _sigmoid(z):
 def predict(info: dict, payload: bytes, table: Table):
     """Predictions for a table: dict with 'value' (regression) or 'proba' (n x classes), and 'mask'."""
     import numpy as np
+    if info.get('family') == 'ml_pipeline':
+        from . import mlpipeline
+        return mlpipeline.predict(info, sk_loads(payload), table)
     design = Design.from_json(info['design'])
     X, mask, unseen = design.matrix(table)
     family = info['family']

@@ -6,17 +6,55 @@
   "xml_tool_name": "Fit",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/machine-learning/fit-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "model",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "fit",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "importance",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": []
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "model_name": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-ml-runtime",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -24,7 +62,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.ml_fit",
+    "version": "1.0.0",
+    "module": "flowengine.tools.machine_learning",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -36,9 +80,15 @@
     "section_headings": []
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 5,
+    "passing": 5,
+    "tests": [
+      "test_batch9.AssistedModelingTests.test_compares_algorithms_and_returns_a_usable_model",
+      "test_batch9.PipelineTests.test_classification_pipeline_matches_a_direct_scikit_learn_fit",
+      "test_batch9.PipelineTests.test_missing_values_need_a_clean_up_and_the_training_median_is_reused",
+      "test_batch9.PipelineTests.test_pipeline_survives_sampling_and_refits_in_cross_validation",
+      "test_batch9.PipelineTests.test_unknown_categories_can_be_an_error"
+    ]
   },
   "sources": [
     {
@@ -54,7 +104,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet."
   ]
 }
