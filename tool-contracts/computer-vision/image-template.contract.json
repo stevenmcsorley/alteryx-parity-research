@@ -146,11 +146,12 @@
     ]
   },
   "independent_tests": {
-    "count": 2,
-    "passing": 2,
+    "count": 3,
+    "passing": 3,
     "tests": [
       "test_batch12.PDFAndTemplateTests.test_template_regions_scale_to_the_page",
-      "test_batch12.ProcessingTests.test_shift_realigns_to_a_template_anchor"
+      "test_batch12.ProcessingTests.test_shift_realigns_to_a_template_anchor",
+      "test_batch12b.OCRTests.test_template_regions"
     ]
   },
   "sources": [

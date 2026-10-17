@@ -116,8 +116,8 @@
     ]
   },
   "independent_tests": {
-    "count": 7,
-    "passing": 7,
+    "count": 12,
+    "passing": 12,
     "tests": [
       "test_batch12.BarcodeTests.test_generate_then_read_round_trip",
       "test_batch12.InputOutputTests.test_folder_input_renders_pdf_pages_and_filters_types",
@@ -125,7 +125,12 @@
       "test_batch12.ProcessingTests.test_shift_realigns_to_a_template_anchor",
       "test_batch12.ProcessingTests.test_steps",
       "test_batch12.ProfileTests.test_base_and_summary_statistics",
-      "test_batch12.ProfileTests.test_exif_gps"
+      "test_batch12.ProfileTests.test_exif_gps",
+      "test_batch12b.ImageRecognitionTests.test_trains_on_backbone_scores_and_predicts",
+      "test_batch12b.KeyValueTests.test_tool_columns",
+      "test_batch12b.OCRTests.test_lines_in_reading_order_and_confidence",
+      "test_batch12b.OCRTests.test_preflight_and_missing_models",
+      "test_batch12b.OCRTests.test_template_regions"
     ]
   },
   "sources": [

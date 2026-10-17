@@ -160,11 +160,12 @@
     ]
   },
   "independent_tests": {
-    "count": 2,
-    "passing": 2,
+    "count": 3,
+    "passing": 3,
     "tests": [
       "test_batch12.PDFAndTemplateTests.test_formats_page_range_and_risk",
-      "test_batch12.PDFAndTemplateTests.test_template_regions_scale_to_the_page"
+      "test_batch12.PDFAndTemplateTests.test_template_regions_scale_to_the_page",
+      "test_batch12b.OCRTests.test_preflight_and_missing_models"
     ]
   },
   "sources": [

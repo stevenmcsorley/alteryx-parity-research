@@ -187,7 +187,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 272,
+      "independent_tests": 273,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:text-input)"
@@ -331,7 +331,7 @@
       "oracle_status": "reference-differential",
       "implementation_status": "implemented",
       "verification_status": "partial",
-      "independent_tests": 31,
+      "independent_tests": 32,
       "reference_cases": 13,
       "evidence_refs": [
         "tool-contracts (contract JSON for preparation:formula)"
@@ -6761,9 +6761,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for laboratory:key-value-pair-extraction)"
@@ -7027,7 +7027,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 7,
+      "independent_tests": 8,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for machine-learning:predict)"
@@ -7339,7 +7339,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 7,
+      "independent_tests": 12,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for computer-vision:image-input)"
@@ -7433,9 +7433,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for computer-vision:image-recognition)"
@@ -7459,7 +7459,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 2,
+      "independent_tests": 3,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for computer-vision:image-template)"
@@ -7481,9 +7481,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 3,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for computer-vision:image-to-text)"
@@ -7507,7 +7507,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 2,
+      "independent_tests": 3,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for computer-vision:pdf-to-text)"

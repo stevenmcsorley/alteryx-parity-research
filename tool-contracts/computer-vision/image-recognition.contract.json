@@ -6,56 +6,124 @@
   "xml_tool_name": "ImageRecognition",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-recognition.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "input",
+      "name": "train",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "input",
+      "name": "validation",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "output",
+      "name": "model",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "output",
+      "name": "evaluation",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "output",
+      "name": "report",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Options",
-      "Epochs",
-      "Pre-trained Model",
-      "Batch Size"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "image_field",
+      "label_field"
+    ],
+    "properties": {
+      "image_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "label_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "validation_image_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "validation_label_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "model": {
+        "enum": [
+          "mobilenet_v2",
+          "resnet50_v2"
+        ],
+        "default": "mobilenet_v2"
+      },
+      "epochs": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000,
+        "default": 10
+      },
+      "batch_size": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4096,
+        "default": 32
+      },
+      "learning_rate": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 1,
+        "default": 0.001
+      },
+      "hidden_units": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4096,
+        "default": 128
+      },
+      "seed": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 1
+      },
+      "model_name": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-cv-runtime (image/OCR)",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -63,7 +131,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.image_recognition",
+    "version": "1.0.0",
+    "module": "flowengine.tools.vision_ai",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -108,9 +182,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch12b.ImageRecognitionTests.test_trains_on_backbone_scores_and_predicts",
+      "test_batch12b.OCRTests.test_preflight_and_missing_models"
+    ]
   },
   "sources": [
     {
@@ -126,6 +203,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

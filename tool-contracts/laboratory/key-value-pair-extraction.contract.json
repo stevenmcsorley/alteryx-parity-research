@@ -6,36 +6,70 @@
   "xml_tool_name": "KeyValuePairExtraction",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/laboratory/key-value-pair-extraction.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "keys",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Output",
-      "FAQ",
-      "Do the keys I choose need to match the document exactly?",
-      "Can my document have a colored background?",
-      "If I use the grayscale option in the Image Processing tool first, will that improve the key-value pair results?",
-      "Can you use the Key-Value Pair Extraction tool with the Image Template tool?",
-      "I am getting the following error in the Results: “This key isn’t supported: None” – what should I do?",
-      "Does the Key-Value Pair Extraction tool work on handwriting? Can I use it on forms with handwritten inputs?",
-      "What does the tool recognize as a key-value pair? How should I format the key-value pairs?"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "image_field",
+      "key_field"
+    ],
+    "properties": {
+      "image_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "key_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "language": {
+        "enum": [
+          "english",
+          "french",
+          "german",
+          "italian",
+          "portuguese",
+          "spanish"
+        ],
+        "default": "english"
+      },
+      "threshold": {
+        "type": "number",
+        "minimum": 0.5,
+        "maximum": 1,
+        "default": 0.8
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "experimental-in-reference",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -43,7 +77,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.key_value_pair_extraction",
+    "version": "1.0.0",
+    "module": "flowengine.tools.vision_ai",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -83,9 +123,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_batch12b.KeyValueTests.test_tool_columns"
+    ]
   },
   "sources": [
     {
@@ -101,6 +143,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

@@ -730,8 +730,9 @@ class PDFToText(Tool):
                     'several records. **Risk score** (low, medium or high) flags pages whose text may be stored as '
                     'images and need OCR, from image coverage and character count. **Page image** adds a rendered '
                     'PNG. With Image Template regions, string regions give their text, table regions their lines '
-                    'and image regions a cropped image, scaled from the template to each page. OCR of scanned pages '
-                    'is in the OCR batch (text_and_ocr).',
+                    'and image regions a cropped image, scaled from the template to each page. **Read text and image '
+                    'content** (text_and_ocr) OCRs scanned pages entirely, and adds the text of pictures on other '
+                    'pages. Its models download on first use.',
         config_schema={'type': 'object', 'additionalProperties': False, 'properties': {
             'path': {'type': ['string', 'null'], 'default': None}, 'path_field': {'type': ['string', 'null'], 'default': None},
             'mode': {'enum': ['text_only', 'text_and_ocr'], 'default': 'text_only'},
@@ -759,8 +760,6 @@ class PDFToText(Tool):
     def run(self, ctx, cfg, inputs):
         import pypdfium2 as pdfium
         self.infer(ctx, cfg, {k: v.schema for k, v in inputs.items() if v is not None})
-        if cfg['mode'] == 'text_and_ocr':
-            raise ConfigError('OCR of scanned pages needs the OCR components (Batch 12b); use text_only')
         roots = ([_path(ctx, v) for v in inputs['input'].column(cfg['path_field']) if not missing(v)]
                  if inputs.get('input') is not None else [_path(ctx, cfg['path'])])
         files = []
@@ -793,6 +792,8 @@ class PDFToText(Tool):
                         records += self._regions(f, index + 1, page, regions, cfg, risk)
                         continue
                     lines = _page_lines(page)
+                    if cfg['mode'] == 'text_and_ocr':
+                        lines, full = self._with_ocr(ctx, page, lines, full, chars)
                     for fmt in cfg['formats']:
                         if fmt == 'string':
                             records.append((str(f), index + 1, 'String', None, None, full.strip(), risk, image, None))
@@ -815,6 +816,31 @@ class PDFToText(Tool):
             rows = [(*r[:8], *((r[8] or []) + [None] * (widest - len(r[8] or [])))) for r in records]
             return {'output': Table.from_rows(schema, rows)}
         return {'output': Table.from_rows(self.SCHEMA, [r[:8] for r in records])}
+
+    @staticmethod
+    def downloads(cfg):
+        return ['ocr-models'] if cfg.get('mode') == 'text_and_ocr' else []
+
+    def _with_ocr(self, ctx, page, lines, full, chars):
+        """Scanned pages (little or no stored text) are read entirely by OCR; otherwise text in pictures is added."""
+        import pypdfium2.raw as raw
+        from .vision_ai import ocr, ocr_lines
+        scale = 200 / 72
+        rendered = page.render(scale=scale).to_pil()
+        width, height = page.get_size()
+        if chars < 20:
+            words = ocr(ctx, [rendered], 'PDF to Text')[0]
+            new = [(m, parts) for m, parts in ocr_lines(words)]
+            return new, '\n'.join(' '.join(p[2] for p in parts) for _, parts in new)
+        crops = []
+        for obj in page.get_objects(filter=[raw.FPDF_PAGEOBJ_IMAGE], max_depth=4):
+            l, b, r, t = obj.get_pos()
+            if (r - l) * (t - b) > 0.01 * width * height:
+                crops.append(rendered.crop((round(l * scale), round((height - t) * scale), round(r * scale), round((height - b) * scale))))
+        if not crops:
+            return lines, full
+        extra = [(0, parts) for words in ocr(ctx, crops, 'PDF to Text') for _, parts in ocr_lines(words)]
+        return lines + extra, full + '\n' + '\n'.join(' '.join(p[2] for p in parts) for _, parts in extra)
 
     @staticmethod
     def _cells(parts, cols):

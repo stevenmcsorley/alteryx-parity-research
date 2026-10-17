@@ -12,7 +12,7 @@
 | Machine-readable contracts generated | 323 |
 | Entries with known anchors (manifest, reference-observed or public-doc) | 247 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 210 |
+| Independent kernels implemented and passing tests | 213 |
 | Independently implemented application adapters (in progress) | 14 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 421 run, 0 failed |
+| Unit/integration tests in last ledger build | 427 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -37,13 +37,13 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:input-data` | `core.input_data` | 28 | 0/0 | not-tested |
 | `in-out:map-input` | `core.map_input` | 1 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 12 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 272 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 273 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 1 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 2 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
 | `preparation:data-cleansing` | `core.data_cleansing` | 3 | 0/0 | not-tested |
 | `preparation:filter` | `core.filter` | 31 | 5/5 | partial |
-| `preparation:formula` | `core.formula` | 31 | 13/13 | partial |
+| `preparation:formula` | `core.formula` | 32 | 13/13 | partial |
 | `preparation:generate-rows` | `core.generate_rows` | 3 | 0/0 | not-tested |
 | `preparation:imputation` | `core.imputation` | 1 | 1/1 | partial |
 | `preparation:multi-field-binning` | `core.multi_field_binning` | 1 | 0/0 | not-tested |
@@ -215,6 +215,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `developer:throttle` | `core.throttle` | 1 | 0/0 | not-tested |
 | `laboratory:json-build` | `core.json_build` | 1 | 0/0 | not-tested |
 | `laboratory:jupyter-flow` | `core.jupyter_flow` | 2 | 0/0 | not-tested |
+| `laboratory:key-value-pair-extraction` | `core.key_value_pair_extraction` | 1 | 0/0 | not-tested |
 | `laboratory:transpose-in-db` | `core.transpose_indb` | 1 | 0/0 | not-tested |
 | `laboratory:visual-layout` | `core.visual_layout` | 2 | 0/0 | not-tested |
 | `machine-learning:assisted-modeling` | `core.assisted_modeling` | 2 | 0/0 | not-tested |
@@ -223,7 +224,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `machine-learning:data-health` | `core.data_health` | 2 | 0/0 | not-tested |
 | `machine-learning:feature-types` | `core.ml_feature_types` | 1 | 0/0 | not-tested |
 | `machine-learning:fit` | `core.ml_fit` | 5 | 0/0 | not-tested |
-| `machine-learning:predict` | `core.ml_predict` | 7 | 0/0 | not-tested |
+| `machine-learning:predict` | `core.ml_predict` | 8 | 0/0 | not-tested |
 | `machine-learning:regression` | `core.ml_regression` | 2 | 0/0 | not-tested |
 | `machine-learning:transformation` | `core.ml_transformation` | 3 | 0/0 | not-tested |
 | `text-mining:named-entity-recognition` | `core.named_entity_recognition` | 2 | 0/0 | not-tested |
@@ -236,12 +237,14 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `text-mining:word-cloud` | `core.word_cloud` | 1 | 0/0 | not-tested |
 | `text-mining:zero-shot-text-classification` | `core.zero_shot_classification` | 2 | 0/0 | not-tested |
 | `computer-vision:barcode-tool` | `core.barcode` | 1 | 0/0 | not-tested |
-| `computer-vision:image-input` | `core.image_input` | 7 | 0/0 | not-tested |
+| `computer-vision:image-input` | `core.image_input` | 12 | 0/0 | not-tested |
 | `computer-vision:image-output` | `core.image_output` | 1 | 0/0 | not-tested |
 | `computer-vision:image-processing` | `core.image_processing` | 2 | 0/0 | not-tested |
 | `computer-vision:image-profile` | `core.image_profile` | 2 | 0/0 | not-tested |
-| `computer-vision:image-template` | `core.image_template` | 2 | 0/0 | not-tested |
-| `computer-vision:pdf-to-text` | `core.pdf_to_text` | 2 | 0/0 | not-tested |
+| `computer-vision:image-recognition` | `core.image_recognition` | 2 | 0/0 | not-tested |
+| `computer-vision:image-template` | `core.image_template` | 3 | 0/0 | not-tested |
+| `computer-vision:image-to-text` | `core.image_to_text` | 3 | 0/0 | not-tested |
+| `computer-vision:pdf-to-text` | `core.pdf_to_text` | 3 | 0/0 | not-tested |
 
 ## By category
 
@@ -252,7 +255,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Address | 6 | 0 | 0 | 3 | 6 |
 | Behavior Analysis (Deprecated) | 10 | 0 | 0 | 0 | 10 |
 | Calgary | 5 | 0 | 0 | 5 | 5 |
-| Computer Vision | 9 | 7 | 0 | 9 | 0 |
+| Computer Vision | 9 | 9 | 0 | 9 | 0 |
 | Connect | 3 | 0 | 0 | 0 | 3 |
 | Connectors | 44 | 0 | 0 | 1 | 44 |
 | Data Investigation | 14 | 14 | 0 | 14 | 0 |
@@ -263,7 +266,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | In/Out | 8 | 7 | 0 | 7 | 0 |
 | Interface | 18 | 2 | 0 | 17 | 0 |
 | Join | 7 | 7 | 5 | 7 | 0 |
-| Laboratory | 7 | 4 | 0 | 5 | 0 |
+| Laboratory | 7 | 5 | 0 | 5 | 0 |
 | Machine Learning | 11 | 9 | 0 | 9 | 0 |
 | Parse | 4 | 4 | 4 | 4 | 0 |
 | Predictive | 25 | 23 | 0 | 23 | 0 |

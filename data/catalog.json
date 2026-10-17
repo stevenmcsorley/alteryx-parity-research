@@ -3393,7 +3393,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/laboratory/key-value-pair-extraction.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3729,7 +3729,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-recognition.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3753,7 +3753,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-to-text.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

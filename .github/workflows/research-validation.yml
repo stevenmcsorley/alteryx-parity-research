@@ -100,9 +100,9 @@ jobs:
           path: .flowbench-ci
           key: text-addons-${{ runner.os }}-${{ hashFiles('flowengine/addons.py') }}
       - name: Install the first-use components through the product's own installer
-        run: python -m flowengine addons install spacy-model:english spacy-model:german zero-shot-model
-      - name: Text tools on the real spaCy models and ONNX zero-shot model
-        run: python -m unittest discover -s tests/integration -p test_text_addons_integration.py -v
+        run: python -m flowengine addons install spacy-model:english spacy-model:german zero-shot-model ocr-models image-model:mobilenet_v2
+      - name: Text and vision tools on the real spaCy, ONNX zero-shot, PaddleOCR and MobileNetV2 models
+        run: python -m unittest discover -s tests/integration -p "test_*_addons_integration.py" -v
 
   desktop:
     runs-on: ubuntu-latest
