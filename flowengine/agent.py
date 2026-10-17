@@ -488,6 +488,15 @@ def extract_archive(ctx: Context, path: str, folder: str | None = None) -> dict:
     return {'folder': str(dest), 'files': files}
 
 
+def _child_env() -> dict:
+    """The environment for programs the AI runs: as inherited, except that Python never reads the user's
+    ~/.local site-packages or a PYTHONPATH, so Flowbench's (or a managed environment's) packages are used."""
+    import os
+    env = {k: v for k, v in os.environ.items() if k not in ('PYTHONPATH', 'PYTHONHOME', 'PYTHONSTARTUP')}
+    env['PYTHONNOUSERSITE'] = '1'
+    return env
+
+
 def _snapshot(folder: Path) -> dict:
     out = {}
     for i, p in enumerate(folder.rglob('*')):
@@ -505,7 +514,7 @@ def _execute(ctx: Context, argv: list[str], cwd: Path, timeout_seconds: int, std
     before = _snapshot(ctx.base_dir)
     started = time.monotonic()
     try:
-        proc = subprocess.run(argv, cwd=cwd, input=stdin, capture_output=True, text=True, timeout=timeout_seconds)
+        proc = subprocess.run(argv, cwd=cwd, input=stdin, capture_output=True, text=True, timeout=timeout_seconds, env=_child_env())
     except FileNotFoundError:
         raise EngineError(f'Program not found: {argv[0]}', code='not-found') from None
     except subprocess.TimeoutExpired:
@@ -553,7 +562,8 @@ def install_python_packages(ctx: Context, packages: list[str], env: str = 'analy
     if created:
         venv.EnvBuilder(with_pip=True, system_site_packages=True).create(folder)
     exe = interpreter(env)
-    proc = subprocess.run([exe, '-m', 'pip', 'install', '--disable-pip-version-check', *packages], capture_output=True, text=True, timeout=1800)
+    proc = subprocess.run([exe, '-m', 'pip', 'install', '--disable-pip-version-check', *packages], capture_output=True, text=True,
+                          timeout=1800, env=_child_env())
     if proc.returncode != 0:
         raise EngineError(f'pip could not install {packages}: {proc.stderr[-2000:]}', code='install-failed')
     manifest = write_manifest(env, packages)
@@ -600,7 +610,14 @@ def inspect_environment(ctx: Context) -> dict:
                       'compose': compose.stdout.strip() or None}
         except Exception as e:
             docker = {'error': str(e)}
+    import site
+    try:
+        import numpy
+        numpy_info = {'version': numpy.__version__, 'path': numpy.__file__}
+    except Exception as e:  # pragma: no cover - numpy is bundled
+        numpy_info = {'error': str(e)}
     return {'os': f'{platform.system()} {platform.release()}', 'machine': platform.machine(), 'python': sys.version.split()[0],
+            'user_site_packages_enabled': bool(site.ENABLE_USER_SITE), 'numpy': numpy_info,
             'python_executable': sys.executable, 'packages': packages, 'python_environments': list_envs(),
             'rscript': find_rscript(), 'programs': {k: v for k, v in programs.items() if v}, 'docker': docker,
             'workspace': str(ctx.base_dir)}
@@ -616,7 +633,7 @@ def start_process(ctx: Context, argv: list[str], cwd: str = '.') -> dict:
     import uuid
     folder = ctx.path(cwd)
     try:
-        proc = subprocess.Popen(argv, cwd=folder, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+        proc = subprocess.Popen(argv, cwd=folder, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1, env=_child_env())
     except FileNotFoundError:
         raise EngineError(f'Program not found: {argv[0]}', code='not-found') from None
     pid = uuid.uuid4().hex[:12]

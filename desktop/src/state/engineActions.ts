@@ -25,7 +25,7 @@ export async function initEngine(): Promise<void> {
   const st = useEditor.getState();
   try {
     const t = engine();
-    const info = await t.request<{ version: string; python: string; protocol: number; cwd: string }>('engine.info');
+    const info = await t.request<{ version: string; python: string; protocol: number; cwd: string; default_workspace?: string }>('engine.info');
     const [tools, catalog, profiles] = await Promise.all([
       t.request<ToolManifest[]>('tools.list'),
       t.request<CatalogEntry[]>('catalog.list'),
@@ -33,7 +33,8 @@ export async function initEngine(): Promise<void> {
     ]);
     st.setEngineMeta({ engineInfo: info, tools: Object.fromEntries(tools.map((m) => [m.tool_id, m])), catalog, profiles,
       engineError: null });
-    if (!useEditor.getState().baseDir) useEditor.getState().setFilePath(useEditor.getState().filePath, info.cwd);
+    // Untitled workflows live in a folder the user owns (~/Flowbench in the desktop app), not the install folder.
+    if (!useEditor.getState().baseDir) useEditor.getState().setFilePath(useEditor.getState().filePath, info.default_workspace || info.cwd);
     unsubscribe?.();
     unsubscribe = t.subscribe((n) => {
       if (n.method === 'run.event') useEditor.getState().runEvent(n.params);

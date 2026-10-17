@@ -42,6 +42,12 @@ pub fn engine_root(resource_dir: Option<PathBuf>) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join("..")
 }
 
+/// The engine (and every Python it starts) uses only its own runtime's packages: packages in the
+/// user's ~/.local site-packages or on a PYTHONPATH (for example an older NumPy) must never shadow
+/// the bundled ones. FLOWBENCH_DESKTOP tells the engine to keep untitled work in ~/Flowbench.
+pub const ISOLATION_ENV: &[(&str, &str)] = &[("PYTHONNOUSERSITE", "1"), ("FLOWBENCH_DESKTOP", "1")];
+pub const REMOVED_ENV: &[&str] = &["PYTHONPATH", "PYTHONHOME", "PYTHONSTARTUP"];
+
 pub fn python_command(root: &Path) -> PathBuf {
     if let Ok(p) = std::env::var("FLOWENGINE_PYTHON") {
         return PathBuf::from(p);
@@ -81,9 +87,13 @@ impl Engine {
             .env("FLOWENGINE_HOME", history.parent().unwrap_or(root))
             .env("PYTHONIOENCODING", "utf-8")
             .env("PYTHONUNBUFFERED", "1")
+            .envs(ISOLATION_ENV.iter().copied())
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
+        for name in REMOVED_ENV {
+            cmd.env_remove(name);
+        }
         #[cfg(windows)]
         {
             use std::os::windows::process::CommandExt;
@@ -289,6 +299,12 @@ fn startup_rpc(input: &mut ChildStdin, output: &mpsc::Receiver<String>, id: u64,
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn the_engine_ignores_user_site_packages_and_python_path() {
+        assert!(super::ISOLATION_ENV.contains(&("PYTHONNOUSERSITE", "1")));
+        assert!(super::REMOVED_ENV.contains(&"PYTHONPATH") && super::REMOVED_ENV.contains(&"PYTHONHOME"));
+    }
+
     use super::*;
 
     #[test]

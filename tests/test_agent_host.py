@@ -67,6 +67,31 @@ class ProcessTests(HostCase):
         self.assertEqual(self.call('profile_file', path='prepared.csv')['result']['rows'], 2)
 
 
+class IsolationTests(HostCase):
+    def test_child_processes_never_read_user_site_packages(self):
+        import os
+        from unittest import mock
+        from flowengine import runtimes
+        with mock.patch.dict(os.environ, {'PYTHONPATH': '/somewhere/else', 'PYTHONHOME': '/x'}):
+            env = agent._child_env()
+            self.assertEqual(env['PYTHONNOUSERSITE'], '1')
+            self.assertNotIn('PYTHONPATH', env)
+            self.assertNotIn('PYTHONHOME', env)
+        self.assertEqual(runtimes.clean_env()['PYTHONNOUSERSITE'], '1')
+        out = self.call('run_python', ('processes',), code='import site, sys; print(site.ENABLE_USER_SITE)')['result']
+        self.assertEqual(out['stdout'].strip(), 'False')
+
+    def test_untitled_work_goes_to_a_user_folder_in_the_desktop_app(self):
+        import os
+        from unittest import mock
+        from flowengine.service import default_workspace
+        with mock.patch.dict(os.environ, {'FLOWBENCH_DESKTOP': '1', 'HOME': str(self.dir), 'USERPROFILE': str(self.dir)}):
+            self.assertEqual(default_workspace(), self.dir / 'Flowbench')
+            self.assertTrue((self.dir / 'Flowbench').is_dir())
+        with mock.patch.dict(os.environ, {'FLOWBENCH_WORKSPACE': str(self.dir / 'chosen')}):
+            self.assertEqual(default_workspace(), self.dir / 'chosen')
+
+
 class DatabaseTests(HostCase):
     def test_database_operations_use_the_engine_connection_service(self):
         calls = []

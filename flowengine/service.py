@@ -41,6 +41,22 @@ def _preview(t: Table, n: int, double_text='g15') -> dict:
                      for _, r in zip(range(n), t.rows())]}
 
 
+def default_workspace() -> Path:
+    """Where an untitled workflow lives. The desktop app starts the engine inside its install folder, which the
+    user cannot (or should not) write to, so there it is ~/Flowbench; the browser build keeps the current folder."""
+    if os.environ.get('FLOWBENCH_WORKSPACE'):
+        folder = Path(os.environ['FLOWBENCH_WORKSPACE'])
+    elif os.environ.get('FLOWBENCH_DESKTOP'):
+        folder = Path.home() / 'Flowbench'
+    else:
+        return Path(os.getcwd())
+    try:
+        folder.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        pass
+    return folder
+
+
 class EngineService:
     def __init__(self, notify=None, history_path: Path | None = None):
         import atexit
@@ -93,7 +109,8 @@ class EngineService:
         reg = default_registry()
         if method == 'engine.info':
             return {'engine': 'flowengine', 'version': __version__, 'protocol': PROTOCOL,
-                    'python': sys.version.split()[0], 'history': bool(self.history), 'cwd': os.getcwd()}
+                    'python': sys.version.split()[0], 'history': bool(self.history), 'cwd': os.getcwd(),
+                    'default_workspace': str(default_workspace())}
         if method == 'tools.list':
             return [t.manifest.to_dict() for t in reg.tools()]
         if method == 'agent.tools_list':

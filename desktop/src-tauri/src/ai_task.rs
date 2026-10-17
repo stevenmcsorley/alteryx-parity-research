@@ -85,16 +85,27 @@ pub(super) fn stated_requirements(prompt: &str) -> Vec<(String, usize)> {
         "workflow" | "workflows" => Some("workflow"),
         _ => None,
     };
+    // A thing counts as a deliverable only when the request asks for it to be produced: a number before
+    // it ("two charts") or a creating verb shortly before it. "Report the results" or "Training dataset:"
+    // name inputs or verbs, not files to make.
+    const MAKE: &[&str] = &["create", "make", "build", "generate", "produce", "plot", "draw", "save", "write", "export",
+                            "render", "add", "prepare", "construct", "include"];
     let mut out: Vec<(String, usize)> = Vec::new();
     for (i, w) in words.iter().enumerate() {
         let Some(k) = kind(w) else { continue };
-        let n = words[i.saturating_sub(2)..i].iter().rev().find_map(|p| number(p)).unwrap_or(1);
+        // "report the results", "chart the totals", "plot them": the word is a verb here.
+        if words.get(i + 1).is_some_and(|n| matches!(*n, "the" | "on" | "back" | "to" | "that" | "what" | "how" | "which" | "any"
+            | "all" | "its" | "their" | "them" | "it" | "this" | "these" | "those" | "your" | "my")) { continue; }
+        let stated = words[i.saturating_sub(2)..i].iter().rev().find_map(|p| number(p).filter(|n| *n > 1 || !matches!(*p, "a" | "an")));
+        let made = words[i.saturating_sub(5)..i].iter().any(|p| MAKE.contains(p));
+        if stated.is_none() && !made { continue; }
+        let n = stated.unwrap_or(1);
         match out.iter_mut().find(|(kk, _)| kk == k) {
             Some(entry) => entry.1 = entry.1.max(n),
             None => out.push((k.to_owned(), n)),
         }
     }
-    if words.iter().any(|w| matches!(*w, "download" | "dataset" | "datasets" | "acquire")) && !out.iter().any(|(k, _)| k == "dataset") {
+    if words.iter().any(|w| matches!(*w, "download" | "downloads" | "fetch" | "acquire" | "retrieve")) && !out.iter().any(|(k, _)| k == "dataset") {
         out.push(("dataset".into(), 1));
     }
     out
@@ -499,6 +510,17 @@ mod tests {
         assert!(r.contains(&("workflow".into(), 1)));
         assert!(r.contains(&("dataset".into(), 1)));
         assert_eq!(stated_requirements("Make 3 plots and a table"), vec![("chart".to_string(), 3), ("table".to_string(), 1)]);
+    }
+
+    #[test]
+    fn inputs_and_verbs_are_not_mistaken_for_deliverables() {
+        let churn = "Create a Flowbench workflow called Predict Customer Churn. Training dataset: https://x/subscriptions.csv \
+            Use native Flowbench machine-learning tools to import the training customers. Show the predictions. \
+            Save the executable workflow and report the native execution results.";
+        assert_eq!(stated_requirements(churn), vec![("workflow".to_string(), 1)]);
+        assert_eq!(stated_requirements("Explain this workflow and report on its tables"), Vec::<(String, usize)>::new());
+        assert_eq!(stated_requirements("Write a short findings report"), vec![("report".to_string(), 1)]);
+        assert_eq!(stated_requirements("Fetch the latest prices"), vec![("dataset".to_string(), 1)]);
     }
 
     #[test]
