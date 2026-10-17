@@ -27,6 +27,8 @@ use url::Url;
 
 #[path = "ai_local.rs"]
 mod local;
+#[path = "ai_task.rs"]
+mod task;
 
 const AUTH: &str = "https://auth.openai.com/api/accounts/authorize";
 const TOKEN: &str = "https://auth.openai.com/api/accounts/oauth/token";
@@ -53,6 +55,7 @@ const API_TOOL_NAMES: &[(&str, &str)] = &[
     ("workflow.request_save", "workflow_request_save"),
     ("run.get_results", "run_get_results"),
     ("run.get_result_page", "run_get_result_page"),
+    ("task.classify", "task_classify"),
 ];
 
 fn internal_tool_name(api_name: &str) -> Option<&'static str> {
@@ -135,6 +138,8 @@ pub struct AiService {
     local: Mutex<Option<local::LocalSettings>>,
     /// Optional key for an OpenAI-compatible server; kept in memory for this app session only.
     local_key: Mutex<Option<String>>,
+    /// The task for the active turn (ai_task.rs); saved under ai-tasks/ as it changes.
+    task: Mutex<Option<task::Task>>,
 }
 
 #[derive(Clone)]
@@ -155,6 +160,7 @@ impl AiService {
         Self {
             local: Mutex::new(local),
             local_key: Mutex::new(None),
+            task: Mutex::new(None),
             data_dir,
             credentials: Mutex::new(credentials),
             cancel: Arc::new(AtomicBool::new(false)),
@@ -662,6 +668,7 @@ fn response_failure(kind: &str, code: &str) -> Option<String> {
 fn native_tool_definitions() -> Value {
     let mut tools = editor_tool_definitions();
     if let Some(list) = tools.as_array_mut() {
+        list.push(task::classify_tool_definition());
         list.extend(agent_operations().iter().map(|op| op.definition.clone()));
     }
     tools
@@ -725,6 +732,8 @@ fn valid_tool_arguments(name: &str, args: &Value) -> bool {
         "workflow.request_run" | "workflow.request_save" | "run.get_results" => obj.is_empty(),
         // The engine validates operation arguments against the operation's JSON Schema.
         _ if name.starts_with("agent.") => true,
+        "task.classify" => obj.get("kind").and_then(Value::as_str).is_some_and(|k| k == "question" || k == "execution")
+            && obj.get("reason").is_some_and(Value::is_string) && obj.len() == 2,
         _ => false,
     }
 }
@@ -2074,7 +2083,7 @@ pub async fn ai_cancel(state: tauri::State<'_, AiService>) -> Result<(), String>
 }
 
 #[tauri::command]
-pub async fn ai_begin(state: tauri::State<'_, AiService>, prompt: String) -> Result<Value, String> {
+pub async fn ai_begin(app: tauri::AppHandle, state: tauri::State<'_, AiService>, prompt: String) -> Result<Value, String> {
     if state.running.load(Ordering::SeqCst) {
         return Err("A response is already running".into());
     }
@@ -2093,30 +2102,47 @@ pub async fn ai_begin(state: tauri::State<'_, AiService>, prompt: String) -> Res
     };
     drop(conversation);
     state.cancel.store(false, Ordering::SeqCst);
-    let value = json!({"turn_id":turn.id,"assistant_message_id":turn.assistant_message_id});
+    let new_task = task::Task::new(&turn.id, prompt.trim());
+    let mut value = json!({"turn_id":turn.id,"assistant_message_id":turn.assistant_message_id});
+    value["task"] = new_task.public();
+    task::save(&state.data_dir, &new_task);
+    let _ = app.emit("ai-task", new_task.public());
+    *state.task.lock().await = Some(new_task);
     *active = Some(turn);
     Ok(value)
 }
 
 #[tauri::command]
 pub async fn ai_finish_turn(
+    app: tauri::AppHandle,
     state: tauri::State<'_, AiService>,
     turn_id: String,
-) -> Result<(), String> {
+) -> Result<Value, String> {
     let mut active = state.active_turn.lock().await;
     if active.as_ref().is_none_or(|turn| turn.id != turn_id) {
         return Err("Conversation turn is no longer active".into());
     }
     *active = None;
     state.pending_calls.lock().await.clear();
-    Ok(())
+    update_task(&state, Some(&app), |t| t.finish("completed")).await;
+    Ok(state.task.lock().await.take().map(|t| t.public()).unwrap_or(Value::Null))
+}
+
+/// Recent tasks, newest first, for the task view.
+#[tauri::command]
+pub async fn ai_recent_tasks(state: tauri::State<'_, AiService>) -> Result<Vec<Value>, String> {
+    Ok(task::load_recent(&state.data_dir, 20))
 }
 
 #[tauri::command]
 pub async fn ai_abort_turn(
+    app: tauri::AppHandle,
     state: tauri::State<'_, AiService>,
     turn_id: String,
 ) -> Result<(), String> {
+    let cancelled = state.cancel.load(Ordering::SeqCst);
+    update_task(&state, Some(&app), |t| t.finish(if cancelled { "cancelled" } else { "failed" })).await;
+    state.task.lock().await.take();
     let mut active = state.active_turn.lock().await;
     if let Some(turn) = active.as_ref() {
         if turn.id != turn_id {
@@ -2601,10 +2627,13 @@ pub async fn ai_respond(
             return Err("ChatGPT returned an unsupported response item".into());
         }
     }
-    let calls = match register_output(&state, &active_turn, &cycle_id, &items).await? {
+    let calls = match register_output(&state, &app, &active_turn, &cycle_id, &items).await? {
         Ok(calls) => calls,
         Err(correction) => return Ok(correction),
     };
+    if calls.is_empty() && !final_text.trim().is_empty() {
+        if let Some(gate) = completion_gate(&state, &app, &active_turn, &cycle_id, &final_text).await { return Ok(gate); }
+    }
     let empty_reason = if final_text.trim().is_empty() {
         Some(empty_response_reason(
             &reconciled_output,
@@ -2629,14 +2658,24 @@ pub async fn ai_respond(
     }))
 }
 
+/// Applies a change to the active task, saves it and tells the renderer.
+async fn update_task(state: &AiService, app: Option<&tauri::AppHandle>, change: impl FnOnce(&mut task::Task)) {
+    let mut guard = state.task.lock().await;
+    let Some(task) = guard.as_mut() else { return };
+    change(task);
+    task::save(&state.data_dir, task);
+    if let Some(app) = app { let _ = app.emit("ai-task", task.public()); }
+}
+
 /// Checks the model's function calls, registers them as pending and records the output in the
 /// conversation. Shared by ChatGPT and local providers. `Err(response)` is a correction request:
 /// a call was invalid, nothing was registered, and the model is sent the errors to fix.
-async fn register_output(state: &AiService, turn: &AiTurn, cycle_id: &str, items: &[Value]) -> Result<Result<Vec<Value>, Value>, String> {
+async fn register_output(state: &AiService, app: &tauri::AppHandle, turn: &AiTurn, cycle_id: &str, items: &[Value]) -> Result<Result<Vec<Value>, Value>, String> {
     let mut calls = Vec::new();
     let mut validated_calls: Vec<(String, String, Value)> = Vec::new();
     let mut rejections = HashMap::new();
     let mut call_ids = HashSet::new();
+    let mut internal_outputs: Vec<(String, Value)> = Vec::new();
     let mut pending = state.pending_calls.lock().await;
     for item in items {
         if item.get("type").and_then(Value::as_str) != Some("function_call") { continue; }
@@ -2652,6 +2691,10 @@ async fn register_output(state: &AiService, turn: &AiTurn, cycle_id: &str, items
         }
         let name = internal_tool_name(wire_name).unwrap();
         let args: Value = serde_json::from_str(raw_args).unwrap();
+        if name == "task.classify" {
+            internal_outputs.push((call_id.to_owned(), args));
+            continue;
+        }
         validated_calls.push((call_id.to_owned(), name.to_owned(), args));
         calls.push(json!({"call_id":call_id,"name":name,"arguments":raw_args}));
     }
@@ -2670,12 +2713,41 @@ async fn register_output(state: &AiService, turn: &AiTurn, cycle_id: &str, items
         return Ok(Err(json!({"turn_id":turn.id,"message_id":turn.assistant_message_id,
             "cycle_id":cycle_id,"text":"","calls":[],"needs_tool_correction":true})));
     }
+    let started: Vec<(String, Value)> = validated_calls.iter().map(|(_, name, args)| (name.clone(), args.clone())).collect();
     for (id, name, args) in validated_calls {
         pending.insert(id, (name, args));
     }
     drop(pending);
-    append_completed_output(&mut *state.conversation.lock().await, items);
+    let mut answers = Vec::new();
+    for (_, args) in &internal_outputs {
+        let mut answer = Value::Null;
+        update_task(state, Some(app), |t| { t.call_started("task.classify", args); answer = task::apply_classification(t, args); t.call_finished("task.classify", &answer); }).await;
+        answers.push(answer);
+    }
+    update_task(state, Some(app), |t| for (name, args) in &started { t.call_started(name, args); }).await;
+    {
+        let mut history = state.conversation.lock().await;
+        append_completed_output(&mut history, items);
+        for ((id, _), answer) in internal_outputs.iter().zip(answers) {
+            history.push(json!({"type":"function_call_output","call_id":id,"output":answer.to_string()}));
+        }
+    }
+    if calls.is_empty() && !internal_outputs.is_empty() {
+        // Only Flowbench-internal calls: their outputs are in the history; ask the model to carry on.
+        return Ok(Err(json!({"turn_id":turn.id,"message_id":turn.assistant_message_id,"cycle_id":cycle_id,"text":"","calls":[],"continue":true})));
+    }
     Ok(Ok(calls))
+}
+
+/// When the model answers in text alone, decides whether the task may complete. If the request needs
+/// execution and nothing backs the answer yet, the model is told so and the turn continues.
+async fn completion_gate(state: &AiService, app: &tauri::AppHandle, turn: &AiTurn, cycle_id: &str, text: &str) -> Option<Value> {
+    let mut message = None;
+    update_task(state, Some(app), |t| message = t.completion_check()).await;
+    let message = message?;
+    state.conversation.lock().await.push(json!({"role":"developer","content":[{"type":"input_text","text":message}]}));
+    Some(json!({"turn_id":turn.id,"message_id":turn.assistant_message_id,"cycle_id":cycle_id,"text":"","calls":[],
+        "needs_execution":true,"draft_chars":text.chars().count()}))
 }
 
 /// One response cycle from a local model server.
@@ -2717,10 +2789,13 @@ async fn respond_local(
         return Err("The model returned a function call during a no-tools request".into());
     }
     let _ = app.emit("ai-stream", json!({"type":"completed","turn_id":turn.id,"message_id":turn.assistant_message_id,"cycle_id":cycle_id}));
-    let calls = match register_output(state, turn, cycle_id, &items).await? {
+    let calls = match register_output(state, app, turn, cycle_id, &items).await? {
         Ok(calls) => calls,
         Err(correction) => return Ok(correction),
     };
+    if calls.is_empty() && !text.trim().is_empty() {
+        if let Some(gate) = completion_gate(state, app, turn, cycle_id, &text).await { return Ok(gate); }
+    }
     let empty_reason = (text.trim().is_empty() && calls.is_empty()).then_some("The local model returned an empty reply");
     Ok(json!({"turn_id":turn.id,"message_id":turn.assistant_message_id,"cycle_id":cycle_id,"text":text,
         "text_source":"local_stream","empty_reason":empty_reason,"calls":calls,
@@ -2729,6 +2804,7 @@ async fn respond_local(
 
 #[tauri::command]
 pub async fn ai_submit_tool_result(
+    app: tauri::AppHandle,
     state: tauri::State<'_, AiService>,
     call_id: String,
     result: Value,
@@ -2741,6 +2817,7 @@ pub async fn ai_submit_tool_result(
     // renderer-owned and cannot be factually attested by this native layer.
     // Preserve that provenance in the model transcript.
     let observation = renderer_tool_observation(safe);
+    update_task(&state, Some(&app), |t| t.call_finished(&name, &observation)).await;
     let encoded = serde_json::to_string(&observation).map_err(|_| "Tool result was invalid")?;
     pending.remove(&call_id);
     drop(pending);
