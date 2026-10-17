@@ -13,6 +13,7 @@ import datetime as _dt
 import hashlib
 import json
 import logging
+import os
 import platform
 import time
 import uuid
@@ -510,6 +511,9 @@ def run_workflow(doc: dict, *, base_dir: Path, registry: Registry | None = None,
         try:
             out = pn.tool.run(ctx, pn.config, inputs)
             err = None
+            if os.environ.get('FLOWENGINE_EXAMPLE_LOG'):
+                from .examples import record
+                record(pn.tool, pn.config, inputs, out)
         except EngineError as e:
             e.node_id = e.node_id or nid
             out, err = None, e

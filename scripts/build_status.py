@@ -211,6 +211,12 @@ BLOCKING = ('licensed-reference-dataset', 'external-service-account', 'vendor-cl
 ENVIRONMENT_GATED_LEDGER_TESTS = {
     'test_fe_tools_wave2.UserCodeTools.test_r_tool',
 }
+# Replays outputs Flowbench itself recorded (data/tool-examples.json): a regression guard for the
+# AI's examples, not independent evidence that a tool behaves correctly.
+SELF_REFERENTIAL_LEDGER_TESTS = {
+    'test_tool_examples.ToolExampleTests.test_every_stored_example_replays',
+}
+LEDGER_EXCLUDED_TESTS = ENVIRONMENT_GATED_LEDGER_TESTS | SELF_REFERENTIAL_LEDGER_TESTS
 
 
 def slug(s):
@@ -233,7 +239,7 @@ def run_tests_with_tool_map():
 
     def recording_get(self, tool_id):
         tool = original_get(self, tool_id)
-        if current['test'] and current['test'] not in ENVIRONMENT_GATED_LEDGER_TESTS:
+        if current['test'] and current['test'] not in LEDGER_EXCLUDED_TESTS:
             used[current['test']].add(tool.manifest.tool_id)
         return tool
     plugin.Registry.get = recording_get
@@ -241,7 +247,7 @@ def run_tests_with_tool_map():
     class Recorder(unittest.TextTestResult):
         def startTest(self, test):
             current['test'] = test.id()
-            if test.id() not in ENVIRONMENT_GATED_LEDGER_TESTS:
+            if test.id() not in LEDGER_EXCLUDED_TESTS:
                 seen.add(test.id())
             super().startTest(test)
 
