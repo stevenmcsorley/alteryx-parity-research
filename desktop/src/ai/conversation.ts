@@ -13,7 +13,7 @@ export type ChatMessage = {
   /** From the task controller: whether Flowbench execution backs this answer. */
   verification?: Verification;
 };
-export type Verification = { status: 'verified' | 'unverified' | 'answered_without_execution' | 'not_required'; note?: string; runIds?: string[] };
+export type Verification = { status: 'verified' | 'unverified' | 'incomplete' | 'answered_without_execution' | 'not_required'; missing?: string[]; note?: string; runIds?: string[] };
 export type TaskPhase = 'discover' | 'plan' | 'acquire' | 'build' | 'validate' | 'execute' | 'inspect' | 'repair' | 'complete';
 export type TaskAction = { at: number; tool: string; phase: TaskPhase; ok: boolean | null; summary: string };
 /** The task controller's record of a turn (desktop/src-tauri/src/ai_task.rs). */
@@ -21,7 +21,9 @@ export type AgentTask = { id: string; objective: string; kind: 'question' | 'exe
   verification: Verification['status']; classified_as_question?: string | null; actions: TaskAction[];
   runs: Array<{ run_id?: string | null; status: string; outputs: number }>; artifacts: Array<{ kind: string; path?: string; url?: string; sha256?: string }>;
   revisions: string[]; errors: Array<{ tool: string; error: unknown }>; evidence: Array<{ kind: string; run_id?: string | null }>;
-  started_at: number; finished_at?: number | null };
+  started_at: number; finished_at?: number | null;
+  deliverables?: Array<{ id: string; kind: string; description: string; artifact?: Record<string, unknown> | null; status: 'pending' | 'verified' | 'failed'; problem?: string | null }>;
+  missing?: string[] };
 export type ActionApproval = { operation: string; permissions: string[]; detail: string };
 export type TurnState = 'idle' | 'submitting' | 'streaming' | 'tool-running' | 'completed' | 'failed' | 'cancelled';
 type ConversationState = {
@@ -92,7 +94,7 @@ export const useAiConversation = create<ConversationState>((set) => ({
   requestActionApproval: (request) => set({ actionApproval: request }),
   setTask: (task) => set({ task: task && typeof task === 'object' && typeof task.id === 'string' ? {
     ...task, actions: task.actions ?? [], runs: task.runs ?? [], artifacts: task.artifacts ?? [], revisions: task.revisions ?? [],
-    errors: task.errors ?? [], evidence: task.evidence ?? [] } : null }),
+    errors: task.errors ?? [], evidence: task.evidence ?? [], deliverables: task.deliverables ?? [], missing: task.missing ?? [] } : null }),
 }));
 
 let listener: Promise<() => void> | undefined;

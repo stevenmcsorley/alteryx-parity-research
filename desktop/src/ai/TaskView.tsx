@@ -11,10 +11,16 @@ const TOOL_LABEL: Record<string, string> = {
   'run.get_results': 'Read run results', 'run.get_result_page': 'Read result rows', 'workflow.get_snapshot': 'Read the workflow',
   'workflow.get_schema': 'Read output fields', 'workflow.get_node_config': 'Read node settings', 'workflow.get_diagnostics': 'Read diagnostics',
   'catalog.search_tools': 'Searched the catalogue', 'catalog.get_tool_manifest': 'Read a manifest', 'task.classify': 'Classified the request',
+  'task.plan': 'Planned the deliverables', 'task.deliver': 'Delivered', 'agent.web_search': 'Searched the web', 'agent.search_datasets': 'Searched dataset catalogues',
+  'agent.fetch_page': 'Read a web page', 'agent.find_data_files': 'Looked for data files', 'agent.inspect_api': 'Inspected an API', 'agent.fetch_api': 'Fetched API data',
+  'agent.run_python': 'Ran Python', 'agent.run_command': 'Ran a command', 'agent.run_r': 'Ran R', 'agent.docker': 'Ran Docker',
+  'agent.install_python_packages': 'Installed Python packages', 'agent.inspect_environment': 'Inspected the computer', 'agent.write_text_file': 'Wrote a file',
+  'agent.extract_archive': 'Extracted an archive', 'agent.formula_reference': 'Read the formula reference',
 };
 
 export const STATUS_TEXT: Record<string, string> = {
-  running: 'Working', completed: 'Completed', unverified: 'Finished without a Flowbench run', failed: 'Stopped by an error', cancelled: 'Stopped',
+  running: 'Working', completed: 'Completed', unverified: 'Finished without a Flowbench run', incomplete: 'Finished with deliverables missing',
+  failed: 'Stopped by an error', cancelled: 'Stopped',
 };
 
 function time(seconds: number) {
@@ -42,6 +48,14 @@ export function TaskView({ task, compact = false }: { task: AgentTask; compact?:
     </ol>
     {task.kind === 'question' && <p className="ai-menu-note">{task.classified_as_question
       ? `Answered without running Flowbench: ${task.classified_as_question}` : 'An ordinary question: no execution needed.'}</p>}
+    {!!task.deliverables?.length && <div className="ai-task-group"><h4>Deliverables</h4>
+      <ul className="ai-task-actions" aria-label="Deliverables">{task.deliverables.map((d) => <li key={d.id} className={d.status === 'verified' ? 'ok' : d.status === 'failed' ? 'failed' : 'pending'}>
+        <span className="ai-task-mark" aria-hidden="true">{d.status === 'verified' ? '✓' : d.status === 'failed' ? '✗' : '○'}</span>
+        <span>{d.description || d.id}</span>
+        <span className="ai-task-summary" title={d.problem ?? undefined}>{d.problem ?? (d.artifact ? String(d.artifact.path ?? d.artifact.run_id ?? '') : d.kind)}</span>
+        <span />
+      </li>)}</ul></div>}
+    {!!task.missing?.length && <div className="ai-task-group"><h4>Missing</h4>{task.missing.map((m, i) => <div key={i} className="failed">{m}</div>)}</div>}
     {!!task.actions.length && <ul className="ai-task-actions" aria-label="Actions">
       {task.actions.map((a, i) => <li key={i} className={a.ok === false ? 'failed' : a.ok ? 'ok' : 'pending'}>
         <span className="ai-task-mark" aria-hidden="true">{a.ok === false ? '✗' : a.ok ? '✓' : '…'}</span>
@@ -59,6 +73,7 @@ export function TaskView({ task, compact = false }: { task: AgentTask; compact?:
     <p className={`ai-task-verdict ${task.verification}`}>{{
       verified: `Backed by Flowbench execution (${task.evidence.length} piece${task.evidence.length === 1 ? '' : 's'} of evidence).`,
       unverified: 'No Flowbench run backs the answer.', answered_without_execution: 'Answered without Flowbench execution.',
+      incomplete: 'Flowbench ran the work, but some requested deliverables are missing.',
       not_required: 'No execution was needed.' }[task.verification]}</p>
   </section>;
 }
