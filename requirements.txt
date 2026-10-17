@@ -15,4 +15,3 @@ yxdb>=1.1,<2
 psycopg[binary]>=3.2,<4
 pymssql>=2.3,<3
 vaderSentiment>=3.3,<4
-summa>=1.2,<2

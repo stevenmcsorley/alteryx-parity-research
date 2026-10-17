@@ -49,7 +49,7 @@ class SummaryTests(unittest.TestCase):
             'the canvas. Charts open in a viewer that can zoom. Workflows run locally on the desktop.')
 
     def test_top_sentences_in_importance_order(self):
-        from summa import summarizer
+        from flowengine._vendor.summa import summarizer
         ranked = summarizer.summarize(self.TEXT, ratio=1.0, split=True, scores=True)
         best = [s for s, _ in sorted(ranked, key=lambda p: -p[1])[:2]]
         long_field = [{'name': 'text', 'type': 'v_wstring', 'size': 4000}]

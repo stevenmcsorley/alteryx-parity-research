@@ -3,12 +3,12 @@
 Independent implementations of the methods the vendor documents:
 
 * VADER sentiment (the ``vaderSentiment`` package)
-* TextRank extractive summaries (the ``summa`` package)
+* TextRank extractive summaries (``summa``, vendored in ``flowengine._vendor``)
 * latent Dirichlet allocation (scikit-learn), with pyLDAvis-style relevance and saliency
 * TF-IDF text classifiers (multinomial naive Bayes or a linear SVM, chosen by cross-validated grid search)
 * a word-cloud layout drawn as an SVG chart
 
-Stop words come from ``summa``'s lists (English, German, Spanish, Portuguese, Italian); French uses none. The
+Stop words come from summa's lists (English, German, Spanish, Portuguese, Italian); French uses none. The
 spaCy-based tools are separate.
 """
 from __future__ import annotations
@@ -36,7 +36,7 @@ _WORD = re.compile(r"[^\W\d_](?:[\w'’-]*[^\W_])?", re.UNICODE)
 
 
 def stop_words(language):
-    from summa.preprocessing.stopwords import get_stopwords_by_language
+    from .._vendor.summa.preprocessing.stopwords import get_stopwords_by_language
     return {w.strip() for w in get_stopwords_by_language(language).split() if w.strip()}
 
 
@@ -124,7 +124,7 @@ class TextSummary(Tool):
         return {'output': Schema([*inputs['input'], Field(cfg['output_field'], FieldType.V_WSTRING, TEXT)])}
 
     def run(self, ctx, cfg, inputs):
-        from summa import summarizer
+        from .._vendor.summa import summarizer
         table = inputs['input']
         schema = self.infer(ctx, cfg, {'input': table.schema})['output']
         short, out = 0, []
