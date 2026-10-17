@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 273,
-    "passing": 273,
+    "count": 277,
+    "passing": 277,
     "tests": [
       "test_batch10.APIOutputTests.test_quoted_csv_messages",
       "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
@@ -422,7 +422,11 @@
       "test_spatial.NearestMatchTests.test_spatial_match_predicates",
       "test_spatial.PointsDistanceTests.test_buffers_are_metric_not_degrees",
       "test_spatial.PointsDistanceTests.test_create_points_validates_and_reprojects",
-      "test_spatial.PointsDistanceTests.test_geodesic_and_planar_distance"
+      "test_spatial.PointsDistanceTests.test_geodesic_and_planar_distance",
+      "test_tool_specs.SemanticsTests.test_filter_routes_null_to_false_and_union_fills_missing_fields",
+      "test_tool_specs.SemanticsTests.test_formula_null_division_case_and_in",
+      "test_tool_specs.SemanticsTests.test_join_nulls_match_and_unique_keeps_first",
+      "test_tool_specs.SemanticsTests.test_summarize_null_handling_and_names"
     ]
   },
   "sources": [

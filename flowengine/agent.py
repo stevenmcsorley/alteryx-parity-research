@@ -19,6 +19,7 @@ from typing import Callable
 
 from . import __version__, catalog
 from .errors import EngineError
+from . import agent_web, tool_specs
 from .examples import examples_for
 from .plugin import default_registry
 
@@ -182,6 +183,7 @@ def describe_tool(ctx: Context, tool_id: str, full: bool = False) -> dict:
                       'dependencies': list(m.dependencies or [])},
         'usage_notes': USAGE_NOTES.get(m.tool_id, []),
         'examples': [_example_view(e, full) for e in examples_for(m.tool_id)],
+        'contract': tool_specs.contract(tool),
         'related_tools': _related(reg, m, names),
         'node_example': {'tool_id': m.tool_id, 'config': {k: _placeholder(schema['properties'][k]) for k in required
                                                          if k in schema.get('properties', {})}},
@@ -506,15 +508,141 @@ def run_command(ctx: Context, argv: list[str], cwd: str = '.', timeout_seconds: 
     return {'argv': argv, 'cwd': str(folder), **_execute(ctx, argv, folder, timeout_seconds, stdin)}
 
 
-def run_python(ctx: Context, code: str, timeout_seconds: int = 600) -> dict:
-    """Runs a script with Flowbench's own Python (pandas, numpy, pyarrow, scipy, ...) in the workspace.
-    The script is kept under .flowbench/scripts/ so the step is recorded and can be rerun."""
-    import sys
+def _script(ctx: Context, code: str, suffix: str) -> Path:
     folder = ctx.base_dir / '.flowbench' / 'scripts'
     folder.mkdir(parents=True, exist_ok=True)
-    script = folder / f'{_dt.datetime.now().strftime("%Y%m%d-%H%M%S")}-{hashlib.sha256(code.encode()).hexdigest()[:10]}.py'
+    script = folder / f'{_dt.datetime.now().strftime("%Y%m%d-%H%M%S")}-{hashlib.sha256(code.encode()).hexdigest()[:10]}{suffix}'
     script.write_text(code, encoding='utf-8')
-    return {'script': str(script), 'python': sys.executable, **_execute(ctx, [sys.executable, str(script)], ctx.base_dir, timeout_seconds)}
+    return script
+
+
+def run_python(ctx: Context, code: str, timeout_seconds: int = 600, env: str | None = None) -> dict:
+    """Runs a script with Flowbench's own Python (pandas, numpy, pyarrow, scipy, ...) or a named environment
+    made by install_python_packages, in the workspace. The script is kept under .flowbench/scripts/."""
+    from .runtimes import interpreter
+    python = interpreter(env)
+    script = _script(ctx, code, '.py')
+    return {'script': str(script), 'python': python, 'env': env or 'default',
+            **_execute(ctx, [python, str(script)], ctx.base_dir, timeout_seconds)}
+
+
+def install_python_packages(ctx: Context, packages: list[str], env: str = 'analysis') -> dict:
+    """pip-installs packages into a managed environment that also sees Flowbench's bundled libraries."""
+    import subprocess
+    import venv
+    from .runtimes import env_dir, interpreter, write_manifest
+    if not all(re.fullmatch(r'[A-Za-z0-9_.\-\[\],<>=!~ ]{1,120}', p) for p in packages):
+        raise EngineError('Package names must be plain requirement specifiers such as "pyreadstat>=1.2"', code='bad-package')
+    folder = env_dir(env)
+    created = not folder.exists()
+    if created:
+        venv.EnvBuilder(with_pip=True, system_site_packages=True).create(folder)
+    exe = interpreter(env)
+    proc = subprocess.run([exe, '-m', 'pip', 'install', '--disable-pip-version-check', *packages], capture_output=True, text=True, timeout=1800)
+    if proc.returncode != 0:
+        raise EngineError(f'pip could not install {packages}: {proc.stderr[-2000:]}', code='install-failed')
+    manifest = write_manifest(env, packages)
+    return {'env': env, 'created': created, 'python': exe, 'installed': packages, 'stdout': proc.stdout[-4000:],
+            'manifest': manifest, 'note': f'Run scripts in it with run_python env "{env}".'}
+
+
+def run_r(ctx: Context, code: str, timeout_seconds: int = 600) -> dict:
+    from .runtimes import find_rscript
+    rscript = find_rscript()
+    if not rscript:
+        raise EngineError('R is not installed on this computer (Rscript was not found)', code='not-installed')
+    script = _script(ctx, code, '.R')
+    return {'script': str(script), 'rscript': rscript, **_execute(ctx, [rscript, str(script)], ctx.base_dir, timeout_seconds)}
+
+
+PROGRAMS = ('python3', 'python', 'Rscript', 'R', 'docker', 'git', 'node', 'npm', 'java', 'curl', 'wget', 'ogr2ogr', 'gdalinfo',
+            'soffice', 'libreoffice', 'psql', 'sqlite3', 'duckdb', 'jq', 'unzip', '7z', 'pandoc', 'make')
+
+
+def inspect_environment(ctx: Context) -> dict:
+    """The computer's operating system, Flowbench's Python and libraries, and which programs are installed."""
+    import importlib.metadata as md
+    import platform
+    import shutil
+    import sys
+    from .runtimes import find_rscript, list_envs
+    wanted = ('pandas', 'numpy', 'pyarrow', 'scipy', 'scikit-learn', 'statsmodels', 'openpyxl', 'requests', 'shapely', 'pyproj',
+              'networkx', 'reportlab', 'pillow', 'jsonschema')
+    packages = {}
+    for name in wanted:
+        try:
+            packages[name] = md.version(name)
+        except md.PackageNotFoundError:
+            pass
+    programs = {name: shutil.which(name) for name in PROGRAMS}
+    docker = None
+    if programs.get('docker'):
+        import subprocess
+        try:
+            out = subprocess.run(['docker', 'version', '--format', '{{.Server.Version}}'], capture_output=True, text=True, timeout=15)
+            compose = subprocess.run(['docker', 'compose', 'version', '--short'], capture_output=True, text=True, timeout=15)
+            docker = {'server': out.stdout.strip() or None, 'error': out.stderr.strip()[:300] or None,
+                      'compose': compose.stdout.strip() or None}
+        except Exception as e:
+            docker = {'error': str(e)}
+    return {'os': f'{platform.system()} {platform.release()}', 'machine': platform.machine(), 'python': sys.version.split()[0],
+            'python_executable': sys.executable, 'packages': packages, 'python_environments': list_envs(),
+            'rscript': find_rscript(), 'programs': {k: v for k, v in programs.items() if v}, 'docker': docker,
+            'workspace': str(ctx.base_dir)}
+
+
+# Long-running processes: started, then polled; output is kept in memory while they run.
+_PROCESSES: dict[str, dict] = {}
+
+
+def start_process(ctx: Context, argv: list[str], cwd: str = '.') -> dict:
+    import subprocess
+    import threading
+    import uuid
+    folder = ctx.path(cwd)
+    try:
+        proc = subprocess.Popen(argv, cwd=folder, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+    except FileNotFoundError:
+        raise EngineError(f'Program not found: {argv[0]}', code='not-found') from None
+    pid = uuid.uuid4().hex[:12]
+    entry = {'argv': argv, 'cwd': str(folder), 'proc': proc, 'output': [], 'started_at': _dt.datetime.now(_dt.timezone.utc).isoformat(timespec='seconds')}
+
+    def pump():
+        for line in proc.stdout:
+            entry['output'].append(line)
+    threading.Thread(target=pump, daemon=True).start()
+    _PROCESSES[pid] = entry
+    return {'process_id': pid, 'argv': argv, 'cwd': str(folder), 'started_at': entry['started_at']}
+
+
+def process_status(ctx: Context, process_id: str, from_line: int = 0) -> dict:
+    entry = _PROCESSES.get(process_id)
+    if not entry:
+        raise EngineError('Unknown process id', code='unknown-process')
+    code = entry['proc'].poll()
+    return {'process_id': process_id, 'argv': entry['argv'], 'running': code is None, 'exit_code': code,
+            'output': ''.join(entry['output'][from_line:]), 'next_line': len(entry['output'])}
+
+
+def stop_process(ctx: Context, process_id: str) -> dict:
+    entry = _PROCESSES.get(process_id)
+    if not entry:
+        raise EngineError('Unknown process id', code='unknown-process')
+    if entry['proc'].poll() is None:
+        entry['proc'].terminate()
+        try:
+            entry['proc'].wait(timeout=10)
+        except Exception:
+            entry['proc'].kill()
+    return process_status(ctx, process_id)
+
+
+def docker(ctx: Context, args: list[str], timeout_seconds: int = 1800) -> dict:
+    """Runs `docker <args>` (for example ["compose", "up", "-d"], ["run", "--rm", "image", ...], ["ps"])."""
+    import shutil
+    if not shutil.which('docker'):
+        raise EngineError('Docker is not installed on this computer', code='not-installed')
+    return {'argv': ['docker', *args], **_execute(ctx, ['docker', *args], ctx.base_dir, timeout_seconds)}
 
 
 # ---------------------------------------------------------------------------------------- databases
@@ -551,6 +679,8 @@ OPS: dict[str, Op] = {op.name: op for op in [
        _obj({'query': {'type': 'string', 'minLength': 1}, 'limit': {'type': 'integer', 'minimum': 1, 'maximum': 30}}, ['query']), find_tools),
     Op('describe_tool', 'Full specification of one tool: purpose, input and output anchors, every setting with type, default and allowed values, side effects, usage notes, related tools and tested examples (configuration, input and the output it produces). Call before adding a tool to a workflow. Examples show the first five input rows; pass full true for all of them.',
        _obj({'tool_id': {'type': 'string', 'minLength': 1}, 'full': {'type': 'boolean'}}, ['tool_id']), describe_tool),
+    Op('formula_reference', 'The Flowbench expression language used by Formula, Filter, Multi-Row Formula and other expression settings: fields, literals, operators, conditionals, null rules and every available function with its argument counts.',
+       _obj({}), lambda ctx: tool_specs.formula_reference()),
     Op('list_files', 'List files in the workspace folder or a sub-folder (relative paths resolve against the workspace).',
        _obj({'path': {'type': 'string'}, 'pattern': {'type': 'string'}}), list_files),
     Op('inspect_spreadsheet', 'Show every worksheet of an Excel (.xlsx/.xlsm) or OpenDocument (.ods) file with its size and first rows, so you can choose the sheet and where the table starts. Published statistics usually have notes and multi-row headers above the data.',
@@ -585,9 +715,48 @@ OPS: dict[str, Op] = {op.name: op for op in [
        _obj({'argv': {'type': 'array', 'minItems': 1, 'items': {'type': 'string'}}, 'cwd': {'type': 'string'},
              'timeout_seconds': {'type': 'integer', 'minimum': 1}, 'stdin': {'type': ['string', 'null']}}, ['argv']),
        run_command, read_only=False, open_world=True, writes_files=True, permissions=('processes',)),
-    Op('run_python', 'Run a Python script with Flowbench\'s Python (pandas, numpy, pyarrow, scipy, scikit-learn, statsmodels, openpyxl, requests) in the workspace, and return its output and the files it wrote. Use it to prepare data that no native tool can handle, writing results to files that the workflow then reads; the script is kept under .flowbench/scripts/.',
-       _obj({'code': {'type': 'string', 'minLength': 1}, 'timeout_seconds': {'type': 'integer', 'minimum': 1}}, ['code']),
+    Op('run_python', 'Run a Python script with Flowbench\'s Python (or the env made by install_python_packages) (pandas, numpy, pyarrow, scipy, scikit-learn, statsmodels, openpyxl, requests) in the workspace, and return its output and the files it wrote. Use it to prepare data that no native tool can handle, writing results to files that the workflow then reads; the script is kept under .flowbench/scripts/.',
+       _obj({'code': {'type': 'string', 'minLength': 1}, 'timeout_seconds': {'type': 'integer', 'minimum': 1}, 'env': {'type': ['string', 'null']}}, ['code']),
        run_python, read_only=False, open_world=True, writes_files=True, permissions=('processes',)),
+    Op('install_python_packages', 'pip-install packages (for example a parser for an unusual file format) into a managed Python environment that also sees Flowbench\'s bundled libraries; then use run_python with env.',
+       _obj({'packages': {'type': 'array', 'minItems': 1, 'items': {'type': 'string'}}, 'env': {'type': 'string'}}, ['packages']),
+       install_python_packages, read_only=False, open_world=True, permissions=('processes', 'network')),
+    Op('run_r', 'Run an R script in the workspace with the installed R (Rscript); fails with not-installed when R is absent.',
+       _obj({'code': {'type': 'string', 'minLength': 1}, 'timeout_seconds': {'type': 'integer', 'minimum': 1}}, ['code']),
+       run_r, read_only=False, writes_files=True, permissions=('processes',)),
+    Op('inspect_environment', 'The operating system, Flowbench\'s Python and libraries, managed Python environments, R, Docker and which common programs are installed.',
+       _obj({}), inspect_environment),
+    Op('start_process', 'Start a long-running program (argv, no shell) in the background and get a process_id; poll it with process_status and end it with stop_process.',
+       _obj({'argv': {'type': 'array', 'minItems': 1, 'items': {'type': 'string'}}, 'cwd': {'type': 'string'}}, ['argv']),
+       start_process, read_only=False, open_world=True, writes_files=True, permissions=('processes',)),
+    Op('process_status', 'Whether a started process is still running, its exit code, and its output (from_line onwards).',
+       _obj({'process_id': {'type': 'string'}, 'from_line': {'type': 'integer', 'minimum': 0}}, ['process_id']), process_status),
+    Op('stop_process', 'Stop a process started with start_process.', _obj({'process_id': {'type': 'string'}}, ['process_id']),
+       stop_process, read_only=False, permissions=('processes',)),
+    Op('docker', 'Run a docker command, for example ["compose", "up", "-d"], ["run", "--rm", "postgres:16", "psql", "--version"] or ["ps"]; returns exit code, output and files written.',
+       _obj({'args': {'type': 'array', 'minItems': 1, 'items': {'type': 'string'}}, 'timeout_seconds': {'type': 'integer', 'minimum': 1}}, ['args']),
+       docker, read_only=False, open_world=True, writes_files=True, permissions=('processes',)),
+    Op('web_search', 'Search the web and get titles, URLs and snippets. Uses the user\'s SearXNG instance when one is set (provider auto), falling back to DuckDuckGo; Brave Search works with a saved connection. engines picks SearXNG engines, e.g. "bing". For official statistics also try search_datasets.',
+       _obj({'query': {'type': 'string', 'minLength': 1}, 'provider': {'enum': ['auto', 'searxng', 'duckduckgo', 'brave']},
+             'limit': {'type': 'integer', 'minimum': 1, 'maximum': 50}, 'connection_id': {'type': ['string', 'null']},
+             'engines': {'type': ['string', 'null']}}, ['query']), agent_web.web_search, open_world=True, permissions=('network',)),
+    Op('search_datasets', 'Search official dataset catalogues: GOV.UK statistics and data sets (govuk), data.gov.uk (datagovuk), or any CKAN portal (ckan with ckan_url). Results link to the publication pages and, for CKAN, list their files.',
+       _obj({'query': {'type': 'string', 'minLength': 1}, 'catalogue': {'enum': ['govuk', 'datagovuk', 'ckan']}, 'ckan_url': {'type': ['string', 'null']},
+             'limit': {'type': 'integer', 'minimum': 1, 'maximum': 100}}, ['query']), agent_web.search_datasets, open_world=True, permissions=('network',)),
+    Op('fetch_page', 'Retrieve a web page: its title, readable text, every link, and the data files it offers (CSV, Excel, ODS, JSON, XML, ZIP, ...). GOV.UK pages list their published files with direct download URLs.',
+       _obj({'url': {'type': 'string', 'minLength': 8}}, ['url']), agent_web.fetch_page, open_world=True, permissions=('network',)),
+    Op('find_data_files', 'Follow a site\'s links from a starting page (depth levels, same site by default) and list every data file found, with the page it was found on.',
+       _obj({'url': {'type': 'string', 'minLength': 8}, 'depth': {'type': 'integer', 'minimum': 0, 'maximum': 3}, 'same_site': {'type': 'boolean'}}, ['url']),
+       agent_web.find_data_files, open_world=True, permissions=('network',)),
+    Op('inspect_api', 'Summarise an API: an OpenAPI/Swagger document (servers, endpoints, parameters) or a GraphQL endpoint (queries and types, by introspection).',
+       _obj({'url': {'type': 'string', 'minLength': 8}, 'kind': {'enum': ['auto', 'openapi', 'graphql']}}, ['url']), agent_web.inspect_api, open_world=True, permissions=('network',)),
+    Op('fetch_api', 'GET a JSON API, following pagination (page number, offset, cursor or next link), and save all items to a workspace file (.json, or .csv flattened) with provenance. Use a saved connection for APIs that need a key.',
+       _obj({'url': {'type': 'string', 'minLength': 8}, 'params': {'type': 'object'}, 'items_path': {'type': ['string', 'null']},
+             'pagination': _obj({'mode': {'enum': ['none', 'page', 'offset', 'cursor', 'link']}, 'param': {'type': 'string'}, 'size': {'type': 'integer'},
+                                 'size_param': {'type': 'string'}, 'start': {'type': 'integer'}, 'cursor_path': {'type': 'string'},
+                                 'next_path': {'type': 'string'}, 'max_pages': {'type': 'integer', 'minimum': 1}}),
+             'connection_id': {'type': ['string', 'null']}, 'save_as': {'type': ['string', 'null']}}, ['url']),
+       agent_web.fetch_api, open_world=True, writes_files=True, permissions=('network', 'file_writes')),
     Op('list_connections', 'List the saved database connections (name, kind, host, database; never credentials).', _obj({}), list_connections),
     Op('list_tables', 'List the schemas of a saved database connection, or the tables in one schema.',
        _obj({'connection_id': {'type': 'string', 'minLength': 1}, 'schema': {'type': ['string', 'null']}}, ['connection_id']), list_tables),

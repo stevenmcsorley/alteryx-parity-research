@@ -172,8 +172,8 @@
     ]
   },
   "independent_tests": {
-    "count": 10,
-    "passing": 10,
+    "count": 11,
+    "passing": 11,
     "tests": [
       "test_data_correctness.DataCorrectnessTests.test_full_typed_csv_pipeline_roundtrip",
       "test_data_correctness.DataCorrectnessTests.test_sort_nan_and_join_key_types",
@@ -184,7 +184,8 @@
       "test_fe_tools.JoinTests.test_join_case_insensitive_and_type_check",
       "test_fe_tools.JoinTests.test_join_options",
       "test_fe_tools.JoinTests.test_join_three_outputs_many_to_many_nulls",
-      "test_macros.StandardMacroTests.test_macro_binds_multiple_parent_connections_to_distinct_child_inputs"
+      "test_macros.StandardMacroTests.test_macro_binds_multiple_parent_connections_to_distinct_child_inputs",
+      "test_tool_specs.SemanticsTests.test_join_nulls_match_and_unique_keeps_first"
     ]
   },
   "sources": [

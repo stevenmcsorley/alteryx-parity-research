@@ -60,6 +60,66 @@ Beyond workflow tools, the AI can work with the computer:
 | run_python | run a Python script with Flowbench's Python (pandas, numpy, pyarrow, scipy, scikit-learn, statsmodels, openpyxl); the script is kept under `.flowbench/scripts/` | running programs |
 | list_connections, list_tables, describe_table, query_database | discover saved database connections and query them read-only; credentials stay in the system vault | — |
 
+More operations on the computer:
+
+| Operation | Does | Permission |
+|---|---|---|
+| inspect_environment | the operating system, Flowbench's Python and libraries, managed Python environments, R, Docker and installed programs | — |
+| install_python_packages | pip-install into a managed environment that also sees Flowbench's bundled libraries; run_python then takes env | running programs, internet |
+| run_r | run an R script with the installed Rscript | running programs |
+| start_process, process_status, stop_process | long-running programs in the background, with output so far, exit code and stop | running programs |
+| docker | `docker <args>`, including `compose` | running programs |
+
+### Finding data on the web
+
+| Operation | Does |
+|---|---|
+| search_datasets | search official catalogues: GOV.UK statistics and data sets, data.gov.uk, or any CKAN portal |
+| web_search | general web search; see below |
+| fetch_page | a page's title, readable text, links and the data files it offers. GOV.UK pages list their published files with direct download URLs |
+| find_data_files | follow a site's links from a page and list every data file found |
+| inspect_api | summarise an OpenAPI/Swagger document, or a GraphQL endpoint by introspection |
+| fetch_api | GET a JSON API with page, offset, cursor or next-link pagination, saving all items to `.json` or `.csv` with provenance |
+
+All need internet permission. Downloads follow redirects and record their final URL, time, size and SHA-256.
+
+**Web search** uses your own [SearXNG](https://docs.searxng.org/) instance when one is set in **AI settings → Web search**. It falls back to DuckDuckGo when SearXNG returns nothing, or Brave Search with a saved connection and key. SearXNG must allow JSON output. A minimal setup:
+
+```yaml
+# docker-compose.yml
+services:
+  searxng:
+    image: searxng/searxng:latest
+    ports: ["127.0.0.1:8888:8080"]
+    volumes: ["./settings.yml:/etc/searxng/settings.yml:ro"]
+    restart: unless-stopped
+```
+
+```yaml
+# settings.yml
+use_default_settings: true
+server:
+  secret_key: "change-me"
+  limiter: false
+search:
+  formats: [html, json]
+```
+
+Run `docker compose up -d`, then set the address to `http://localhost:8888`. The search results show which SearXNG engines did not respond. Engines such as Google and DuckDuckGo often block self-hosted instances; Bing and others usually work. The MCP server takes `--searxng URL`, and the `FLOWBENCH_SEARXNG_URL` environment variable works everywhere.
+
+### Tool contracts
+
+**describe_tool** returns a contract for every installed tool:
+- the settings with their defaults and constraints, and the anchors;
+- the error conditions the kernel raises, read from its code (185 tools);
+- side effects and streaming;
+- first-use downloads;
+- recovery behaviour;
+- limitations and verification status from the contract ledger;
+- tested examples.
+
+Formula, Summarize, Filter, Join, Union, Unique, Sort, Multi-Row Formula and Input Data also carry curated semantics: null handling, ordering, output types and names. Every curated rule is checked against the engine by `tests/test_tool_specs.py`. **formula_reference** gives the expression language: operators, keywords, conditionals, null rules, and the 63 functions that exist, with their argument counts.
+
 Python and commands are fallbacks for steps no native tool covers, and they are recorded as such in the task, not disguised as workflow nodes.
 
 If a run fails, the AI receives the engine's error code, message and failing node, so it can repair the workflow and run it again. When no native tool fits, it uses the Python or Run Command tools inside the workflow, so that step is recorded too.
@@ -80,6 +140,17 @@ Every request is a task, saved under the app's data folder in `ai-tasks/`. A tas
 The **Task** tab shows the current task live, with earlier tasks below it. While the AI works, a strip above the message box shows the phase, with **Pause** (the AI waits between actions so you can edit the workflow) and **Take over** (stop the AI and turn Full Control off).
 
 A request that asks for analysis, calculations, a workflow, a chart or data needs execution evidence before it can complete: a successful run, or a result query on one. If the model answers in text alone, Flowbench sends it back, at most twice, to build and run the workflow. An answer that is still not backed by a run is labelled **Not verified**. Ordinary questions are answered normally. The model can declare a request a plain question with `task_classify`, and its reason is shown beside the answer. These checks are made by Flowbench from tool observations, not by the model.
+
+### Deliverables
+
+For multi-part requests, the AI lists what was asked for with `task_plan`: the dataset and its source, the workflow, statistics, each chart, saved files. It links each one to its artifact with `task_deliver`. Flowbench checks every artifact itself:
+- files exist and are not empty;
+- charts are image, SVG, HTML or PDF files;
+- workflows parse as Flowbench workflows with nodes;
+- sources have recorded provenance;
+- tables and statistics name a run that succeeded in the task.
+
+Counts the request states, such as "two charts", are read from the request itself, so a plan cannot ask for less. A task whose deliverables are missing ends as **Incomplete**, and the Task tab lists what is missing.
 
 ### Permissions
 

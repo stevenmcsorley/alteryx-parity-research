@@ -99,6 +99,14 @@ class EngineService:
         if method == 'agent.tools_list':
             from . import agent
             return agent.tools_list()
+        if method == 'agent.search_settings':
+            from . import agent_web
+            if 'searxng_url' in params:
+                agent_web.save_search_settings(params['searxng_url'] or None)
+            settings = agent_web.search_settings()
+            if params.get('test') and settings['searxng_url']:
+                settings['test'] = agent_web.test_searxng(settings['searxng_url'])
+            return settings
         if method == 'agent.call':
             from . import agent
             ctx = agent.Context(self._base(params), params.get('permissions') or (), self.runs, service=self)

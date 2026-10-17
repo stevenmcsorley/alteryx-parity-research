@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import datetime as _dt
 import json
+import os
 import logging
 import sys
 from pathlib import Path
@@ -111,6 +112,7 @@ def main(argv=None) -> int:
     sv.add_argument('--history', type=Path, help='SQLite run-history database')
     mc = sub.add_parser('mcp', help='Model Context Protocol server (stdio) over the Flowbench tools')
     mc.add_argument('--workspace', type=Path, default=Path('.'), help='Folder the AI may read and write (default: current)')
+    mc.add_argument('--searxng', help='SearXNG address for web_search, e.g. http://localhost:8888')
     mc.add_argument('--allow', default='', help='Comma-separated permissions: network,file_writes,processes,database_writes,remote_writes')
     im = sub.add_parser('import', help='Convert a .yxmd/.yxmc/.yxwz/.yxzp document to a flowengine workflow')
     im.add_argument('source', type=Path)
@@ -153,6 +155,8 @@ def main(argv=None) -> int:
             if unknown:
                 print(f'Unknown permission(s): {", ".join(unknown)}', file=sys.stderr)
                 return 2
+            if args.searxng:
+                os.environ['FLOWBENCH_SEARXNG_URL'] = args.searxng
             serve_mcp(args.workspace, granted)
             return 0
         if args.cmd == 'import':

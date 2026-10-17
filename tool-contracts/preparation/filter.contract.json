@@ -163,8 +163,8 @@
     ]
   },
   "independent_tests": {
-    "count": 31,
-    "passing": 31,
+    "count": 32,
+    "passing": 32,
     "tests": [
       "test_control_container.ControlContainerTests.test_empty_control_input_skips_contents_and_their_downstream",
       "test_control_container.ControlContainerTests.test_inactive_container_stops_a_chain_and_nested_containers",
@@ -196,7 +196,8 @@
       "test_macros.BatchMacroTests.test_empty_control_table_returns_inferred_empty_schema",
       "test_macros.BatchMacroTests.test_native_control_parameter_uses_each_parent_row_and_updates_child_configuration",
       "test_macros.IterativeMacroTests.test_macro_child_failure_reports_call_node_and_stack",
-      "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow"
+      "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
+      "test_tool_specs.SemanticsTests.test_filter_routes_null_to_false_and_union_fills_missing_fields"
     ]
   },
   "sources": [

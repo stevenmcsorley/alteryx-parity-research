@@ -111,14 +111,15 @@
     ]
   },
   "independent_tests": {
-    "count": 5,
-    "passing": 5,
+    "count": 6,
+    "passing": 6,
     "tests": [
       "test_fe_executor.EndToEndTests.test_golden_outputs",
       "test_fe_executor.EndToEndTests.test_runs_are_reproducible",
       "test_fe_executor.PropertyTests.test_invariants",
       "test_fe_scale.SpillAndParallelTests.test_spill_and_parallel_give_identical_results",
-      "test_fe_tools.PreparationTests.test_unique"
+      "test_fe_tools.PreparationTests.test_unique",
+      "test_tool_specs.SemanticsTests.test_join_nulls_match_and_unique_keeps_first"
     ]
   },
   "sources": [

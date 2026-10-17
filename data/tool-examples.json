@@ -46469,19 +46469,15 @@
        {
         "name": "k",
         "size": 254,
-        "type": "v_string"
+        "type": "v_wstring"
        },
        {
-        "name": "i",
+        "name": "n",
         "type": "int32"
        }
       ],
-      "row_count": 2,
+      "row_count": 1,
       "rows": [
-       [
-        null,
-        "5"
-       ],
        [
         "a",
         "3"
@@ -46493,26 +46489,22 @@
        {
         "name": "k",
         "size": 254,
-        "type": "v_string"
+        "type": "v_wstring"
        },
        {
-        "name": "i",
+        "name": "n",
         "type": "int32"
        }
       ],
-      "row_count": 3,
+      "row_count": 2,
       "rows": [
-       [
-        null,
-        "4"
-       ],
-       [
-        "A",
-        "2"
-       ],
        [
         "a",
         "1"
+       ],
+       [
+        "b",
+        "2"
        ]
       ]
      }
@@ -46523,10 +46515,10 @@
        {
         "name": "k",
         "size": 254,
-        "type": "v_string"
+        "type": "v_wstring"
        },
        {
-        "name": "i",
+        "name": "n",
         "type": "int32"
        }
       ],
@@ -46536,20 +46528,12 @@
         "1"
        ],
        [
-        "A",
+        "b",
         "2"
        ],
        [
         "a",
         "3"
-       ],
-       [
-        null,
-        "4"
-       ],
-       [
-        null,
-        "5"
        ]
       ]
      }

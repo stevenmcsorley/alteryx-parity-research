@@ -144,8 +144,8 @@
     ]
   },
   "independent_tests": {
-    "count": 35,
-    "passing": 35,
+    "count": 36,
+    "passing": 36,
     "tests": [
       "test_acceptance.AcquisitionTests.test_download_build_run_and_cite_evidence",
       "test_acceptance.ExternalExecutionTests.test_python_prepares_api_data_that_a_workflow_analyses",
@@ -181,7 +181,8 @@
       "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level",
       "test_predictive.ExampleTests.test_fuel_models_example",
       "test_reporting.RenderTests.test_fuel_report_example",
-      "test_spatial.ExampleTests.test_uk_spatial_example"
+      "test_spatial.ExampleTests.test_uk_spatial_example",
+      "test_tool_specs.SemanticsTests.test_formula_null_division_case_and_in"
     ]
   },
   "sources": [

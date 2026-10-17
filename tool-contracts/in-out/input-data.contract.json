@@ -259,8 +259,8 @@
     ]
   },
   "independent_tests": {
-    "count": 42,
-    "passing": 42,
+    "count": 43,
+    "passing": 43,
     "tests": [
       "test_acceptance.AcquisitionTests.test_download_build_run_and_cite_evidence",
       "test_acceptance.ExternalExecutionTests.test_python_prepares_api_data_that_a_workflow_analyses",
@@ -271,6 +271,7 @@
       "test_agent.DataTests.test_query_results_aggregates_the_full_output",
       "test_agent.DownloadTests.test_download_needs_permission_and_records_provenance",
       "test_agent_host.ProcessTests.test_python_scripts_are_recorded_and_their_files_feed_flowbench",
+      "test_agent_web.ApiTests.test_page_pagination_saves_all_items_with_provenance",
       "test_batch5.MapReportExampleTests.test_uk_map_report_example",
       "test_batch8.ExampleTests.test_diesel_forecast_example",
       "test_control_container.ControlContainerTests.test_chained_containers_run_in_sequence_through_a_file",

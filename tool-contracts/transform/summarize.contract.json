@@ -160,8 +160,8 @@
     ]
   },
   "independent_tests": {
-    "count": 16,
-    "passing": 16,
+    "count": 17,
+    "passing": 17,
     "tests": [
       "test_acceptance.AcquisitionTests.test_download_build_run_and_cite_evidence",
       "test_acceptance.ExternalExecutionTests.test_python_prepares_api_data_that_a_workflow_analyses",
@@ -178,7 +178,8 @@
       "test_fe_scale.SpillAndParallelTests.test_spill_and_parallel_give_identical_results",
       "test_fe_tools.TransformTests.test_summarize",
       "test_fe_tools.TransformTests.test_summarize_empty_and_errors",
-      "test_reporting.RenderTests.test_fuel_report_example"
+      "test_reporting.RenderTests.test_fuel_report_example",
+      "test_tool_specs.SemanticsTests.test_summarize_null_handling_and_names"
     ]
   },
   "sources": [
