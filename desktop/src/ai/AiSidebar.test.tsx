@@ -478,7 +478,8 @@ describe('local model provider', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     expect(await screen.findByText('Local answer')).toBeTruthy();
     expect(tauriMock.invoke.mock.calls.find(([c]) => c === 'ai_respond')?.[1]).toMatchObject({ model: 'qwen2.5:7b', effort: null });
-    expect(screen.getByText('6.4k tokens this turn')).toBeTruthy();
+    expect(screen.getByText(/6\.4k this turn · 6\.4k total/)).toBeTruthy();
+    expect(screen.getByRole('img', { name: /New input 6\.4k/ })).toBeTruthy();
   });
 });
 
