@@ -102,6 +102,9 @@ class DataTests(AgentCase):
         self.assertEqual(len(ev['workflow_digest']), 64)
         self.assertEqual(ev['nodes']['typed']['outputs']['output']['rows'], 4)
         self.assertIn({'node_id': 'typed', 'anchor': 'output'}, ev['artifacts'])
+        import hashlib
+        self.assertEqual([(i['node_id'], i['sha256']) for i in ev['input_files']],
+                         [('in', hashlib.sha256(CSV.encode()).hexdigest())])
 
 
 class DownloadTests(AgentCase):

@@ -87,13 +87,18 @@
     ]
   },
   "independent_tests": {
-    "count": 6,
-    "passing": 6,
+    "count": 11,
+    "passing": 11,
     "tests": [
+      "test_acceptance.AcquisitionTests.test_download_build_run_and_cite_evidence",
+      "test_acceptance.ExternalExecutionTests.test_python_prepares_api_data_that_a_workflow_analyses",
+      "test_acceptance.RepairTests.test_failed_run_is_repaired_without_repeating_successful_steps",
+      "test_acceptance.WorkflowConstructionTests.test_clean_group_sort_chart_and_reopen",
       "test_agent.DataTests.test_evidence_names_versions_digests_and_artifacts",
       "test_agent.DataTests.test_profile_computes_types_and_stats_natively",
       "test_agent.DataTests.test_query_results_aggregates_the_full_output",
       "test_agent.DownloadTests.test_download_needs_permission_and_records_provenance",
+      "test_agent_host.ProcessTests.test_python_scripts_are_recorded_and_their_files_feed_flowbench",
       "test_fe_tools_wave2.PreparationWave2.test_auto_field_picks_smallest_types",
       "test_spreadsheet.OdsTests.test_inspect_lists_sheets_with_first_rows"
     ]

@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 1 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 442 run, 0 failed |
+| Unit/integration tests in last ledger build | 452 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -34,16 +34,16 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:browse` | `core.browse` | 32 | 0/0 | not-tested |
 | `in-out:date-time-now` | `core.date_time_now` | 1 | 0/0 | not-tested |
 | `in-out:directory` | `core.directory` | 3 | 0/0 | not-tested |
-| `in-out:input-data` | `core.input_data` | 37 | 0/0 | not-tested |
+| `in-out:input-data` | `core.input_data` | 42 | 0/0 | not-tested |
 | `in-out:map-input` | `core.map_input` | 1 | 0/0 | not-tested |
-| `in-out:output-data` | `core.output_data` | 12 | 0/0 | not-tested |
+| `in-out:output-data` | `core.output_data` | 13 | 0/0 | not-tested |
 | `in-out:text-input` | `core.text_input` | 273 | 0/0 | not-tested |
-| `preparation:auto-field` | `core.auto_field` | 6 | 1/1 | partial |
+| `preparation:auto-field` | `core.auto_field` | 11 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 2 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
-| `preparation:data-cleansing` | `core.data_cleansing` | 3 | 0/0 | not-tested |
+| `preparation:data-cleansing` | `core.data_cleansing` | 4 | 0/0 | not-tested |
 | `preparation:filter` | `core.filter` | 31 | 5/5 | partial |
-| `preparation:formula` | `core.formula` | 32 | 13/13 | partial |
+| `preparation:formula` | `core.formula` | 35 | 13/13 | partial |
 | `preparation:generate-rows` | `core.generate_rows` | 3 | 0/0 | not-tested |
 | `preparation:imputation` | `core.imputation` | 1 | 1/1 | partial |
 | `preparation:multi-field-binning` | `core.multi_field_binning` | 1 | 0/0 | not-tested |
@@ -56,7 +56,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `preparation:sample` | `core.sample` | 3 | 6/6 | partial |
 | `preparation:select` | `core.select` | 8 | 2/2 | partial |
 | `preparation:select-records` | `core.select_records` | 1 | 1/1 | partial |
-| `preparation:sort` | `core.sort` | 14 | 2/3 | failed |
+| `preparation:sort` | `core.sort` | 15 | 2/3 | failed |
 | `preparation:tile` | `core.tile` | 1 | 1/1 | partial |
 | `preparation:unique` | `core.unique` | 5 | 2/2 | partial |
 | `join:append-fields` | `core.append_fields` | 2 | 1/1 | partial |
@@ -75,7 +75,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `transform:cross-tab` | `core.cross_tab` | 1 | 3/3 | partial |
 | `transform:make-columns` | `core.make_columns` | 1 | 1/1 | partial |
 | `transform:running-total` | `core.running_total` | 1 | 1/1 | partial |
-| `transform:summarize` | `core.summarize` | 12 | 4/4 | partial |
+| `transform:summarize` | `core.summarize` | 16 | 4/4 | partial |
 | `transform:transpose` | `core.transpose` | 1 | 1/1 | partial |
 | `transform:weighted-average` | `core.weighted_average` | 1 | 1/1 | partial |
 | `in-database:browse-in-db` | `core.browse_indb` | 1 | 0/0 | not-tested |
@@ -96,12 +96,12 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-database:write-data-in-db` | `core.write_indb` | 1 | 0/0 | not-tested |
 | `reporting:email` | `core.email` | 5 | 0/0 | not-tested |
 | `reporting:image` | `core.report_image` | 4 | 0/0 | not-tested |
-| `reporting:interactive-chart` | `core.interactive_chart` | 5 | 0/0 | not-tested |
+| `reporting:interactive-chart` | `core.interactive_chart` | 6 | 0/0 | not-tested |
 | `reporting:layout` | `core.report_layout` | 5 | 0/0 | not-tested |
 | `reporting:map-legend-builder` | `core.map_legend_builder` | 1 | 0/0 | not-tested |
 | `reporting:map-legend-splitter` | `core.map_legend_splitter` | 1 | 0/0 | not-tested |
 | `reporting:overlay` | `core.report_overlay` | 1 | 0/0 | not-tested |
-| `reporting:render` | `core.render` | 8 | 0/0 | not-tested |
+| `reporting:render` | `core.render` | 9 | 0/0 | not-tested |
 | `reporting:report-footer` | `core.report_footer` | 2 | 0/0 | not-tested |
 | `reporting:report-header` | `core.report_header` | 2 | 0/0 | not-tested |
 | `reporting:report-map` | `core.report_map` | 2 | 0/0 | not-tested |

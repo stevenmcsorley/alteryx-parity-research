@@ -3519,49 +3519,24 @@
      "output": {
       "fields": [
        {
-        "name": "i",
+        "name": "region",
+        "size": 1,
+        "type": "v_string"
+       },
+       {
+        "name": "sales",
         "type": "byte"
-       },
-       {
-        "name": "big",
-        "type": "int32"
-       },
-       {
-        "name": "d",
-        "type": "double"
-       },
-       {
-        "name": "dt",
-        "type": "date"
-       },
-       {
-        "name": "s",
-        "size": 3,
-        "type": "v_wstring"
        }
       ],
-      "row_count": 3,
+      "row_count": 2,
       "rows": [
        [
-        "1",
-        "70000",
-        "1.5",
-        "2024-01-02",
-        "ab"
+        "N",
+        "3"
        ],
        [
-        "255",
-        "-3",
-        "2",
-        "2024-02-29",
-        "zoë"
-       ],
-       [
-        null,
-        null,
-        null,
-        null,
-        null
+        "S",
+        "4"
        ]
       ]
      }
@@ -3570,52 +3545,24 @@
      "input": {
       "fields": [
        {
-        "name": "i",
-        "size": 254,
-        "type": "v_string"
+        "name": "region",
+        "size": 1073741823,
+        "type": "v_wstring"
        },
        {
-        "name": "big",
-        "size": 254,
-        "type": "v_string"
-       },
-       {
-        "name": "d",
-        "size": 254,
-        "type": "v_string"
-       },
-       {
-        "name": "dt",
-        "size": 254,
-        "type": "v_string"
-       },
-       {
-        "name": "s",
-        "size": 254,
+        "name": "sales",
+        "size": 1073741823,
         "type": "v_wstring"
        }
       ],
       "rows": [
        [
-        "1",
-        "70000",
-        "1.5",
-        "2024-01-02",
-        "ab"
+        "N",
+        "3"
        ],
        [
-        "255",
-        "-3",
-        "2",
-        "2024-02-29",
-        "zoë"
-       ],
-       [
-        null,
-        "",
-        "",
-        null,
-        null
+        "S",
+        "4"
        ]
       ]
      }
@@ -9339,10 +9286,8 @@
    {
     "check": "values",
     "config": {
-     "case": "title",
-     "collapse_whitespace": true,
      "fields": [
-      "name"
+      "Category"
      ],
      "trim_whitespace": true
     },
@@ -9350,80 +9295,57 @@
      "output": {
       "fields": [
        {
-        "name": "customer_id",
-        "size": 8,
-        "type": "v_string"
-       },
-       {
-        "name": "name",
-        "size": 100,
+        "name": "Order",
+        "size": 1073741823,
         "type": "v_wstring"
        },
        {
-        "name": "region",
-        "size": 16,
-        "type": "v_string"
+        "name": "Category",
+        "size": 1073741823,
+        "type": "v_wstring"
        },
        {
-        "name": "status",
-        "size": 16,
-        "type": "v_string"
-       },
-       {
-        "name": "signup_date",
-        "type": "date"
+        "name": "Sales",
+        "size": 1073741823,
+        "type": "v_wstring"
        }
       ],
       "row_count": 7,
       "rows": [
        [
-        "C001",
-        "Ada Lovelace",
-        "North",
-        "active",
-        "2025-01-15"
+        "1",
+        "Toys",
+        "12.50"
        ],
        [
-        "C002",
-        "Ben Okafor",
-        "South",
-        "active",
-        "2025-02-01"
+        "2",
+        "Toys",
+        "7.5"
        ],
        [
-        "C003",
-        "Zoë Kowalski",
-        "North",
-        "inactive",
-        "2024-11-30"
+        "3",
+        "Games",
+        "30"
        ],
        [
-        "C002",
-        "Ben Okafor (Duplicate)",
-        "South",
-        "active",
-        "2025-02-02"
+        "4",
+        "Games",
+        ""
        ],
        [
-        "C004",
-        "李 雷",
-        "East",
-        "active",
-        "2025-03-10"
+        "5",
+        "Books",
+        "4.25"
        ],
        [
-        "C005",
-        null,
-        "South",
-        "active",
-        null
+        "6",
+        "books",
+        "5.75"
        ],
        [
-        "C006",
-        "Chidi Anagonye",
-        "East",
-        "active",
-        "2025-06-21"
+        "7",
+        "Games",
+        "10"
        ]
       ]
      }
@@ -9432,79 +9354,56 @@
      "input": {
       "fields": [
        {
-        "name": "customer_id",
-        "size": 8,
-        "type": "v_string"
-       },
-       {
-        "name": "name",
-        "size": 100,
+        "name": "Order",
+        "size": 1073741823,
         "type": "v_wstring"
        },
        {
-        "name": "region",
-        "size": 16,
-        "type": "v_string"
+        "name": "Category",
+        "size": 1073741823,
+        "type": "v_wstring"
        },
        {
-        "name": "status",
-        "size": 16,
-        "type": "v_string"
-       },
-       {
-        "name": "signup_date",
-        "type": "date"
+        "name": "Sales",
+        "size": 1073741823,
+        "type": "v_wstring"
        }
       ],
       "rows": [
        [
-        "C001",
-        "  ada lovelace ",
-        "North",
-        "active",
-        "2025-01-15"
+        "1",
+        " Toys ",
+        "12.50"
        ],
        [
-        "C002",
-        "Ben Okafor",
-        "South",
-        "active",
-        "2025-02-01"
+        "2",
+        "Toys",
+        "7.5"
        ],
        [
-        "C003",
-        "zoë kowalski",
-        "North",
-        "inactive",
-        "2024-11-30"
+        "3",
+        "Games",
+        "30"
        ],
        [
-        "C002",
-        "Ben Okafor (duplicate)",
-        "South",
-        "active",
-        "2025-02-02"
+        "4",
+        "Games",
+        ""
        ],
        [
-        "C004",
-        "李 雷",
-        "East",
-        "active",
-        "2025-03-10"
+        "5",
+        "Books",
+        "4.25"
        ],
        [
-        "C005",
-        null,
-        "South",
-        "active",
-        null
+        "6",
+        "books ",
+        "5.75"
        ],
        [
-        "C006",
-        "Chidi  Anagonye",
-        "East",
-        "active",
-        "2025-06-21"
+        "7",
+        "Games",
+        "10"
        ]
       ]
      }
@@ -39493,8 +39392,8 @@
     "config": {
      "keys": [
       {
-       "field": "amount",
-       "order": "asc"
+       "field": "Total",
+       "order": "desc"
       }
      ]
     },
@@ -39502,114 +39401,35 @@
      "output": {
       "fields": [
        {
-        "name": "RecordID",
-        "type": "int32"
-       },
-       {
-        "name": "id",
-        "type": "int64"
-       },
-       {
-        "name": "region",
-        "size": 4,
+        "name": "Category",
+        "size": 5,
         "type": "v_string"
        },
        {
-        "name": "amount",
+        "name": "Total",
         "type": "double"
        },
        {
-        "name": "note",
-        "size": 40,
-        "type": "v_wstring"
-       },
-       {
-        "name": "band",
-        "size": 1073741823,
-        "type": "v_wstring"
+        "name": "Average",
+        "type": "double"
        }
       ],
-      "row_count": 36,
+      "row_count": 3,
       "rows": [
        [
-        "107",
-        "12",
-        "S",
-        "13.36",
-        "a,b",
-        "low"
+        "Games",
+        "40",
+        "20"
        ],
        [
-        "130",
-        "42",
-        "S",
-        "66.01",
-        "spaced",
-        "low"
+        "Toys",
+        "20",
+        "10"
        ],
        [
-        "115",
-        "23",
-        "E",
-        "67.18",
-        null,
-        "low"
-       ],
-       [
-        "127",
-        "38",
-        "N",
-        "83",
-        null,
-        "low"
-       ],
-       [
-        "124",
-        "35",
-        "N",
-        "140.03",
-        "zoë",
-        "low"
-       ],
-       [
-        "131",
-        "43",
-        "S",
-        "155.15",
-        "spaced",
-        "low"
-       ],
-       [
-        "112",
-        "18",
-        "E",
-        "173.27",
-        "spaced",
-        "low"
-       ],
-       [
-        "133",
-        "45",
-        "S",
-        "189.02",
-        "ok",
-        "low"
-       ],
-       [
-        "113",
-        "21",
-        "W",
-        "216.73",
-        "ok",
-        "low"
-       ],
-       [
-        "101",
-        "2",
-        "N",
-        "302.26",
-        "ok",
-        "low"
+        "Books",
+        "10",
+        "5"
        ]
       ]
      }
@@ -39618,321 +39438,34 @@
      "input": {
       "fields": [
        {
-        "name": "RecordID",
-        "type": "int32"
-       },
-       {
-        "name": "id",
-        "type": "int64"
-       },
-       {
-        "name": "region",
-        "size": 4,
+        "name": "Category",
+        "size": 5,
         "type": "v_string"
        },
        {
-        "name": "amount",
+        "name": "Total",
         "type": "double"
        },
        {
-        "name": "note",
-        "size": 40,
-        "type": "v_wstring"
-       },
-       {
-        "name": "band",
-        "size": 1073741823,
-        "type": "v_wstring"
+        "name": "Average",
+        "type": "double"
        }
       ],
       "rows": [
        [
-        "100",
-        "0",
-        "E",
-        "942.65",
-        null,
-        "high"
-       ],
-       [
-        "101",
-        "2",
-        "N",
-        "302.26",
-        "ok",
-        "low"
-       ],
-       [
-        "102",
-        "4",
-        "W",
-        "359.99",
-        "spaced",
-        "low"
-       ],
-       [
-        "103",
-        "5",
-        "N",
-        "506.15",
-        "ok",
-        "high"
-       ],
-       [
-        "104",
-        "9",
-        "N",
-        "512.33",
-        "spaced",
-        "high"
-       ],
-       [
-        "105",
+        "Books",
         "10",
-        "E",
-        "361.05",
-        "a,b",
-        "low"
+        "5"
        ],
        [
-        "106",
-        "11",
-        "N",
-        "528.01",
-        "a,b",
-        "high"
-       ],
-       [
-        "107",
-        "12",
-        "S",
-        "13.36",
-        "a,b",
-        "low"
-       ],
-       [
-        "108",
-        "13",
-        "S",
-        "309.64",
-        "a,b",
-        "low"
-       ],
-       [
-        "109",
-        "14",
-        "N",
-        "520.81",
-        "a,b",
-        "high"
-       ],
-       [
-        "110",
-        "15",
-        "S",
-        "446.06",
-        "a,b",
-        "low"
-       ],
-       [
-        "111",
-        "16",
-        "W",
-        "754.95",
-        null,
-        "high"
-       ],
-       [
-        "112",
-        "18",
-        "E",
-        "173.27",
-        "spaced",
-        "low"
-       ],
-       [
-        "113",
-        "21",
-        "W",
-        "216.73",
-        "ok",
-        "low"
-       ],
-       [
-        "114",
-        "22",
-        "N",
-        "463.13",
-        "spaced",
-        "low"
-       ],
-       [
-        "115",
-        "23",
-        "E",
-        "67.18",
-        null,
-        "low"
-       ],
-       [
-        "116",
-        "26",
-        "E",
-        "664.82",
-        "a,b",
-        "high"
-       ],
-       [
-        "117",
-        "27",
-        "W",
-        "537.88",
-        null,
-        "high"
-       ],
-       [
-        "118",
-        "28",
-        "N",
-        "823.96",
-        "zoë",
-        "high"
-       ],
-       [
-        "119",
-        "29",
-        "W",
-        "666.75",
-        "ok",
-        "high"
-       ],
-       [
-        "120",
-        "30",
-        "N",
-        "704.28",
-        "zoë",
-        "high"
-       ],
-       [
-        "121",
-        "32",
-        "E",
-        "688.29",
-        "zoë",
-        "high"
-       ],
-       [
-        "122",
-        "33",
-        "N",
-        "934.71",
-        "zoë",
-        "high"
-       ],
-       [
-        "123",
-        "34",
-        "S",
-        "572.01",
-        null,
-        "high"
-       ],
-       [
-        "124",
-        "35",
-        "N",
-        "140.03",
-        "zoë",
-        "low"
-       ],
-       [
-        "125",
-        "36",
-        "S",
-        "712.2",
-        null,
-        "high"
-       ],
-       [
-        "126",
-        "37",
-        "W",
-        "908.5",
-        null,
-        "high"
-       ],
-       [
-        "127",
-        "38",
-        "N",
-        "83",
-        null,
-        "low"
-       ],
-       [
-        "128",
+        "Games",
         "40",
-        "W",
-        "850.38",
-        "zoë",
-        "high"
+        "20"
        ],
        [
-        "129",
-        "41",
-        "W",
-        "985.11",
-        null,
-        "high"
-       ],
-       [
-        "130",
-        "42",
-        "S",
-        "66.01",
-        "spaced",
-        "low"
-       ],
-       [
-        "131",
-        "43",
-        "S",
-        "155.15",
-        "spaced",
-        "low"
-       ],
-       [
-        "132",
-        "44",
-        "N",
-        "433.46",
-        "a,b",
-        "low"
-       ],
-       [
-        "133",
-        "45",
-        "S",
-        "189.02",
-        "ok",
-        "low"
-       ],
-       [
-        "134",
-        "46",
-        "S",
-        "360.84",
-        "zoë",
-        "low"
-       ],
-       [
-        "135",
-        "49",
-        "W",
-        "889.49",
-        "a,b",
-        "high"
+        "Toys",
+        "20",
+        "10"
        ]
       ]
      }

@@ -117,9 +117,10 @@
     ]
   },
   "independent_tests": {
-    "count": 14,
-    "passing": 14,
+    "count": 15,
+    "passing": 15,
     "tests": [
+      "test_acceptance.WorkflowConstructionTests.test_clean_group_sort_chart_and_reopen",
       "test_data_correctness.DataCorrectnessTests.test_full_typed_csv_pipeline_roundtrip",
       "test_data_correctness.DataCorrectnessTests.test_sort_nan_and_join_key_types",
       "test_fe_executor.EndToEndTests.test_golden_outputs",

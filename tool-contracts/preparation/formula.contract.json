@@ -144,9 +144,12 @@
     ]
   },
   "independent_tests": {
-    "count": 32,
-    "passing": 32,
+    "count": 35,
+    "passing": 35,
     "tests": [
+      "test_acceptance.AcquisitionTests.test_download_build_run_and_cite_evidence",
+      "test_acceptance.ExternalExecutionTests.test_python_prepares_api_data_that_a_workflow_analyses",
+      "test_acceptance.WorkflowConstructionTests.test_clean_group_sort_chart_and_reopen",
       "test_batch12.InputOutputTests.test_output_writes_named_files_with_permission",
       "test_batch12b.ImageRecognitionTests.test_trains_on_backbone_scores_and_predicts",
       "test_batch5.MapReportExampleTests.test_uk_map_report_example",

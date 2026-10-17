@@ -160,9 +160,13 @@
     ]
   },
   "independent_tests": {
-    "count": 12,
-    "passing": 12,
+    "count": 16,
+    "passing": 16,
     "tests": [
+      "test_acceptance.AcquisitionTests.test_download_build_run_and_cite_evidence",
+      "test_acceptance.ExternalExecutionTests.test_python_prepares_api_data_that_a_workflow_analyses",
+      "test_acceptance.RepairTests.test_failed_run_is_repaired_without_repeating_successful_steps",
+      "test_acceptance.WorkflowConstructionTests.test_clean_group_sort_chart_and_reopen",
       "test_agent.DiscoveryTests.test_describe_lists_every_setting_and_notes",
       "test_data_correctness.DataCorrectnessTests.test_full_typed_csv_pipeline_roundtrip",
       "test_fe_executor.EndToEndTests.test_golden_outputs",

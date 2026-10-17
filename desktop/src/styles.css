@@ -211,6 +211,7 @@ button.link { justify-self: start; padding: 0; border: 0; background: none; colo
 .ai-task-last { flex-shrink: 0; }
 .ai-task-controls { display: flex; gap: 4px; flex-shrink: 0; }
 .ai-task-controls button { padding: 2px 7px; font-size: 10.5px; }
+.ai-approval-detail { margin: 0; max-height: 180px; overflow: auto; padding: 6px 8px; border-radius: 5px; background: var(--panel-2); font-family: var(--mono); font-size: 10.5px; white-space: pre-wrap; overflow-wrap: anywhere; }
 .ai-verification { width: fit-content; margin-top: 8px; padding: 3px 8px; border-radius: 9px; background: var(--panel-2); color: var(--text-3); font-size: 10.5px; }
 .ai-verification.ok { background: var(--ok-soft); color: var(--text-2); }
 .ai-verification.warn { background: var(--warn-soft); color: var(--warn); font-weight: 600; }

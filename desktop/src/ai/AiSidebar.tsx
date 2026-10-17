@@ -51,8 +51,15 @@ let resolveRunApproval: ((value: unknown) => void) | null = null;
 let resolvePatchApproval: ((value: unknown) => void) | null = null;
 let resolveSaveApproval: ((value: unknown) => void) | null = null;
 let resolveActionApproval: ((approved: boolean) => void) | null = null;
+/** Permissions the user approved during the current task; cleared when a new request starts. */
+const taskGrants = new Set<string>();
 function describeOperation(operation: string, args: Record<string, unknown>) {
   if (operation === 'download_file') return `Download ${String(args.url ?? '')} into ${String(args.folder ?? 'data')}/`;
+  if (operation === 'run_command') return `Run: ${(args.argv as string[] | undefined)?.join(' ') ?? ''}`;
+  if (operation === 'run_python') return `Run this Python script in the workspace:\n${String(args.code ?? '').split('\n').slice(0, 12).join('\n')}`;
+  if (operation === 'write_text_file') return `Write ${String(args.path ?? '')}${args.overwrite ? ' (replacing the existing file)' : ''}`;
+  if (operation === 'extract_archive') return `Extract ${String(args.path ?? '')}`;
+  if (operation === 'make_folder') return `Create the folder ${String(args.path ?? '')}`;
   return `${operation.replaceAll('_', ' ')} ${JSON.stringify(args).slice(0, 300)}`;
 }
 
@@ -213,8 +220,8 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   async function callAgentOperation(operation: string, args: Record<string, unknown>) {
     const call = (permissions: string[]) => engine().request<unknown>('agent.call',
       { name: operation, arguments: args, base_dir: useEditor.getState().baseDir, permissions });
-    const first = await call(fullControlForCurrentWorkspace() ? ['network', 'file_writes'] : []) as
-      { ok: boolean; error?: { code: string; permissions?: string[] } };
+    const granted = new Set([...(fullControlForCurrentWorkspace() ? ['network', 'file_writes'] : []), ...taskGrants]);
+    const first = await call([...granted]) as { ok: boolean; error?: { code: string; permissions?: string[] } };
     if (first.ok || first.error?.code !== 'permission-required') return first;
     const needed = first.error.permissions ?? [];
     const approved = await new Promise<boolean>((resolve) => {
@@ -223,7 +230,9 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
       useAiConversation.getState().requestActionApproval({ operation, permissions: needed, detail: describeOperation(operation, args) });
     });
     if (!approved) return { ok: false, operation, error: { code: 'permission-declined', message: `The user declined ${needed.join(' and ')} for ${operation}. Ask before trying again, or continue another way.` } };
-    return call(needed);
+    // An approval holds for the rest of this task, so a multi-step job is not interrupted at every step.
+    needed.forEach((p) => taskGrants.add(p));
+    return call([...new Set([...granted, ...needed])]);
   }
   function fullControlForCurrentWorkspace() {
     const state = useEditor.getState();
@@ -348,7 +357,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     const text = (textOverride ?? draft).trim();
     if (!text || !model || streaming || !authorized || !routingConsent) return;
     stickToBottom.current = true;
-    setError(''); setDraft(''); cancelled.current = false; setTurnUsage(NO_USAGE);
+    setError(''); setDraft(''); cancelled.current = false; setTurnUsage(NO_USAGE); taskGrants.clear();
     let turnId: string | undefined;
     let correctionAttempts = 0;
     let executionChecks = 0;
@@ -642,9 +651,11 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
             <button onClick={rejectSave}>Cancel</button></div>
         </section>}
         {actionApproval && <section className="ai-proposal-card" aria-label="Permission request">
-          <strong>Allow {actionApproval.permissions.map((p) => p === 'network' ? 'internet access' : p === 'file_writes' ? 'saving files' : p).join(' and ')}?</strong>
-          <p>{actionApproval.detail}</p>
-          <small className="ai-menu-note">Turn on Full Control in settings to allow this for the workspace without asking.</small>
+          <strong>Allow {actionApproval.permissions.map((p) => p === 'network' ? 'internet access' : p === 'file_writes' ? 'saving files' : p === 'processes' ? 'running programs' : p).join(' and ')} for this task?</strong>
+          <pre className="ai-approval-detail">{actionApproval.detail}</pre>
+          <small className="ai-menu-note">{actionApproval.permissions.includes('processes')
+            ? 'Programs and scripts run with your user account in the workspace folder. You are asked once per task.'
+            : 'You are asked once per task. Turn on Full Control in settings to allow downloads and saving files for the workspace without asking.'}</small>
           <div><button className="primary" onClick={() => { useAiConversation.getState().requestActionApproval(null); resolveActionApproval?.(true); resolveActionApproval = null; }}>Allow</button>
             <button onClick={() => { useAiConversation.getState().requestActionApproval(null); resolveActionApproval?.(false); resolveActionApproval = null; }}>Decline</button></div>
         </section>}
