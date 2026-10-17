@@ -528,21 +528,25 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   ];
   return <aside className={`${embedded ? 'ai-content' : 'app-right'} ai-sidebar`} aria-label="Flowbench AI workspace" data-testid="ai-sidebar">
     <header className="ai-head">
-      <div className="ai-brand"><span className={`routing-dot ${ready ? 'connected' : ''}`} title={ready ? `${providerName} connected` : `${providerName} not connected`} />
-        <strong>Flowbench AI</strong><span className="ai-provider-badge">{providerName}</span></div>
-      <div className="ai-header-controls">
-        {authorized && <select aria-label="Active model" title="Model" value={model} onChange={(e) => setModel(e.target.value)} disabled={streaming || !models.length}>
+      <div className="ai-head-row">
+        <div className="ai-brand"><span className={`routing-dot ${ready ? 'connected' : ''}`} title={ready ? `${providerName} connected` : `${providerName} not connected`} />
+          <strong>Flowbench AI</strong><span className="ai-provider-badge">{providerName}</span></div>
+        <div className="ai-header-controls">
+          <button className="icon" aria-label="New conversation" title="New conversation" disabled={streaming} onClick={() => void newConversation()}>＋</button>
+          <button className={`icon ${settingsOpen ? 'active' : ''}`} aria-label="AI settings" title="AI settings" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((open) => !open)}>⚙</button>
+          {embedded && <button className="icon" onClick={close} aria-label="Close Flowbench AI" title="Close">×</button>}
+        </div>
+      </div>
+      {authorized && <div className="ai-head-row ai-model-row">
+        <select aria-label="Active model" title="Model" value={model} onChange={(e) => setModel(e.target.value)} disabled={streaming || !models.length}>
           {!models.length && <option value="">No models</option>}
           {models.map((choice) => <option key={choice.slug} value={choice.slug}>{choice.display_name}</option>)}
-        </select>}
-        {authorized && !local && <select aria-label="Reasoning effort" title="Reasoning effort: higher levels think longer and use more of the plan's limits" value={effort}
+        </select>
+        {!local && <select aria-label="Reasoning effort" title="Reasoning effort: higher levels think longer and use more of the plan's limits" value={effort}
           onChange={(e) => chooseEffort(e.target.value)} disabled={streaming || !models.length}>
           {effortChoices.map((choice) => <option key={choice} value={choice}>{effortLabel(choice)}</option>)}
         </select>}
-        <button className="icon" aria-label="New conversation" title="New conversation" disabled={streaming} onClick={() => void newConversation()}>＋</button>
-        <button className={`icon ${settingsOpen ? 'active' : ''}`} aria-label="AI settings" title="AI settings" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((open) => !open)}>⚙</button>
-        {embedded && <button className="icon" onClick={close} aria-label="Close Flowbench AI">×</button>}
-      </div>
+      </div>}
     </header>
 
     {settingsOpen && <div className="ai-settings" role="region" aria-label="AI settings panel">
@@ -789,17 +793,18 @@ function verificationOf(task: TaskRecord | null | undefined): Verification | und
 /** Where the AI's web_search goes: the user's SearXNG instance, else DuckDuckGo. Stored by the engine. */
 function WebSearchSettings({ disabled }: { disabled: boolean }) {
   const [url, setUrl] = useState('');
+  const [engines, setEngines] = useState('');
   const [note, setNote] = useState<{ text: string; ok: boolean } | null>(null);
   const [working, setWorking] = useState(false);
   useEffect(() => {
-    engine().request<{ searxng_url: string | null }>('agent.search_settings', {})
-      .then((s) => setUrl(s.searxng_url ?? '')).catch(() => undefined);
+    engine().request<{ searxng_url: string | null; searxng_engines?: string | null }>('agent.search_settings', {})
+      .then((s) => { setUrl(s.searxng_url ?? ''); setEngines(s.searxng_engines ?? ''); }).catch(() => undefined);
   }, []);
   async function save(test: boolean) {
     setWorking(true); setNote(null);
     try {
       const s = await engine().request<{ searxng_url: string | null; test?: { results: number; unresponsive_engines: unknown[] } }>(
-        'agent.search_settings', { searxng_url: url.trim() || null, test });
+        'agent.search_settings', { searxng_url: url.trim() || null, searxng_engines: engines.trim() || null, test });
       setNote(!s.searxng_url ? { text: 'Web search uses DuckDuckGo.', ok: true }
         : s.test ? { text: `SearXNG answered with ${s.test.results} result(s)${s.test.unresponsive_engines.length ? `; engines not responding: ${s.test.unresponsive_engines.map((e) => (e as string[])[0]).join(', ')}` : ''}.`, ok: s.test.results > 0 }
         : { text: 'Saved.', ok: true });
@@ -811,7 +816,9 @@ function WebSearchSettings({ disabled }: { disabled: boolean }) {
     <div className="ai-settings-body">
       <label>SearXNG address
         <input value={url} placeholder="http://localhost:8888" onChange={(e) => setUrl(e.target.value)} disabled={disabled || working} spellCheck={false} /></label>
-      <small className="ai-menu-note">Your own SearXNG instance (JSON output enabled). Leave empty to use DuckDuckGo. Official statistics are also found through GOV.UK and data.gov.uk search.</small>
+      <label>Engines (optional)
+        <input value={engines} placeholder="yandex,bing" onChange={(e) => setEngines(e.target.value)} disabled={disabled || working} spellCheck={false} /></label>
+      <small className="ai-menu-note">Your own SearXNG instance (JSON output enabled). Many engines block self-hosted instances; list the ones that answer, or leave empty for SearXNG's defaults. If SearXNG finds nothing, DuckDuckGo is used. Official statistics are also found through GOV.UK and data.gov.uk search.</small>
       <div className="ai-settings-row wrap">
         <button onClick={() => void save(true)} disabled={disabled || working || !url.trim()}>{working ? 'Testing…' : 'Save and test'}</button>
         <button onClick={() => void save(false)} disabled={disabled || working}>Save</button>

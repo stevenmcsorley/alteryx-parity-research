@@ -102,10 +102,10 @@ class EngineService:
         if method == 'agent.search_settings':
             from . import agent_web
             if 'searxng_url' in params:
-                agent_web.save_search_settings(params['searxng_url'] or None)
+                agent_web.save_search_settings(params['searxng_url'] or None, params.get('searxng_engines'))
             settings = agent_web.search_settings()
             if params.get('test') and settings['searxng_url']:
-                settings['test'] = agent_web.test_searxng(settings['searxng_url'])
+                settings['test'] = agent_web.test_searxng(settings['searxng_url'], settings['searxng_engines'])
             return settings
         if method == 'agent.call':
             from . import agent

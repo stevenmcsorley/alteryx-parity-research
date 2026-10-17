@@ -186,10 +186,11 @@ def search_settings() -> dict:
     except (OSError, ValueError):
         pass
     url = os.environ.get('FLOWBENCH_SEARXNG_URL') or saved.get('searxng_url')
-    return {'searxng_url': url.rstrip('/') if url else None}
+    engines = os.environ.get('FLOWBENCH_SEARXNG_ENGINES') or saved.get('searxng_engines')
+    return {'searxng_url': url.rstrip('/') if url else None, 'searxng_engines': engines or None}
 
 
-def save_search_settings(searxng_url: str | None) -> dict:
+def save_search_settings(searxng_url: str | None, engines: str | None = None) -> dict:
     from .runtimes import home
     if searxng_url and not re.match(r'^https?://[^/\s]+', searxng_url):
         raise EngineError('The SearXNG address must be an http:// or https:// URL, such as http://localhost:8888', code='bad-url')
@@ -200,6 +201,10 @@ def save_search_settings(searxng_url: str | None) -> dict:
     except (OSError, ValueError):
         saved = {}
     saved['searxng_url'] = searxng_url.rstrip('/') if searxng_url else None
+    cleaned = ','.join(e.strip() for e in (engines or '').split(',') if e.strip())
+    if cleaned and not re.fullmatch(r'[a-z0-9 _.,-]+', cleaned, re.I):
+        raise EngineError('Engines are SearXNG engine names separated by commas, such as "bing,mojeek,wikipedia"', code='bad-engines')
+    saved['searxng_engines'] = cleaned or None
     path.write_text(json.dumps(saved, indent=2), encoding='utf-8')
     return search_settings()
 
@@ -219,8 +224,8 @@ def _searxng(base: str, query: str, limit: int, engines: str | None = None) -> t
     return results, body.get('unresponsive_engines', [])
 
 
-def test_searxng(base: str) -> dict:
-    results, unresponsive = _searxng(base.rstrip('/'), 'flowbench test', 5)
+def test_searxng(base: str, engines: str | None = None) -> dict:
+    results, unresponsive = _searxng(base.rstrip('/'), 'official statistics', 5, engines)
     return {'ok': True, 'results': len(results), 'unresponsive_engines': unresponsive}
 
 
@@ -241,9 +246,10 @@ def web_search(ctx, query: str, provider: str = 'auto', limit: int = 10, connect
                engines: str | None = None) -> dict:
     notes = []
     if provider in ('auto', 'searxng'):
-        base = search_settings()['searxng_url']
+        settings = search_settings()
+        base = settings['searxng_url']
         if base:
-            results, unresponsive = _searxng(base, query, limit, engines)
+            results, unresponsive = _searxng(base, query, limit, engines or settings['searxng_engines'])
             out = {'query': query, 'provider': 'searxng', 'searxng_url': base, 'results': results, 'retrieved_at': _now()}
             if unresponsive:
                 out['unresponsive_engines'] = unresponsive

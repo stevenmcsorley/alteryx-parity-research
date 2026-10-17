@@ -714,8 +714,9 @@ describe('deliverables and web search settings', () => {
     await ready();
     fireEvent.click(screen.getByRole('button', { name: 'AI settings' }));
     fireEvent.change(screen.getByLabelText('SearXNG address'), { target: { value: 'http://localhost:8888' } });
+    fireEvent.change(screen.getByLabelText('Engines (optional)'), { target: { value: 'yandex,bing' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save and test' }));
     expect(await screen.findByText(/SearXNG answered with 10 result\(s\); engines not responding: google/)).toBeTruthy();
-    expect(calls[calls.length - 1]).toEqual({ method: 'agent.search_settings', params: { searxng_url: 'http://localhost:8888', test: true } });
+    expect(calls[calls.length - 1]).toEqual({ method: 'agent.search_settings', params: { searxng_url: 'http://localhost:8888', searxng_engines: 'yandex,bing', test: true } });
   });
 });
