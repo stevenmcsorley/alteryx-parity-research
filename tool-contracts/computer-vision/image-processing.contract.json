@@ -6,57 +6,138 @@
   "xml_tool_name": "ImageProcessing",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-processing.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "Optional input",
+      "name": "template",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Advanced",
-      "Alignment",
-      "Brightness Balance",
-      "Crop",
-      "Enhance",
-      "Grayscale",
-      "OCR Optimization",
-      "Scale",
-      "Shift",
-      "Thresholding"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "image_field",
+      "steps"
+    ],
+    "properties": {
+      "image_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "steps": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": [
+            "op"
+          ],
+          "properties": {
+            "op": {
+              "enum": [
+                "alignment",
+                "brightness",
+                "crop",
+                "enhance",
+                "grayscale",
+                "ocr_optimization",
+                "scale",
+                "shift",
+                "threshold"
+              ]
+            },
+            "mode": {
+              "type": "string"
+            },
+            "degrees": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "value": {
+              "type": "number"
+            },
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "unit": {
+              "enum": [
+                "px",
+                "percent"
+              ]
+            },
+            "anchor": {
+              "type": "string"
+            },
+            "keep_aspect": {
+              "type": "boolean"
+            },
+            "non_white_background": {
+              "type": "boolean"
+            },
+            "method": {
+              "enum": [
+                "adaptive_gaussian",
+                "binary"
+              ]
+            },
+            "block_size": {
+              "type": "integer",
+              "minimum": 3
+            },
+            "c": {
+              "type": "number"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-cv-runtime (image/OCR)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.image_processing",
+    "version": "1.0.0",
+    "module": "flowengine.tools.vision",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -97,9 +178,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch12.ProcessingTests.test_shift_realigns_to_a_template_anchor",
+      "test_batch12.ProcessingTests.test_steps"
+    ]
   },
   "sources": [
     {
@@ -115,6 +199,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }

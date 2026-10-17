@@ -6,42 +6,120 @@
   "xml_tool_name": "ImageTemplate",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/alteryx-intelligence-suite/computer-vision/image-template.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Table Detection"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "annotations"
+    ],
+    "properties": {
+      "template_path": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "image_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "pdf_dpi": {
+        "type": "integer",
+        "minimum": 36,
+        "maximum": 600,
+        "default": 200
+      },
+      "annotations": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "x",
+            "y",
+            "width",
+            "height"
+          ],
+          "properties": {
+            "label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": {
+              "enum": [
+                "string",
+                "table",
+                "image"
+              ],
+              "default": "string"
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "x": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "y": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "width": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "python-cv-runtime (image/OCR)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.image_template",
+    "version": "1.0.0",
+    "module": "flowengine.tools.vision",
+    "side_effects": "none"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -68,9 +146,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_batch12.PDFAndTemplateTests.test_template_regions_scale_to_the_page",
+      "test_batch12.ProcessingTests.test_shift_realigns_to_a_template_anchor"
+    ]
   },
   "sources": [
     {
@@ -86,6 +167,6 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet."
   ]
 }
