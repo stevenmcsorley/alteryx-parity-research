@@ -28,7 +28,8 @@ from .errors import ConfigError
 from .runtimes import home
 
 KINDS = ('web', 'github', 'smtp')
-AUTH_MODES = ('bearer', 'basic', 'header', 'none')  # none: an open service such as a self-hosted routing server
+# none: an open service such as a self-hosted routing server; aws-sigv4: S3-compatible storage (username = access key id)
+AUTH_MODES = ('bearer', 'basic', 'header', 'none', 'aws-sigv4')
 _HEADER = re.compile(r"^[!#$%&'*+.^_`|~0-9A-Za-z-]{1,128}$")
 _LOOPBACK = ('localhost', '127.0.0.1', '::1')
 
@@ -71,8 +72,9 @@ class ServiceConnection:
             raise ConfigError('Base URL must be an absolute https:// URL without credentials, query or fragment')
         if parts.scheme == 'http' and parts.hostname not in _LOOPBACK:
             raise ConfigError('Plain http:// is allowed only for localhost; use https:// so the credential is encrypted')
-        if self.auth == 'basic' and not (self.username or '').strip():
-            raise ConfigError('Basic authentication needs a username')
+        if self.auth in ('basic', 'aws-sigv4') and not (self.username or '').strip():
+            raise ConfigError('Basic authentication needs a username' if self.auth == 'basic'
+                              else 'AWS Signature V4 needs the access key id as the username')
         if self.auth == 'header' and not _HEADER.match(self.header_name or ''):
             raise ConfigError('Header authentication needs a valid header name')
         if self.token_url:
@@ -118,6 +120,8 @@ class ServiceConnection:
             raise ConfigError(f'URL is outside the base URL of connection {self.name!r}')
         if self.auth == 'none':
             return {}
+        if self.auth == 'aws-sigv4':
+            raise ConfigError(f'Connection {self.name!r} signs each request (AWS Signature V4); use it with the Amazon S3 tools')
         if self.auth == 'basic':
             token = base64.b64encode(f'{self.username}:{secret}'.encode('utf-8')).decode('ascii')
             return {'Authorization': f'Basic {token}'}

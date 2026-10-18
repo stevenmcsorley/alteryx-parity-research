@@ -55,12 +55,19 @@ def workflow_effects(document: dict, base_dir: str | Path, registry=None) -> dic
                     found['file_writes'].append(record)
                 elif effect == 'process':
                     found['processes'].append(record)
-                if tool_id in DB_WRITE_TOOLS:
-                    found['database_writes'].append(record)
-                if tool_id in NETWORK_TOOLS:
-                    found['network_requests'].append(record)
-                if tool_id in REMOTE_WRITE_TOOLS:
-                    found['remote_writes'].append(record)
+                declared = getattr(tool, 'effects', None)
+                if callable(declared):
+                    # The tool says what this configuration does (for example only POST/PUT/DELETE write remotely).
+                    try:
+                        kinds = set(declared(node.get('config') or {}))
+                    except Exception:
+                        found['unresolved'].append({'path': list(path), 'reason': 'tool effects could not be determined'})
+                        kinds = set()
+                else:
+                    kinds = {k for k, ids in (('database_writes', DB_WRITE_TOOLS), ('network_requests', NETWORK_TOOLS),
+                                              ('remote_writes', REMOTE_WRITE_TOOLS)) if tool_id in ids}
+                for kind in sorted(kinds):
+                    found[kind].append(record)
                 downloads = getattr(tool, 'downloads', None)
                 if callable(downloads):
                     try:

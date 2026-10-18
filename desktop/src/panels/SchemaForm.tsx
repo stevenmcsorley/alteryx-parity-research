@@ -290,7 +290,15 @@ function JsonEditor({ id, label, help, value, onChange, onBeginEdit }: {
 
 function ServiceConnectionField({ id, label, help, value, onChange, onBeginEdit, kind, optional }: { id: string; label: ReactNode; help: ReactNode; value: string | null; onChange: (v: unknown) => void; onBeginEdit: () => void; kind?: string; optional: boolean }) {
   const [items, setItems] = useState<ServiceConnection[] | null>(null);
-  useEffect(() => { void engine().request<ServiceConnection[]>('credentials.list', kind ? { kind } : {}).then(setItems).catch(() => setItems([])); }, [kind]);
+  const dialect = kind?.startsWith('database:') ? kind.slice('database:'.length) : null;
+  useEffect(() => {
+    // database:<dialect> lists saved database connections (Databases in the toolbar); other kinds are Web & API ones
+    const load = dialect
+      ? engine().request<Array<{ id: string; name: string; dialect: string; host: string; port: number; database: string }>>('database.connections.list')
+        .then((r) => r.filter((c) => c.dialect === dialect).map((c) => ({ id: c.id, name: c.name, base_url: `${c.host}:${c.port}/${c.database}` }) as unknown as ServiceConnection))
+      : engine().request<ServiceConnection[]>('credentials.list', kind ? { kind } : {});
+    void load.then(setItems).catch(() => setItems([]));
+  }, [kind, dialect]);
   const known = items ?? [];
   return <div className="form-field">{label}
     <select id={id} value={value ?? ''} onFocus={onBeginEdit} onChange={(e) => onChange(e.target.value || null)}
@@ -299,6 +307,6 @@ function ServiceConnectionField({ id, label, help, value, onChange, onBeginEdit,
       {value && items && !known.some((c) => c.id === value) && <option value={value}>{value} (missing)</option>}
       {known.map((c) => <option key={c.id} value={c.id}>{c.name} — {c.base_url}</option>)}
     </select>
-    {help}<small className="help">Add credentials under Web &amp; API in the toolbar.</small>
+    {help}<small className="help">{dialect ? 'Add the connection under Databases in the toolbar.' : 'Add credentials under Web & API in the toolbar.'}</small>
   </div>;
 }

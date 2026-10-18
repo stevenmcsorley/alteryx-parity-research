@@ -397,7 +397,7 @@ function DatabaseInputForm({ value, onBeginEdit, onChange }: { value: Record<str
   const connection = String(value.connection_id ?? '');
   const schema = String(value.schema ?? '');
   const mode = String(value.mode ?? 'table');
-  useEffect(() => { void engine().request<DbConnection[]>('database.connections.list').then(setConnections).catch((e) => setError(describe(e))); }, []);
+  useEffect(() => { void engine().request<DbConnection[]>('database.connections.list').then((r) => setConnections(r.filter((c: any) => c.dialect !== 'mongodb'))).catch((e) => setError(describe(e))); }, []);
   useEffect(() => {
     if (!connection) { setSchemas([]); setTables([]); return; }
     void engine().request<string[]>('database.schemas', { connection_id: connection }).then((x) => {
@@ -442,7 +442,7 @@ function DatabaseOutputForm({ value, onBeginEdit, onChange }: { value: Record<st
   onChange: (v: Record<string, unknown>) => void }) {
   const [connections, setConnections] = useState<DbConnection[]>([]);
   const [error, setError] = useState('');
-  useEffect(() => { void engine().request<DbConnection[]>('database.connections.list').then(setConnections)
+  useEffect(() => { void engine().request<DbConnection[]>('database.connections.list').then((r) => setConnections(r.filter((c: any) => c.dialect !== 'mongodb')))
     .catch((e) => setError(describe(e))); }, []);
   const change = (patch: Record<string, unknown>) => { onBeginEdit(); onChange({ ...value, ...patch }); };
   const connection = connections.find((c) => c.id === value.connection_id);

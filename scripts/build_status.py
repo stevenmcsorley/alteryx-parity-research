@@ -297,6 +297,16 @@ RUNTIME_GATED_EVIDENCE = {
     'test_fe_tools_wave2.UserCodeTools.test_r_tool': {'job': 'r-runtime', 'tools': ['core.r']},
     'test_providers.SparkRuntimeTests.test_spark_code_transforms_typed_tables': {'job': 'spark-runtime',
                                                                                  'tools': ['core.spark_code']},
+    **{f'test_s3.LiveS3Tests.{name}': {'job': 'service-integration', 'tools': ['core.s3_download', 'core.s3_upload']}
+       for name in ('test_round_trip_in_several_formats', 'test_a_wrong_secret_is_rejected_by_the_server',
+                    'test_upload_needs_remote_writes_and_missing_objects_fail_clearly',
+                    'test_multipart_upload_above_the_part_size')},
+    **{f'test_mongodb.MongoDBTests.{name}': {'job': 'service-integration',
+                                             'tools': ['core.mongodb_input', 'core.mongodb_output']}
+       for name in ('test_insert_then_find_with_filter_projection_sort_and_types',
+                    'test_nested_documents_json_output_and_upsert',
+                    'test_writes_need_permission_writable_connection_and_replace_confirmation',
+                    'test_bad_password_and_bad_filter_fail_clearly')},
 }
 ENVIRONMENT_GATED_LEDGER_TESTS = set(RUNTIME_GATED_EVIDENCE)
 # Replays outputs Flowbench itself recorded (data/tool-examples.json): a regression guard for the

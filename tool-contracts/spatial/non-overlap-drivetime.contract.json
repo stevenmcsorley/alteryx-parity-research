@@ -131,11 +131,12 @@
     ]
   },
   "independent_tests": {
-    "count": 2,
-    "passing": 2,
+    "count": 3,
+    "passing": 3,
     "tests": [
       "test_drivetime.DrivetimeTests.test_needs_network_permission_points_and_a_reachable_location",
-      "test_drivetime.DrivetimeTests.test_overlapping_areas_are_split_between_the_nearest_points"
+      "test_drivetime.DrivetimeTests.test_overlapping_areas_are_split_between_the_nearest_points",
+      "test_workflow_effects.WorkflowEffectsTests.test_provider_backed_tools_declare_network_and_remote_writes_from_their_config"
     ]
   },
   "sources": [

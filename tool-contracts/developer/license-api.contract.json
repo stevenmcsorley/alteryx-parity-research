@@ -188,12 +188,13 @@
     ]
   },
   "independent_tests": {
-    "count": 3,
-    "passing": 3,
+    "count": 4,
+    "passing": 4,
     "tests": [
       "test_license_api.LicenseApiTests.test_connection_must_carry_its_token_url",
       "test_license_api.LicenseApiTests.test_patch_needs_remote_writes_and_a_bad_token_is_explained",
-      "test_license_api.LicenseApiTests.test_refresh_grant_dotted_fields_and_rotation_saved"
+      "test_license_api.LicenseApiTests.test_refresh_grant_dotted_fields_and_rotation_saved",
+      "test_workflow_effects.WorkflowEffectsTests.test_provider_backed_tools_declare_network_and_remote_writes_from_their_config"
     ]
   },
   "sources": [

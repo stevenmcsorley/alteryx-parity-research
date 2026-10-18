@@ -6,26 +6,110 @@
   "xml_tool_name": "AlteryxConnectorGui.AmazonS3Upload.AmazonS3Upload",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/amazon-s3-upload-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "outputs": [],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "bucket",
+      "key"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "amazon-s3"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "Saved Web/API connection to the S3 endpoint (AWS Signature V4)"
+      },
+      "region": {
+        "type": "string",
+        "minLength": 1,
+        "default": "us-east-1"
+      },
+      "bucket": {
+        "type": "string",
+        "minLength": 3
+      },
+      "key": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Object key, for example exports/2026/sales.csv"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 3600,
+        "default": 300
+      },
+      "write": {
+        "type": "object",
+        "default": {},
+        "description": "Output Data settings except path"
+      },
+      "server_side_encryption": {
+        "enum": [
+          "none",
+          "AES256",
+          "aws:kms"
+        ],
+        "default": "none"
+      },
+      "kms_key_id": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "storage_class": {
+        "enum": [
+          "STANDARD",
+          "STANDARD_IA",
+          "ONEZONE_IA",
+          "INTELLIGENT_TIERING",
+          "GLACIER_IR"
+        ],
+        "default": "STANDARD"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.s3_upload",
+    "version": "1.0.0",
+    "module": "flowengine.tools.s3",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -39,9 +123,15 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 5,
+    "passing": 5,
+    "tests": [
+      "test_s3.LiveS3Tests.test_a_wrong_secret_is_rejected_by_the_server",
+      "test_s3.LiveS3Tests.test_multipart_upload_above_the_part_size",
+      "test_s3.LiveS3Tests.test_round_trip_in_several_formats",
+      "test_s3.LiveS3Tests.test_upload_needs_remote_writes_and_missing_objects_fail_clearly",
+      "test_workflow_effects.WorkflowEffectsTests.test_provider_backed_tools_declare_network_and_remote_writes_from_their_config"
+    ]
   },
   "sources": [
     {
@@ -53,12 +143,17 @@
       "url": "https://help.alteryx.com/current/en/designer/tools/connectors/amazon-s3-upload-tool.html",
       "evidence_type": "public-tool-help-page-metadata",
       "accessed_utc": "2026-10-13T09:33:23.202410+00:00"
+    },
+    {
+      "url": ".github/workflows/research-validation.yml#service-integration",
+      "evidence_type": "runtime-gated-ci-job",
+      "accessed_utc": null
     }
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider amazon-s3: Signing checked against the AWS documentation example signature; download, upload and multipart run live against MinIO (an S3-compatible server) in the service-integration CI job. Live acceptance against AWS itself is pending (no AWS account available)."
   ]
 }

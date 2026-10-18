@@ -56,3 +56,28 @@ register(Provider(
     verification='Checked against a controlled local fixture of the published endpoints with the RFC 6749 refresh grant. '
                  "The portal does not publish its token exchange, so live acceptance against the real portal is pending "
                  '(no portal account available).'))
+
+register(Provider(
+    id='amazon-s3', family='object-storage', name='Amazon S3 (and S3-compatible storage)', kind='vendor',
+    serves=('connectors:amazon-s3-download', 'connectors:amazon-s3-upload'), needs=('connection:web',),
+    homepage='https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html',
+    semantics={'auth': 'AWS Signature Version 4, header signing with the payload hash',
+               'addressing': 'path-style <endpoint>/<bucket>/<key>',
+               'formats': 'whatever Input Data reads / Output Data writes'},
+    setup='Add a Web/API connection: base URL https://s3.<region>.amazonaws.com (or your S3-compatible endpoint), '
+          'authentication AWS Signature V4, the access key id as username and the secret access key as the secret.',
+    verification='Signing checked against the AWS documentation example signature; download, upload and multipart '
+                 'run live against MinIO (an S3-compatible server) in the service-integration CI job. '
+                 'Live acceptance against AWS itself is pending (no AWS account available).'))
+
+register(Provider(
+    id='mongodb', family='document-database', name='MongoDB', kind='open-source',
+    serves=('connectors:mongodb-input', 'connectors:mongodb-output'), licence='SSPL-1.0 (server); Apache-2.0 (pymongo driver)',
+    needs=('python:pymongo',), homepage='https://www.mongodb.com/docs/drivers/pymongo/',
+    semantics={'reads': 'find with filter, projection, sort and limit in MongoDB Extended JSON',
+               'types': 'top-level scalars keep their type; ObjectId as text; nested documents and arrays as JSON text; '
+                        'dates in UTC',
+               'writes': 'insert, upsert on key fields, or replace the collection'},
+    setup='Add a database connection of type MongoDB under Databases (host, port, database, user; the password goes '
+          'to the OS vault). Set the connection option auth_source if the user is not defined in admin.',
+    verification='Reads and writes run live against MongoDB 7.0 in the service-integration CI job.'))

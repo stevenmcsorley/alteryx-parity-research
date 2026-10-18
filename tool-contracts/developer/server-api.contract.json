@@ -185,14 +185,15 @@
     ]
   },
   "independent_tests": {
-    "count": 5,
-    "passing": 5,
+    "count": 6,
+    "passing": 6,
     "tests": [
       "test_server_api.ServerApiTests.test_an_expired_token_is_renewed_once",
       "test_server_api.ServerApiTests.test_each_data_record_is_one_call_and_failures_go_to_f",
       "test_server_api.ServerApiTests.test_list_call_authenticates_and_parses_one_level_deep",
       "test_server_api.ServerApiTests.test_writes_need_permission_and_delete_needs_confirmation",
-      "test_server_api.ServerApiTests.test_wrong_secret_endpoint_outside_api_and_non_json_responses"
+      "test_server_api.ServerApiTests.test_wrong_secret_endpoint_outside_api_and_non_json_responses",
+      "test_workflow_effects.WorkflowEffectsTests.test_provider_backed_tools_declare_network_and_remote_writes_from_their_config"
     ]
   },
   "sources": [

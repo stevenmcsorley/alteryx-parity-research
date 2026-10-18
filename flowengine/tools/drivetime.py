@@ -113,6 +113,9 @@ class NonOverlapDrivetime(Tool):
             'output_field': {'type': 'string', 'minLength': 1, 'default': 'DriveTimeArea'}, 'format': _FORMAT,
             'timeout_seconds': {'type': 'number', 'exclusiveMinimum': 0, 'maximum': 600, 'default': 60}}})
 
+    def effects(self, cfg):
+        return {'network_requests'}
+
     def infer(self, ctx, cfg, inputs):
         schema = inputs['input']
         require_fields(schema, [cfg['geometry_field']])

@@ -30,6 +30,8 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `alteryx-server` (vendor) | Server API | a declared Alteryx Server licence; a Web/API connection with basic auth (API key and secret) | Controlled fixture of the documented token flow and v3 calls. **Live acceptance pending:** no Alteryx Server is available |
 | `alteryx-license-portal` (vendor) | License API | a declared Alteryx Designer licence; a Web/API connection with bearer auth (the refresh token) and a token URL | Controlled fixture of the published OpenAPI endpoints with the RFC 6749 refresh grant. **Live acceptance pending:** no portal account, and the portal does not publish its token exchange |
 | `valhalla` (open source, MIT) | Non Overlap Drivetime | a Web/API connection to your Valhalla server (authentication can be None) | Controlled fixture of the documented `/isochrone` API. **Live acceptance pending:** a real Valhalla build. Areas will not match the reference's licensed drivetime data |
+| `amazon-s3` (vendor; any S3-compatible store) | Amazon S3 Download, Amazon S3 Upload | a Web/API connection with AWS Signature V4 (access key id as username, secret access key as secret) | Signer reproduces the AWS documentation example signature. Download, upload, multipart and a rejected wrong secret run live against SeaweedFS, which checks signatures, in the `service-integration` CI job. **Live acceptance against AWS is pending:** no AWS account is available |
+| `mongodb` (open source) | MongoDB Input, MongoDB Output | a database connection of type MongoDB; pymongo | Live against MongoDB 7.0 in the `service-integration` CI job |
 
 Apache Spark Code runs PySpark in local mode. `read_input(n)` returns a Spark DataFrame whose types are mapped from Flowbench types. `write_output(n, df)` collects the DataFrame and maps its types back exactly; types Flowbench cannot hold are rejected with a message. Remote clusters (Livy, Databricks) are not served by this provider.
 
@@ -41,6 +43,27 @@ Apache Spark Code runs PySpark in local mode. `read_input(n)` returns a Spark Da
 - Permissions: GET needs the network permission. POST, PUT and PATCH also need remote writes. DELETE also needs `confirm_delete`.
 - Server API keeps nested values as JSON text (parsed one level deep). License API flattens nested objects into dotted field names.
 - A refresh token is sent only to the token URL saved with the connection, never to a URL from the workflow. A refresh token the server rotates is saved back to the vault.
+
+## Amazon S3
+
+- Requests use path-style addresses (`<endpoint>/<bucket>/<key>`), so they stay inside the connection's base URL.
+- Download reads the object exactly as Input Data reads a local file. Its `read` settings are Input Data's: format, delimiter, sheet, declared fields, `empty_as_null`, and so on.
+- Upload writes exactly as Output Data does, then sends the result with one signed PUT, or as a multipart upload above 64 MB. A failed multipart upload is aborted.
+- Optional server-side encryption: AES256, or aws:kms with an optional key id. The storage class can be set.
+
+## MongoDB
+
+- MongoDB connections live in the existing database connection store (Databases in the toolbar, type MongoDB), with the password in the OS vault. The SQL tools refuse them.
+- **Input** runs a find. Filter, projection and sort are written in MongoDB Extended JSON; a limit is optional. Output is either one field per top-level key or one JSON field per document.
+  - Top-level scalars keep their type: numbers, booleans, text, and Decimal128 as fixed decimal.
+  - ObjectIds come out as text; nested documents and arrays as JSON text.
+  - Dates are converted to UTC.
+- **Output** has three modes:
+  - insert;
+  - upsert on key fields, which replaces the matched document;
+  - replace the collection, which needs `confirm_replace`.
+
+  `json_field` writes a field of whole Extended JSON documents. Output needs a connection that allows writes and the run's database-write permission.
 
 ## Non Overlap Drivetime
 

@@ -2193,7 +2193,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/amazon-s3-download-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2205,7 +2205,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/amazon-s3-upload-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2505,7 +2505,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/mongodb-input-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2517,7 +2517,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/mongodb-output-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

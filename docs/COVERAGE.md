@@ -10,9 +10,9 @@
 | Distinct tool names | 321 |
 | Public help URL resolved (official tool list sync) | 323 |
 | Machine-readable contracts generated | 323 |
-| Entries with known anchors (manifest, reference-observed or public-doc) | 249 |
+| Entries with known anchors (manifest, reference-observed or public-doc) | 253 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 231 |
+| Independent kernels implemented and passing tests | 235 |
 | Independently implemented application adapters (in progress) | 19 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 0 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 499 run, 0 failed |
+| Unit/integration tests in last ledger build | 510 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -114,7 +114,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `spatial:generalize` | `core.generalize` | 1 | 0/0 | not-tested |
 | `spatial:heat-map` | `core.heat_map` | 1 | 0/0 | not-tested |
 | `spatial:make-grid` | `core.make_grid` | 2 | 0/0 | not-tested |
-| `spatial:non-overlap-drivetime` | `core.non_overlap_drivetime` | 2 | 0/0 | not-tested |
+| `spatial:non-overlap-drivetime` | `core.non_overlap_drivetime` | 3 | 0/0 | not-tested |
 | `spatial:poly-build` | `core.poly_build` | 1 | 0/0 | not-tested |
 | `spatial:poly-split` | `core.poly_split` | 1 | 0/0 | not-tested |
 | `spatial:smooth` | `core.smooth` | 1 | 0/0 | not-tested |
@@ -187,6 +187,10 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `prescriptive:simulation-sampling` | `core.simulation_sampling` | 1 | 0/0 | not-tested |
 | `prescriptive:simulation-scoring` | `core.simulation_scoring` | 1 | 0/0 | not-tested |
 | `prescriptive:simulation-summary` | `core.simulation_summary` | 1 | 0/0 | not-tested |
+| `connectors:amazon-s3-download` | `core.s3_download` | 5 | 0/0 | not-tested |
+| `connectors:amazon-s3-upload` | `core.s3_upload` | 5 | 0/0 | not-tested |
+| `connectors:mongodb-input` | `core.mongodb_input` | 4 | 0/0 | not-tested |
+| `connectors:mongodb-output` | `core.mongodb_output` | 4 | 0/0 | not-tested |
 | `developer:apache-spark-code` | `core.spark_code` | 2 | 0/0 | not-tested |
 | `developer:api-output` | `core.api_output` | 1 | 0/0 | not-tested |
 | `developer:base64-encoder` | `core.base64_encoder` | 1 | 0/0 | not-tested |
@@ -208,13 +212,13 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `developer:github-get-last-commit` | `core.github_last_commit` | 2 | 0/0 | not-tested |
 | `developer:json-parse` | `core.json_parse` | 2 | 2/2 | partial |
 | `developer:json-schema` | `core.json_schema` | 2 | 0/0 | not-tested |
-| `developer:license-api` | `core.license_api` | 3 | 0/0 | not-tested |
+| `developer:license-api` | `core.license_api` | 4 | 0/0 | not-tested |
 | `developer:message` | `core.message` | 1 | 0/0 | not-tested |
 | `developer:python` | `core.python` | 4 | 0/0 | not-tested |
 | `developer:r` | `core.r` | 1 | 0/0 | not-tested |
 | `developer:run-command` | `core.run_command` | 1 | 0/0 | not-tested |
 | `developer:runner` | `core.runner` | 4 | 0/0 | not-tested |
-| `developer:server-api` | `core.server_api` | 5 | 0/0 | not-tested |
+| `developer:server-api` | `core.server_api` | 6 | 0/0 | not-tested |
 | `developer:test` | `core.test` | 1 | 0/0 | not-tested |
 | `developer:throttle` | `core.throttle` | 1 | 0/0 | not-tested |
 | `laboratory:json-build` | `core.json_build` | 1 | 0/0 | not-tested |
@@ -261,7 +265,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Calgary | 5 | 0 | 0 | 5 | 5 |
 | Computer Vision | 9 | 9 | 0 | 9 | 0 |
 | Connect | 3 | 0 | 0 | 0 | 3 |
-| Connectors | 44 | 0 | 0 | 1 | 44 |
+| Connectors | 44 | 4 | 0 | 5 | 44 |
 | Data Investigation | 14 | 14 | 0 | 14 | 0 |
 | Demographic Analysis | 4 | 0 | 0 | 0 | 4 |
 | Developer | 30 | 30 | 4 | 30 | 0 |
