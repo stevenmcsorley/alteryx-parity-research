@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.ToolContainer.ToolContainer",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/documentation/tool-container-tool.html",
-  "status": "in-progress",
-  "implementation_status": "in-progress",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
@@ -24,7 +24,8 @@
     "supported_variants": [
       "Group top-level canvas nodes; edit caption; collapse/expand child nodes; disable/enable contained tools; persist container metadata through workflow save/reopen; propose these edits through atomic AI workflow patches"
     ],
-    "unsupported_variants": [
+    "unsupported_variants": [],
+    "unverified_variants": [
       "Authentic Alteryx Tool Container XML configuration mapping and imported Style variants are not verified"
     ],
     "preserved_runtime_xml": true
@@ -42,7 +43,8 @@
     "supported_variants": [
       "Group top-level canvas nodes; edit caption; collapse/expand child nodes; disable/enable contained tools; persist container metadata through workflow save/reopen; propose these edits through atomic AI workflow patches"
     ],
-    "unimplemented_variants": [
+    "unimplemented_variants": [],
+    "unverified_variants": [
       "Authentic Alteryx Tool Container XML configuration mapping and imported Style variants are not verified"
     ]
   },

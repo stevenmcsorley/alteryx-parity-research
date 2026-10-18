@@ -17,6 +17,8 @@ export function statusOf(c: CatalogEntry): { cls: string; label: string; text: s
     return { cls: 'native', label: 'Flowbench native', text: 'Native analytic-app Error Message; a connected Condition can stop the run with the configured message.' };
   if (c.id === 'documentation:comment')
     return { cls: 'native', label: 'Flowbench native', text: 'Canvas annotation stored with the workflow and restored on reopen.' };
+  if (c.id === 'documentation:explorer-box')
+    return { cls: 'native', label: 'Flowbench native', text: 'Shows a web page, a folder listing or a file preview on the canvas. Pages that forbid embedding stay blank.' };
   if (c.id === 'documentation:tool-container')
     return { cls: 'native', label: 'Flowbench native', text: 'Groups selected canvas nodes, with caption, disable and collapse controls. Alteryx Tool Container XML import parity is not verified.' };
   if (c.id === 'interface:tree')
@@ -51,6 +53,7 @@ export function Palette() {
   const addApplicationCondition = useEditor((s) => s.addApplicationCondition);
   const addApplicationError = useEditor((s) => s.addApplicationError);
   const addComment = useEditor((s) => s.addComment);
+  const addExplorer = useEditor((s) => s.addExplorer);
   const groupSelected = useEditor((s) => s.groupSelected);
   const selectedTopLevelCount = useEditor((s) => s.nodes.filter((n) => n.selected && !n.parentId).length);
   const flow = useReactFlow();
@@ -70,16 +73,17 @@ export function Palette() {
   const available = catalog.filter((c) =>
     (c.kernel && c.implementation_status === 'implemented') || statusOf(c).cls === 'native').length;
   const activeEntry = catalog.find((c) => c.id === active);
-  const interfaceQuestions: Record<string, string> = { 'interface:action': 'text', 'interface:text-box': 'text-box', 'interface:check-box': 'check-box', 'interface:drop-down': 'drop-down', 'interface:numeric-up-down': 'numeric-up-down', 'interface:radio-button': 'radio-button', 'interface:date': 'date', 'interface:list-box': 'list-box', 'interface:control-parameter': 'control-parameter', 'interface:file-browse': 'file-browse', 'interface:folder-browse': 'folder-browse', 'interface:tree': 'tree' };
+  const interfaceQuestions: Record<string, string> = { 'interface:action': 'text', 'interface:text-box': 'text-box', 'interface:check-box': 'check-box', 'interface:drop-down': 'drop-down', 'interface:numeric-up-down': 'numeric-up-down', 'interface:radio-button': 'radio-button', 'interface:date': 'date', 'interface:list-box': 'list-box', 'interface:control-parameter': 'control-parameter', 'interface:file-browse': 'file-browse', 'interface:folder-browse': 'folder-browse', 'interface:tree': 'tree', 'interface:map': 'map', 'interface:dcm-connection': 'connection' };
   const addInterfaceQuestion = (catalogId: string, position?: { x: number; y: number }) => {
     const selected = useEditor.getState().nodes.find((n) => n.selected);
     const p = position ?? (selected ? { x: selected.position.x, y: selected.position.y + 190 } : { x: 120, y: 120 });
     if (catalogId === 'interface:condition') { addApplicationCondition(p); return; }
     if (catalogId === 'interface:error-message') { addApplicationError(p); return; }
     if (catalogId === 'documentation:comment') { addComment(p); return; }
+    if (catalogId === 'documentation:explorer-box') { addExplorer(p); return; }
     addApplicationAction(p, interfaceQuestions[catalogId] ?? 'text', catalog.find((c) => c.id === catalogId)?.name ?? 'Enter a value');
   };
-  const canAddInterface = (id: string) => id in interfaceQuestions || id === 'interface:condition' || id === 'interface:error-message' || id === 'documentation:comment';
+  const canAddInterface = (id: string) => id in interfaceQuestions || id === 'interface:condition' || id === 'interface:error-message' || id === 'documentation:comment' || id === 'documentation:explorer-box';
   const extensions = ['core.db_input', 'core.db_output'].filter((id) => tools[id] &&
     (!q.trim() || tools[id].display_name.toLowerCase().includes(q.trim().toLowerCase()) ||
       tools[id].description.toLowerCase().includes(q.trim().toLowerCase())));
@@ -137,7 +141,7 @@ export function Palette() {
                       draggable={!!c.kernel || canAddInterface(c.id)}
                       onDragStart={(e) => {
                         if (!c.kernel && !canAddInterface(c.id)) return;
-                        const special = c.id === 'interface:condition' ? 'flowengine.application_condition' : c.id === 'interface:error-message' ? 'flowengine.application_error' : c.id === 'documentation:comment' ? 'flowengine.comment' : `flowengine.application_action:${c.id}`;
+                        const special = c.id === 'interface:condition' ? 'flowengine.application_condition' : c.id === 'interface:error-message' ? 'flowengine.application_error' : c.id === 'documentation:comment' ? 'flowengine.comment' : c.id === 'documentation:explorer-box' ? 'flowengine.explorer' : `flowengine.application_action:${c.id}`;
                         e.dataTransfer.setData(TOOL_MIME, c.kernel ?? special);
                         e.dataTransfer.effectAllowed = 'copy';
                       }}
@@ -204,7 +208,7 @@ function ToolDetail({ entry, onAdd, onAddQuestion, supportsQuestion, onGroup, ca
       {m && <p>{st.text}</p>}
       {entry.documentation_url && <p style={{ wordBreak: 'break-all' }}>Public reference: {entry.documentation_url}</p>}
       {m && <button className="primary" onClick={() => onAdd(m.tool_id)}>Add to canvas</button>}
-      {!m && supportsQuestion && <button className="primary" onClick={() => onAddQuestion(entry.id)}>{entry.id === 'interface:error-message' ? 'Add Error Message' : entry.id === 'interface:condition' ? 'Add Condition' : entry.id === 'documentation:comment' ? 'Add Comment' : 'Add application question'}</button>}
+      {!m && supportsQuestion && <button className="primary" onClick={() => onAddQuestion(entry.id)}>{entry.id === 'interface:error-message' ? 'Add Error Message' : entry.id === 'interface:condition' ? 'Add Condition' : entry.id === 'documentation:comment' ? 'Add Comment' : entry.id === 'documentation:explorer-box' ? 'Add Explorer Box' : 'Add application question'}</button>}
       {entry.id === 'documentation:tool-container' && <button className="primary" data-testid="group-as-tool-container" disabled={!canGroup} onClick={onGroup}>Group selected nodes</button>}
     </div>
   );
@@ -228,7 +232,7 @@ function Navigator() {
       <div className="palette-head"><input type="search" placeholder="Find node…" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Find node" /></div>
       {list.map((n) => {
         const label = n.data.kind === 'tool' ? (n.data.label || tools[n.data.tool]?.display_name || n.data.tool)
-          : n.data.kind === 'container' ? `▢ ${n.data.caption}` : '✎ Comment';
+          : n.data.kind === 'container' ? `▢ ${n.data.caption}` : n.data.kind === 'explorer' ? '⌕ Explorer Box' : '✎ Comment';
         const bad = problems.some((p) => p.node_id === n.id);
         return (
           <div key={n.id} className="tool-item" role="button" tabIndex={0} onClick={() => focus(n.id)}

@@ -105,11 +105,11 @@ def example_workflow(tool_id: str, example: dict) -> dict:
     return {'format': 'flowengine.workflow', 'formatVersion': 1, 'nodes': nodes, 'edges': edges}
 
 
-def replay(tool_id: str, example: dict, base_dir) -> str | None:
+def replay(tool_id: str, example: dict, base_dir, clock=None) -> str | None:
     """Runs the example; returns None when the tool still produces the recorded output, else the difference."""
     from .executor import run_workflow
     try:
-        result = run_workflow(example_workflow(tool_id, example), base_dir=base_dir)
+        result = run_workflow(example_workflow(tool_id, example), base_dir=base_dir, clock=clock)
     except Exception as e:
         return f'{type(e).__name__}: {e}'
     if result.status != 'succeeded':

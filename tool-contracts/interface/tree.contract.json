@@ -22,10 +22,15 @@
     "status": "partially-specified",
     "source": "docs/INTERFACE_TREE.md",
     "supported_variants": [
-      "Single selected configured leaf path with hierarchical \" > \" labels; answer is bound as the normalized full path string and validated against the declared tree choices"
+      "Single selected configured leaf path with hierarchical \" > \" labels; answer is bound as the normalized full path string and validated against the declared tree choices",
+      "Options read from a data file (one field per level) or a folder of files, refreshed each run"
     ],
     "unsupported_variants": [
-      "Authentic Alteryx Tree XML mapping, Allocate Geography/Variables, filesystem tree browsing, and external custom data-source variants are not implemented"
+      "Allocate Geography/Variables data sources (they need the licensed Allocate dataset)",
+      "Alteryx Tree questions are not mapped by the importer"
+    ],
+    "unverified_variants": [
+      "Authentic Alteryx Tree XML option settings are not verified"
     ],
     "preserved_runtime_xml": true
   },
@@ -42,10 +47,15 @@
     "tool_id": "interface:tree",
     "module": "flowengine.interface_app + desktop/src/ui/dialogs.tsx",
     "supported_variants": [
-      "Single selected configured leaf path with hierarchical \" > \" labels; answer is bound as the normalized full path string and validated against the declared tree choices"
+      "Single selected configured leaf path with hierarchical \" > \" labels; answer is bound as the normalized full path string and validated against the declared tree choices",
+      "Options read from a data file (one field per level) or a folder of files, refreshed each run"
     ],
     "unimplemented_variants": [
-      "Authentic Alteryx Tree XML mapping, Allocate Geography/Variables, filesystem tree browsing, and external custom data-source variants are not implemented"
+      "Allocate Geography/Variables data sources (they need the licensed Allocate dataset)",
+      "Alteryx Tree questions are not mapped by the importer"
+    ],
+    "unverified_variants": [
+      "Authentic Alteryx Tree XML option settings are not verified"
     ]
   },
   "reference_observation": {
@@ -78,10 +88,12 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
+    "count": 3,
+    "passing": 3,
     "tests": [
-      "test_fe_interop.ImportTests.test_native_tree_question_binds_a_defined_leaf_path_only"
+      "test_fe_interop.ImportTests.test_native_tree_question_binds_a_defined_leaf_path_only",
+      "test_interface_batch.QuestionTests.test_options_come_from_a_data_file_and_follow_its_changes",
+      "test_interface_batch.QuestionTests.test_tree_can_browse_a_folder"
     ]
   },
   "sources": [

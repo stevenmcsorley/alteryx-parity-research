@@ -11,7 +11,7 @@
 - Reference build: Designer 2026.1.4.126 (installed-build comparison outstanding)
 - Official catalogue: https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html
 - Specific reference: **NOT YET VERIFIED** — run public catalogue sync
-- Implementation: **in-progress** — native canvas grouping, collapse, disable and AI patch operations are implemented; no row kernel is applicable.
+- Implementation: **implemented** — native canvas grouping, collapse, disable and AI patch operations are implemented; no row kernel is applicable.
 - Machine-readable contract: `tool-container.contract.json`
 - Conformance verification: **not-tested**
 

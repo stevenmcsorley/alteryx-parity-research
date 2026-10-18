@@ -49,7 +49,8 @@ class ResearchCoverageTests(unittest.TestCase):
             self.assertEqual(r['implementation_status'], l['implementation_status'], r['id'])
             self.assertEqual(r['verification_status'], l['verification_status'], r['id'])
             if r['implementation_status'] == 'implemented':
-                self.assertTrue(l['kernel'] and l['independent_tests'] > 0, r['id'])
+                # a row kernel, or an application adapter whose listed tests pass (docs/TOOL_STATUS_RULES.md)
+                self.assertTrue((l['kernel'] or l.get('adapter')) and l['independent_tests'] > 0, r['id'])
             elif r['implementation_status'] == 'in-progress':  # kernel exists but has no passing test evidence
                 self.assertTrue(l['kernel'] or (l.get('adapter') and l['independent_tests'] > 0), r['id'])
             else:

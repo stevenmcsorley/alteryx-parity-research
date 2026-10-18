@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 277,
-    "passing": 277,
+    "count": 278,
+    "passing": 278,
     "tests": [
       "test_batch10.APIOutputTests.test_quoted_csv_messages",
       "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
@@ -356,6 +356,7 @@
       "test_indb.ExecutionTests.test_dynamic_input_checks_every_query",
       "test_indb.ExecutionTests.test_in_db_macro_passes_streams",
       "test_indb.ExecutionTests.test_writes_need_a_writable_connection_and_a_run_grant",
+      "test_interface_batch.ActionTests.test_formula_action_builds_a_value_from_several_answers",
       "test_investigation.CorrelationTests.test_contingency_chi_square",
       "test_investigation.CorrelationTests.test_spearman_matches_pearson_of_average_ranks",
       "test_investigation.DistributionTests.test_fits_ranked_by_aic_and_positive_only_rules",

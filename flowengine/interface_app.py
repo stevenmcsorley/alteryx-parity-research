@@ -17,6 +17,107 @@ from .errors import EngineError
 _EXTENSION = re.compile(r'^[a-z0-9][a-z0-9_+-]{0,15}$')
 
 
+QUESTION_TYPES = ('text', 'text-area', 'boolean', 'number', 'choice', 'date', 'file', 'folder', 'multi-choice',
+                  'control-parameter', 'tree', 'map', 'connection')
+CONNECTION_KINDS = {'database', 'web', 'github', 'smtp'}
+SOURCE_LIMIT = 1000
+
+
+def _check_source(qid, q):
+    """Option sources: a data file's field values (Drop Down, List Box, Tree) or a folder tree (Tree)."""
+    src = q['source']
+    if q['type'] not in ('choice', 'multi-choice', 'tree') or not isinstance(src, dict):
+        raise EngineError(f'Question {qid!r}: only Drop Down, List Box, Radio Button and Tree questions can take a source', code='application-invalid')
+    if src.get('kind') == 'file':
+        fields = src.get('fields') if q['type'] == 'tree' else [src.get('field')]
+        if not isinstance(src.get('path'), str) or not src['path'] or not isinstance(fields, list) or not fields \
+                or any(not isinstance(f, str) or not f for f in fields):
+            raise EngineError(f'Question {qid!r}: a file source needs path and field (or fields for a Tree, one per level)', code='application-invalid')
+    elif src.get('kind') == 'folder':
+        if q['type'] != 'tree' or not isinstance(src.get('path'), str) or not src['path']:
+            raise EngineError(f'Question {qid!r}: a folder source is for Tree questions and needs a path', code='application-invalid')
+    else:
+        raise EngineError(f'Question {qid!r}: source kind must be file or folder', code='application-invalid')
+
+
+def _resolve(path, base_dir):
+    p = Path(path).expanduser()
+    return p if p.is_absolute() or base_dir is None else Path(base_dir) / p
+
+
+def source_options(q, base_dir=None):
+    """The options a question's source yields now (dynamic: re-read whenever the application is described or run)."""
+    src = q['source']
+    if src['kind'] == 'folder':
+        root = _resolve(src['path'], base_dir)
+        if not root.is_dir():
+            raise EngineError(f"Tree source folder {root} does not exist", code='application-source-missing')
+        depth = int(src.get('depth', 4))
+        exts = {e.lower().lstrip('.') for e in src.get('extensions') or []}
+        out = []
+        for p in sorted(root.rglob('*')):
+            rel = p.relative_to(root).parts
+            if len(rel) > depth or any(part.startswith('.') for part in rel):
+                continue
+            if p.is_file() and (not exts or p.suffix.lower().lstrip('.') in exts):
+                out.append(' > '.join(rel))
+            if len(out) >= SOURCE_LIMIT:
+                break
+        return out
+    from .executor import run_workflow
+    path = _resolve(src['path'], base_dir)
+    doc = {'format': 'flowengine.workflow', 'formatVersion': 1,
+           'nodes': [{'id': 'src', 'tool': 'core.input_data', 'config': {'path': str(path)}}], 'edges': []}
+    r = run_workflow(doc, base_dir=base_dir or Path.cwd())
+    if r.status != 'succeeded':
+        raise EngineError(f'Could not read the option source {path}: {(r.error or {}).get("message")}', code='application-source-missing')
+    table = r.outputs['src']['output']
+    names = table.schema.names
+    fields = src['fields'] if q['type'] == 'tree' else [src['field']]
+    missing = [f for f in fields if f not in names]
+    if missing:
+        raise EngineError(f'Option source {path.name} has no field(s) {missing}', code='application-source-missing')
+    idx = [names.index(f) for f in fields]
+    seen, out = set(), []
+    for row in table.rows():
+        parts = [str(row[i]).strip() for i in idx]
+        if any(not p or p == 'None' for p in parts):
+            continue
+        label = ' > '.join(parts)
+        if label not in seen:
+            seen.add(label)
+            out.append(label)
+        if len(out) >= SOURCE_LIMIT:
+            break
+    return sorted(out) if src.get('sort', True) else out
+
+
+def _with_sources(spec, base_dir):
+    questions = []
+    for q in spec['questions']:
+        if q.get('source') is not None:
+            q = {**q, 'options': source_options(q, base_dir)}
+            if not q['options']:
+                raise EngineError(f"Question {q['id']!r}: its source yielded no options", code='application-source-missing')
+        questions.append(q)
+    return {**spec, 'questions': questions}
+
+
+def _map_answer(qid, value):
+    """Map questions take a GeoJSON geometry (object or text); the answer is stored as GeoJSON text."""
+    import json
+    try:
+        geometry = json.loads(value) if isinstance(value, str) else value
+        if not isinstance(geometry, dict) or 'type' not in geometry:
+            raise ValueError('not a GeoJSON geometry')
+        from shapely.geometry import shape
+        shape(geometry)
+    except Exception as exc:
+        raise EngineError(f'Application input {qid!r} must be a GeoJSON geometry, such as {{"type":"Point","coordinates":[-0.12,51.5]}}',
+                          code='application-input-invalid') from exc
+    return json.dumps(geometry, separators=(',', ':'))
+
+
 def _spec(doc):
     spec = (doc.get('metadata') or {}).get('application')
     if spec is None:
@@ -29,7 +130,7 @@ def _spec(doc):
     ids = set()
     question_types = {}
     for q in questions:
-        if not isinstance(q, dict) or q.get('type') not in ('text', 'text-area', 'boolean', 'number', 'choice', 'date', 'file', 'folder', 'multi-choice', 'control-parameter', 'tree'):
+        if not isinstance(q, dict) or q.get('type') not in QUESTION_TYPES:
             raise EngineError('Each application question needs a supported type', code='application-invalid')
         qid = q.get('id')
         if not isinstance(qid, str) or not qid or qid in ids:
@@ -56,6 +157,12 @@ def _spec(doc):
                                   code='application-invalid')
         if q['type'] in ('file', 'folder') and 'default' in q and not isinstance(q['default'], str):
             raise EngineError(f'Browse question {qid!r} default must be a path string', code='application-invalid')
+        if q.get('source') is not None:
+            _check_source(qid, q)
+            continue  # options come from the source when the application is described or bound
+        if q['type'] == 'connection' and q.get('kinds') is not None and (
+                not isinstance(q['kinds'], list) or any(k not in CONNECTION_KINDS for k in q['kinds'])):
+            raise EngineError(f'Connection question {qid!r} kinds must be from {sorted(CONNECTION_KINDS)}', code='application-invalid')
         if q['type'] in ('choice', 'multi-choice') and (
                 not isinstance(q.get('options'), list) or not q['options']
                 or any(not isinstance(option, str) for option in q['options'])
@@ -85,9 +192,23 @@ def _spec(doc):
                 raise EngineError(f'Tree question {qid!r} has duplicate paths or a selectable parent path', code='application-invalid')
             if 'default' in q and q['default'] not in normalized:
                 raise EngineError(f'Tree question {qid!r} default must be one of its paths', code='application-invalid')
+    normalized_actions = []
     for a in actions:
-        if not isinstance(a, dict) or a.get('question') not in ids or not isinstance(a.get('node_id'), str):
+        if not isinstance(a, dict) or not isinstance(a.get('node_id'), str):
             raise EngineError('Application action references an unknown question or node', code='application-invalid')
+        kind = a.get('kind', 'value')
+        if kind not in ('value', 'formula', 'input'):
+            raise EngineError('Application action kind must be value, formula or input', code='application-invalid')
+        if kind == 'formula':
+            if not isinstance(a.get('expression'), str) or not a['expression'].strip():
+                raise EngineError('A formula action needs an expression over the question answers', code='application-invalid')
+        elif a.get('question') not in ids:
+            raise EngineError('Application action references an unknown question or node', code='application-invalid')
+        if kind == 'input' and a.get('config_path', ['path']) != ['path']:
+            raise EngineError('An input action updates the Input Data path; omit config_path or use ["path"]', code='application-invalid')
+        if kind == 'input' and 'config_path' not in a:
+            a = {**a, 'config_path': ['path']}
+        normalized_actions.append(a)
         when = a.get('when')
         if when is not None:
             if not _valid_predicate(when, ids, question_types):
@@ -100,7 +221,7 @@ def _spec(doc):
             raise EngineError('Each application error needs a non-empty message', code='application-invalid')
         if error.get('when') is not None and not _valid_predicate(error['when'], ids, question_types):
             raise EngineError('Application error has an invalid conditional predicate', code='application-invalid')
-    return {'questions': questions, 'actions': actions, 'errors': errors}
+    return {'questions': questions, 'actions': normalized_actions, 'errors': errors}
 
 
 def _valid_predicate(predicate, question_ids, question_types, depth=0):
@@ -176,9 +297,12 @@ def _condition_matches(predicate, answers):
     return has_value if operation == 'contains' else not has_value
 
 
-def describe_application(doc):
-    """Return public question definitions without exposing action internals."""
+def describe_application(doc, base_dir=None):
+    """Return public question definitions without exposing action internals. Option sources (a data file's
+    values, a folder tree) are read now when the workspace folder is given."""
     spec = _spec(doc)
+    if base_dir is not None:
+        spec = _with_sources(spec, base_dir)
     public = []
     for question in spec['questions']:
         if question['type'] == 'control-parameter':
@@ -213,13 +337,33 @@ def _check_path_answer(qid, q, value, base_dir):
         raise EngineError(f'Application input {qid!r} must be {expected}', code='application-input-invalid')
 
 
+def _action_value(action, values, spec):
+    """value: the answer as given; formula: an expression over all answers ([question_id]); input: a file path."""
+    if action.get('kind') != 'formula':
+        return copy.deepcopy(values[action['question']])
+    from .formula import EvalContext, compile_expression
+    from .types import Field, FieldType, Schema
+    kinds = {'number': FieldType.DOUBLE, 'boolean': FieldType.BOOL}
+    fields = [Field(q['id'], kinds.get(q['type'], FieldType.V_WSTRING), None if q['type'] in kinds else 1073741823)
+              for q in spec['questions'] if q['type'] != 'control-parameter']
+    row = tuple((values.get(f.name) if f.type is not FieldType.V_WSTRING or values.get(f.name) is None
+                 else (', '.join(values[f.name]) if isinstance(values[f.name], list) else str(values[f.name]))) for f in fields)
+    try:
+        expression = compile_expression(action['expression'], Schema(fields))
+        return expression.evaluate(row, EvalContext())
+    except EngineError:
+        raise
+    except Exception as exc:
+        raise EngineError(f'Application formula action failed: {exc}', code='application-invalid', node_id=action.get('node_id')) from exc
+
+
 def bind_application(doc, supplied, base_dir=None):
     """Return a modified document copy and normalized answers; never mutate input.
 
     When ``base_dir`` is given, File/Folder Browse answers are resolved against it
     and must exist (a save-mode file needs only an existing parent folder).
     """
-    spec = _spec(doc)
+    spec = _with_sources(_spec(doc), base_dir)
     if supplied is None:
         supplied = {}
     if not isinstance(supplied, dict):
@@ -261,6 +405,10 @@ def bind_application(doc, supplied, base_dir=None):
             values[qid] = value
         elif q['type'] == 'tree' and isinstance(value, str) and value in q['options']:
             values[qid] = ' > '.join(part.strip() for part in value.split('>'))
+        elif q['type'] == 'map':
+            values[qid] = _map_answer(qid, value)
+        elif q['type'] == 'connection' and isinstance(value, str) and value.strip():
+            values[qid] = value.strip()
         else:
             raise EngineError(f'Application input {qid!r} has an invalid value or type', code='application-input-invalid')
         if q['type'] == 'number' and values[qid] is not None:
@@ -294,10 +442,13 @@ def bind_application(doc, supplied, base_dir=None):
                 target = None
                 break
         leaf = action['config_path'][-1]
+        new_value = _action_value(action, values, spec)
+        if action.get('kind') == 'input' and node.get('tool') != 'core.input_data':
+            raise EngineError('An input action must target an Input Data node', code='application-invalid', node_id=node['id'])
         if isinstance(target, dict) and leaf in target:
-            target[leaf] = copy.deepcopy(values[action['question']])
+            target[leaf] = new_value
         elif isinstance(target, list) and leaf.isdecimal() and int(leaf) < len(target):
-            target[int(leaf)] = copy.deepcopy(values[action['question']])
+            target[int(leaf)] = new_value
         else:
             raise EngineError('Application actions may only update existing configuration properties', code='application-invalid', node_id=node['id'])
     return result

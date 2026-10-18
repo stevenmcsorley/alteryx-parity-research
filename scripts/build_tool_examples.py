@@ -10,6 +10,7 @@ every stored example against its kernel.
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import json
 import os
 import subprocess
@@ -48,6 +49,10 @@ NUMERIC_MODEL_CATEGORIES = {'Machine Learning', 'Predictive', 'Predictive Groupi
                             'Time Series', 'Spatial'}
 
 
+# Output that changes with the clock (a report footer's date) is checked on schema and row count too.
+OTHER_DAY = lambda: _dt.datetime(2001, 2, 3, 4, 5, 6)  # noqa: E731
+
+
 def check_for(tool, categories) -> str:
     cats = {categories.get(c) for c in tool.manifest.catalog_ids}
     return 'schema' if not tool.manifest.deterministic or cats & NUMERIC_MODEL_CATEGORIES else 'values'
@@ -84,6 +89,10 @@ def select(entries: list[dict]) -> dict:
             with tempfile.TemporaryDirectory() as tmp:
                 if replay(tool_id, example, tmp) is not None:
                     continue  # keep only examples that reproduce from their stored inputs
+                if example['check'] == 'values' and replay(tool_id, example, tmp, clock=OTHER_DAY) is not None:
+                    example['check'] = 'schema'
+                    if replay(tool_id, example, tmp, clock=OTHER_DAY) is not None:
+                        continue
             chosen.append(example)
             if len(chosen) == PER_TOOL:
                 break

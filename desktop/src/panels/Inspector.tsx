@@ -16,7 +16,7 @@ export function Inspector({ embedded = false }: { embedded?: boolean } = {}) {
         node.data.kind === 'application-action' ? <ApplicationActionInspector node={node} /> :
         node.data.kind === 'application-condition' ? <ApplicationConditionInspector node={node} /> :
         node.data.kind === 'application-error' ? <ApplicationErrorInspector node={node} /> :
-        node.data.kind === 'container' ? <ContainerInspector node={node} /> : <CommentInspector node={node} />}
+        node.data.kind === 'container' ? <ContainerInspector node={node} /> : node.data.kind === 'explorer' ? <ExplorerInspector node={node} /> : <CommentInspector node={node} />}
     </aside>
   );
 }
@@ -121,8 +121,11 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
       <label>Answer type</label><select aria-label="Action answer type" value={d.question.type} onFocus={checkpoint} onChange={(e) => changeQuestion({ type: e.target.value as any,
         ...(e.target.value === 'file' ? {} : { mode: undefined, extensions: undefined }),
         default: e.target.value === 'text' || e.target.value === 'text-area' || e.target.value === 'date' || e.target.value === 'file' || e.target.value === 'folder' || e.target.value === 'tree' ? (e.target.value === 'tree' ? d.question.options?.[0] ?? '' : '') : e.target.value === 'number' ? 0 : e.target.value === 'choice' ? d.question.options?.[0] ?? '' : e.target.value === 'multi-choice' ? [] : false })}>
-        <option value="text">Single-line Text</option><option value="text-area">Text Box</option><option value="number">Numeric Up Down</option><option value="boolean">Check Box</option><option value="choice">Drop Down / Radio Button</option><option value="multi-choice">Multi Select</option><option value="tree">Tree</option><option value="date">Date</option><option value="file">File Browse</option><option value="folder">Folder Browse</option>
+        <option value="text">Single-line Text</option><option value="text-area">Text Box</option><option value="number">Numeric Up Down</option><option value="boolean">Check Box</option><option value="choice">Drop Down / Radio Button</option><option value="multi-choice">Multi Select</option><option value="tree">Tree</option><option value="date">Date</option><option value="file">File Browse</option><option value="folder">Folder Browse</option><option value="map">Map (point or GeoJSON)</option><option value="connection">Saved connection</option>
       </select>
+      {d.question.type === 'connection' && <><label>Connection kinds</label><input key={`${node.id}:kinds:${(d.question.kinds ?? []).join(',')}`} aria-label="Connection kinds" placeholder="database, web, github, smtp" defaultValue={(d.question.kinds ?? []).join(', ')} onFocus={checkpoint}
+        onBlur={(e) => { const kinds = [...new Set(e.target.value.split(',').map((x) => x.trim().toLowerCase()).filter(Boolean))]; changeQuestion({ kinds: kinds.length ? kinds : undefined }); }} /></>}
+      {(d.question.type === 'choice' || d.question.type === 'multi-choice' || d.question.type === 'tree') && <OptionSource question={d.question} onChange={(source) => changeQuestion({ source })} onFocus={checkpoint} />}
       {(d.question.type === 'choice' || d.question.type === 'multi-choice') && <><label>Options</label><textarea aria-label="Action answer options" value={(d.question.options ?? []).map(String).join('\n')} rows={4} onFocus={checkpoint} onChange={(e) => changeQuestion({ options: e.target.value.split(/\r?\n/).filter((x) => x.length) })} /></>}
       {d.question.type === 'tree' && <><label>Tree paths</label><textarea aria-label="Tree answer options" value={(d.question.options ?? []).map(String).join('\n')} rows={6} placeholder={'Sales > Online\nSales > Retail\nReturns'} onFocus={checkpoint} onChange={(e) => changeQuestion({ options: e.target.value.split(/\r?\n/).filter((x) => x.trim().length) })} /><small>One selectable path per line. Separate levels with &gt;.</small></>}
       {d.question.type === 'file' && <><label>Browse mode</label><select aria-label="File browse mode" value={d.question.mode ?? 'open'} onFocus={checkpoint} onChange={(e) => changeQuestion({ mode: e.target.value as 'open' | 'save' })}><option value="open">Open existing file</option><option value="save">Save to file</option></select>
@@ -166,12 +169,17 @@ function ApplicationActionInspector({ node }: { node: CanvasNode }) {
           </>}
       </>}
       </>}
+      <label>Action</label><select aria-label="Action kind" value={d.action_kind ?? 'value'} onFocus={checkpoint}
+        onChange={(e) => update(node.id, { action_kind: e.target.value === 'value' ? undefined : e.target.value })}>
+        <option value="value">Use the answer</option><option value="formula">Build a value with a formula</option><option value="input">Point an Input Data at the answer</option></select>
+      {d.action_kind === 'formula' && <><label>Formula</label><textarea aria-label="Action formula" rows={3} placeholder={'"[sales] >= " + ToString([min])'} value={d.expression ?? ''} onFocus={checkpoint}
+        onChange={(e) => update(node.id, { expression: e.target.value }, false)} /><small>Answers are fields: [question id].</small></>}
       <label>Target</label><span>{target?.data.kind === 'tool' ? target.id : 'Connect Action to a tool’s Action anchor'}</span>
-      <label>Configuration field</label><select aria-label="Action configuration field" value={pathKey} disabled={!target} onFocus={checkpoint}
+      {d.action_kind !== 'input' && <><label>Configuration field</label><select aria-label="Action configuration field" value={pathKey} disabled={!target} onFocus={checkpoint}
         onChange={(e) => update(node.id, { config_path: e.target.value.split('.') })}>
         {!paths.some((p) => p.join('.') === pathKey) && <option value={pathKey}>{pathKey || 'Choose a field'}</option>}
         {paths.map((p) => <option key={p.join('.')} value={p.join('.')}>{p.join('.')}</option>)}
-      </select>
+      </select></>}
     </div>
     <div className="section"><p className="help">{d.question.type === 'control-parameter'
       ? 'The Action connection updates this target for each batch record. It is a configuration dependency, not a row-data connection.'
@@ -555,4 +563,39 @@ function CommentInspector({ node }: { node: CanvasNode }) {
       <div className="section"><textarea rows={6} value={d.text} aria-label="Comment text" onChange={(e) => update(node.id, { text: e.target.value }, false)} /></div>
     </>
   );
+}
+
+function ExplorerInspector({ node }: { node: CanvasNode }) {
+  const d = node.data as { url: string; hide_address_bar?: boolean };
+  const update = useEditor((s) => s.updateNodeData);
+  return (
+    <>
+      <div className="section"><h3>Explorer Box</h3></div>
+      <div className="section kv">
+        <label>Show</label><input aria-label="Explorer URL" value={d.url} placeholder="https://…, a file or a folder" onChange={(e) => update(node.id, { url: e.target.value }, false)} />
+        <label>Hide address bar</label><input aria-label="Hide address bar" type="checkbox" checked={!!d.hide_address_bar} style={{ justifySelf: 'start' }} onChange={(e) => update(node.id, { hide_address_bar: e.target.checked })} />
+      </div>
+      <div className="section"><p className="help">Relative paths are read from the workflow folder. Folders list their contents and text files show a preview; web pages are shown in a sandbox (sites that forbid embedding stay blank). The box is documentation and never runs.</p></div>
+    </>
+  );
+}
+
+type OptionSourceValue = ApplicationActionNodeData['question']['source'];
+
+/** Where a choice or tree question reads its options: listed in the question, a data file's field, or a folder (Tree). */
+function OptionSource({ question, onChange, onFocus }: { question: ApplicationActionNodeData['question']; onChange: (s: OptionSourceValue) => void; onFocus: () => void }) {
+  const src = question.source;
+  const kind = src?.kind ?? 'list';
+  return <>
+    <label>Options from</label><select aria-label="Options source" value={kind} onFocus={onFocus}
+      onChange={(e) => onChange(e.target.value === 'file' ? { kind: 'file', path: '', ...(question.type === 'tree' ? { fields: [] } : { field: '' }) }
+        : e.target.value === 'folder' ? { kind: 'folder', path: '' } : undefined)}>
+      <option value="list">The list below</option><option value="file">A data file</option>{question.type === 'tree' && <option value="folder">A folder</option>}</select>
+    {src && <><label>{src.kind === 'folder' ? 'Folder' : 'File'}</label><input aria-label="Options source path" value={src.path} onFocus={onFocus} onChange={(e) => onChange({ ...src, path: e.target.value })} /></>}
+    {src?.kind === 'file' && <><label>{question.type === 'tree' ? 'Fields (levels)' : 'Field'}</label><input aria-label="Options source fields" value={question.type === 'tree' ? (src.fields ?? []).join(', ') : src.field ?? ''} onFocus={onFocus}
+      onChange={(e) => onChange(question.type === 'tree' ? { ...src, fields: e.target.value.split(',').map((x) => x.trim()).filter(Boolean) } : { ...src, field: e.target.value })} /></>}
+    {src?.kind === 'folder' && <><label>File types</label><input aria-label="Options source extensions" placeholder="csv, xlsx (blank for any)" value={(src.extensions ?? []).join(', ')} onFocus={onFocus}
+      onChange={(e) => onChange({ ...src, extensions: e.target.value.split(',').map((x) => x.trim().replace(/^\./, '')).filter(Boolean) })} /></>}
+    {src && <small>Options are read from this source each time the app runs.</small>}
+  </>;
 }

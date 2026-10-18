@@ -133,7 +133,7 @@ export async function runWorkflow(options: { workers?: number; batch_rows?: numb
     window.alert('Flowbench could not inspect every nested macro. File, database, process, network and remote-write permissions remain disabled for this run.');
   }
   try {
-    const app = await engine().request<{ questions: import('../ui/dialogs').AppQuestion[] }>('workflow.application', { workflow: document });
+    const app = await engine().request<{ questions: import('../ui/dialogs').AppQuestion[] }>('workflow.application', { workflow: document, base_dir: s.baseDir });
     const applicationValues = app.questions.length ? await promptApplication(app.questions) : undefined;
     if (app.questions.length && applicationValues === null) return;
     const res = await engine().request<{ run_id: string; status: string; problems?: any[] }>('run.start', {

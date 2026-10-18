@@ -666,7 +666,7 @@ def import_document(xml_text: str, *, name: str | None = None, source: str | Non
     if root.tag != 'AlteryxDocument':
         raise ValueError(f'Unexpected root element {root.tag!r}')
     version = root.get('yxmdVer')
-    nodes, comments, containers = [], [], []
+    nodes, comments, containers, explorers = [], [], [], []
     anchor_maps: dict[str, Converted] = {}
     report_nodes = []
     original = {}
@@ -699,6 +699,17 @@ def import_document(xml_text: str, *, name: str | None = None, source: str | Non
                              'position': position or {'x': 0, 'y': 0}, 'size': {'width': 200, 'height': 80},
                              'parent': f't{container}' if container else None})
             report_nodes.append({'node': nid, 'source': plugin, 'status': 'mapped', 'as': 'comment'})
+            continue
+        if short == 'HtmlBox':
+            # URL and HideAddressBar are the reference-observed elements; text or value= are both read.
+            url = (_t(cfg, 'URL') or _v(cfg, 'URL') or '') if cfg is not None else ''
+            explorers.append({'id': nid, 'url': url.strip(),
+                              'hide_address_bar': _b(_v(cfg, 'HideAddressBar', 'False')) if cfg is not None else False,
+                              'position': position or {'x': 0, 'y': 0},
+                              'size': {'width': float(pos.get('width', 320)) if pos is not None else 320,
+                                       'height': float(pos.get('height', 240)) if pos is not None else 240},
+                              'parent': f't{container}' if container else None})
+            report_nodes.append({'node': nid, 'source': plugin, 'status': 'mapped', 'as': 'explorer'})
             continue
         ident = plugin or macro or '(unknown)'
         # Question and Action nodes are application controls/configuration edges,
@@ -782,7 +793,7 @@ def import_document(xml_text: str, *, name: str | None = None, source: str | Non
                                         if c.find('Origin') is not None and c.find('Destination') is not None
                                         and (f"t{c.find('Origin').get('ToolID')}" in interface_tool_ids or
                                              f"t{c.find('Destination').get('ToolID')}" in interface_tool_ids)]
-    metadata = {'ui': {'containers': containers, 'comments': comments},
+    metadata = {'ui': {'containers': containers, 'comments': comments, 'explorers': explorers},
                                         'import': {'source': source, 'source_format_version': version,
                                                    'nodes': original,
                                                    'interface_nodes': interface_xml,
@@ -835,13 +846,13 @@ def _import_alteryx_application(root, interface_tool_ids, connections, nodes):
         typ = {'TextBox': 'text', 'NumericUpDown': 'number', 'CheckBox': 'boolean',
                'DropDown': 'choice', 'ListBox': 'multi-choice', 'RadioButton': 'choice',
                'Date': 'date', 'FileBrowse': 'file', 'FolderBrowse': 'folder',
-               'CheckBoxGroup': 'multi-choice'}.get(qtype)
+               'CheckBoxGroup': 'multi-choice', 'Map': 'map'}.get(qtype)
         if not typ:
             warnings.append(f'Alteryx application question {tid} ({qtype or "unknown"}) is preserved but not exposed in the Flowbench run form')
             continue
         value_el = q.find('Default')
         default = None
-        if value_el is not None:
+        if value_el is not None and typ != 'map':  # the Map default's serialisation is unverified
             raw = value_el.get('value') if value_el.get('value') is not None else value_el.text
             if raw not in (None, ''):
                 try:

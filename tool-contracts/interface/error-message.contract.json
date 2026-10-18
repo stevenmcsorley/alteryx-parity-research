@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Error.Error",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/error-message-tool.html",
-  "status": "in-progress",
-  "implementation_status": "in-progress",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
@@ -24,7 +24,8 @@
     "supported_variants": [
       "Native Flowbench application Error Message with optional typed Condition predicate; failure is raised before node execution"
     ],
-    "unsupported_variants": [
+    "unsupported_variants": [],
+    "unverified_variants": [
       "Alteryx Error Message XML-to-native mapping has not been established against an authorised reference fixture"
     ],
     "preserved_runtime_xml": true
@@ -43,7 +44,8 @@
     "supported_variants": [
       "Native Flowbench application Error Message with optional typed Condition predicate; failure is raised before node execution"
     ],
-    "unimplemented_variants": [
+    "unimplemented_variants": [],
+    "unverified_variants": [
       "Alteryx Error Message XML-to-native mapping has not been established against an authorised reference fixture"
     ]
   },
