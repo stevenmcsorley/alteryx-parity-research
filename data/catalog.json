@@ -1065,7 +1065,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/non-overlapping-drivetime-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3237,7 +3237,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/license-api-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3309,7 +3309,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/server-api-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

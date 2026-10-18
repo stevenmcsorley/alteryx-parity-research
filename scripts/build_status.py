@@ -418,6 +418,12 @@ def build(check=False):
             (conf if mode == 'e1' else conf_other)[r['catalog_id']].append(rec)
     ref_anchor_map = anchor_names_from_cases(CASES)
 
+    from flowengine import providers as _providers
+    provider_notes = defaultdict(list)
+    for prov in _providers.providers():
+        for served in prov.serves:
+            provider_notes[served].append(prov)
+
     ledger, changed = [], []
     for row in rows:
         cid = row['id']
@@ -513,6 +519,9 @@ def build(check=False):
             unresolved.append('Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.')
         if tool and ver_status == 'not-tested':
             unresolved.append('No differential conformance case yet.')
+        for prov in provider_notes.get(cid, []):
+            if 'pending' in prov.verification.lower():
+                unresolved.append(f'Provider {prov.id}: {prov.verification}')
         sources = [{'url': row['source_url'], 'evidence_type': 'public-tool-list', 'accessed_utc': catalog_doc['metadata'].get('source_retrieved_at_utc')}]
         if row.get('documentation_url'):
             sources.append({'url': row['documentation_url'], 'evidence_type': 'public-tool-help-page-metadata',

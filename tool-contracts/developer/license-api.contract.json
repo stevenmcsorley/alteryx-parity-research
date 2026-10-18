@@ -6,71 +6,116 @@
   "xml_tool_name": "LicenseAPITool_1_0",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/license-api-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Authorization) input",
+      "name": "data",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
-    },
-    {
-      "name": "Data) input",
-      "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "success",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "authToken) output",
+      "name": "fail",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "Success) output",
+      "name": "log",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
-    },
-    {
-      "name": "Fail) output",
-      "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
-    },
-    {
-      "name": "Logs) output",
-      "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Requirements and Compatibility Notes",
-      "Required Package Installation",
-      "Tool Components",
-      "Example Response",
-      "Raw JSON Example Response",
-      "Example Parsed Response via License API Tool",
-      "Configure the Tool",
-      "Authentication",
-      "API Configuration"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "endpoint"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "alteryx-license-portal"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "Saved Web/API connection to the license portal"
+      },
+      "method": {
+        "type": "string",
+        "enum": [
+          "GET",
+          "POST",
+          "PATCH",
+          "DELETE"
+        ],
+        "default": "GET"
+      },
+      "confirm_delete": {
+        "type": "boolean",
+        "default": false
+      },
+      "endpoint": {
+        "type": "string",
+        "minLength": 4,
+        "description": "For example v1/devices or v2/licenses"
+      },
+      "query": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "default": {}
+      },
+      "payload": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "JSON body; {field} placeholders allowed"
+      },
+      "payload_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Take the JSON body from this field"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 60
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "alteryx-server (public-doc keyword signal; unreviewed)",
     "credentials (public-doc keyword signal; unreviewed)",
@@ -79,7 +124,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.license_api",
+    "version": "1.0.0",
+    "module": "flowengine.tools.server_api",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -137,9 +188,13 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 3,
+    "passing": 3,
+    "tests": [
+      "test_license_api.LicenseApiTests.test_connection_must_carry_its_token_url",
+      "test_license_api.LicenseApiTests.test_patch_needs_remote_writes_and_a_bad_token_is_explained",
+      "test_license_api.LicenseApiTests.test_refresh_grant_dotted_fields_and_rotation_saved"
+    ]
   },
   "sources": [
     {
@@ -155,6 +210,7 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet.",
+    "Provider alteryx-license-portal: Checked against a controlled local fixture of the published endpoints with the RFC 6749 refresh grant. The portal does not publish its token exchange, so live acceptance against the real portal is pending (no portal account available)."
   ]
 }

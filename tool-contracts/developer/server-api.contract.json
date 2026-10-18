@@ -6,69 +6,116 @@
   "xml_tool_name": "ServerAPI_1_0",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/server-api-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Authorization) input",
+      "name": "data",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
-    },
-    {
-      "name": "Data) input",
-      "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
-      "name": "Output",
+      "name": "success",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "authToken) output",
+      "name": "fail",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "Success) output",
+      "name": "log",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
-    },
-    {
-      "name": "Fail) output",
-      "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
-    },
-    {
-      "name": "Logs) output",
-      "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Requirements and Compatibility Notes",
-      "Required Package Installation",
-      "Tool Components",
-      "*Example Response",
-      "Configure the Tool",
-      "Authentication",
-      "API Configuration"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "endpoint"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "alteryx-server"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "Saved Web/API connection to the Server Web API"
+      },
+      "method": {
+        "type": "string",
+        "enum": [
+          "GET",
+          "POST",
+          "PUT",
+          "DELETE"
+        ],
+        "default": "GET"
+      },
+      "confirm_delete": {
+        "type": "boolean",
+        "default": false
+      },
+      "endpoint": {
+        "type": "string",
+        "minLength": 4,
+        "description": "For example v3/workflows or v3/workflows/{id}"
+      },
+      "query": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "default": {}
+      },
+      "payload": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "JSON body; {field} placeholders allowed"
+      },
+      "payload_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Take the JSON body from this field"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 60
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "credentials (public-doc keyword signal; unreviewed)",
     "python-runtime (public-doc keyword signal; unreviewed)",
@@ -76,7 +123,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.server_api",
+    "version": "1.0.0",
+    "module": "flowengine.tools.server_api",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -132,9 +185,15 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 5,
+    "passing": 5,
+    "tests": [
+      "test_server_api.ServerApiTests.test_an_expired_token_is_renewed_once",
+      "test_server_api.ServerApiTests.test_each_data_record_is_one_call_and_failures_go_to_f",
+      "test_server_api.ServerApiTests.test_list_call_authenticates_and_parses_one_level_deep",
+      "test_server_api.ServerApiTests.test_writes_need_permission_and_delete_needs_confirmation",
+      "test_server_api.ServerApiTests.test_wrong_secret_endpoint_outside_api_and_non_json_responses"
+    ]
   },
   "sources": [
     {
@@ -150,6 +209,7 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified."
+    "No differential conformance case yet.",
+    "Provider alteryx-server: Checked against a controlled local fixture of the documented token flow and v3 list/detail calls. Live acceptance against a real Alteryx Server is pending (no server or API key available)."
   ]
 }

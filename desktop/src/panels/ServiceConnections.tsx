@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { engine, describe } from '../state/engineActions';
 
 export type ServiceConnection = { id: string; name: string; kind: 'web' | 'github' | 'smtp'; base_url: string;
-  auth: 'bearer' | 'basic' | 'header'; username?: string | null; header_name?: string | null };
-const blank = (): ServiceConnection => ({ id: '', name: '', kind: 'web', base_url: 'https://', auth: 'bearer', username: null, header_name: null });
+  auth: 'bearer' | 'basic' | 'header' | 'none'; username?: string | null; header_name?: string | null; token_url?: string | null };
+const blank = (): ServiceConnection => ({ id: '', name: '', kind: 'web', base_url: 'https://', auth: 'bearer', username: null, header_name: null, token_url: null });
 
 export function ServiceConnections({ close }: { close: () => void }) {
   const [items, setItems] = useState<ServiceConnection[]>([]);
@@ -19,7 +19,8 @@ export function ServiceConnections({ close }: { close: () => void }) {
     setBusy(true); setMessage('');
     try {
       const connection = { ...form, ...(form.id ? {} : { id: undefined }),
-        username: form.auth === 'basic' ? form.username : null, header_name: form.auth === 'header' ? form.header_name : null };
+        username: form.auth === 'basic' ? form.username : null, header_name: form.auth === 'header' ? form.header_name : null,
+        token_url: form.kind === 'web' && form.auth === 'bearer' && form.token_url ? form.token_url : null };
       await engine().request('credentials.save', { connection, ...(secret ? { secret } : {}) });
       setSecret(''); await refresh(); setMessage('Connection saved.');
     } catch (e) { setMessage(describe(e)); } finally { setBusy(false); }
@@ -55,13 +56,15 @@ export function ServiceConnections({ close }: { close: () => void }) {
           <label>{form.kind === 'smtp' ? 'SMTP server' : 'Base URL'}<input aria-label="Base URL" value={form.base_url} onChange={(e) => set({ base_url: e.target.value })} /></label>
           {form.kind === 'smtp' && <p className="help">smtps://host:465 encrypts from the start; smtp://host:587 uses STARTTLS.</p>}
           {form.kind === 'web' && <label>Authentication<select aria-label="Authentication" value={form.auth} onChange={(e) => set({ auth: e.target.value as ServiceConnection['auth'] })}>
-            <option value="bearer">Bearer token</option><option value="basic">Username and password</option><option value="header">API key header</option>
+            <option value="bearer">Bearer token</option><option value="basic">Username and password</option><option value="header">API key header</option><option value="none">None (open service)</option>
           </select></label>}
           {form.auth === 'basic' && <label>Username<input autoComplete="username" value={form.username ?? ''} onChange={(e) => set({ username: e.target.value })} /></label>}
           {form.auth === 'header' && <label>Header name<input aria-label="Header name" placeholder="X-Api-Key" value={form.header_name ?? ''} onChange={(e) => set({ header_name: e.target.value })} /></label>}
-          <label>{secretLabel}<input aria-label="Secret" type="password" autoComplete="new-password" value={secret} onChange={(e) => setSecret(e.target.value)}
-            placeholder={form.id ? 'Leave blank to keep saved credential' : ''} /></label>
-          <div className="db-actions"><button onClick={() => void save()} disabled={busy || !form.name || !form.base_url || (!form.id && !secret)}>{busy ? 'Working…' : 'Save'}</button></div>
+          {form.kind === 'web' && form.auth === 'bearer' && <label>Token URL (optional)<input aria-label="Token URL" placeholder="Only for a refresh token, e.g. a portal's Authentication URL"
+            value={form.token_url ?? ''} onChange={(e) => set({ token_url: e.target.value || null })} /></label>}
+          {form.auth !== 'none' && <label>{secretLabel}<input aria-label="Secret" type="password" autoComplete="new-password" value={secret} onChange={(e) => setSecret(e.target.value)}
+            placeholder={form.id ? 'Leave blank to keep saved credential' : ''} /></label>}
+          <div className="db-actions"><button onClick={() => void save()} disabled={busy || !form.name || !form.base_url || (!form.id && !secret && form.auth !== 'none')}>{busy ? 'Working…' : 'Save'}</button></div>
           {message && <div role="status" className="db-message">{message}</div>}
           <p className="help">{form.kind === 'smtp'
             ? 'The password is stored in the operating system credential vault and is only sent to this mail server over an encrypted connection. Workflows store only the connection, never the password.'

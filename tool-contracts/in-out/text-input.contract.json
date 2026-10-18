@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 278,
-    "passing": 278,
+    "count": 282,
+    "passing": 282,
     "tests": [
       "test_batch10.APIOutputTests.test_quoted_csv_messages",
       "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
@@ -234,6 +234,8 @@
       "test_download.DownloadTests.test_get_with_query_and_header_fields_keeps_record_order",
       "test_download.DownloadTests.test_post_bodies_from_fields",
       "test_download.DownloadTests.test_requires_network_permission_and_is_reported_by_preflight",
+      "test_drivetime.DrivetimeTests.test_needs_network_permission_points_and_a_reachable_location",
+      "test_drivetime.DrivetimeTests.test_overlapping_areas_are_split_between_the_nearest_points",
       "test_dynamic_input.DynamicInputTests.test_bad_paths_fail_with_the_record_number",
       "test_dynamic_input.DynamicInputTests.test_declared_fields_give_a_static_schema_and_an_empty_result",
       "test_dynamic_input.DynamicInputTests.test_path_field_must_exist_and_be_text",
@@ -413,6 +415,8 @@
       "test_runner.RunnerTests.test_requires_process_permission_and_is_reported_by_preflight",
       "test_runner.RunnerTests.test_routes_success_and_failure_logs_without_failing_the_parent",
       "test_runner.RunnerTests.test_stop_on_failure_marks_remaining_workflows_not_run",
+      "test_server_api.ServerApiTests.test_each_data_record_is_one_call_and_failures_go_to_f",
+      "test_server_api.ServerApiTests.test_writes_need_permission_and_delete_needs_confirmation",
       "test_service_connections.DownloadAuthTests.test_header_auth_and_conflicting_headers",
       "test_service_connections.DownloadAuthTests.test_token_is_sent_only_inside_the_base_url",
       "test_spatial.InfoGridTests.test_invalid_geometry_handling",

@@ -6,19 +6,104 @@
   "xml_tool_name": "Non_Overlapping_DT.yxmc",
   "user_role": "Full (Data Packages Add-on)",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/spatial/non-overlapping-drivetime-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "geometry_field",
+      "minutes"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "valhalla"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "Saved Web/API connection to the Valhalla server"
+      },
+      "geometry_field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minutes": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 240
+      },
+      "costing": {
+        "enum": [
+          "auto",
+          "truck",
+          "bicycle",
+          "pedestrian"
+        ],
+        "default": "auto"
+      },
+      "grid_size": {
+        "type": "number",
+        "minimum": 0.01,
+        "maximum": 5,
+        "default": 0.25
+      },
+      "grid_units": {
+        "enum": [
+          "mi",
+          "km"
+        ],
+        "default": "mi"
+      },
+      "output_field": {
+        "type": "string",
+        "minLength": 1,
+        "default": "DriveTimeArea"
+      },
+      "format": {
+        "enum": [
+          "wkt",
+          "geojson"
+        ],
+        "default": "wkt"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 60
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "spatial-geometry-library",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -26,7 +111,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.non_overlap_drivetime",
+    "version": "1.0.0",
+    "module": "flowengine.tools.drivetime",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -40,9 +131,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_drivetime.DrivetimeTests.test_needs_network_permission_points_and_a_reachable_location",
+      "test_drivetime.DrivetimeTests.test_overlapping_areas_are_split_between_the_nearest_points"
+    ]
   },
   "sources": [
     {
@@ -58,7 +152,7 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet.",
+    "Provider valhalla: Checked against a controlled local fixture of the documented /isochrone API (polygons=true). Live acceptance against a real Valhalla build is pending; areas are not expected to match the reference's licensed drivetime dataset."
   ]
 }

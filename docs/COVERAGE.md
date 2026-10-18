@@ -10,9 +10,9 @@
 | Distinct tool names | 321 |
 | Public help URL resolved (official tool list sync) | 323 |
 | Machine-readable contracts generated | 323 |
-| Entries with known anchors (manifest, reference-observed or public-doc) | 248 |
+| Entries with known anchors (manifest, reference-observed or public-doc) | 249 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 228 |
+| Independent kernels implemented and passing tests | 231 |
 | Independently implemented application adapters (in progress) | 19 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 0 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 488 run, 0 failed |
+| Unit/integration tests in last ledger build | 499 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -37,7 +37,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:input-data` | `core.input_data` | 46 | 0/0 | not-tested |
 | `in-out:map-input` | `core.map_input` | 1 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 13 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 278 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 282 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 13 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 2 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -114,6 +114,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `spatial:generalize` | `core.generalize` | 1 | 0/0 | not-tested |
 | `spatial:heat-map` | `core.heat_map` | 1 | 0/0 | not-tested |
 | `spatial:make-grid` | `core.make_grid` | 2 | 0/0 | not-tested |
+| `spatial:non-overlap-drivetime` | `core.non_overlap_drivetime` | 2 | 0/0 | not-tested |
 | `spatial:poly-build` | `core.poly_build` | 1 | 0/0 | not-tested |
 | `spatial:poly-split` | `core.poly_split` | 1 | 0/0 | not-tested |
 | `spatial:smooth` | `core.smooth` | 1 | 0/0 | not-tested |
@@ -207,11 +208,13 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `developer:github-get-last-commit` | `core.github_last_commit` | 2 | 0/0 | not-tested |
 | `developer:json-parse` | `core.json_parse` | 2 | 2/2 | partial |
 | `developer:json-schema` | `core.json_schema` | 2 | 0/0 | not-tested |
+| `developer:license-api` | `core.license_api` | 3 | 0/0 | not-tested |
 | `developer:message` | `core.message` | 1 | 0/0 | not-tested |
 | `developer:python` | `core.python` | 4 | 0/0 | not-tested |
 | `developer:r` | `core.r` | 1 | 0/0 | not-tested |
 | `developer:run-command` | `core.run_command` | 1 | 0/0 | not-tested |
 | `developer:runner` | `core.runner` | 4 | 0/0 | not-tested |
+| `developer:server-api` | `core.server_api` | 5 | 0/0 | not-tested |
 | `developer:test` | `core.test` | 1 | 0/0 | not-tested |
 | `developer:throttle` | `core.throttle` | 1 | 0/0 | not-tested |
 | `laboratory:json-build` | `core.json_build` | 1 | 0/0 | not-tested |
@@ -261,7 +264,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Connectors | 44 | 0 | 0 | 1 | 44 |
 | Data Investigation | 14 | 14 | 0 | 14 | 0 |
 | Demographic Analysis | 4 | 0 | 0 | 0 | 4 |
-| Developer | 30 | 28 | 4 | 30 | 0 |
+| Developer | 30 | 30 | 4 | 30 | 0 |
 | Documentation | 3 | 0 | 0 | 1 | 0 |
 | In-Database | 16 | 16 | 0 | 16 | 0 |
 | In/Out | 8 | 7 | 0 | 7 | 0 |
@@ -276,7 +279,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Prescriptive | 4 | 4 | 0 | 4 | 0 |
 | Reporting | 13 | 13 | 0 | 13 | 0 |
 | SDK Examples | 1 | 0 | 0 | 0 | 0 |
-| Spatial | 15 | 14 | 0 | 14 | 0 |
+| Spatial | 15 | 15 | 0 | 15 | 0 |
 | Text Mining | 9 | 9 | 0 | 9 | 0 |
 | Time Series | 9 | 9 | 0 | 9 | 0 |
 | Transform | 8 | 8 | 7 | 8 | 0 |
