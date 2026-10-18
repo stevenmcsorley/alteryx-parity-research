@@ -180,3 +180,26 @@ register(Provider(
           'the client id, and a client secret with scope https://storage.azure.com/.default (or device sign-in).',
     verification='Checked against a controlled local fixture of the documented path operations. Live acceptance against an '
                  'Azure storage account is pending (none available).'))
+
+register(Provider(
+    id='salesforce', family='salesforce', name='Salesforce (REST API)', kind='vendor',
+    serves=('connectors:salesforce-input', 'connectors:salesforce-output-new'), needs=('connection:web',),
+    homepage='https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/',
+    semantics={'reads': 'SOQL query / queryAll, all pages; relationship fields as dotted names; date-times in UTC',
+               'writes': 'sObject Collections, 200 per request; per-record id, success and errors'},
+    setup='Create a connected app (OAuth, PKCE). Add a Web/API connection: base URL https://<domain>.my.salesforce.com, '
+          'OAuth, token URL https://login.salesforce.com/services/oauth2/token, authorization URL '
+          'https://login.salesforce.com/services/oauth2/authorize, the consumer key as client id, scope "api refresh_token", '
+          'then Sign in in browser (or use the client credentials flow with the consumer secret).',
+    verification='Checked against a controlled local fixture of the documented query and sObject Collections endpoints. '
+                 'Live acceptance against a Salesforce org is pending (no org available).'))
+
+register(Provider(
+    id='servicenow', family='servicenow', name='ServiceNow (Table API)', kind='vendor',
+    serves=('connectors:servicenow-input',), needs=('connection:web',),
+    homepage='https://www.servicenow.com/docs/bundle/xanadu-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html',
+    semantics={'reads': 'Table API with an encoded query, offset paging', 'types': 'all values as text (stored values by default)'},
+    setup='Add a Web/API connection: base URL https://<instance>.service-now.com, with basic authentication (an integration '
+          'user) or OAuth (token URL https://<instance>.service-now.com/oauth_token.do).',
+    verification='Checked against a controlled local fixture of the documented Table API. Live acceptance against a '
+                 'ServiceNow instance is pending (none available).'))

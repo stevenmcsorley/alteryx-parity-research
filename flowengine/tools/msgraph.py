@@ -40,15 +40,21 @@ class Graph:
     # Other origins of the same vendor that the API documents for this service (for example a separate upload
     # host). Fixed per tool class, never taken from a connection or a workflow; the token may go there too.
     extra_origins: tuple[str, ...] = ()
+    # Services that also accept the connection store's other modes (basic, bearer, API key header).
+    other_auth = False
 
     def __init__(self, cfg):
         from ..oauth import OAuthSession
         from ..service_connections import ServiceConnectionStore
         store = ServiceConnectionStore()
         self.conn = store.get(cfg['connection_id'], kind='web')
-        if self.conn.auth != 'oauth2':
-            raise ConfigError(f'{self.service} connections use OAuth: an app secret or a device sign-in')
-        self.oauth = OAuthSession(self.conn, store.secret(self.conn), store)
+        if self.conn.auth == 'oauth2':
+            self.oauth = OAuthSession(self.conn, store.secret(self.conn), store)
+        elif self.other_auth and self.conn.auth in ('basic', 'bearer', 'header'):
+            self.oauth, self._secret = None, store.secret(self.conn)
+        else:
+            raise ConfigError(f'{self.service} connections use OAuth: an app secret or a sign-in'
+                              + (' (or basic, bearer or API key authentication)' if self.other_auth else ''))
         self.base = self.conn.base_url.rstrip('/')
         self.timeout = cfg.get('timeout_seconds', 120)
         self.opener = urllib.request.build_opener(_HttpOnlyRedirects(self.conn))
@@ -66,8 +72,9 @@ class Graph:
         data = body if isinstance(body, (bytes, type(None))) else json.dumps(body).encode()
         renewed, renew_now = False, False
         for attempt in range(MAX_RETRIES + 1):
-            h = {'Accept': 'application/json', 'Authorization': f'Bearer {self.oauth.access_token(refresh=renew_now)}',
-                 **(headers or {})}
+            auth = ({'Authorization': f'Bearer {self.oauth.access_token(refresh=renew_now)}'} if self.oauth
+                    else self.conn.authorize(url if self.conn.covers(url) else self.conn.base_url, self._secret))
+            h = {'Accept': 'application/json', **auth, **(headers or {})}
             renew_now = False
             if data is not None and not isinstance(body, bytes):
                 h['Content-Type'] = 'application/json'
@@ -84,7 +91,7 @@ class Graph:
                 if (accept_incomplete and e.code == 308) or (accept_redirect and 300 <= e.code < 400):
                     return (b'', e.headers) if with_headers else b''
                 retry = e.headers.get('Retry-After')
-                if e.code == 401 and not renewed:
+                if e.code == 401 and not renewed and self.oauth:
                     renewed = renew_now = True  # one fresh token; later retries reuse it
                     continue
                 if e.code in (429, 503) and attempt < MAX_RETRIES:

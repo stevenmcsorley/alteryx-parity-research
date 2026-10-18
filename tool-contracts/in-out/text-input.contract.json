@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 294,
-    "passing": 294,
+    "count": 295,
+    "passing": 295,
     "tests": [
       "test_batch10.APIOutputTests.test_quoted_csv_messages",
       "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
@@ -223,6 +223,7 @@
       "test_correlation.CorrelationTests.test_rejects_nulls_nonfinite_and_insufficient_rows",
       "test_correlation.CorrelationTests.test_rejects_text_and_missing_fields",
       "test_correlation.CorrelationTests.test_sample_covariance",
+      "test_crm.CrmTests.test_output_reports_each_record_and_batches_two_hundred",
       "test_data_correctness.DataCorrectnessTests.test_basic_filter_temporal_literals_are_typed",
       "test_data_correctness.DataCorrectnessTests.test_filter_numeric_literal_int64_precision",
       "test_data_correctness.DataCorrectnessTests.test_sort_nan_and_join_key_types",
