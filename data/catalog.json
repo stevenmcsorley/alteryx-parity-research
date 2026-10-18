@@ -2373,7 +2373,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/google-analytics-4-input-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2385,7 +2385,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/google-bigquery-input-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2397,7 +2397,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/google-bigquery-output-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2409,7 +2409,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/google-drive-input-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2421,7 +2421,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/google-drive-output-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2433,7 +2433,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/google-sheets-input-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2445,7 +2445,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/google-sheets-output-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
