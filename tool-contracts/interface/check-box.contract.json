@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.CheckBoxGroup.CheckBoxGroup",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/check-box-tool.html",
-  "status": "in-progress",
-  "implementation_status": "in-progress",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [
@@ -24,7 +24,8 @@
     "supported_variants": [
       "Boolean answer, default and Action binding preserve JSON booleans; strings are rejected"
     ],
-    "unsupported_variants": [
+    "unsupported_variants": [],
+    "unverified_variants": [
       "Authentic Alteryx Check Box XML and Action-connection parity are unverified"
     ],
     "preserved_runtime_xml": true
@@ -43,7 +44,8 @@
     "supported_variants": [
       "Boolean answer, default and Action binding preserve JSON booleans; strings are rejected"
     ],
-    "unimplemented_variants": [
+    "unimplemented_variants": [],
+    "unverified_variants": [
       "Authentic Alteryx Check Box XML and Action-connection parity are unverified"
     ]
   },

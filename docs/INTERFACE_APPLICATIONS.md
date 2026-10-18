@@ -89,3 +89,27 @@ The parameter is omitted from the standalone application form and cannot be
 bound as an ordinary application answer. This adapter does not establish
 Alteryx Control Parameter XML compatibility; imported vendor configurations
 remain subject to their existing preservation and diagnostic behavior.
+
+# Map, saved-connection and sourced questions
+
+- **Map** (`type: "map"`): the answer is a GeoJSON geometry, or `longitude, latitude` typed in the run dialog, which becomes a Point. Flowbench checks it with shapely and binds it as compact GeoJSON text, ready for the spatial tools. Drawing on an interactive base map is not available because no map tile provider is bundled.
+- **Saved connection** (`type: "connection"`, optional `kinds` from `database`, `web`, `github`, `smtp`): the run dialog lists the connections saved in Settings, and the answer is the connection's stable id. Secrets never pass through the application.
+- **Option sources** for Drop Down, Radio Button, List Box and Tree: `source: {kind: "file", path, field}` reads the distinct values of a field from any file Input Data reads. A Tree uses `fields` (one per level) instead of `field`, or `{kind: "folder", path, depth, extensions}` to browse files. Sources are read each time the application is described or run, so options follow the data. An answer must be one of the current options.
+
+# Formula and Input Data actions
+
+An action's `kind` is one of:
+- `value` (the default): the answer itself goes into the configuration path.
+- `formula`: `expression` is evaluated over every answer, each one a field `[question id]`, and the result is written to the path.
+- `input`: points a `core.input_data` tool's `path` at the chosen file. It is rejected for any other tool.
+
+Binding never changes the saved document.
+
+# Explorer Box
+
+A documentation box on the canvas. It shows one of:
+- a web page, in a sandboxed frame; sites that forbid embedding stay blank;
+- a folder listing;
+- a preview of a text file.
+
+Relative paths resolve against the workflow folder. Alteryx HtmlBox nodes import with their `URL` and `HideAddressBar` settings. The box is never part of a run.

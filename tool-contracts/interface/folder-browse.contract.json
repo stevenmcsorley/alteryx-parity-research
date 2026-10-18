@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.FolderBrowse.FolderBrowse",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/folder-browse-tool.html",
-  "status": "in-progress",
-  "implementation_status": "in-progress",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [
@@ -24,8 +24,10 @@
     "supported_variants": [
       "Native folder answer must be an existing directory resolved against the workflow directory; selected path bound through configured actions"
     ],
-    "unsupported_variants": [
-      "Authentic Alteryx Folder Browse XML configuration and Gallery/Server behaviour are not verified"
+    "unsupported_variants": [],
+    "unverified_variants": [
+      "Authentic Alteryx Folder Browse XML configuration is not verified",
+      "Gallery/Server behaviour is server-only and not part of the desktop engine"
     ],
     "preserved_runtime_xml": true
   },
@@ -44,8 +46,10 @@
     "supported_variants": [
       "Native folder answer must be an existing directory resolved against the workflow directory; selected path bound through configured actions"
     ],
-    "unimplemented_variants": [
-      "Authentic Alteryx Folder Browse XML configuration and Gallery/Server behaviour are not verified"
+    "unimplemented_variants": [],
+    "unverified_variants": [
+      "Authentic Alteryx Folder Browse XML configuration is not verified",
+      "Gallery/Server behaviour is server-only and not part of the desktop engine"
     ]
   },
   "reference_observation": {

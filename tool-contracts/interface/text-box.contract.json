@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.TextBox.QuestionTextBox",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/text-box-tool.html",
-  "status": "in-progress",
-  "implementation_status": "in-progress",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [
@@ -24,7 +24,8 @@
     "supported_variants": [
       "Native multiline string answer preserved exactly, including newline and Unicode characters, through validated application actions"
     ],
-    "unsupported_variants": [
+    "unsupported_variants": [],
+    "unverified_variants": [
       "Authentic Alteryx Text Box XML configuration and vendor-specific limits/formatting are not verified"
     ],
     "preserved_runtime_xml": true
@@ -43,7 +44,8 @@
     "supported_variants": [
       "Native multiline string answer preserved exactly, including newline and Unicode characters, through validated application actions"
     ],
-    "unimplemented_variants": [
+    "unimplemented_variants": [],
+    "unverified_variants": [
       "Authentic Alteryx Text Box XML configuration and vendor-specific limits/formatting are not verified"
     ]
   },

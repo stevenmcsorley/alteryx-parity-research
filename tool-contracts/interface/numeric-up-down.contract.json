@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.NumericUpDown.NumericUpDown",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/numeric-up-down-tool.html",
-  "status": "in-progress",
-  "implementation_status": "in-progress",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [
@@ -24,7 +24,8 @@
     "supported_variants": [
       "Finite numeric answers with configured minimum/maximum bounds and typed Action binding"
     ],
-    "unsupported_variants": [
+    "unsupported_variants": [],
+    "unverified_variants": [
       "Alteryx numeric storage precision, step increment and XML settings are unverified"
     ],
     "preserved_runtime_xml": true
@@ -43,7 +44,8 @@
     "supported_variants": [
       "Finite numeric answers with configured minimum/maximum bounds and typed Action binding"
     ],
-    "unimplemented_variants": [
+    "unimplemented_variants": [],
+    "unverified_variants": [
       "Alteryx numeric storage precision, step increment and XML settings are unverified"
     ]
   },

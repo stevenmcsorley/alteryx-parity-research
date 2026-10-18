@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.DropDownListBox.DropDown",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/drop-down-tool.html",
-  "status": "in-progress",
-  "implementation_status": "in-progress",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
@@ -29,10 +29,12 @@
     "status": "partially-specified",
     "source": "docs/INTERFACE_APPLICATIONS.md",
     "supported_variants": [
-      "Unique string options; exactly one declared option is bound as a string"
+      "Unique string options; exactly one declared option is bound as a string",
+      "Options read from a field of a data file (distinct values), refreshed each time the app runs"
     ],
-    "unsupported_variants": [
-      "Authentic Alteryx Drop Down XML sourcing and dynamic option refresh are unverified"
+    "unsupported_variants": [],
+    "unverified_variants": [
+      "Authentic Alteryx Drop Down XML option-source settings are not verified"
     ],
     "preserved_runtime_xml": true
   },
@@ -49,10 +51,12 @@
     "tool_id": "interface:drop-down",
     "module": "flowengine.interface_app + desktop/src/ui/dialogs.tsx",
     "supported_variants": [
-      "Unique string options; exactly one declared option is bound as a string"
+      "Unique string options; exactly one declared option is bound as a string",
+      "Options read from a field of a data file (distinct values), refreshed each time the app runs"
     ],
-    "unimplemented_variants": [
-      "Authentic Alteryx Drop Down XML sourcing and dynamic option refresh are unverified"
+    "unimplemented_variants": [],
+    "unverified_variants": [
+      "Authentic Alteryx Drop Down XML option-source settings are not verified"
     ]
   },
   "reference_observation": {
@@ -82,10 +86,11 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
+    "count": 2,
+    "passing": 2,
     "tests": [
-      "test_fe_interop.ImportTests.test_native_choice_controls_enforce_single_and_multi_select_shapes"
+      "test_fe_interop.ImportTests.test_native_choice_controls_enforce_single_and_multi_select_shapes",
+      "test_interface_batch.QuestionTests.test_options_come_from_a_data_file_and_follow_its_changes"
     ]
   },
   "sources": [

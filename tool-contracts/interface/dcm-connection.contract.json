@@ -6,18 +6,22 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.DcmConnection.QuestionDcmConnection",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/dcm-connection-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "in-progress",
+  "implementation_status": "in-progress",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Update Value Using the Action Tool"
-    ]
+    "status": "partially-specified",
+    "source": "docs/INTERFACE_APPLICATIONS.md",
+    "supported_variants": [
+      "Picks a saved database, web, GitHub or SMTP connection by its stable id (never a secret) and binds the id through actions"
+    ],
+    "unsupported_variants": [
+      "Alteryx DCM Connection questions are not mapped by the importer (no reference fixture)"
+    ],
+    "unverified_variants": [],
+    "preserved_runtime_xml": true
   },
   "deterministic": null,
   "external_dependencies": [
@@ -26,7 +30,18 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "Flowbench native saved-connection question adapter",
+    "tool_id": "interface:dcm-connection",
+    "module": "flowengine.interface_app + desktop/src/ui/dialogs.tsx",
+    "supported_variants": [
+      "Picks a saved database, web, GitHub or SMTP connection by its stable id (never a secret) and binds the id through actions"
+    ],
+    "unimplemented_variants": [
+      "Alteryx DCM Connection questions are not mapped by the importer (no reference fixture)"
+    ],
+    "unverified_variants": []
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -41,9 +56,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_interface_batch.QuestionTests.test_connection_question_selects_a_saved_connection"
+    ]
   },
   "sources": [
     {
@@ -55,11 +72,16 @@
       "url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/dcm-connection-tool.html",
       "evidence_type": "public-tool-help-page-metadata",
       "accessed_utc": "2026-10-13T09:33:24.273102+00:00"
+    },
+    {
+      "url": "docs/INTERFACE_APPLICATIONS.md",
+      "evidence_type": "project-authored-runtime-and-ui-evidence",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
     }
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
+    "No independent row-processing kernel; this entry is implemented as a workflow application adapter.",
     "Anchors unknown: not described in public page text and not observed in shipped workflows."
   ]
 }

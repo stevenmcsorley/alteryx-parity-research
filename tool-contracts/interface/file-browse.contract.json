@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.FileBrowse.FileBrowse",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/file-browse-tool.html",
-  "status": "in-progress",
-  "implementation_status": "in-progress",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [
@@ -25,8 +25,10 @@
       "Native open-mode answer must be an existing file and save-mode answer a file path in an existing folder, resolved against the workflow directory",
       "Optional extension filter applied in the native picker and enforced by the engine; selected path bound through configured actions"
     ],
-    "unsupported_variants": [
-      "Authentic Alteryx File Browse XML configuration, file-type filter syntax and Gallery/Server upload behaviour are not verified"
+    "unsupported_variants": [],
+    "unverified_variants": [
+      "Authentic Alteryx File Browse XML configuration and file-type filter syntax are not verified",
+      "Gallery/Server upload behaviour is server-only and not part of the desktop engine"
     ],
     "preserved_runtime_xml": true
   },
@@ -46,8 +48,10 @@
       "Native open-mode answer must be an existing file and save-mode answer a file path in an existing folder, resolved against the workflow directory",
       "Optional extension filter applied in the native picker and enforced by the engine; selected path bound through configured actions"
     ],
-    "unimplemented_variants": [
-      "Authentic Alteryx File Browse XML configuration, file-type filter syntax and Gallery/Server upload behaviour are not verified"
+    "unimplemented_variants": [],
+    "unverified_variants": [
+      "Authentic Alteryx File Browse XML configuration and file-type filter syntax are not verified",
+      "Gallery/Server upload behaviour is server-only and not part of the desktop engine"
     ]
   },
   "reference_observation": {

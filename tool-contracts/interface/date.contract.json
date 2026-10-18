@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.Date.Date",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/date-tool.html",
-  "status": "in-progress",
-  "implementation_status": "in-progress",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [
@@ -24,7 +24,8 @@
     "supported_variants": [
       "Native date control accepts valid YYYY-MM-DD calendar dates and binds the selected ISO string through configured actions"
     ],
-    "unsupported_variants": [
+    "unsupported_variants": [],
+    "unverified_variants": [
       "Authentic Alteryx Date question XML configuration and locale-specific date parsing have not been verified"
     ],
     "preserved_runtime_xml": true
@@ -43,7 +44,8 @@
     "supported_variants": [
       "Native date control accepts valid YYYY-MM-DD calendar dates and binds the selected ISO string through configured actions"
     ],
-    "unimplemented_variants": [
+    "unimplemented_variants": [],
+    "unverified_variants": [
       "Authentic Alteryx Date question XML configuration and locale-specific date parsing have not been verified"
     ]
   },

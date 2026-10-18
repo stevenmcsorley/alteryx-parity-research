@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.RadioButtonGroup.RadioButtonGroup",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/radio-button-tool.html",
-  "status": "in-progress",
-  "implementation_status": "in-progress",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [
@@ -22,10 +22,12 @@
     "status": "partially-specified",
     "source": "docs/INTERFACE_APPLICATIONS.md",
     "supported_variants": [
-      "Unique string options; exactly one declared option is bound as a string"
+      "Unique string options; exactly one declared option is bound as a string",
+      "Options read from a field of a data file (distinct values), refreshed each time the app runs"
     ],
-    "unsupported_variants": [
-      "Authentic Alteryx Radio Button XML orientation and option-source settings are unverified"
+    "unsupported_variants": [],
+    "unverified_variants": [
+      "Authentic Alteryx Radio Button XML option-source settings are not verified"
     ],
     "preserved_runtime_xml": true
   },
@@ -41,10 +43,12 @@
     "tool_id": "interface:radio-button",
     "module": "flowengine.interface_app + desktop/src/ui/dialogs.tsx",
     "supported_variants": [
-      "Unique string options; exactly one declared option is bound as a string"
+      "Unique string options; exactly one declared option is bound as a string",
+      "Options read from a field of a data file (distinct values), refreshed each time the app runs"
     ],
-    "unimplemented_variants": [
-      "Authentic Alteryx Radio Button XML orientation and option-source settings are unverified"
+    "unimplemented_variants": [],
+    "unverified_variants": [
+      "Authentic Alteryx Radio Button XML option-source settings are not verified"
     ]
   },
   "reference_observation": {
@@ -72,10 +76,11 @@
     ]
   },
   "independent_tests": {
-    "count": 1,
-    "passing": 1,
+    "count": 2,
+    "passing": 2,
     "tests": [
-      "test_fe_interop.ImportTests.test_native_choice_controls_enforce_single_and_multi_select_shapes"
+      "test_fe_interop.ImportTests.test_native_choice_controls_enforce_single_and_multi_select_shapes",
+      "test_interface_batch.QuestionTests.test_options_come_from_a_data_file_and_follow_its_changes"
     ]
   },
   "sources": [

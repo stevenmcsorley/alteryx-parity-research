@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxGuiToolkit.Questions.ControlParam.ControlParam",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/interface-tools/control-parameter-tool.html",
-  "status": "in-progress",
-  "implementation_status": "in-progress",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [
@@ -24,7 +24,8 @@
     "supported_variants": [
       "Native control-parameter question maps a parent control-record field to connected child configuration actions for each ordered Batch Macro invocation"
     ],
-    "unsupported_variants": [
+    "unsupported_variants": [],
+    "unverified_variants": [
       "Authentic Alteryx Control Parameter XML/action connection mapping is not verified"
     ],
     "preserved_runtime_xml": true
@@ -43,7 +44,8 @@
     "supported_variants": [
       "Native control-parameter question maps a parent control-record field to connected child configuration actions for each ordered Batch Macro invocation"
     ],
-    "unimplemented_variants": [
+    "unimplemented_variants": [],
+    "unverified_variants": [
       "Authentic Alteryx Control Parameter XML/action connection mapping is not verified"
     ]
   },

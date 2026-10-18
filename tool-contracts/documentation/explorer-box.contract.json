@@ -6,22 +6,24 @@
   "xml_tool_name": "AlteryxGuiToolkit.HtmlBox.HtmlBox",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/documentation/explorer-box-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "HideAddressBar",
-      "URL"
+    "status": "partially-specified",
+    "source": "docs/INTERFACE_APPLICATIONS.md",
+    "supported_variants": [
+      "Shows a web page (sandboxed frame), a folder listing or a text file preview; paths resolve against the workflow folder",
+      "Alteryx HtmlBox URL and HideAddressBar imported; the box is documentation and never runs"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Use the Resource",
-      "Adjust the Box"
-    ]
+    "unsupported_variants": [],
+    "unverified_variants": [
+      "Authentic HtmlBox XML value encoding is not verified against a reference fixture",
+      "Pages that forbid embedding render blank"
+    ],
+    "preserved_runtime_xml": true
   },
   "deterministic": null,
   "external_dependencies": [
@@ -29,7 +31,20 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "Flowbench native Explorer Box adapter",
+    "tool_id": "documentation:explorer-box",
+    "module": "flowengine.explorer + flowengine.interop.yxmd + desktop ExplorerNode",
+    "supported_variants": [
+      "Shows a web page (sandboxed frame), a folder listing or a text file preview; paths resolve against the workflow folder",
+      "Alteryx HtmlBox URL and HideAddressBar imported; the box is documentation and never runs"
+    ],
+    "unimplemented_variants": [],
+    "unverified_variants": [
+      "Authentic HtmlBox XML value encoding is not verified against a reference fixture",
+      "Pages that forbid embedding render blank"
+    ]
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -58,9 +73,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_interface_batch.ExplorerTests.test_explorer_shows_a_folder_a_file_or_a_web_address",
+      "test_interface_batch.ExplorerTests.test_html_box_imports_as_an_explorer_and_never_runs"
+    ]
   },
   "sources": [
     {
@@ -77,11 +95,16 @@
       "url": "data/reference-observations.json",
       "evidence_type": "authorised-reference-structural-scan",
       "accessed_utc": "2026-10-13T09:34:26+00:00"
+    },
+    {
+      "url": "docs/INTERFACE_APPLICATIONS.md",
+      "evidence_type": "project-authored-runtime-and-ui-evidence",
+      "accessed_utc": "2026-10-13T09:15:04.301501+00:00"
     }
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
+    "No independent row-processing kernel; this entry is implemented as a workflow application adapter.",
     "Anchors unknown: not described in public page text and not observed in shipped workflows."
   ]
 }
