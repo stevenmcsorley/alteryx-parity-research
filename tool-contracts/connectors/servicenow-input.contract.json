@@ -6,26 +6,102 @@
   "xml_tool_name": "ServiceNowInput_1_1_0",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/servicenow-input.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Configuration"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "table"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "servicenow"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "Saved ServiceNow connection, base URL https://<instance>.service-now.com"
+      },
+      "table": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Table name, for example incident"
+      },
+      "query": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Encoded query, e.g. active=true^ORDERBYnumber"
+      },
+      "fields": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^[a-z0-9_.]{1,80}$"
+        },
+        "uniqueItems": true,
+        "default": []
+      },
+      "display_values": {
+        "type": "boolean",
+        "default": false
+      },
+      "limit": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 0
+      },
+      "page_size": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10000,
+        "default": 1000
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 120
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.servicenow_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.crm",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -39,9 +115,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_crm.CrmTests.test_servicenow_pages_with_basic_auth_and_keeps_stored_values_as_text"
+    ]
   },
   "sources": [
     {
@@ -57,8 +135,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider servicenow: Checked against a controlled local fixture of the documented Table API. Live acceptance against a ServiceNow instance is pending (none available)."
   ]
 }

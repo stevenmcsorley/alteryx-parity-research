@@ -6,27 +6,113 @@
   "xml_tool_name": "SalesforceOutput_v1.3.1",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/salesforce-output-tool--new-.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Sign In to Salesforce",
-      "Configure the Tool"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "object"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "salesforce"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "Saved Salesforce connection (OAuth), base URL https://<domain>.my.salesforce.com"
+      },
+      "api_version": {
+        "type": "string",
+        "pattern": "^v[0-9]{2}\\.0$",
+        "default": "v62.0"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 120
+      },
+      "object": {
+        "type": "string",
+        "minLength": 1,
+        "description": "API name, for example Account or Invoice__c"
+      },
+      "mode": {
+        "enum": [
+          "insert",
+          "update",
+          "upsert",
+          "delete"
+        ],
+        "default": "insert"
+      },
+      "external_id_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "For upsert, e.g. External_Id__c"
+      },
+      "all_or_none": {
+        "type": "boolean",
+        "default": false
+      },
+      "confirm_delete": {
+        "type": "boolean",
+        "default": false
+      },
+      "fail_on_errors": {
+        "type": "boolean",
+        "default": false,
+        "description": "Fail the run if any record fails"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.salesforce_output",
+    "version": "1.0.0",
+    "module": "flowengine.tools.crm",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -41,9 +127,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_crm.CrmTests.test_output_reports_each_record_and_batches_two_hundred"
+    ]
   },
   "sources": [
     {
@@ -59,8 +147,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider salesforce: Checked against a controlled local fixture of the documented query and sObject Collections endpoints. Live acceptance against a Salesforce org is pending (no org available)."
   ]
 }

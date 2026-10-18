@@ -37,6 +37,7 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `microsoft-power-bi` (vendor) | Microsoft Power BI Output | a Web/API connection with OAuth 2.0 (device sign-in) | Controlled fixture of the documented push-dataset API. **Live acceptance against a Power BI workspace is pending** |
 | `google` (vendor) | Google Drive Input/Output, Google Sheets Input/Output, Google BigQuery Input/Output, Google Analytics 4 Input | one Web/API connection with OAuth 2.0 per Google API host; browser sign-in or a service account key | Controlled fixture of the documented endpoints, with service-account JWTs verified against the public key. **Live acceptance against Google is pending:** no Google Cloud project is available |
 | `box`, `dropbox`, `azure-data-lake` (vendor) | Box, Dropbox and Azure Data Lake File Input/Output | a Web/API connection with OAuth 2.0 | Controlled fixtures of the documented APIs. **Live acceptance is pending** for each: no Box, Dropbox or Azure storage account is available |
+| `salesforce`, `servicenow` (vendor) | Salesforce Input/Output, ServiceNow Input | a Web/API connection: OAuth for Salesforce; basic auth or OAuth for ServiceNow | Controlled fixtures of the documented REST APIs. **Live acceptance is pending:** no Salesforce org or ServiceNow instance is available |
 
 Apache Spark Code runs PySpark in local mode. `read_input(n)` returns a Spark DataFrame whose types are mapped from Flowbench types. `write_output(n, df)` collects the DataFrame and maps its types back exactly; types Flowbench cannot hold are rejected with a message. Remote clusters (Livy, Databricks) are not served by this provider.
 
@@ -121,6 +122,19 @@ All three read files exactly as Input Data reads them and write exactly as Outpu
 - **Azure Data Lake Storage Gen2** (`https://<account>.dfs.core.windows.net`) works on a file system (container) and a path. A file is created, appended in 8 MB chunks at increasing positions, then flushed. `If-None-Match: *` is sent when the file must not already exist.
 
 Each tool may send the token only to its vendor's own documented hosts. That list is fixed in Flowbench, never taken from a connection or a workflow.
+
+## Salesforce and ServiceNow
+
+- **Salesforce Input** runs SOQL (`query`, or `queryAll` with `include_deleted`) and follows `nextRecordsUrl` to the end.
+  - Relationship fields become dotted names (`Account.Name`), and child subqueries become JSON text.
+  - Dates and date-times are typed; date-times are in UTC.
+- **Salesforce Output** writes through sObject Collections, 200 records per request.
+  - Modes: insert, update (by `Id`), upsert (by an external id field), or delete (by `Id`, needs `confirm_delete`).
+  - Every record comes back with `SalesforceId`, `Success` and `Errors`, so one bad record doesn't hide the rest.
+  - `all_or_none` rolls back a whole batch if any record fails. `fail_on_errors` fails the run instead.
+- **ServiceNow Input** reads a table through the Table API, using an encoded query, chosen fields and offset paging.
+  - Values stay as the text the API returns: stored values, or display values with `display_values`. Reference fields are sys_ids.
+  - Basic authentication is supported, for an integration user, as well as OAuth.
 
 ## Amazon S3
 
