@@ -99,3 +99,32 @@ register(Provider(
     verification='Checked against a controlled local fixture of the documented Graph and Microsoft identity platform '
                  'endpoints (token grants, device code, drive items, upload sessions, list items, messages, paging, '
                  'throttling). Live acceptance against a Microsoft 365 tenant is pending (no tenant available).'))
+
+register(Provider(
+    id='microsoft-dataverse', family='microsoft-dataverse', name='Microsoft Dataverse / Dynamics 365 (Web API)', kind='vendor',
+    serves=('connectors:dataverse-input', 'connectors:dataverse-output', 'connectors:dynamics-crm-input',
+            'connectors:dynamics-crm-output'),
+    needs=('connection:web',), homepage='https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/overview',
+    semantics={'api': 'Dataverse Web API v9.2 (OData v4); Dynamics 365 apps store their data in Dataverse',
+               'reads': 'entity set with $select/$filter/$orderby, paged with odata.maxpagesize',
+               'writes': 'create, update (If-Match: *), upsert by primary or alternate key, delete',
+               'types': 'lookups as _<name>_value ids; dates in UTC'},
+    setup='Register an app in Microsoft Entra ID with Dataverse access. Add a Web/API connection: base URL '
+          'https://<org>.crm.dynamics.com/api/data/v9.2, OAuth, token URL https://login.microsoftonline.com/<tenant>/oauth2/v2.0/token, '
+          'the client id, and either a client secret with scope https://<org>.crm.dynamics.com/.default, or device sign-in.',
+    verification='Checked against a controlled local fixture of the documented Web API (paging, create, update, upsert by '
+                 'alternate key, delete). Live acceptance against a Dataverse environment is pending (none available).'))
+
+register(Provider(
+    id='microsoft-power-bi', family='microsoft-power-bi', name='Microsoft Power BI (push datasets)', kind='vendor',
+    serves=('connectors:microsoft-power-bi-output',), needs=('connection:web',),
+    homepage='https://learn.microsoft.com/en-us/rest/api/power-bi/push-datasets',
+    semantics={'api': 'Power BI REST API v1.0 push datasets', 'batches': 'at most 10,000 rows per request',
+               'limits': '75 columns; 4,000 characters per text value', 'types': 'Int64, Double, Decimal, Boolean, Datetime, String'},
+    setup='Register an app in Microsoft Entra ID with the Power BI Service Dataset.ReadWrite.All permission. Add a Web/API '
+          'connection: base URL https://api.powerbi.com/v1.0/myorg, OAuth, token URL '
+          'https://login.microsoftonline.com/<tenant>/oauth2/v2.0/token, the client id, and device sign-in with scope '
+          '"https://analysis.windows.net/powerbi/api/Dataset.ReadWrite.All offline_access" (push datasets do not work with '
+          'service principal profiles).',
+    verification='Checked against a controlled local fixture of the documented push dataset endpoints. Live acceptance '
+                 'against a Power BI workspace is pending (none available).'))
