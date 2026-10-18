@@ -169,7 +169,36 @@ def contract(tool) -> dict:
         out['expression_language'] = 'Call formula_reference for operators, keywords and the function list.'
     if m.tool_id in SEMANTICS:
         out['semantics'] = SEMANTICS[m.tool_id]
+    provider = provider_requirements(schema)
+    if provider:
+        out['provider'] = provider
     return out
+
+
+def provider_requirements(schema: dict) -> dict | None:
+    """For provider-backed tools: which providers can serve the node, whether each is ready here, and how to set it up."""
+    props = (schema or {}).get('properties', {})
+    allowed = (props.get('provider') or {}).get('enum')
+    if not allowed:
+        return None
+    from . import providers
+    connection_kind = (props.get('connection_id') or {}).get('x-flowbench-connection')
+    options = []
+    for pid in allowed:
+        try:
+            st = providers.status(providers.get(pid))
+        except Exception:  # an unknown provider id is a manifest bug; report it rather than hide the tool
+            options.append({'provider': pid, 'ready': False, 'missing': ['provider is not registered']})
+            continue
+        options.append({'provider': pid, 'name': st['name'], 'kind': st['kind'], 'ready': st['ready'],
+                        'missing': [c['detail'] for c in st['checks'] if not c['ok']], 'setup': st['setup'],
+                        'results': st['semantics'], 'verification': st['verification']})
+    note = ('Set provider to one of these ids; Flowbench never picks one. ')
+    if connection_kind:
+        note += (f'connection_id must name a saved {"database" if connection_kind.startswith("database") else "Web/API"} '
+                 'connection: call list_connections. If none fits, tell the user what to add (see setup); never ask for '
+                 'or handle secrets yourself.')
+    return {'options': options, 'connection': connection_kind, 'note': note}
 
 
 def formula_reference() -> dict:

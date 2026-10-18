@@ -57,6 +57,24 @@ def default_workspace() -> Path:
     return folder
 
 
+def _credential_state(store, conn) -> dict:
+    """Whether a connection has what it needs to authenticate; never the secret itself."""
+    if conn.auth == 'none':
+        return {'credential_saved': True}
+    try:
+        raw = store.secret(conn)
+    except Exception:
+        raw = ''
+    if conn.auth != 'oauth2':
+        return {'credential_saved': bool(raw)}
+    try:
+        held = json.loads(raw) if raw else {}
+    except ValueError:
+        held = {}
+    return {'credential_saved': bool(held), 'signed_in': bool(held.get('refresh_token')),
+            'app_credentials': bool(held.get('client_secret') or held.get('service_account'))}
+
+
 class EngineService:
     def __init__(self, notify=None, history_path: Path | None = None):
         import atexit
@@ -322,7 +340,7 @@ class EngineService:
         from .service_connections import ServiceConnectionStore
         store = ServiceConnectionStore()
         if method == 'credentials.list':
-            return [c.public() for c in store.list(params.get('kind'))]
+            return [{**c.public(), **_credential_state(store, c)} for c in store.list(params.get('kind'))]
         if method == 'credentials.save':
             secret = params.get('secret') or None
             data = dict(params.get('connection') or {})

@@ -102,9 +102,12 @@ class DatabaseTests(HostCase):
                 return {'database.connections.list': [{'id': 'c1', 'name': 'Warehouse', 'dialect': 'postgresql'}],
                         'database.schemas': ['public'], 'database.tables': ['sales'],
                         'database.columns': [{'name': 'amount', 'type': 'double'}],
-                        'database.preview': {'fields': [], 'total_rows': 0, 'rows': []}}[method]
+                        'database.preview': {'fields': [], 'total_rows': 0, 'rows': []},
+                        'credentials.list': [{'id': 'svc_1', 'name': 'Graph', 'kind': 'web', 'base_url': 'https://graph.microsoft.com/v1.0',
+                                              'auth': 'oauth2', 'credential_saved': True, 'signed_in': True}]}[method]
         svc = Service()
-        self.assertEqual(self.call('list_connections', service=svc)['result']['connections'][0]['name'], 'Warehouse')
+        listed = self.call('list_connections', service=svc)['result']
+        self.assertEqual((listed['databases'][0]['name'], listed['web_connections'][0]['signed_in']), ('Warehouse', True))
         self.assertEqual(self.call('list_tables', service=svc, connection_id='c1')['result'], {'schemas': ['public']})
         self.assertEqual(self.call('list_tables', service=svc, connection_id='c1', schema='public')['result']['tables'], ['sales'])
         self.assertEqual(self.call('describe_table', service=svc, connection_id='c1', table='sales')['result']['columns'][0]['name'], 'amount')

@@ -68,7 +68,8 @@ export function activityLabel(tool: string, args: Args = {}, state?: Pick<Editor
     case 'agent.start_process': return `Starting ${((args.argv as string[] | undefined) ?? []).join(' ')}…`;
     case 'agent.process_status': return 'Checking a running process…';
     case 'agent.stop_process': return 'Stopping a process…';
-    case 'agent.list_connections': return 'Listing database connections…';
+    case 'agent.list_connections': return 'Listing saved connections…';
+    case 'agent.list_providers': return 'Checking providers and integrations…';
     case 'agent.list_tables': return 'Listing database tables…';
     case 'agent.describe_table': return `Reading the columns of ${String(args.table ?? 'a table')}…`;
     case 'agent.query_database': return 'Querying the database…';

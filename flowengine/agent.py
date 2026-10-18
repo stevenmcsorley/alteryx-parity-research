@@ -685,8 +685,35 @@ def _db(ctx: Context, method: str, **params):
 
 
 def list_connections(ctx: Context) -> dict:
-    return {'connections': _db(ctx, 'database.connections.list'),
-            'note': 'Saved connections only; credentials stay in the system vault.'}
+    databases = _db(ctx, 'database.connections.list')
+    services = _db(ctx, 'credentials.list')
+    return {'databases': [{k: c.get(k) for k in ('id', 'name', 'dialect', 'host', 'port', 'database', 'allow_writes')} for c in databases],
+            'web_connections': [{k: c.get(k) for k in ('id', 'name', 'kind', 'base_url', 'auth', 'credential_saved', 'signed_in',
+                                                       'app_credentials') if k in c} for c in services],
+            'note': 'Saved connections only; credentials stay in the system vault. Use a connection id as connection_id. '
+                    'Database tools take databases (dialect mongodb for the MongoDB tools); provider-backed tools take '
+                    'web_connections whose base_url matches the service. An OAuth connection that is not signed in and has '
+                    'no app credentials needs the user to sign in under Integrations.'}
+
+
+def list_providers(ctx: Context, tool_id: str | None = None) -> dict:
+    """Providers behind the connector and runtime tools: ready here or not, what is missing, how to set them up."""
+    if ctx.service is None:
+        raise EngineError('Provider status is unavailable here', code='unavailable')
+    providers = ctx.service.handle('integrations.providers', {})
+    if tool_id:
+        from .plugin import default_registry
+        try:
+            cids = set(default_registry().get(tool_id).manifest.catalog_ids)
+        except Exception:
+            raise EngineError(f'Unknown tool {tool_id!r}; use find_tools', code='not-found') from None
+        providers = [p for p in providers if cids & set(p['serves'])]
+    return {'providers': [{'id': p['id'], 'name': p['name'], 'kind': p['kind'], 'ready': p['ready'], 'serves': p['serves'],
+                           'missing': [c['detail'] for c in p['checks'] if not c['ok']], 'setup': p['setup'],
+                           'results': p['semantics'], 'verification': p['verification']} for p in providers],
+            'licences': ctx.service.handle('integrations.entitlements.list', {}),
+            'note': 'A provider that is not ready needs the user to act (install a runtime, add a connection, record a licence). '
+                    'Declared licences are never validated with the vendor.'}
 
 
 def list_tables(ctx: Context, connection_id: str, schema: str | None = None) -> dict:
@@ -790,7 +817,11 @@ OPS: dict[str, Op] = {op.name: op for op in [
                                  'next_path': {'type': 'string'}, 'max_pages': {'type': 'integer', 'minimum': 1}}),
              'connection_id': {'type': ['string', 'null']}, 'save_as': {'type': ['string', 'null']}}, ['url']),
        agent_web.fetch_api, open_world=True, writes_files=True, permissions=('network', 'file_writes')),
-    Op('list_connections', 'List the saved database connections (name, kind, host, database; never credentials).', _obj({}), list_connections),
+    Op('list_connections', 'List the saved connections: databases (PostgreSQL, SQL Server, MongoDB) and Web/API connections '
+                           '(base URL, authentication, whether a credential or sign-in is saved; never the credentials).', _obj({}), list_connections),
+    Op('list_providers', 'Status of the providers behind connector and runtime tools (Salesforce, Google, Spark, ...): ready or '
+                         'not, what is missing and how to set it up. tool_id narrows it to the providers of one tool.',
+       _obj({'tool_id': {'type': ['string', 'null']}}), list_providers),
     Op('list_tables', 'List the schemas of a saved database connection, or the tables in one schema.',
        _obj({'connection_id': {'type': 'string', 'minLength': 1}, 'schema': {'type': ['string', 'null']}}, ['connection_id']), list_tables),
     Op('describe_table', 'Columns and types of a database table.',
