@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { engine, describe } from '../state/engineActions';
 
-type Connection = { id: string; name: string; dialect: 'postgresql' | 'sqlserver'; host: string; port: number;
+type Connection = { id: string; name: string; dialect: 'postgresql' | 'sqlserver' | 'mongodb'; host: string; port: number;
   database: string; user: string; tls: string; ca_file?: string | null; connect_timeout: number; query_timeout: number;
   allow_writes: boolean };
 const blank = (): Connection => ({ id: '', name: '', dialect: 'postgresql', host: 'localhost', port: 5432,
@@ -55,8 +55,8 @@ export function DatabaseConnections({ close }: { close: () => void }) {
           <label>Name<input value={form.name} onChange={(e) => set('name', e.target.value)} /></label>
           <label>Database type<select value={form.dialect} onChange={(e) => {
             const dialect = e.target.value as Connection['dialect'];
-            setForm((f) => ({ ...f, dialect, port: dialect === 'postgresql' ? 5432 : 1433 }));
-          }}><option value="postgresql">PostgreSQL</option><option value="sqlserver">Microsoft SQL Server</option></select></label>
+            setForm((f) => ({ ...f, dialect, port: dialect === 'postgresql' ? 5432 : dialect === 'mongodb' ? 27017 : 1433 }));
+          }}><option value="postgresql">PostgreSQL</option><option value="sqlserver">Microsoft SQL Server</option><option value="mongodb">MongoDB</option></select></label>
           <label>Host<input value={form.host} onChange={(e) => set('host', e.target.value)} /></label>
           <label>Port<input type="number" min="1" max="65535" value={form.port} onChange={(e) => set('port', e.target.value)} /></label>
           <label>Database<input value={form.database} onChange={(e) => set('database', e.target.value)} /></label>
@@ -64,9 +64,9 @@ export function DatabaseConnections({ close }: { close: () => void }) {
           <label>Password<input type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={form.id ? 'Leave blank to keep saved credential' : ''} /></label>
           <label>TLS<select value={form.tls} onChange={(e) => set('tls', e.target.value)}>
             <option value="disable">Disable</option><option value="prefer">Prefer</option><option value="require">Require</option>
-            {form.dialect === 'postgresql' && <option value="verify-full">Verify certificate and host</option>}
+            {form.dialect !== 'sqlserver' && <option value="verify-full">Verify certificate and host</option>}
           </select></label>
-          {form.dialect === 'postgresql' && <label>CA certificate path<input value={form.ca_file ?? ''} onChange={(e) => set('ca_file', e.target.value || null)} /></label>}
+          {form.dialect !== 'sqlserver' && <label>CA certificate path<input value={form.ca_file ?? ''} onChange={(e) => set('ca_file', e.target.value || null)} /></label>}
           <label>Connection timeout (seconds)<input type="number" min="1" value={form.connect_timeout} onChange={(e) => set('connect_timeout', e.target.value)} /></label>
           <label>Query timeout (seconds; 0 = none)<input type="number" min="0" value={form.query_timeout} onChange={(e) => set('query_timeout', e.target.value)} /></label>
           <label className="db-check"><input type="checkbox" checked={form.allow_writes} onChange={(e) => set('allow_writes', e.target.checked)} />Allow database writes on this connection</label>

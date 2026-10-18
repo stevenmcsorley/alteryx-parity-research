@@ -36,6 +36,35 @@ jobs:
       - name: Execute Apache Spark Code integration test (a skip fails the job)
         run: python scripts/run_gated_tests.py spark-runtime
 
+  service-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install engine dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Start an S3-compatible server that checks signatures (SeaweedFS) and MongoDB 7.0
+        run: |
+          mkdir -p "$RUNNER_TEMP/s3cfg"
+          echo '{"identities":[{"name":"fbtest","credentials":[{"accessKey":"fbtestkey","secretKey":"fbtestsecret123"}],"actions":["Admin","Read","Write","List","Tagging"]}]}' > "$RUNNER_TEMP/s3cfg/s3.json"
+          docker run -d --name fb-seaweed -p 127.0.0.1:18333:8333 -v "$RUNNER_TEMP/s3cfg:/cfg:ro" chrislusf/seaweedfs:3.97 server -s3 -s3.config=/cfg/s3.json -dir=/data -master.volumeSizeLimitMB=16 -volume.max=40
+          docker run -d --name fb-mongo -p 127.0.0.1:27018:27017 -e MONGO_INITDB_ROOT_USERNAME=fbtest -e MONGO_INITDB_ROOT_PASSWORD=fbtestsecret123 mongo:7.0
+          for i in $(seq 60); do curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:18333/ | grep -q '403\|200' && break; sleep 2; done
+          for i in $(seq 60); do docker exec fb-mongo mongosh --quiet -u fbtest -p fbtestsecret123 --eval 'db.runCommand({ping:1}).ok' 2>/dev/null | grep -q 1 && break; sleep 2; done
+          sleep 3
+      - name: Execute S3 and MongoDB integration tests (a skip fails the job)
+        env:
+          FLOWBENCH_S3_ENDPOINT: http://127.0.0.1:18333
+          FLOWBENCH_S3_KEY: fbtestkey
+          FLOWBENCH_S3_SECRET: fbtestsecret123
+          FLOWBENCH_MONGO_HOST: 127.0.0.1
+          FLOWBENCH_MONGO_PORT: '27018'
+          FLOWBENCH_MONGO_USER: fbtest
+          FLOWBENCH_MONGO_PASSWORD: fbtestsecret123
+        run: python scripts/run_gated_tests.py service-integration
+
   database-integration:
     runs-on: ubuntu-latest
     steps:

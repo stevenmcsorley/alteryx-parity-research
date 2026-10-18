@@ -16,7 +16,8 @@ from pathlib import Path
 from ..errors import ConfigError
 from ..runtimes import home
 
-DIALECTS = ('postgresql', 'sqlserver')
+DIALECTS = ('postgresql', 'sqlserver')       # SQL databases (Database Input/Output, In-Database tools)
+DOCUMENT_STORES = ('mongodb',)               # document databases (MongoDB Input/Output)
 TLS_MODES = ('disable', 'prefer', 'require', 'verify-full')
 _SECRET_KEYS = re.compile(r'pass|secret|token|pwd', re.I)
 
@@ -55,8 +56,8 @@ class Connection:
     options: dict = field(default_factory=dict)
 
     def validate(self):
-        if self.dialect not in DIALECTS:
-            raise ConfigError(f'Unsupported database type {self.dialect!r}; supported: {DIALECTS}')
+        if self.dialect not in DIALECTS + DOCUMENT_STORES:
+            raise ConfigError(f'Unsupported database type {self.dialect!r}; supported: {DIALECTS + DOCUMENT_STORES}')
         if self.tls not in TLS_MODES:
             raise ConfigError(f'TLS mode must be one of {TLS_MODES}')
         if not self.host or not self.database or not self.user:

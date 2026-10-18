@@ -17,6 +17,18 @@ def workflow(nodes):
 
 
 class WorkflowEffectsTests(unittest.TestCase):
+    def test_provider_backed_tools_declare_network_and_remote_writes_from_their_config(self):
+        nodes = [macro('get', 'core.server_api', {'method': 'GET', 'endpoint': 'v3/workflows'}),
+                 macro('put', 'core.server_api', {'method': 'PUT', 'endpoint': 'v3/workflows/x'}),
+                 macro('lic', 'core.license_api', {'method': 'PATCH', 'endpoint': 'v1/devices'}),
+                 macro('dt', 'core.non_overlap_drivetime', {}),
+                 macro('s3in', 'core.s3_download', {}), macro('s3out', 'core.s3_upload', {})]
+        with tempfile.TemporaryDirectory() as d:
+            found = workflow_effects(workflow(nodes), d)
+        self.assertEqual([r['node_id'] for r in found['network_requests']], ['get', 'put', 'lic', 'dt', 's3in', 's3out'])
+        self.assertEqual([r['node_id'] for r in found['remote_writes']], ['put', 'lic', 's3out'])
+        self.assertEqual(found['unresolved'], [])
+
     def test_embedded_batch_and_iterative_macros_report_nested_blob_output(self):
         leaf = workflow([macro('writer', 'core.blob_output', {'path': 'out.bin'})])
         middle = workflow([macro('loop', 'flowengine.iterative_macro', {'workflow': leaf})])

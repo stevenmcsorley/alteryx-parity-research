@@ -188,6 +188,9 @@ class _ApiTool(Tool):
     def infer(self, ctx, cfg, inputs):
         return {'fail': FAIL_SCHEMA, 'log': LOG_SCHEMA}
 
+    def effects(self, cfg):
+        return {'network_requests'} | ({'remote_writes'} if cfg.get('method', 'GET') != 'GET' else set())
+
     def run(self, ctx, cfg, inputs):
         return _run(self, ctx, cfg, inputs)
 
