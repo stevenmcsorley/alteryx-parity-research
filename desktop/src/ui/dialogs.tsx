@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { isTauri } from '../engine/transport';
+import { engine } from '../state/engineActions';
 
 type Request = { title: string; initial: string; ext: string; mode: 'save' | 'open'; resolve: (v: string | null) => void };
-export type AppQuestion = { id: string; label?: string; type: 'text' | 'text-area' | 'boolean' | 'number' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder' | 'tree'; default?: unknown; required?: boolean; options?: unknown[]; description?: string; secret?: boolean; minimum?: number; maximum?: number; mode?: 'open' | 'save'; extensions?: string[] };
+export type AppQuestion = { id: string; label?: string; type: 'text' | 'text-area' | 'boolean' | 'number' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder' | 'tree' | 'map' | 'connection'; kinds?: string[]; default?: unknown; required?: boolean; options?: unknown[]; description?: string; secret?: boolean; minimum?: number; maximum?: number; mode?: 'open' | 'save'; extensions?: string[] };
 type AppRequest = { title: string; questions: AppQuestion[]; resolve: (v: Record<string, unknown> | null) => void };
 let host: ((r: Request) => void) | null = null;
 let appHost: ((r: AppRequest) => void) | null = null;
@@ -78,7 +79,7 @@ function ApplicationDialog({ request, close }: { request: AppRequest; close: (v:
     if (missing) { setError(`${missing.label || missing.id} is required.`); return; }
     const outOfRange = request.questions.find((q) => q.type === 'number' && values[q.id] != null && ((q.minimum != null && Number(values[q.id]) < q.minimum) || (q.maximum != null && Number(values[q.id]) > q.maximum)));
     if (outOfRange) { setError(`${outOfRange.label || outOfRange.id} is outside the allowed range.`); return; }
-    close(values);
+    close(Object.fromEntries(request.questions.map((q) => [q.id, q.type === 'map' ? mapAnswer(values[q.id]) : values[q.id]])));
   };
   return <div className="modal-backdrop" onMouseDown={() => close(null)}>
     <div className="modal" role="dialog" aria-modal="true" aria-label={request.title} onMouseDown={(e) => e.stopPropagation()}>
@@ -95,6 +96,10 @@ function ApplicationDialog({ request, close }: { request: AppRequest; close: (v:
           onChange={(e) => setValues({ ...values, [q.id]: e.target.checked })} />
           : q.type === 'choice' || q.type === 'multi-choice' ? <select aria-label={q.label || q.id} multiple={q.type === 'multi-choice'} value={q.type === 'multi-choice' ? (values[q.id] as string[] ?? []) : String(values[q.id] ?? '')}
             onChange={(e) => setValues({ ...values, [q.id]: q.type === 'multi-choice' ? [...e.target.selectedOptions].map((o) => o.value) : e.target.value })}>{(q.options ?? []).map((option) => <option key={String(option)} value={String(option)}>{String(option)}</option>)}</select>
+            : q.type === 'connection' ? <ConnectionChoice question={q} value={String(values[q.id] ?? '')} onChange={(v) => setValues({ ...values, [q.id]: v })} />
+            : q.type === 'map' ? <textarea aria-label={q.label || q.id} rows={4} placeholder="Longitude, latitude — or a GeoJSON geometry"
+              value={typeof values[q.id] === 'string' ? String(values[q.id]) : JSON.stringify(values[q.id] ?? '')}
+              onChange={(e) => setValues({ ...values, [q.id]: e.target.value })} />
             : q.type === 'text-area' ? <textarea aria-label={q.label || q.id} rows={5} value={String(values[q.id] ?? '')} onChange={(e) => setValues({ ...values, [q.id]: e.target.value })} />
               : <span style={{ display: 'flex', gap: 6 }}>{(q.type === 'file' || q.type === 'folder') && <button type="button" onClick={() => void choosePath(q)}>Browse…</button>}<input aria-label={q.label || q.id} type={q.secret ? 'password' : q.type === 'number' ? 'number' : q.type === 'date' ? 'date' : 'text'} min={q.type === 'number' ? q.minimum : undefined} max={q.type === 'number' ? q.maximum : undefined} value={String(values[q.id] ?? '')}
                 onChange={(e) => setValues({ ...values, [q.id]: q.type === 'number' ? (e.target.value === '' ? null : Number(e.target.value)) : e.target.value })} /></span>}
@@ -133,4 +138,30 @@ function TreeChoice({ item, selected, onSelect }: { item: TreeChoiceItem; select
   </details>;
   return <button type="button" role="treeitem" aria-pressed={selected === item.value} className="application-tree-leaf"
     onClick={() => item.value && onSelect(item.value)}>{item.label}</button>;
+}
+
+/** "lon, lat" as a GeoJSON point; anything else is sent as typed and checked by the engine. */
+export function mapAnswer(value: unknown): unknown {
+  const m = typeof value === 'string' ? value.trim().match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/) : null;
+  return m ? { type: 'Point', coordinates: [Number(m[1]), Number(m[2])] } : value;
+}
+
+type SavedConnection = { id: string; name?: string; kind?: string };
+
+/** Saved database (Connections panel) and web/GitHub/SMTP connections, filtered by the question's kinds. */
+function ConnectionChoice({ question, value, onChange }: { question: AppQuestion; value: string; onChange: (v: string) => void }) {
+  const [items, setItems] = useState<SavedConnection[] | null>(null);
+  useEffect(() => {
+    const kinds = question.kinds?.length ? question.kinds : ['database', 'web', 'github', 'smtp'];
+    void Promise.all([
+      kinds.includes('database') ? engine().request<SavedConnection[]>('database.connections.list').then((r) => r.map((c) => ({ ...c, kind: 'database' }))) : [],
+      engine().request<SavedConnection[]>('credentials.list', {}).then((r) => r.filter((c) => kinds.includes(String(c.kind)))),
+    ]).then(([db, other]) => setItems([...db, ...other])).catch(() => setItems([]));
+  }, [question.kinds]);
+  if (items === null) return <span>Loading connections…</span>;
+  if (!items.length) return <span>No saved {question.kinds?.join(' / ') ?? ''} connections. Add one in Settings.</span>;
+  return <select aria-label={question.label || question.id} value={value} onChange={(e) => onChange(e.target.value)}>
+    <option value="">Choose a connection</option>
+    {items.map((c) => <option key={c.id} value={c.id}>{c.name || c.id} ({c.kind})</option>)}
+  </select>;
 }

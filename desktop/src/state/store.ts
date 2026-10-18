@@ -66,6 +66,7 @@ export type EditorState = {
   addApplicationCondition(position: { x: number; y: number }): string;
   addApplicationError(position: { x: number; y: number }): string;
   addComment(position: { x: number; y: number }): string;
+  addExplorer(position: { x: number; y: number }): string;
   updateNodeData(id: string, patch: Record<string, unknown>, record?: boolean): void;
   deleteSelected(): void;
   selectAll(): void;
@@ -260,8 +261,8 @@ export const useEditor = create<EditorState>((set, get) => ({
     get().checkpoint();
     set({ nodes: [...s.nodes.map((n) => ({ ...n, selected: false })), { id, type: 'applicationAction', position,
       selected: true, data: { kind: 'application-action', question: { id: questionId, prompt,
-        type: (questionType === 'control-parameter' ? 'control-parameter' : questionType === 'tree' ? 'tree' : questionType === 'text-box' ? 'text-area' : questionType === 'check-box' ? 'boolean' : questionType === 'numeric-up-down' ? 'number' : questionType === 'drop-down' || questionType === 'radio-button' ? 'choice' : questionType === 'date' ? 'date' : questionType === 'file-browse' ? 'file' : questionType === 'folder-browse' ? 'folder' : questionType === 'list-box' ? 'multi-choice' : 'text') as any,
-        ...(questionType === 'control-parameter' ? { control_field: '' } : {}),
+        type: (questionType === 'control-parameter' ? 'control-parameter' : questionType === 'tree' || questionType === 'map' || questionType === 'connection' ? questionType : questionType === 'text-box' ? 'text-area' : questionType === 'check-box' ? 'boolean' : questionType === 'numeric-up-down' ? 'number' : questionType === 'drop-down' || questionType === 'radio-button' ? 'choice' : questionType === 'date' ? 'date' : questionType === 'file-browse' ? 'file' : questionType === 'folder-browse' ? 'folder' : questionType === 'list-box' ? 'multi-choice' : 'text') as any,
+        ...(questionType === 'control-parameter' ? { control_field: '' } : questionType === 'connection' ? { kinds: ['database'] } : {}),
         ...(['drop-down', 'radio-button'].includes(questionType) ? { options: ['Option 1', 'Option 2'] } : questionType === 'tree' ? { options: ['Sales > Online', 'Sales > Retail', 'Returns'], default: 'Sales > Online' } : questionType === 'list-box' ? { type: 'multi-choice' as const, options: ['Option 1', 'Option 2'] } : {}),
         ...(questionType === 'numeric-up-down' ? { minimum: 0, maximum: 100, default: 0 } : questionType === 'check-box' ? { default: false } : {}) },
         config_path: ['expression'] } }] });
@@ -288,6 +289,13 @@ export const useEditor = create<EditorState>((set, get) => ({
     return id;
   },
 
+  addExplorer: (position) => {
+    const s = get();
+    const id = nextNodeId('explorer', s.nodes.map((n) => n.id));
+    get().checkpoint();
+    set({ nodes: [...s.nodes, { id, type: 'explorer', position, data: { kind: 'explorer', url: '' }, style: { width: 320, height: 240 } }] });
+    return id;
+  },
   addComment: (position) => {
     const s = get();
     const id = nextNodeId('comment', s.nodes.map((n) => n.id));

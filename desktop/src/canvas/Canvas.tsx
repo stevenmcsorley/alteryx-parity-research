@@ -92,6 +92,11 @@ export function Canvas() {
       addApplicationError({ x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
       return;
     }
+    if (toolId === 'flowengine.explorer') {
+      const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      useEditor.getState().addExplorer({ x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });
+      return;
+    }
     if (toolId === 'flowengine.comment') {
       const pos = flow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
       addComment({ x: Math.round(pos.x - 80), y: Math.round(pos.y - 25) });

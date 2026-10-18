@@ -1,8 +1,9 @@
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { Handle, NodeResizer, Position, type NodeProps } from '@xyflow/react';
 import { useEditor } from '../state/store';
-import type { ApplicationActionNodeData, ApplicationConditionNodeData, ApplicationErrorNodeData, CanvasNode, CommentNodeData, ContainerNodeData, ToolNodeData } from '../model/workflow';
+import type { ApplicationActionNodeData, ApplicationConditionNodeData, ApplicationErrorNodeData, CanvasNode, CommentNodeData, ContainerNodeData, ExplorerNodeData, ToolNodeData } from '../model/workflow';
 import { categoryColor, glyph } from '../ui/categories';
+import { engine } from '../state/engineActions';
 
 const PORT_H = 20;
 
@@ -134,6 +135,44 @@ export const CommentNode = memo(function CommentNode({ id, data, selected }: Nod
   );
 });
 
+type Explored = { kind: 'web'; url: string } | { kind: 'folder'; path: string; total: number; entries: { name: string; folder: boolean; bytes: number | null }[] }
+  | { kind: 'file'; path: string; bytes: number; text: string | null; truncated: boolean };
+
+/** Explorer Box: shows a web address, a file's text or a folder's contents on the canvas. Never part of a run. */
+export const ExplorerNode = memo(function ExplorerNode({ id, data, selected }: NodeProps<CanvasNode>) {
+  const d = data as ExplorerNodeData;
+  const update = useEditor((s) => s.updateNodeData);
+  const baseDir = useEditor((s) => s.baseDir);
+  const [shown, setShown] = useState<Explored | null>(null);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    setShown(null); setError('');
+    if (!d.url.trim()) return;
+    let live = true;
+    void engine().request<Explored>('workflow.explore', { url: d.url, base_dir: baseDir })
+      .then((r) => { if (live) setShown(r); }).catch((e) => { if (live) setError(String(e?.message ?? e)); });
+    return () => { live = false; };
+  }, [d.url, baseDir]);
+  return (
+    <div className="explorer-node" data-testid={`explorer-${id}`}>
+      <NodeResizer isVisible={!!selected} minWidth={180} minHeight={100} />
+      {!d.hide_address_bar && <input aria-label="Explorer address" className="nodrag" defaultValue={d.url} placeholder="https://…, a file or a folder"
+        onBlur={(e) => e.target.value !== d.url && update(id, { url: e.target.value.trim() })}
+        onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} />}
+      <div className="explorer-body nodrag nowheel">
+        {error ? <span className="explorer-error">{error}</span>
+          : !shown ? <span className="annot">{d.url ? 'Loading…' : 'Enter a web address, file or folder'}</span>
+          // Sandboxed without allow-same-origin: the page gets an opaque origin and cannot reach the app.
+          : shown.kind === 'web' ? <iframe title={`Explorer ${id}`} src={shown.url} sandbox="allow-scripts allow-forms allow-popups" referrerPolicy="no-referrer" />
+          : shown.kind === 'folder' ? <ul aria-label="Folder contents">{shown.entries.map((e) => <li key={e.name}>{e.folder ? '📁' : '📄'} {e.name}</li>)}
+            {shown.total > shown.entries.length && <li className="annot">…and {shown.total - shown.entries.length} more</li>}</ul>
+          : shown.text == null ? <span className="annot">{shown.path} ({shown.bytes} bytes, not text)</span>
+          : <pre>{shown.text}{shown.truncated ? '\n…' : ''}</pre>}
+      </div>
+    </div>
+  );
+});
+
 export const ContainerNode = memo(function ContainerNode({ id, data, selected }: NodeProps<CanvasNode>) {
   const d = data as ContainerNodeData;
   const update = useEditor((s) => s.updateNodeData);
@@ -150,4 +189,4 @@ export const ContainerNode = memo(function ContainerNode({ id, data, selected }:
   );
 });
 
-export const nodeTypes = { tool: ToolNode, applicationAction: ApplicationActionNode, applicationCondition: ApplicationConditionNode, applicationError: ApplicationErrorNode, comment: CommentNode, container: ContainerNode };
+export const nodeTypes = { tool: ToolNode, applicationAction: ApplicationActionNode, applicationCondition: ApplicationConditionNode, applicationError: ApplicationErrorNode, comment: CommentNode, explorer: ExplorerNode, container: ContainerNode };

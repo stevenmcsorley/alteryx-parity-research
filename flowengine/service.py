@@ -164,9 +164,12 @@ class EngineService:
                 for (node, anchor), s in sorted(plan.schemas.items()):
                     schemas.setdefault(node, {})[anchor] = s.to_list()
             return {'valid': not problems, 'problems': problems, 'schemas': schemas}
+        if method == 'workflow.explore':
+            from .explorer import explore
+            return explore(params.get('url', ''), params.get('base_dir'))
         if method == 'workflow.application':
             from .interface_app import describe_application
-            return describe_application(params['workflow'])
+            return describe_application(params['workflow'], params.get('base_dir'))
         if method == 'workflow.run':
             n = int(params.get('preview_rows', 100))
             try:

@@ -54,6 +54,22 @@ describe('workflow model', () => {
     expect(saved.metadata?.application?.questions[0]).toEqual({ id: 'threshold', label: 'Threshold', type: 'text', default: '[amount] > 2' });
   });
 
+  it('round-trips Explorer Boxes, sourced options and formula / input actions', () => {
+    const appDoc = { ...doc, metadata: { ...doc.metadata!, ui: { ...doc.metadata!.ui, explorers: [{ id: 'x1', url: 'docs', hide_address_bar: true, position: { x: 5, y: 600 }, size: { width: 400, height: 300 } }] },
+      application: {
+        questions: [{ id: 'region', label: 'Region', type: 'choice', source: { kind: 'file', path: 'regions.csv', field: 'region' } },
+          { id: 'month', label: 'Month', type: 'file' }],
+        actions: [{ question: 'region', node_id: 'b', config_path: ['expression'], kind: 'formula', expression: '"[region] = \'" + [region] + "\'"' },
+          { question: 'month', node_id: 'a', config_path: ['path'], kind: 'input' }],
+      } } } as WorkflowDoc;
+    const graph = fromDocument(appDoc);
+    expect(graph.nodes.find((n) => n.id === 'x1')?.data).toEqual({ kind: 'explorer', url: 'docs', hide_address_bar: true });
+    const saved = toDocument(graph);
+    expect(saved.metadata!.ui.explorers[0]).toMatchObject({ id: 'x1', url: 'docs', hide_address_bar: true, position: { x: 5, y: 600 }, size: { width: 400, height: 300 } });
+    expect(saved.metadata?.application?.actions).toEqual(appDoc.metadata?.application?.actions);
+    expect(saved.metadata?.application?.questions[0].source).toEqual({ kind: 'file', path: 'regions.csv', field: 'region' });
+  });
+
   it('preserves conditional Action predicates across desktop workflow roundtrips', () => {
     const appDoc = { ...doc, metadata: { ...doc.metadata!, application: {
       questions: [{ id: 'enabled', label: 'Enable', type: 'boolean', default: false },

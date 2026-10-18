@@ -16,18 +16,23 @@ export type ToolNodeData = {
   disabled?: boolean;
 };
 export type CommentNodeData = { kind: 'comment'; text: string };
+export type ExplorerNodeData = { kind: 'explorer'; url: string; hide_address_bar?: boolean };
 export type ContainerNodeData = { kind: 'container'; caption: string; disabled?: boolean; collapsed?: boolean };
 export type ApplicationActionNodeData = {
   kind: 'application-action';
-  question: { id: string; prompt: string; label?: string; description?: string; type: 'text' | 'text-area' | 'number' | 'boolean' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder' | 'control-parameter' | 'tree'; control_field?: string; required?: boolean; default?: unknown; options?: unknown[]; secret?: boolean; minimum?: number; maximum?: number; mode?: 'open' | 'save'; extensions?: string[] };
+  question: { id: string; prompt: string; label?: string; description?: string; type: 'text' | 'text-area' | 'number' | 'boolean' | 'choice' | 'multi-choice' | 'date' | 'file' | 'folder' | 'control-parameter' | 'tree' | 'map' | 'connection'; control_field?: string; kinds?: string[];
+    source?: { kind: 'file'; path: string; field?: string; fields?: string[] } | { kind: 'folder'; path: string; depth?: number; extensions?: string[] }; required?: boolean; default?: unknown; options?: unknown[]; secret?: boolean; minimum?: number; maximum?: number; mode?: 'open' | 'save'; extensions?: string[] };
   config_path: string[];
+  /** value (default): the answer itself; formula: an expression over all answers; input: point an Input Data at the answer. */
+  action_kind?: 'value' | 'formula' | 'input';
+  expression?: string;
   when?: { question: string; operator: 'equals' | 'not_equals' | 'truthy' | 'falsy' | 'contains' | 'not_contains' | 'greater_than' | 'greater_than_or_equal' | 'less_than' | 'less_than_or_equal'; value?: unknown };
   source_action_index?: number;
 };
 export type ApplicationPredicate = NonNullable<ApplicationActionNodeData['when']>;
 export type ApplicationConditionNodeData = { kind: 'application-condition'; when: ApplicationPredicate };
 export type ApplicationErrorNodeData = { kind: 'application-error'; message: string; when?: ApplicationPredicate };
-export type CanvasNodeData = ToolNodeData | CommentNodeData | ContainerNodeData | ApplicationActionNodeData | ApplicationConditionNodeData | ApplicationErrorNodeData;
+export type CanvasNodeData = ToolNodeData | CommentNodeData | ExplorerNodeData | ContainerNodeData | ApplicationActionNodeData | ApplicationConditionNodeData | ApplicationErrorNodeData;
 export type CanvasNode = Node<CanvasNodeData>;
 export type CanvasEdge = Edge<{ kind?: 'application-action' | 'application-condition' }>;
 
@@ -73,6 +78,7 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
   const nodes: WorkflowDoc['nodes'] = [];
   const containers: any[] = [];
   const comments: any[] = [];
+  const explorers: any[] = [];
   const applicationActions: any[] = [];
   const applicationConditions: any[] = [];
   const applicationErrors: any[] = [];
@@ -96,6 +102,7 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
       const link = g.edges.find((e) => e.source === n.id && e.sourceHandle === 'Action' && e.data?.kind === 'application-action');
       const conditionLink = g.edges.find((e) => e.target === n.id && e.data?.kind === 'application-condition');
       applicationActions.push({ id: n.id, question: structuredClone(n.data.question), config_path: [...n.data.config_path],
+        action_kind: n.data.action_kind, expression: n.data.expression,
         target_node: link?.target ?? null, position: pos, source_action_index: n.data.source_action_index,
         when: n.data.when ? structuredClone(n.data.when) : undefined,
         condition_node: conditionLink?.source ?? null, condition_branch: conditionLink?.sourceHandle ?? null });
@@ -108,6 +115,9 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
         ? branchPredicate(conditionNode.data.when, conditionLink?.sourceHandle === 'False Condition') : n.data.when;
       applicationErrors.push({ id: n.id, message: n.data.message, when, condition_node: conditionLink?.source ?? null,
         condition_branch: conditionLink?.sourceHandle ?? null, position: pos });
+    } else if (n.data.kind === 'explorer') {
+      explorers.push({ id: n.id, url: n.data.url, hide_address_bar: !!n.data.hide_address_bar, position: pos, parent: n.parentId ?? null,
+        size: { width: Number(n.style?.width ?? n.width ?? 320), height: Number(n.style?.height ?? n.height ?? 240) } });
     } else {
       comments.push({ id: n.id, text: n.data.text, position: pos, parent: n.parentId ?? null,
         size: { width: Number(n.style?.width ?? n.width ?? 200), height: Number(n.style?.height ?? n.height ?? 80) } });
@@ -151,7 +161,9 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
       const conditionPredicate = conditionNode?.data.kind === 'application-condition'
         ? branchPredicate(conditionNode.data.when, conditionLink?.sourceHandle === 'False Condition') : undefined;
       const when = conditionPredicate ?? d.when;
-      const action = { question: q.id, node_id: target.id, config_path: d.config_path,
+      const kind = d.action_kind ?? 'value';
+      const action = { question: q.id, node_id: target.id, config_path: kind === 'input' ? ['path'] : d.config_path,
+        ...(kind !== 'value' ? { kind } : {}), ...(kind === 'formula' ? { expression: d.expression ?? '' } : {}),
         ...(when ? { when: structuredClone(when) } : {}) };
       const duplicate = actions.findIndex((oldAction: any) => oldAction.question === action.question &&
         oldAction.node_id === action.node_id && JSON.stringify(oldAction.config_path) === JSON.stringify(action.config_path) &&
@@ -165,7 +177,7 @@ export function toDocument(g: CanvasGraph): WorkflowDoc {
     errors.push(...applicationErrors.map(({ condition_node: _node, condition_branch: _branch, position: _position, ...error }) => error));
     metadata.application = { ...old, questions, actions, errors };
   }
-  doc.metadata = { ...metadata, ui: { containers, comments, ownDisabled, applicationActions, applicationConditions, applicationErrors } };
+  doc.metadata = { ...metadata, ui: { containers, comments, explorers, ownDisabled, applicationActions, applicationConditions, applicationErrors } };
   if (g.profile) doc.metadata.profile = g.profile;
   return doc;
 }
@@ -174,6 +186,7 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
   const ui = doc.metadata?.ui ?? {};
   const containers: any[] = ui.containers ?? [];
   const comments: any[] = ui.comments ?? [];
+  const explorers: any[] = ui.explorers ?? [];
   const applicationActions: any[] = ui.applicationActions ?? [];
   const applicationConditions: any[] = ui.applicationConditions ?? [];
   const applicationErrors: any[] = ui.applicationErrors ?? (doc.metadata?.application?.errors ?? []).map((e: any) => e);
@@ -183,7 +196,7 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
   const absById = new Map<string, { x: number; y: number }>();
   for (const c of containers) absById.set(c.id, c.position);
   for (const n of doc.nodes) absById.set(n.id, n.position ?? { x: 0, y: 0 });
-  for (const c of comments) absById.set(c.id, c.position);
+  for (const c of [...comments, ...explorers]) absById.set(c.id, c.position);
   for (const a of applicationActions) absById.set(a.id, a.position ?? { x: 0, y: 0 });
   for (const c of applicationConditions) absById.set(c.id, c.position ?? { x: 0, y: 0 });
   for (const e of applicationErrors) absById.set(e.id, e.position ?? { x: 0, y: 0 });
@@ -225,10 +238,16 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
       id: c.id, type: 'comment', position: rel(c.id), parentId: parentOf.get(c.id),
       data: { kind: 'comment', text: c.text }, style: { width: c.size?.width ?? 200, height: c.size?.height ?? 80 },
     })),
+    ...explorers.map((c): CanvasNode => ({
+      id: c.id, type: 'explorer', position: rel(c.id), parentId: parentOf.get(c.id),
+      data: { kind: 'explorer', url: c.url ?? '', hide_address_bar: !!c.hide_address_bar },
+      style: { width: c.size?.width ?? 320, height: c.size?.height ?? 240 },
+    })),
     ...applicationActions.map((a: any): CanvasNode => ({
       id: a.id, type: 'applicationAction', position: rel(a.id),
       data: { kind: 'application-action', question: { ...a.question, prompt: a.question.prompt ?? a.question.label ?? a.question.id },
-        config_path: a.config_path, when: a.when ? structuredClone(a.when) : undefined, source_action_index: a.source_action_index },
+        config_path: a.config_path, action_kind: a.action_kind, expression: a.expression,
+        when: a.when ? structuredClone(a.when) : undefined, source_action_index: a.source_action_index },
     })),
     ...applicationConditions.map((c: any): CanvasNode => ({
       id: c.id, type: 'applicationCondition', position: rel(c.id),
@@ -272,12 +291,13 @@ export function fromDocument(doc: WorkflowDoc): CanvasGraph {
       const position = { x: 180, y: 80 + i * 110 };
       nodes.push({ id, type: 'applicationAction', position,
         data: { kind: 'application-action', question: { ...structuredClone(question), prompt: question.prompt ?? question.label ?? question.id },
-          config_path: [...action.config_path], when: action.when ? structuredClone(action.when) : undefined, source_action_index: i } });
+          config_path: [...(action.config_path ?? ['path'])], action_kind: action.kind, expression: action.expression,
+          when: action.when ? structuredClone(action.when) : undefined, source_action_index: i } });
       edges.push({ id: `${id}:Action->${action.node_id}:__action__`, source: id, sourceHandle: 'Action',
         target: action.node_id, targetHandle: '__action__', data: { kind: 'application-action' },
         style: { stroke: '#805ad5', strokeDasharray: '5 4' }, label: 'Action' });
-      applicationActions.push({ id, question: structuredClone(question), config_path: [...action.config_path],
-        target_node: action.node_id, position, source_action_index: i, when: action.when ? structuredClone(action.when) : undefined });
+      applicationActions.push({ id, question: structuredClone(question), config_path: [...(action.config_path ?? ['path'])],
+        action_kind: action.kind, expression: action.expression, target_node: action.node_id, position, source_action_index: i, when: action.when ? structuredClone(action.when) : undefined });
     }
   }
   const metadata = doc.metadata ? structuredClone(doc.metadata) : {};
