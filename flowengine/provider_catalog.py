@@ -147,3 +147,36 @@ register(Provider(
     verification='Checked against a controlled local fixture of the documented endpoints, including RS256 service-account '
                  'JWTs verified with the public key, PKCE, resumable uploads (308) and paging. Live acceptance against Google '
                  'is pending (no Google Cloud project available).'))
+
+register(Provider(
+    id='box', family='box', name='Box', kind='vendor', serves=('connectors:box-input', 'connectors:box-output'),
+    needs=('connection:web',), homepage='https://developer.box.com/reference/',
+    semantics={'api': 'Box Content API 2.0', 'files': 'read as Input Data / written as Output Data; existing files get a new version',
+               'downloads': 'pre-signed links fetched without the token'},
+    setup='Create a Box app (OAuth 2.0). Add a Web/API connection: base URL https://api.box.com/2.0, OAuth, token URL '
+          'https://api.box.com/oauth2/token, authorization URL https://account.box.com/api/oauth2/authorize, the client id '
+          'and secret, then Sign in in browser.',
+    verification='Checked against a controlled local fixture of the documented endpoints (folder items, content redirect, '
+                 'upload host). Live acceptance against Box is pending (no Box account available).'))
+
+register(Provider(
+    id='dropbox', family='dropbox', name='Dropbox', kind='vendor', serves=('connectors:dropbox-input', 'connectors:dropbox-output'),
+    needs=('connection:web',), homepage='https://www.dropbox.com/developers/documentation/http/documentation',
+    semantics={'api': 'Dropbox API v2', 'files': 'read as Input Data / written as Output Data; upload sessions above 8 MB'},
+    setup='Create a Dropbox app with files.content.read/write. Add a Web/API connection: base URL https://api.dropboxapi.com/2, '
+          'OAuth, token URL https://api.dropboxapi.com/oauth2/token, authorization URL https://www.dropbox.com/oauth2/authorize, '
+          'the app key as client id (and app secret), then Sign in in browser.',
+    verification='Checked against a controlled local fixture of the documented endpoints (download, upload, upload sessions, '
+                 'conflicts). Live acceptance against Dropbox is pending (no Dropbox account available).'))
+
+register(Provider(
+    id='azure-data-lake', family='azure-data-lake', name='Azure Data Lake Storage Gen2', kind='vendor',
+    serves=('connectors:azure-data-lake-file-input', 'connectors:azure-data-lake-file-output'), needs=('connection:web',),
+    homepage='https://learn.microsoft.com/en-us/rest/api/storageservices/data-lake-storage-gen2',
+    semantics={'api': 'Data Lake Storage Gen2 REST (dfs endpoint, x-ms-version 2023-11-03)',
+               'writes': 'create, append in 8 MB chunks, flush; If-None-Match: * when the file must not exist'},
+    setup='Grant your app (or user) Storage Blob Data Contributor on the account. Add a Web/API connection: base URL '
+          'https://<account>.dfs.core.windows.net, OAuth, token URL https://login.microsoftonline.com/<tenant>/oauth2/v2.0/token, '
+          'the client id, and a client secret with scope https://storage.azure.com/.default (or device sign-in).',
+    verification='Checked against a controlled local fixture of the documented path operations. Live acceptance against an '
+                 'Azure storage account is pending (none available).'))

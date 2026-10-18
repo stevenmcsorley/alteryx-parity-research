@@ -37,6 +37,9 @@ MAX_RETRIES = 4
 class Graph:
     """A JSON API behind an OAuth connection with OData paging (Microsoft Graph, Dataverse, Power BI)."""
     service = 'Microsoft Graph'
+    # Other origins of the same vendor that the API documents for this service (for example a separate upload
+    # host). Fixed per tool class, never taken from a connection or a workflow; the token may go there too.
+    extra_origins: tuple[str, ...] = ()
 
     def __init__(self, cfg):
         from ..oauth import OAuthSession
@@ -53,10 +56,12 @@ class Graph:
     def url(self, path: str) -> str:
         return path if path.startswith('https://') or path.startswith('http://') else f'{self.base}/{path.lstrip("/")}'
 
-    def request(self, method, path, body=None, headers=None, raw=False, with_headers=False, accept_incomplete=False):
-        """accept_incomplete: a resumable-upload chunk, where 308 Resume Incomplete means the chunk was accepted."""
+    def request(self, method, path, body=None, headers=None, raw=False, with_headers=False, accept_incomplete=False,
+                accept_redirect=False):
+        """accept_incomplete: a resumable-upload chunk, where 308 Resume Incomplete means the chunk was accepted.
+        accept_redirect: return a 3xx answer (for its Location) instead of following it with the token."""
         url = self.url(path)
-        if not self.conn.covers(url):
+        if not self.conn.covers(url) and not any(url.startswith(o.rstrip('/') + '/') for o in self.extra_origins):
             raise ConfigError(f'{url} is outside the connection base URL')
         data = body if isinstance(body, (bytes, type(None))) else json.dumps(body).encode()
         renewed, renew_now = False, False
@@ -67,7 +72,7 @@ class Graph:
             if data is not None and not isinstance(body, bytes):
                 h['Content-Type'] = 'application/json'
             req = urllib.request.Request(url, data=data, method=method, headers=h)
-            opener = urllib.request.build_opener(_NoRedirect) if accept_incomplete else self.opener
+            opener = urllib.request.build_opener(_NoRedirect) if accept_incomplete or accept_redirect else self.opener
             try:
                 with opener.open(req, timeout=self.timeout) as r:
                     content = r.read()
@@ -76,7 +81,7 @@ class Graph:
             except urllib.error.HTTPError as e:
                 with e:
                     detail = e.read(64 * 1024)
-                if accept_incomplete and e.code == 308:
+                if (accept_incomplete and e.code == 308) or (accept_redirect and 300 <= e.code < 400):
                     return (b'', e.headers) if with_headers else b''
                 retry = e.headers.get('Retry-After')
                 if e.code == 401 and not renewed:
@@ -109,7 +114,12 @@ class Graph:
 
 def _graph_error(detail: bytes) -> str:
     try:
-        err = json.loads(detail).get('error', {})
+        doc = json.loads(detail)
+        if isinstance(doc, dict) and doc.get('error_summary'):  # Dropbox
+            return str(doc['error_summary'])
+        err = doc.get('error', {})
+        if isinstance(err, str):  # OAuth-style {"error": "...", "error_description": "..."}
+            return f"{err}: {doc.get('error_description', '')}".strip(': ')
         return f"{err.get('code', '')}: {err.get('message', '')}".strip(': ')
     except (ValueError, AttributeError):
         return detail[:300].decode('utf-8', 'replace')
