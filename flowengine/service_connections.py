@@ -56,6 +56,7 @@ class ServiceConnection:
     client_id: str | None = None        # oauth2: the registered application id (not secret)
     scope: str | None = None            # oauth2: space-separated scopes, e.g. https://graph.microsoft.com/.default
     device_code_url: str | None = None  # oauth2: RFC 8628 device authorization endpoint, for sign-in without a redirect
+    authorize_url: str | None = None    # oauth2: authorization endpoint, for browser sign-in (code + PKCE, loopback redirect)
 
     def validate(self):
         if not re.fullmatch(r'svc_[A-Za-z0-9_.-]{1,60}', self.id):
@@ -81,7 +82,7 @@ class ServiceConnection:
                               else 'AWS Signature V4 needs the access key id as the username')
         if self.auth == 'header' and not _HEADER.match(self.header_name or ''):
             raise ConfigError('Header authentication needs a valid header name')
-        for name in ('token_url', 'device_code_url'):
+        for name in ('token_url', 'device_code_url', 'authorize_url'):
             value = getattr(self, name)
             if not value:
                 continue
@@ -90,8 +91,8 @@ class ServiceConnection:
                     or t.fragment or t.username or (t.scheme == 'http' and t.hostname not in _LOOPBACK):
                 raise ConfigError(f'{name.replace("_", " ").capitalize()} needs bearer or OAuth authentication and an '
                                   'absolute https:// URL without query')
-        if self.auth == 'oauth2' and not (self.token_url and (self.client_id or '').strip()):
-            raise ConfigError('OAuth connections need the token URL and the client (application) id')
+        if self.auth == 'oauth2' and not self.token_url:
+            raise ConfigError('OAuth connections need the token URL')
         return self
 
     def _validate_smtp(self):
@@ -175,7 +176,7 @@ class ServiceConnectionStore:
         return ServiceConnection(**data)
 
     def save(self, data: dict, secret: str | None = None) -> ServiceConnection:
-        data = {k: v for k, v in dict(data).items() if v is not None or k in ('username', 'header_name', 'token_url', 'client_id', 'scope', 'device_code_url')}
+        data = {k: v for k, v in dict(data).items() if v is not None or k in ('username', 'header_name', 'token_url', 'client_id', 'scope', 'device_code_url', 'authorize_url')}
         unknown = set(data) - set(ServiceConnection.__dataclass_fields__)
         if unknown:
             raise ConfigError(f'Unknown service connection field(s) {sorted(unknown)}; secrets are passed separately')

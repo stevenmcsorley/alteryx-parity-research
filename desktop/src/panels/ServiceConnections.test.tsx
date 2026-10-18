@@ -74,4 +74,27 @@ describe('Web & API connections', () => {
     await screen.findByText(/Signed in\. The refresh token is saved/);
     expect(calls.filter((c) => c === 'credentials.oauth.device_poll')).toHaveLength(2);
   });
+
+  it('signs in in the browser and waits for the loopback redirect to finish', async () => {
+    const polls = ['pending', 'signed_in'];
+    const google = { id: 'svc_g', name: 'Google Sheets', kind: 'web', base_url: 'https://sheets.googleapis.com', auth: 'oauth2',
+      username: null, header_name: null, token_url: 'https://oauth2.googleapis.com/token', client_id: 'desktop', scope: 'https://www.googleapis.com/auth/spreadsheets',
+      device_code_url: null, authorize_url: 'https://accounts.google.com/o/oauth2/v2/auth' };
+    const calls: string[] = [];
+    const opened = vi.spyOn(window, 'open').mockImplementation(() => null);
+    setTransport({ request: async (method: string) => {
+      calls.push(method);
+      if (method === 'credentials.list') return [google];
+      if (method === 'credentials.oauth.browser_start') return { session_id: 's1', authorize_url: 'https://accounts.google.com/o/oauth2/v2/auth?state=x' };
+      if (method === 'credentials.oauth.browser_poll') return { status: polls.shift() };
+      return {};
+    }, subscribe: () => () => {} } as any);
+    render(<ServiceConnections close={vi.fn()} />);
+    fireEvent.click(await screen.findByText('Google Sheets'));
+    fireEvent.click(screen.getByText('Sign in in browser…'));
+    await waitFor(() => expect(opened).toHaveBeenCalledWith('https://accounts.google.com/o/oauth2/v2/auth?state=x', '_blank', 'noopener'));
+    await screen.findByText(/Signed in\. The refresh token is saved/, {}, { timeout: 5000 });
+    expect(calls.filter((c) => c === 'credentials.oauth.browser_poll')).toHaveLength(2);
+    opened.mockRestore();
+  });
 });

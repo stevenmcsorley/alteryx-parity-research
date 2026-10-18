@@ -187,7 +187,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 288,
+      "independent_tests": 291,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:text-input)"
@@ -4721,9 +4721,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for connectors:google-analytics-4-input)"
@@ -4745,9 +4745,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for connectors:google-bigquery-input)"
@@ -4769,9 +4769,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for connectors:google-bigquery-output)"
@@ -4793,9 +4793,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 2,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for connectors:google-drive-input)"
@@ -4817,9 +4817,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for connectors:google-drive-output)"
@@ -4841,9 +4841,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for connectors:google-sheets-input)"
@@ -4865,9 +4865,9 @@
       ],
       "configuration_cases": [],
       "oracle_status": "missing",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 0,
+      "independent_tests": 1,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for connectors:google-sheets-output)"

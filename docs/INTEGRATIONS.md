@@ -35,6 +35,7 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `microsoft-graph` (vendor) | OneDrive Input/Output, SharePoint Files Input/Output, SharePoint List Input/Output, Outlook 365 Input | a Web/API connection with OAuth 2.0 (app secret, or device sign-in) | Controlled fixture of the documented identity platform and Graph endpoints. **Live acceptance against a Microsoft 365 tenant is pending:** no tenant is available |
 | `microsoft-dataverse` (vendor) | Dataverse Input/Output, Dynamics CRM Input/Output | a Web/API connection with OAuth 2.0 | Controlled fixture of the documented Web API. **Live acceptance against a Dataverse environment is pending** |
 | `microsoft-power-bi` (vendor) | Microsoft Power BI Output | a Web/API connection with OAuth 2.0 (device sign-in) | Controlled fixture of the documented push-dataset API. **Live acceptance against a Power BI workspace is pending** |
+| `google` (vendor) | Google Drive Input/Output, Google Sheets Input/Output, Google BigQuery Input/Output, Google Analytics 4 Input | one Web/API connection with OAuth 2.0 per Google API host; browser sign-in or a service account key | Controlled fixture of the documented endpoints, with service-account JWTs verified against the public key. **Live acceptance against Google is pending:** no Google Cloud project is available |
 
 Apache Spark Code runs PySpark in local mode. `read_input(n)` returns a Spark DataFrame whose types are mapped from Flowbench types. `write_output(n, df)` collects the DataFrame and maps its types back exactly; types Flowbench cannot hold are rejected with a message. Remote clusters (Livy, Databricks) are not served by this provider.
 
@@ -57,6 +58,9 @@ A Web/API connection with authentication **OAuth 2.0** holds three settings:
 Its vault secret holds what the grant needs:
 - **App-only access:** type the client secret. Flowbench uses the client credentials grant.
 - **Signing in as yourself:** save the connection, then choose **Sign in…**. Flowbench shows a code; you enter it at the provider's page in any browser. The refresh token it receives is saved in the vault. This is the device authorization grant (RFC 8628), so no redirect server is needed. Include `offline_access` in the scope for Microsoft.
+
+- **Browser sign-in:** set the authorization URL, save the connection, then choose **Sign in in browser…**. The provider's page opens in your browser. Flowbench listens on a one-time loopback address (`http://127.0.0.1:<port>/callback`) and exchanges the code using PKCE (RFC 7636 and RFC 8252). The redirect's `state` must match, so a forged redirect is refused. Google needs this method, because its device sign-in doesn't allow the Sheets, BigQuery, Analytics or full Drive scopes.
+- **Service accounts:** paste the JSON key file as the secret. Flowbench signs a JWT with the key (RS256) and exchanges it for an access token (RFC 7523). The key stays in the vault.
 
 Access tokens are kept in memory only, and renewed once if a call returns 401. A refresh token that the provider rotates is saved back to the vault. Tokens are sent only to the connection's own token and sign-in URLs, never to a URL from a workflow. Typing a client secret later keeps the saved sign-in.
 
@@ -90,6 +94,23 @@ Writes to a push dataset, at `https://api.powerbi.com/v1.0/myorg`, in your works
 - The 75-column and 4,000-character limits are checked before anything is sent.
 - Push datasets don't work with service principal profiles, so sign in as a user (device sign-in).
 
+## Google
+
+Each Google API has its own host, so each needs its own connection. The token URL is always `https://oauth2.googleapis.com/token`, and browser sign-in uses the authorization URL `https://accounts.google.com/o/oauth2/v2/auth`.
+
+| Connection base URL | Scope | Tools |
+|---|---|---|
+| `https://www.googleapis.com` | `https://www.googleapis.com/auth/drive` | Google Drive Input/Output |
+| `https://sheets.googleapis.com` | `https://www.googleapis.com/auth/spreadsheets` | Google Sheets Input/Output |
+| `https://bigquery.googleapis.com` | `https://www.googleapis.com/auth/bigquery` | Google BigQuery Input/Output |
+| `https://analyticsdata.googleapis.com` | `https://www.googleapis.com/auth/analytics.readonly` | Google Analytics 4 Input |
+
+- **Drive** reads a file by id, or by name in a folder. Google Sheets files are exported as Excel, so `read.sheet` picks the tab. Writing replaces a file of the same name, or fails with `if_exists: error`. Large files use a resumable upload in 256 KiB-multiple chunks.
+- **Sheets** reads unformatted values: numbers and booleans keep their type, and dates arrive as their displayed text. Writing overwrites the tab (cleared first) or appends rows, and creates the tab if it's missing. Values are written as typed (RAW), never interpreted as formulas.
+- **BigQuery** runs GoogleSQL, waits for the job and reads every page. TIMESTAMP becomes a UTC datetime and RECORD/REPEATED columns become JSON text. `maximum_bytes_billed` caps what a query may cost.
+  - Writing uses a **load job**, so all rows land or none do, with no streaming buffer. It appends or replaces, and creates the table from the input schema.
+- **Analytics 4** runs `runReport` with dimensions, metrics and a date range, and pages through all rows. The `date` dimension becomes a date, and integer metrics become integers.
+
 ## Amazon S3
 
 - Requests use path-style addresses (`<endpoint>/<bucket>/<key>`), so they stay inside the connection's base URL.
@@ -121,4 +142,5 @@ Writes to a push dataset, at `https://api.powerbi.com/v1.0/myorg`, in your works
 
 | Entry | Why |
 |---|---|
+| Connectors: Google Analytics | It reads Universal Analytics, whose Reporting API Google shut down in 2024, so no service is left to call. Google Analytics 4 data is read by **Google Analytics 4 Input**. |
 | In/Out: Auto Insights Uploader | The upload protocol is not published. The public help documents only the tool's settings, and no Auto Insights API documentation exists, so an adapter would mean inventing an API. It will be added if Alteryx publishes the protocol. |

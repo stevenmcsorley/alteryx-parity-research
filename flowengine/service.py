@@ -335,9 +335,22 @@ class EngineService:
                         previous = _secrets(store.secret(store.get(data['id'])))
                     except Exception:
                         previous = {}
-                secret = json.dumps({**previous, 'client_secret': secret})
+                try:
+                    pasted = json.loads(secret)
+                except ValueError:
+                    pasted = None
+                if isinstance(pasted, dict) and pasted.get('private_key') and pasted.get('client_email'):
+                    secret = json.dumps({**previous, 'service_account': pasted})  # a service account key file
+                else:
+                    secret = json.dumps({**previous, 'client_secret': secret})
             c = store.save(data, secret=secret)
             return {'connection': c.public(), 'credential_saved': secret is not None}
+        if method == 'credentials.oauth.browser_start':
+            from .oauth import OAuthSession
+            return OAuthSession.for_connection(store.get(params['connection_id'])).browser_start()
+        if method == 'credentials.oauth.browser_poll':
+            from .oauth import OAuthSession
+            return OAuthSession.browser_poll(params['session_id'])
         if method in ('credentials.oauth.device_start', 'credentials.oauth.device_poll'):
             from .oauth import OAuthSession
             session = OAuthSession.for_connection(store.get(params['connection_id']))

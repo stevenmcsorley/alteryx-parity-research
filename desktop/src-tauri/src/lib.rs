@@ -37,6 +37,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             engine_request,
+            open_sign_in_url,
             charts::chart_save,
             charts::chart_open,
             ai::ai_status,
@@ -58,3 +59,16 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running Flowbench");
 }
+
+/// Open an OAuth sign-in page in the system browser. Only https pages (and http on this computer, for
+/// tests) are opened, so the app cannot be used to launch arbitrary programs or files.
+#[tauri::command]
+fn open_sign_in_url(url: String) -> Result<(), String> {
+    let lower = url.to_ascii_lowercase();
+    let loopback = lower.starts_with("http://127.0.0.1:") || lower.starts_with("http://localhost:");
+    if !(lower.starts_with("https://") || loopback) || url.chars().any(|c| c.is_whitespace() || c.is_control()) {
+        return Err("Only https sign-in pages can be opened".into());
+    }
+    open::that_detached(&url).map_err(|e| format!("Could not open the browser: {e}"))
+}
+

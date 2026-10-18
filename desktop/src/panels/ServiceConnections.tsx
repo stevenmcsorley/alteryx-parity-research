@@ -1,11 +1,20 @@
 import { useEffect, useState } from 'react';
 import { engine, describe } from '../state/engineActions';
+import { isTauri } from '../engine/transport';
 
 export type ServiceConnection = { id: string; name: string; kind: 'web' | 'github' | 'smtp'; base_url: string;
   auth: 'bearer' | 'basic' | 'header' | 'none' | 'aws-sigv4' | 'oauth2'; username?: string | null; header_name?: string | null;
-  token_url?: string | null; client_id?: string | null; scope?: string | null; device_code_url?: string | null };
+  token_url?: string | null; client_id?: string | null; scope?: string | null; device_code_url?: string | null; authorize_url?: string | null };
 const blank = (): ServiceConnection => ({ id: '', name: '', kind: 'web', base_url: 'https://', auth: 'bearer', username: null, header_name: null,
-  token_url: null, client_id: null, scope: null, device_code_url: null });
+  token_url: null, client_id: null, scope: null, device_code_url: null, authorize_url: null });
+
+/** Open a sign-in page in the system browser (the desktop app only opens https pages). */
+async function openInBrowser(url: string) {
+  if (isTauri()) {
+    const { invoke } = await import('@tauri-apps/api/core');
+    await invoke('open_sign_in_url', { url });
+  } else window.open(url, '_blank', 'noopener');
+}
 type DeviceSignIn = { device_code: string; user_code: string; verification_uri: string; interval: number; expires_in: number; message?: string };
 
 export function ServiceConnections({ close }: { close: () => void }) {
@@ -25,7 +34,8 @@ export function ServiceConnections({ close }: { close: () => void }) {
         username: form.auth === 'basic' || form.auth === 'aws-sigv4' ? form.username : null, header_name: form.auth === 'header' ? form.header_name : null,
         token_url: form.kind === 'web' && (form.auth === 'bearer' || form.auth === 'oauth2') && form.token_url ? form.token_url : null,
         client_id: form.auth === 'oauth2' ? form.client_id : null, scope: form.auth === 'oauth2' ? form.scope || null : null,
-        device_code_url: form.auth === 'oauth2' ? form.device_code_url || null : null };
+        device_code_url: form.auth === 'oauth2' ? form.device_code_url || null : null,
+        authorize_url: form.auth === 'oauth2' ? form.authorize_url || null : null };
       await engine().request('credentials.save', { connection, ...(secret ? { secret } : {}) });
       setSecret(''); await refresh(); setMessage('Connection saved.');
     } catch (e) { setMessage(describe(e)); } finally { setBusy(false); }
@@ -60,13 +70,44 @@ export function ServiceConnections({ close }: { close: () => void }) {
     void poll();
     return () => { stop = true; };
   }, [signIn, form.id]);
+  const [browserSession, setBrowserSession] = useState<string | null>(null);
+  useEffect(() => {
+    // The engine listens on a loopback address for the provider's redirect; wait for it to finish.
+    if (!browserSession) return;
+    let stop = false;
+    const poll = async () => {
+      const deadline = Date.now() + 10 * 60 * 1000;
+      while (!stop && Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, 1000));
+        if (stop) return;
+        try {
+          const r = await engine().request<{ status: string; error?: string }>('credentials.oauth.browser_poll', { session_id: browserSession });
+          if (r.status === 'pending') continue;
+          setBrowserSession(null);
+          setMessage(r.status === 'signed_in' ? 'Signed in. The refresh token is saved in the credential vault.'
+            : `Sign-in ${r.status}${r.error ? `: ${r.error}` : ''}.`);
+          return;
+        } catch (e) { setBrowserSession(null); setMessage(describe(e)); return; }
+      }
+    };
+    void poll();
+    return () => { stop = true; };
+  }, [browserSession]);
+  const startBrowserSignIn = async () => {
+    setMessage('');
+    try {
+      const r = await engine().request<{ session_id: string; authorize_url: string }>('credentials.oauth.browser_start', { connection_id: form.id });
+      setBrowserSession(r.session_id);
+      await openInBrowser(r.authorize_url);
+    } catch (e) { setBrowserSession(null); setMessage(describe(e)); }
+  };
   const startSignIn = async () => {
     setMessage('');
     try { setSignIn(await engine().request<DeviceSignIn>('credentials.oauth.device_start', { connection_id: form.id })); }
     catch (e) { setMessage(describe(e)); }
   };
   const kindLabel = (k: ServiceConnection['kind']) => k === 'github' ? 'GitHub' : k === 'smtp' ? 'Email (SMTP)' : 'Web/API';
-  const secretLabel = form.auth === 'oauth2' ? 'Client secret (only for app-only access)' : form.auth === 'aws-sigv4' ? 'Secret access key' : form.auth === 'basic' ? 'Password' : form.kind === 'github' ? 'Personal access token' : form.auth === 'header' ? 'Header value (API key)' : 'Token';
+  const secretLabel = form.auth === 'oauth2' ? 'Client secret, or service account key (JSON)' : form.auth === 'aws-sigv4' ? 'Secret access key' : form.auth === 'basic' ? 'Password' : form.kind === 'github' ? 'Personal access token' : form.auth === 'header' ? 'Header value (API key)' : 'Token';
   return <div className="db-modal-backdrop" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && close()}>
     <section className="db-modal" role="dialog" aria-modal="true" aria-labelledby="svc-title">
       <header><h2 id="svc-title">Web &amp; API connections</h2><button onClick={close} aria-label="Close">×</button></header>
@@ -96,6 +137,7 @@ export function ServiceConnections({ close }: { close: () => void }) {
             <label>Token URL<input aria-label="OAuth token URL" placeholder="https://login.microsoftonline.com/<tenant>/oauth2/v2.0/token" value={form.token_url ?? ''} onChange={(e) => set({ token_url: e.target.value || null })} /></label>
             <label>Client id<input aria-label="OAuth client id" value={form.client_id ?? ''} onChange={(e) => set({ client_id: e.target.value || null })} /></label>
             <label>Scope<input aria-label="OAuth scope" placeholder="Files.ReadWrite offline_access" value={form.scope ?? ''} onChange={(e) => set({ scope: e.target.value || null })} /></label>
+            <label>Authorization URL (browser sign-in, optional)<input aria-label="Authorization URL" placeholder="https://accounts.google.com/o/oauth2/v2/auth" value={form.authorize_url ?? ''} onChange={(e) => set({ authorize_url: e.target.value || null })} /></label>
             <label>Device sign-in URL (optional)<input aria-label="Device sign-in URL" placeholder="https://login.microsoftonline.com/<tenant>/oauth2/v2.0/devicecode" value={form.device_code_url ?? ''} onChange={(e) => set({ device_code_url: e.target.value || null })} /></label>
           </>}
           {form.auth === 'header' && <label>Header name<input aria-label="Header name" placeholder="X-Api-Key" value={form.header_name ?? ''} onChange={(e) => set({ header_name: e.target.value })} /></label>}
@@ -104,6 +146,8 @@ export function ServiceConnections({ close }: { close: () => void }) {
           {form.auth !== 'none' && <label>{secretLabel}<input aria-label="Secret" type="password" autoComplete="new-password" value={secret} onChange={(e) => setSecret(e.target.value)}
             placeholder={form.id ? 'Leave blank to keep saved credential' : ''} /></label>}
           <div className="db-actions"><button onClick={() => void save()} disabled={busy || !form.name || !form.base_url || (!form.id && !secret && form.auth !== 'none' && form.auth !== 'oauth2')}>{busy ? 'Working…' : 'Save'}</button>
+            {form.auth === 'oauth2' && form.authorize_url && <button onClick={() => void startBrowserSignIn()} disabled={!form.id || !!browserSession}
+              title={form.id ? 'Sign in on the provider page in your browser' : 'Save the connection first'}>{browserSession ? 'Waiting for browser…' : 'Sign in in browser…'}</button>}
             {form.auth === 'oauth2' && form.device_code_url && <button onClick={() => void startSignIn()} disabled={!form.id || !!signIn}
               title={form.id ? 'Sign in with a code in your browser' : 'Save the connection first'}>Sign in…</button>}</div>
           {signIn && <div className="db-message" role="status" aria-label="Device sign-in">

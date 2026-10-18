@@ -128,3 +128,22 @@ register(Provider(
           'service principal profiles).',
     verification='Checked against a controlled local fixture of the documented push dataset endpoints. Live acceptance '
                  'against a Power BI workspace is pending (none available).'))
+
+register(Provider(
+    id='google', family='google-cloud', name='Google (Drive, Sheets, BigQuery, Analytics 4)', kind='vendor',
+    serves=('connectors:google-drive-input', 'connectors:google-drive-output', 'connectors:google-sheets-input',
+            'connectors:google-sheets-output', 'connectors:google-bigquery-input', 'connectors:google-bigquery-output',
+            'connectors:google-analytics-4-input'),
+    needs=('connection:web', 'python:cryptography'), homepage='https://developers.google.com/workspace',
+    semantics={'apis': 'Drive v3, Sheets v4, BigQuery v2, Analytics Data v1beta (one connection per API host)',
+               'auth': 'OAuth 2.0: browser sign-in (code + PKCE, loopback) or a service account key (JWT bearer)',
+               'bigquery': 'GoogleSQL; TIMESTAMP as UTC; RECORD/REPEATED as JSON text; loads are load jobs (all or nothing)',
+               'sheets': 'unformatted values; dates as displayed text', 'drive': 'Google Sheets files exported as Excel'},
+    setup='Create an OAuth client (Desktop app) or a service account in Google Cloud and enable the API. Add a Web/API '
+          'connection per API: base URL https://www.googleapis.com (Drive), https://sheets.googleapis.com, '
+          'https://bigquery.googleapis.com or https://analyticsdata.googleapis.com; OAuth; token URL '
+          'https://oauth2.googleapis.com/token; authorization URL https://accounts.google.com/o/oauth2/v2/auth; the client id '
+          'and client secret; the scope; then Sign in in browser. For a service account, paste its JSON key as the secret.',
+    verification='Checked against a controlled local fixture of the documented endpoints, including RS256 service-account '
+                 'JWTs verified with the public key, PKCE, resumable uploads (308) and paging. Live acceptance against Google '
+                 'is pending (no Google Cloud project available).'))

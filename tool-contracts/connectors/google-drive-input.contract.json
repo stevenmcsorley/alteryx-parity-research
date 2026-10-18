@@ -6,33 +6,89 @@
   "xml_tool_name": "GoogleDriveInput",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/google-drive-input-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Connector Version 1.1.0 and Later",
-      "Connector Version 1.0.0",
-      "Select a Data Source",
-      "Select a File Format",
-      "XLSX",
-      "CSV",
-      "YXDB",
-      "GSHEET"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "google"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 3600,
+        "default": 300
+      },
+      "file_id": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "name": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "folder_id": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "read": {
+        "type": "object",
+        "default": {},
+        "description": "Input Data settings except path"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.google_drive_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.google",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -53,9 +109,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_google.GoogleTests.test_drive_reads_by_name_exports_sheets_and_writes_small_and_large_files",
+      "test_google.GoogleTests.test_service_account_jwt_is_signed_with_its_key"
+    ]
   },
   "sources": [
     {
@@ -71,8 +130,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider google: Checked against a controlled local fixture of the documented endpoints, including RS256 service-account JWTs verified with the public key, PKCE, resumable uploads (308) and paging. Live acceptance against Google is pending (no Google Cloud project available)."
   ]
 }

@@ -6,26 +6,86 @@
   "xml_tool_name": "google-sheets-input",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/google-sheets-input-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Limitations"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "spreadsheet_id",
+      "sheet"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "google"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 3600,
+        "default": 300
+      },
+      "spreadsheet_id": {
+        "type": "string",
+        "minLength": 1,
+        "description": "The id in the spreadsheet URL"
+      },
+      "sheet": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Tab name"
+      },
+      "range": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "pattern": "^[A-Za-z]{1,3}[0-9]*(:[A-Za-z]{1,3}[0-9]*)?$"
+      },
+      "has_header": {
+        "type": "boolean",
+        "default": true
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.google_sheets_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.google",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -40,9 +100,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_google.GoogleTests.test_sheets_read_typed_values_and_write_overwrite_and_append"
+    ]
   },
   "sources": [
     {
@@ -58,8 +120,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider google: Checked against a controlled local fixture of the documented endpoints, including RS256 service-account JWTs verified with the public key, PKCE, resumable uploads (308) and paging. Live acceptance against Google is pending (no Google Cloud project available)."
   ]
 }

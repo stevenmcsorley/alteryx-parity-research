@@ -53,7 +53,8 @@ class Graph:
     def url(self, path: str) -> str:
         return path if path.startswith('https://') or path.startswith('http://') else f'{self.base}/{path.lstrip("/")}'
 
-    def request(self, method, path, body=None, headers=None, raw=False, with_headers=False):
+    def request(self, method, path, body=None, headers=None, raw=False, with_headers=False, accept_incomplete=False):
+        """accept_incomplete: a resumable-upload chunk, where 308 Resume Incomplete means the chunk was accepted."""
         url = self.url(path)
         if not self.conn.covers(url):
             raise ConfigError(f'{url} is outside the connection base URL')
@@ -66,14 +67,17 @@ class Graph:
             if data is not None and not isinstance(body, bytes):
                 h['Content-Type'] = 'application/json'
             req = urllib.request.Request(url, data=data, method=method, headers=h)
+            opener = urllib.request.build_opener(_NoRedirect) if accept_incomplete else self.opener
             try:
-                with self.opener.open(req, timeout=self.timeout) as r:
+                with opener.open(req, timeout=self.timeout) as r:
                     content = r.read()
                     result = content if raw else (json.loads(content) if content.strip() else None)
                     return (result, r.headers) if with_headers else result
             except urllib.error.HTTPError as e:
                 with e:
                     detail = e.read(64 * 1024)
+                if accept_incomplete and e.code == 308:
+                    return (b'', e.headers) if with_headers else b''
                 retry = e.headers.get('Retry-After')
                 if e.code == 401 and not renewed:
                     renewed = renew_now = True  # one fresh token; later retries reuse it

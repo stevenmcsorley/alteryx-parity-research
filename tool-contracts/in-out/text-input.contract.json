@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 288,
-    "passing": 288,
+    "count": 291,
+    "passing": 291,
     "tests": [
       "test_batch10.APIOutputTests.test_quoted_csv_messages",
       "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
@@ -352,6 +352,9 @@
       "test_github_tools.GitHubToolTests.test_commit_pushes_one_atomic_commit",
       "test_github_tools.GitHubToolTests.test_commit_refuses_to_overwrite_a_concurrent_push",
       "test_github_tools.GitHubToolTests.test_permissions_paths_and_connection_kind",
+      "test_google.GoogleTests.test_bigquery_load_job_appends_replaces_and_reports_errors",
+      "test_google.GoogleTests.test_drive_reads_by_name_exports_sheets_and_writes_small_and_large_files",
+      "test_google.GoogleTests.test_sheets_read_typed_values_and_write_overwrite_and_append",
       "test_indb.CompositionTests.test_join_union_and_sample",
       "test_indb.CompositionTests.test_parameters_follow_their_markers_in_sql_order",
       "test_indb.CompositionTests.test_pipeline_wraps_queries_and_keeps_parameters_in_order",
