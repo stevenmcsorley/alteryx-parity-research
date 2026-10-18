@@ -81,3 +81,21 @@ register(Provider(
     setup='Add a database connection of type MongoDB under Databases (host, port, database, user; the password goes '
           'to the OS vault). Set the connection option auth_source if the user is not defined in admin.',
     verification='Reads and writes run live against MongoDB 7.0 in the service-integration CI job.'))
+
+register(Provider(
+    id='microsoft-graph', family='microsoft-365', name='Microsoft 365 (Microsoft Graph)', kind='vendor',
+    serves=('connectors:onedrive-input', 'connectors:onedrive-output', 'connectors:sharepoint-files-input',
+            'connectors:sharepoint-files-output', 'connectors:sharepoint-list-input', 'connectors:sharepoint-list-output',
+            'connectors:outlook-365-input'),
+    needs=('connection:web',), homepage='https://learn.microsoft.com/en-us/graph/api/overview',
+    semantics={'api': 'Microsoft Graph v1.0', 'auth': 'OAuth 2.0: client credentials, or refresh token from device sign-in',
+               'files': 'read as Input Data / written as Output Data; uploads over 4 MB use an upload session',
+               'lists': 'column internal names; dates in UTC', 'mail': 'newest first; plain-text body'},
+    setup='Register an app in Microsoft Entra ID. Add a Web/API connection: base URL https://graph.microsoft.com/v1.0, '
+          'authentication OAuth, token URL https://login.microsoftonline.com/<tenant>/oauth2/v2.0/token, the client id, '
+          'and either the client secret with scope https://graph.microsoft.com/.default (app-only), or device sign-in URL '
+          'https://login.microsoftonline.com/<tenant>/oauth2/v2.0/devicecode with scopes such as '
+          '"Files.ReadWrite Sites.ReadWrite.All Mail.Read offline_access", then Sign in.',
+    verification='Checked against a controlled local fixture of the documented Graph and Microsoft identity platform '
+                 'endpoints (token grants, device code, drive items, upload sessions, list items, messages, paging, '
+                 'throttling). Live acceptance against a Microsoft 365 tenant is pending (no tenant available).'))

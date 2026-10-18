@@ -6,33 +6,97 @@
   "xml_tool_name": "OneDriveOutput",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/onedrive-output-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "outputs": [],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Sign In to OneDrive",
-      "Select a File",
-      "Add a Folder",
-      "Add a File",
-      "Select a File Format",
-      "XLSX",
-      "CSV",
-      "YXDB"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "path"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "microsoft-graph"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "Saved Microsoft Graph connection (OAuth)"
+      },
+      "path": {
+        "type": "string",
+        "minLength": 1,
+        "description": "File path inside the drive, for example Reports/sales.xlsx"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 3600,
+        "default": 300
+      },
+      "location": {
+        "enum": [
+          "me",
+          "user"
+        ],
+        "default": "me"
+      },
+      "user": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "User principal name, for location user"
+      },
+      "write": {
+        "type": "object",
+        "default": {},
+        "description": "Output Data settings except path"
+      },
+      "if_exists": {
+        "enum": [
+          "overwrite",
+          "error"
+        ],
+        "default": "overwrite"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.onedrive_output",
+    "version": "1.0.0",
+    "module": "flowengine.tools.msgraph",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -53,9 +117,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_msgraph.GraphTests.test_large_upload_uses_a_session_without_the_access_token",
+      "test_msgraph.GraphTests.test_onedrive_and_sharepoint_files_round_trip_in_their_formats"
+    ]
   },
   "sources": [
     {
@@ -71,8 +138,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider microsoft-graph: Checked against a controlled local fixture of the documented Graph and Microsoft identity platform endpoints (token grants, device code, drive items, upload sessions, list items, messages, paging, throttling). Live acceptance against a Microsoft 365 tenant is pending (no tenant available)."
   ]
 }

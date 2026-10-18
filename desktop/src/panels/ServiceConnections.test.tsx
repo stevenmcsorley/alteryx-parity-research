@@ -53,4 +53,25 @@ describe('Web & API connections', () => {
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'svc_1' } });
     expect(onChange).toHaveBeenCalledWith({ connection_id: 'svc_1' });
   });
+
+  it('signs in an OAuth connection with a device code and polls until it is signed in', async () => {
+    const polls: string[] = ['pending', 'signed_in'];
+    const oauth = { id: 'svc_o', name: 'Graph', kind: 'web', base_url: 'https://graph.microsoft.com/v1.0', auth: 'oauth2', username: null,
+      header_name: null, token_url: 'https://login.microsoftonline.com/t/oauth2/v2.0/token', client_id: 'app-1', scope: 'Files.Read offline_access',
+      device_code_url: 'https://login.microsoftonline.com/t/oauth2/v2.0/devicecode' };
+    const calls: string[] = [];
+    setTransport({ request: async (method: string) => {
+      calls.push(method);
+      if (method === 'credentials.list') return [oauth];
+      if (method === 'credentials.oauth.device_start') return { device_code: 'dc', user_code: 'ABCD-EFGH', verification_uri: 'https://microsoft.com/devicelogin', interval: 0, expires_in: 60 };
+      if (method === 'credentials.oauth.device_poll') return { status: polls.shift() };
+      return {};
+    }, subscribe: () => () => {} } as any);
+    render(<ServiceConnections close={vi.fn()} />);
+    fireEvent.click(await screen.findByText('Graph'));
+    fireEvent.click(screen.getByText('Sign in…'));
+    expect(await screen.findByText('ABCD-EFGH')).toBeTruthy();
+    await screen.findByText(/Signed in\. The refresh token is saved/);
+    expect(calls.filter((c) => c === 'credentials.oauth.device_poll')).toHaveLength(2);
+  });
 });
