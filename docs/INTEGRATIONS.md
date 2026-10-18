@@ -38,6 +38,7 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `google` (vendor) | Google Drive Input/Output, Google Sheets Input/Output, Google BigQuery Input/Output, Google Analytics 4 Input | one Web/API connection with OAuth 2.0 per Google API host; browser sign-in or a service account key | Controlled fixture of the documented endpoints, with service-account JWTs verified against the public key. **Live acceptance against Google is pending:** no Google Cloud project is available |
 | `box`, `dropbox`, `azure-data-lake` (vendor) | Box, Dropbox and Azure Data Lake File Input/Output | a Web/API connection with OAuth 2.0 | Controlled fixtures of the documented APIs. **Live acceptance is pending** for each: no Box, Dropbox or Azure storage account is available |
 | `salesforce`, `servicenow` (vendor) | Salesforce Input/Output, ServiceNow Input | a Web/API connection: OAuth for Salesforce; basic auth or OAuth for ServiceNow | Controlled fixtures of the documented REST APIs. **Live acceptance is pending:** no Salesforce org or ServiceNow instance is available |
+| `marketo`, `azure-ai-language`, `power-automate` (vendor) | Marketo Input/Output/Append, Cognitive Services Text Analytics, Power Automate | a Web/API connection: OAuth (Marketo), API key header or OAuth (Language), Signed URL or OAuth (Power Automate) | Controlled fixtures of the documented APIs. **Live acceptance is pending:** no instances are available |
 
 Apache Spark Code runs PySpark in local mode. `read_input(n)` returns a Spark DataFrame whose types are mapped from Flowbench types. `write_output(n, df)` collects the DataFrame and maps its types back exactly; types Flowbench cannot hold are rejected with a message. Remote clusters (Livy, Databricks) are not served by this provider.
 
@@ -136,6 +137,21 @@ Each tool may send the token only to its vendor's own documented hosts. That lis
   - Values stay as the text the API returns: stored values, or display values with `display_values`. Reference fields are sys_ids.
   - Basic authentication is supported, for an integration user, as well as OAuth.
 
+## Marketo, Azure AI Language and Power Automate
+
+- **Marketo** uses the REST API at `https://<munchkin-id>.mktorest.com/rest`.
+  - **Auth:** client credentials, requested the way Marketo documents it (a GET with query parameters to the identity URL). The token is then sent in the `Authorization` header only.
+  - **Input** reads leads by a filter field (300 values per request, every page), or activities since a date for chosen activity types.
+  - **Output** sends leads in batches of 300, and each record reports `created`, `updated` or `skipped` with reasons.
+  - **Append** adds lead fields to incoming records by looking them up on a field such as email.
+  - **Errors:** Marketo returns errors inside 200 responses. 601/602 renew the token once, and 606/615 wait and retry.
+- **Cognitive Services Text Analytics** uses Azure AI Language `analyze-text` (2023-04-01) for sentiment, key phrases, entities and language detection.
+  - It uses the documented batch sizes: 10, 10, 5 and 1,000.
+  - Texts over 5,120 characters, empty texts and texts the service rejects get an `AnalysisError` instead of failing the run.
+- **Power Automate** posts each record (or all records as one array) to a flow's HTTP request trigger.
+  - The trigger URL's signed query string is the secret (authentication **Signed URL**). Flows limited to Microsoft Entra users use OAuth instead.
+  - Each call's status and response are returned. `fail_on_error` controls whether a rejected call fails the run.
+
 ## Amazon S3
 
 - Requests use path-style addresses (`<endpoint>/<bucket>/<key>`), so they stay inside the connection's base URL.
@@ -168,4 +184,5 @@ Each tool may send the token only to its vendor's own documented hosts. That lis
 | Entry | Why |
 |---|---|
 | Connectors: Google Analytics | It reads Universal Analytics, whose Reporting API Google shut down in 2024, so no service is left to call. Google Analytics 4 data is read by **Google Analytics 4 Input**. |
+| Connectors: Automation Anywhere 360 | The Bot Deploy API's request schema (bot input types, run-as users, device pools) is published only in each customer's Control Room Swagger (`https://<control-room>/swagger/`). The public documentation doesn't include it, and community examples disagree about versions and field types. Building against them would mean guessing an API, so it waits until the schema can be confirmed from an authoritative source. |
 | In/Out: Auto Insights Uploader | The upload protocol is not published. The public help documents only the tool's settings, and no Auto Insights API documentation exists, so an adapter would mean inventing an API. It will be added if Alteryx publishes the protocol. |

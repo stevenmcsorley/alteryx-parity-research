@@ -3,7 +3,7 @@ import { engine, describe } from '../state/engineActions';
 import { isTauri } from '../engine/transport';
 
 export type ServiceConnection = { id: string; name: string; kind: 'web' | 'github' | 'smtp'; base_url: string;
-  auth: 'bearer' | 'basic' | 'header' | 'none' | 'aws-sigv4' | 'oauth2'; username?: string | null; header_name?: string | null;
+  auth: 'bearer' | 'basic' | 'header' | 'none' | 'aws-sigv4' | 'oauth2' | 'signed-url'; username?: string | null; header_name?: string | null;
   token_url?: string | null; client_id?: string | null; scope?: string | null; device_code_url?: string | null; authorize_url?: string | null };
 const blank = (): ServiceConnection => ({ id: '', name: '', kind: 'web', base_url: 'https://', auth: 'bearer', username: null, header_name: null,
   token_url: null, client_id: null, scope: null, device_code_url: null, authorize_url: null });
@@ -107,7 +107,7 @@ export function ServiceConnections({ close }: { close: () => void }) {
     catch (e) { setMessage(describe(e)); }
   };
   const kindLabel = (k: ServiceConnection['kind']) => k === 'github' ? 'GitHub' : k === 'smtp' ? 'Email (SMTP)' : 'Web/API';
-  const secretLabel = form.auth === 'oauth2' ? 'Client secret, or service account key (JSON)' : form.auth === 'aws-sigv4' ? 'Secret access key' : form.auth === 'basic' ? 'Password' : form.kind === 'github' ? 'Personal access token' : form.auth === 'header' ? 'Header value (API key)' : 'Token';
+  const secretLabel = form.auth === 'signed-url' ? 'Signed query string (the part after ?)' : form.auth === 'oauth2' ? 'Client secret, or service account key (JSON)' : form.auth === 'aws-sigv4' ? 'Secret access key' : form.auth === 'basic' ? 'Password' : form.kind === 'github' ? 'Personal access token' : form.auth === 'header' ? 'Header value (API key)' : 'Token';
   return <div className="db-modal-backdrop" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && close()}>
     <section className="db-modal" role="dialog" aria-modal="true" aria-labelledby="svc-title">
       <header><h2 id="svc-title">Web &amp; API connections</h2><button onClick={close} aria-label="Close">×</button></header>
@@ -130,7 +130,7 @@ export function ServiceConnections({ close }: { close: () => void }) {
           <label>{form.kind === 'smtp' ? 'SMTP server' : 'Base URL'}<input aria-label="Base URL" value={form.base_url} onChange={(e) => set({ base_url: e.target.value })} /></label>
           {form.kind === 'smtp' && <p className="help">smtps://host:465 encrypts from the start; smtp://host:587 uses STARTTLS.</p>}
           {form.kind === 'web' && <label>Authentication<select aria-label="Authentication" value={form.auth} onChange={(e) => set({ auth: e.target.value as ServiceConnection['auth'] })}>
-            <option value="bearer">Bearer token</option><option value="basic">Username and password</option><option value="header">API key header</option><option value="none">None (open service)</option><option value="oauth2">OAuth 2.0</option><option value="aws-sigv4">AWS Signature V4 (S3)</option>
+            <option value="bearer">Bearer token</option><option value="basic">Username and password</option><option value="header">API key header</option><option value="none">None (open service)</option><option value="oauth2">OAuth 2.0</option><option value="aws-sigv4">AWS Signature V4 (S3)</option><option value="signed-url">Signed URL (trigger)</option>
           </select></label>}
           {(form.auth === 'basic' || form.auth === 'aws-sigv4') && <label>{form.auth === 'aws-sigv4' ? 'Access key id' : 'Username'}<input autoComplete="username" value={form.username ?? ''} onChange={(e) => set({ username: e.target.value })} /></label>}
           {form.auth === 'oauth2' && <>

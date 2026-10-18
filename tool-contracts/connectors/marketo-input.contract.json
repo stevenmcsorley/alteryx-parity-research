@@ -6,33 +6,109 @@
   "xml_tool_name": "marketo-input",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/marketo-input-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Configuration",
-      "Marketo Credentials",
-      "Options",
-      "Parameters",
-      "Data Considerations",
-      "Datetime fields",
-      "Reading data from Marketo",
-      "Writing date to Marketo"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "marketo"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "Saved Marketo connection, base URL https://<munchkin-id>.mktorest.com/rest"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 120
+      },
+      "fields": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_]{1,80}$"
+        },
+        "uniqueItems": true,
+        "default": [],
+        "description": "Lead fields (REST API names); empty for the default set"
+      },
+      "read": {
+        "enum": [
+          "leads",
+          "activities"
+        ],
+        "default": "leads"
+      },
+      "filter_type": {
+        "type": "string",
+        "default": "email",
+        "description": "Lead field to filter on, e.g. email or id"
+      },
+      "filter_values": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      },
+      "since": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Activities since, e.g. 2026-10-01T00:00:00Z"
+      },
+      "activity_type_ids": {
+        "type": "array",
+        "items": {
+          "type": "integer"
+        },
+        "maxItems": 10,
+        "default": []
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.marketo_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.marketo",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -53,9 +129,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_marketo_azure.Tests.test_marketo_reads_leads_and_activities_renewing_and_waiting_as_told"
+    ]
   },
   "sources": [
     {
@@ -71,8 +149,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider marketo: Checked against a controlled local fixture of the documented identity and REST endpoints. Live acceptance against a Marketo instance is pending (none available)."
   ]
 }

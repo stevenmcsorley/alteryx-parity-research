@@ -6,32 +6,85 @@
   "xml_tool_name": "marketo-output",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/marketo-output-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Marketo Credentials",
-      "Options",
-      "Data Considerations",
-      "Datetime Fields",
-      "Reading Data from Marketo",
-      "Writing Date to Marketo"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "marketo"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "Saved Marketo connection, base URL https://<munchkin-id>.mktorest.com/rest"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 120
+      },
+      "action": {
+        "enum": [
+          "createOrUpdate",
+          "createOnly",
+          "updateOnly",
+          "createDuplicate"
+        ],
+        "default": "createOrUpdate"
+      },
+      "lookup_field": {
+        "type": "string",
+        "default": "email"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.marketo_output",
+    "version": "1.0.0",
+    "module": "flowengine.tools.marketo",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -51,9 +104,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_marketo_azure.Tests.test_marketo_output_reports_each_lead_and_append_matches_by_email"
+    ]
   },
   "sources": [
     {
@@ -69,8 +124,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider marketo: Checked against a controlled local fixture of the documented identity and REST endpoints. Live acceptance against a Marketo instance is pending (none available)."
   ]
 }
