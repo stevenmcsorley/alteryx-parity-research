@@ -28,7 +28,7 @@ from .errors import ConfigError
 from .runtimes import home
 
 KINDS = ('web', 'github', 'smtp')
-AUTH_MODES = ('bearer', 'basic', 'header')
+AUTH_MODES = ('bearer', 'basic', 'header', 'none')  # none: an open service such as a self-hosted routing server
 _HEADER = re.compile(r"^[!#$%&'*+.^_`|~0-9A-Za-z-]{1,128}$")
 _LOOPBACK = ('localhost', '127.0.0.1', '::1')
 
@@ -49,6 +49,8 @@ class ServiceConnection:
     auth: str = 'bearer'
     username: str | None = None      # basic auth
     header_name: str | None = None   # custom header auth, e.g. X-Api-Key
+    # OAuth refresh: the only URL outside base_url the secret (a refresh token) may be sent to
+    token_url: str | None = None
 
     def validate(self):
         if not re.fullmatch(r'svc_[A-Za-z0-9_.-]{1,60}', self.id):
@@ -59,7 +61,8 @@ class ServiceConnection:
             raise ConfigError(f'Service connection kind must be one of {KINDS}')
         if self.kind == 'smtp':
             return self._validate_smtp()
-        if self.auth not in AUTH_MODES or (self.kind == 'github' and self.auth != 'bearer'):
+        if self.auth not in AUTH_MODES or (self.kind == 'github' and self.auth != 'bearer') \
+                or (self.kind == 'smtp' and self.auth == 'none'):
             raise ConfigError('GitHub connections use a token (bearer)' if self.kind == 'github'
                               else f'Authentication must be one of {AUTH_MODES}')
         parts = urlsplit(self.base_url)
@@ -72,6 +75,11 @@ class ServiceConnection:
             raise ConfigError('Basic authentication needs a username')
         if self.auth == 'header' and not _HEADER.match(self.header_name or ''):
             raise ConfigError('Header authentication needs a valid header name')
+        if self.token_url:
+            t = urlsplit(self.token_url)
+            if self.auth != 'bearer' or t.scheme not in ('https', 'http') or not t.hostname or t.query or t.fragment \
+                    or t.username or (t.scheme == 'http' and t.hostname not in _LOOPBACK):
+                raise ConfigError('Token URL needs bearer authentication and an absolute https:// URL without query')
         return self
 
     def _validate_smtp(self):
@@ -108,6 +116,8 @@ class ServiceConnection:
         """Auth headers for ``url``; raises ConfigError when the URL is outside the base URL."""
         if not self.covers(url):
             raise ConfigError(f'URL is outside the base URL of connection {self.name!r}')
+        if self.auth == 'none':
+            return {}
         if self.auth == 'basic':
             token = base64.b64encode(f'{self.username}:{secret}'.encode('utf-8')).decode('ascii')
             return {'Authorization': f'Basic {token}'}
@@ -148,7 +158,7 @@ class ServiceConnectionStore:
         return ServiceConnection(**data)
 
     def save(self, data: dict, secret: str | None = None) -> ServiceConnection:
-        data = {k: v for k, v in dict(data).items() if v is not None or k in ('username', 'header_name')}
+        data = {k: v for k, v in dict(data).items() if v is not None or k in ('username', 'header_name', 'token_url')}
         unknown = set(data) - set(ServiceConnection.__dataclass_fields__)
         if unknown:
             raise ConfigError(f'Unknown service connection field(s) {sorted(unknown)}; secrets are passed separately')
@@ -159,11 +169,13 @@ class ServiceConnectionStore:
         from .db.vault import vault
         with self._lock:
             items = self._load()
-            if conn.id not in items and not secret:
+            if conn.id not in items and not secret and conn.auth != 'none':
                 raise ConfigError('A new service connection needs its token or password')
             items[conn.id] = conn.public()
-            if secret:
+            if secret and conn.auth != 'none':
                 vault().set(conn.id, conn.username or '', secret)
+            elif conn.auth == 'none':
+                vault().remove(conn.id)
             self._save(items)
         return conn
 
@@ -176,6 +188,8 @@ class ServiceConnectionStore:
         vault().remove(conn_id)
 
     def secret(self, conn: ServiceConnection) -> str:
+        if conn.auth == 'none':
+            return ''
         from .db.vault import vault
         value = vault().get(conn.id)
         if not value:
