@@ -32,6 +32,7 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `valhalla` (open source, MIT) | Non Overlap Drivetime | a Web/API connection to your Valhalla server (authentication can be None) | Controlled fixture of the documented `/isochrone` API. **Live acceptance pending:** a real Valhalla build. Areas will not match the reference's licensed drivetime data |
 | `amazon-s3` (vendor; any S3-compatible store) | Amazon S3 Download, Amazon S3 Upload | a Web/API connection with AWS Signature V4 (access key id as username, secret access key as secret) | Signer reproduces the AWS documentation example signature. Download, upload, multipart and a rejected wrong secret run live against SeaweedFS, which checks signatures, in the `service-integration` CI job. **Live acceptance against AWS is pending:** no AWS account is available |
 | `mongodb` (open source) | MongoDB Input, MongoDB Output | a database connection of type MongoDB; pymongo | Live against MongoDB 7.0 in the `service-integration` CI job |
+| `microsoft-graph` (vendor) | OneDrive Input/Output, SharePoint Files Input/Output, SharePoint List Input/Output, Outlook 365 Input | a Web/API connection with OAuth 2.0 (app secret, or device sign-in) | Controlled fixture of the documented identity platform and Graph endpoints. **Live acceptance against a Microsoft 365 tenant is pending:** no tenant is available |
 
 Apache Spark Code runs PySpark in local mode. `read_input(n)` returns a Spark DataFrame whose types are mapped from Flowbench types. `write_output(n, df)` collects the DataFrame and maps its types back exactly; types Flowbench cannot hold are rejected with a message. Remote clusters (Livy, Databricks) are not served by this provider.
 
@@ -43,6 +44,30 @@ Apache Spark Code runs PySpark in local mode. `read_input(n)` returns a Spark Da
 - Permissions: GET needs the network permission. POST, PUT and PATCH also need remote writes. DELETE also needs `confirm_delete`.
 - Server API keeps nested values as JSON text (parsed one level deep). License API flattens nested objects into dotted field names.
 - A refresh token is sent only to the token URL saved with the connection, never to a URL from the workflow. A refresh token the server rotates is saved back to the vault.
+
+## OAuth 2.0 connections
+
+A Web/API connection with authentication **OAuth 2.0** holds three settings:
+- the token URL;
+- the client (application) id;
+- the scopes, and optionally a device sign-in URL.
+
+Its vault secret holds what the grant needs:
+- **App-only access:** type the client secret. Flowbench uses the client credentials grant.
+- **Signing in as yourself:** save the connection, then choose **Sign in…**. Flowbench shows a code; you enter it at the provider's page in any browser. The refresh token it receives is saved in the vault. This is the device authorization grant (RFC 8628), so no redirect server is needed. Include `offline_access` in the scope for Microsoft.
+
+Access tokens are kept in memory only, and renewed once if a call returns 401. A refresh token that the provider rotates is saved back to the vault. Tokens are sent only to the connection's own token and sign-in URLs, never to a URL from a workflow. Typing a client secret later keeps the saved sign-in.
+
+## Microsoft 365 (Graph)
+
+- **Base URL:** `https://graph.microsoft.com/v1.0`.
+- **Paging and throttling:** pages are followed with `@odata.nextLink`, and a repeated page link stops the read. Throttling (429/503) waits for `Retry-After`.
+- **Files:** OneDrive and SharePoint files are read exactly as Input Data reads them and written exactly as Output Data writes them.
+  - **Locations:** your OneDrive (`me`), a user's OneDrive (`user`), or a site's document library (`site`, for example `contoso.sharepoint.com:/sites/Sales:`, plus an optional library id).
+  - **Uploads over 4 MB** use an upload session. The pre-authenticated upload URL receives only the file bytes, never the access token, in chunks that are multiples of 320 KiB.
+- **SharePoint List Input:** returns the item id and the column values (internal names). System columns are dropped, and dates are read as UTC.
+- **SharePoint List Output:** appends, updates by item id, or deletes by item id (needs `confirm_delete`).
+- **Outlook 365 Input:** reads a folder newest first, with an OData filter or search text. Bodies are plain text.
 
 ## Amazon S3
 

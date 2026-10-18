@@ -29,7 +29,8 @@ from .runtimes import home
 
 KINDS = ('web', 'github', 'smtp')
 # none: an open service such as a self-hosted routing server; aws-sigv4: S3-compatible storage (username = access key id)
-AUTH_MODES = ('bearer', 'basic', 'header', 'none', 'aws-sigv4')
+# oauth2: tokens from token_url (client credentials, or a refresh token from device sign-in); see flowengine/oauth.py
+AUTH_MODES = ('bearer', 'basic', 'header', 'none', 'aws-sigv4', 'oauth2')
 _HEADER = re.compile(r"^[!#$%&'*+.^_`|~0-9A-Za-z-]{1,128}$")
 _LOOPBACK = ('localhost', '127.0.0.1', '::1')
 
@@ -52,6 +53,9 @@ class ServiceConnection:
     header_name: str | None = None   # custom header auth, e.g. X-Api-Key
     # OAuth refresh: the only URL outside base_url the secret (a refresh token) may be sent to
     token_url: str | None = None
+    client_id: str | None = None        # oauth2: the registered application id (not secret)
+    scope: str | None = None            # oauth2: space-separated scopes, e.g. https://graph.microsoft.com/.default
+    device_code_url: str | None = None  # oauth2: RFC 8628 device authorization endpoint, for sign-in without a redirect
 
     def validate(self):
         if not re.fullmatch(r'svc_[A-Za-z0-9_.-]{1,60}', self.id):
@@ -77,11 +81,17 @@ class ServiceConnection:
                               else 'AWS Signature V4 needs the access key id as the username')
         if self.auth == 'header' and not _HEADER.match(self.header_name or ''):
             raise ConfigError('Header authentication needs a valid header name')
-        if self.token_url:
-            t = urlsplit(self.token_url)
-            if self.auth != 'bearer' or t.scheme not in ('https', 'http') or not t.hostname or t.query or t.fragment \
-                    or t.username or (t.scheme == 'http' and t.hostname not in _LOOPBACK):
-                raise ConfigError('Token URL needs bearer authentication and an absolute https:// URL without query')
+        for name in ('token_url', 'device_code_url'):
+            value = getattr(self, name)
+            if not value:
+                continue
+            t = urlsplit(value)
+            if self.auth not in ('bearer', 'oauth2') or t.scheme not in ('https', 'http') or not t.hostname or t.query \
+                    or t.fragment or t.username or (t.scheme == 'http' and t.hostname not in _LOOPBACK):
+                raise ConfigError(f'{name.replace("_", " ").capitalize()} needs bearer or OAuth authentication and an '
+                                  'absolute https:// URL without query')
+        if self.auth == 'oauth2' and not (self.token_url and (self.client_id or '').strip()):
+            raise ConfigError('OAuth connections need the token URL and the client (application) id')
         return self
 
     def _validate_smtp(self):
@@ -122,6 +132,9 @@ class ServiceConnection:
             return {}
         if self.auth == 'aws-sigv4':
             raise ConfigError(f'Connection {self.name!r} signs each request (AWS Signature V4); use it with the Amazon S3 tools')
+        if self.auth == 'oauth2':
+            from .oauth import OAuthSession
+            return {'Authorization': f'Bearer {OAuthSession.for_connection(self, secret).access_token()}'}
         if self.auth == 'basic':
             token = base64.b64encode(f'{self.username}:{secret}'.encode('utf-8')).decode('ascii')
             return {'Authorization': f'Basic {token}'}
@@ -162,7 +175,7 @@ class ServiceConnectionStore:
         return ServiceConnection(**data)
 
     def save(self, data: dict, secret: str | None = None) -> ServiceConnection:
-        data = {k: v for k, v in dict(data).items() if v is not None or k in ('username', 'header_name', 'token_url')}
+        data = {k: v for k, v in dict(data).items() if v is not None or k in ('username', 'header_name', 'token_url', 'client_id', 'scope', 'device_code_url')}
         unknown = set(data) - set(ServiceConnection.__dataclass_fields__)
         if unknown:
             raise ConfigError(f'Unknown service connection field(s) {sorted(unknown)}; secrets are passed separately')
@@ -173,7 +186,7 @@ class ServiceConnectionStore:
         from .db.vault import vault
         with self._lock:
             items = self._load()
-            if conn.id not in items and not secret and conn.auth != 'none':
+            if conn.id not in items and not secret and conn.auth not in ('none', 'oauth2'):
                 raise ConfigError('A new service connection needs its token or password')
             items[conn.id] = conn.public()
             if secret and conn.auth != 'none':
@@ -195,6 +208,8 @@ class ServiceConnectionStore:
         if conn.auth == 'none':
             return ''
         from .db.vault import vault
+        if conn.auth == 'oauth2':
+            return vault().get(conn.id) or ''  # JSON {client_secret?, refresh_token?}; empty before sign-in
         value = vault().get(conn.id)
         if not value:
             raise ConfigError(f'No saved credential for connection {conn.name!r}; edit the connection to add it')

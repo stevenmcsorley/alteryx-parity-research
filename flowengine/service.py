@@ -325,8 +325,23 @@ class EngineService:
             return [c.public() for c in store.list(params.get('kind'))]
         if method == 'credentials.save':
             secret = params.get('secret') or None
-            c = store.save(dict(params.get('connection') or {}), secret=secret)
+            data = dict(params.get('connection') or {})
+            if secret and data.get('auth') == 'oauth2':
+                # A client secret typed in the form joins what sign-in already saved (the refresh token).
+                from .oauth import _secrets
+                previous = {}
+                if data.get('id'):
+                    try:
+                        previous = _secrets(store.secret(store.get(data['id'])))
+                    except Exception:
+                        previous = {}
+                secret = json.dumps({**previous, 'client_secret': secret})
+            c = store.save(data, secret=secret)
             return {'connection': c.public(), 'credential_saved': secret is not None}
+        if method in ('credentials.oauth.device_start', 'credentials.oauth.device_poll'):
+            from .oauth import OAuthSession
+            session = OAuthSession.for_connection(store.get(params['connection_id']))
+            return session.device_start() if method.endswith('start') else session.device_poll(params['device_code'])
         if method == 'credentials.delete':
             store.delete(params['connection_id'])
             return {'deleted': True}

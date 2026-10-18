@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 282,
-    "passing": 282,
+    "count": 285,
+    "passing": 285,
     "tests": [
       "test_batch10.APIOutputTests.test_quoted_csv_messages",
       "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
@@ -390,6 +390,9 @@
       "test_macros.StandardMacroTests.test_macro_input_filter_formula_output_matches_direct_workflow",
       "test_macros.StandardMacroTests.test_macro_resolves_child_resources_relative_to_definition",
       "test_macros.StandardMacroTests.test_nested_macro_executes_once_at_each_level",
+      "test_msgraph.GraphTests.test_large_upload_uses_a_session_without_the_access_token",
+      "test_msgraph.GraphTests.test_list_input_pages_and_list_output_appends_updates_and_deletes",
+      "test_msgraph.GraphTests.test_onedrive_and_sharepoint_files_round_trip_in_their_formats",
       "test_predictive.EvaluationTests.test_comparison_cross_validation_and_lift",
       "test_predictive.EvaluationTests.test_lift_of_a_perfect_ranking",
       "test_predictive.EvaluationTests.test_stepwise_drops_noise_and_nested_test_matches_statsmodels",

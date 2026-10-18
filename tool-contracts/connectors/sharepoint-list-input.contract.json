@@ -6,27 +6,98 @@
   "xml_tool_name": "AlteryxConnectorDotNet.SharepointInput.SharepointInput",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/sharepoint-list-input-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "DateTime data and SharePoint",
-      "Tool Configuration"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "site",
+      "list"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "microsoft-graph"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web"
+      },
+      "site": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Site, for example contoso.sharepoint.com:/sites/Sales: (or a site id)"
+      },
+      "list": {
+        "type": "string",
+        "minLength": 1,
+        "description": "List display name or id"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 120
+      },
+      "columns": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "uniqueItems": true,
+        "default": [],
+        "description": "Internal column names; empty reads every user column"
+      },
+      "filter": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "OData filter on fields, e.g. fields/Region eq 'North'"
+      },
+      "limit": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 0
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "alteryx-server (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.sharepoint_list_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.msgraph",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -41,9 +112,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_msgraph.GraphTests.test_list_input_pages_and_list_output_appends_updates_and_deletes"
+    ]
   },
   "sources": [
     {
@@ -59,8 +132,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider microsoft-graph: Checked against a controlled local fixture of the documented Graph and Microsoft identity platform endpoints (token grants, device code, drive items, upload sessions, list items, messages, paging, throttling). Live acceptance against a Microsoft 365 tenant is pending (no tenant available)."
   ]
 }

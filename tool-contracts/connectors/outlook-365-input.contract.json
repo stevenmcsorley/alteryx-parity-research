@@ -6,29 +6,99 @@
   "xml_tool_name": "Outlook365Input_v1.1.0",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/outlook-365-input-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Sign In to Outlook 365",
-      "Select a Data Source",
-      "Email",
-      "Calendar"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "microsoft-graph"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web"
+      },
+      "mailbox": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "User principal name; empty for the signed-in user"
+      },
+      "folder": {
+        "type": "string",
+        "minLength": 1,
+        "default": "inbox",
+        "description": "Well-known name (inbox, sentitems, ...) or folder id"
+      },
+      "filter": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "OData $filter, for example isRead eq false"
+      },
+      "search": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Search text (Graph $search)"
+      },
+      "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100000,
+        "default": 500
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 120
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.outlook365_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.msgraph",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -45,9 +115,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_msgraph.GraphTests.test_bad_refresh_token_is_explained_and_expired_access_token_is_renewed",
+      "test_msgraph.GraphTests.test_outlook_reads_newest_first_with_plain_text_bodies"
+    ]
   },
   "sources": [
     {
@@ -63,8 +136,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider microsoft-graph: Checked against a controlled local fixture of the documented Graph and Microsoft identity platform endpoints (token grants, device code, drive items, upload sessions, list items, messages, paging, throttling). Live acceptance against a Microsoft 365 tenant is pending (no tenant available)."
   ]
 }
