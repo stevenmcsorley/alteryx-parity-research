@@ -238,8 +238,12 @@ class OAuthSession:
         params = {'response_type': 'code', 'client_id': self.conn.client_id, 'redirect_uri': redirect_uri,
                   'scope': self.conn.scope or '', 'state': state, 'code_challenge_method': 'S256',
                   'code_challenge': _b64url(hashlib.sha256(verifier.encode()).digest())}
-        if urllib.parse.urlsplit(self.conn.authorize_url).hostname == 'accounts.google.com':
-            params.update(access_type='offline', prompt='consent')  # Google issues a refresh token only when asked
+        host = urllib.parse.urlsplit(self.conn.authorize_url).hostname
+        # Some providers issue a refresh token only when asked for offline access.
+        if host == 'accounts.google.com':
+            params.update(access_type='offline', prompt='consent')
+        elif host == 'www.dropbox.com':
+            params.update(token_access_type='offline')
         _BROWSER[session_id] = entry
         return {'session_id': session_id, 'authorize_url': f'{self.conn.authorize_url}?{urllib.parse.urlencode(params)}',
                 'redirect_uri': redirect_uri, 'expires_in': BROWSER_TIMEOUT}

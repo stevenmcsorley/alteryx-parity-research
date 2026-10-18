@@ -6,25 +6,80 @@
   "xml_tool_name": "DropboxOutput_v1.1.2",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/dropbox-output-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "outputs": [],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "path"
+    ],
+    "properties": {
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 3600,
+        "default": 300
+      },
+      "provider": {
+        "type": "string",
+        "enum": [
+          "dropbox"
+        ]
+      },
+      "path": {
+        "type": "string",
+        "minLength": 1,
+        "description": "File path, for example /Reports/sales.csv"
+      },
+      "write": {
+        "type": "object",
+        "default": {},
+        "description": "Output Data settings except path"
+      },
+      "if_exists": {
+        "enum": [
+          "overwrite",
+          "error"
+        ],
+        "default": "overwrite"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.dropbox_output",
+    "version": "1.0.0",
+    "module": "flowengine.tools.filestores",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -38,9 +93,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_filestores.FileStoreTests.test_dropbox_round_trip_escapes_unicode_paths_and_uses_sessions_for_big_files"
+    ]
   },
   "sources": [
     {
@@ -56,8 +113,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider dropbox: Checked against a controlled local fixture of the documented endpoints (download, upload, upload sessions, conflicts). Live acceptance against Dropbox is pending (no Dropbox account available)."
   ]
 }

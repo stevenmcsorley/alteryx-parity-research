@@ -36,6 +36,7 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `microsoft-dataverse` (vendor) | Dataverse Input/Output, Dynamics CRM Input/Output | a Web/API connection with OAuth 2.0 | Controlled fixture of the documented Web API. **Live acceptance against a Dataverse environment is pending** |
 | `microsoft-power-bi` (vendor) | Microsoft Power BI Output | a Web/API connection with OAuth 2.0 (device sign-in) | Controlled fixture of the documented push-dataset API. **Live acceptance against a Power BI workspace is pending** |
 | `google` (vendor) | Google Drive Input/Output, Google Sheets Input/Output, Google BigQuery Input/Output, Google Analytics 4 Input | one Web/API connection with OAuth 2.0 per Google API host; browser sign-in or a service account key | Controlled fixture of the documented endpoints, with service-account JWTs verified against the public key. **Live acceptance against Google is pending:** no Google Cloud project is available |
+| `box`, `dropbox`, `azure-data-lake` (vendor) | Box, Dropbox and Azure Data Lake File Input/Output | a Web/API connection with OAuth 2.0 | Controlled fixtures of the documented APIs. **Live acceptance is pending** for each: no Box, Dropbox or Azure storage account is available |
 
 Apache Spark Code runs PySpark in local mode. `read_input(n)` returns a Spark DataFrame whose types are mapped from Flowbench types. `write_output(n, df)` collects the DataFrame and maps its types back exactly; types Flowbench cannot hold are rejected with a message. Remote clusters (Livy, Databricks) are not served by this provider.
 
@@ -110,6 +111,16 @@ Each Google API has its own host, so each needs its own connection. The token UR
 - **BigQuery** runs GoogleSQL, waits for the job and reads every page. TIMESTAMP becomes a UTC datetime and RECORD/REPEATED columns become JSON text. `maximum_bytes_billed` caps what a query may cost.
   - Writing uses a **load job**, so all rows land or none do, with no streaming buffer. It appends or replaces, and creates the table from the input schema.
 - **Analytics 4** runs `runReport` with dimensions, metrics and a date range, and pages through all rows. The `date` dimension becomes a date, and integer metrics become integers.
+
+## Box, Dropbox and Azure Data Lake Storage
+
+All three read files exactly as Input Data reads them and write exactly as Output Data writes them. An existing file is replaced, or the run fails when `if_exists` is `error`.
+
+- **Box** (`https://api.box.com/2.0`) finds a file by id, or by name in a folder (folder `0` is All Files). An existing file gets a new version. Uploads go to Box's upload host. Downloads are redirected by Box to a pre-signed link, which Flowbench fetches **without** the access token.
+- **Dropbox** (`https://api.dropboxapi.com/2`) addresses files by path. File content goes through Dropbox's content host, with the `Dropbox-API-Arg` header escaped to ASCII as the API requires. Files over 8 MB use an upload session. Browser sign-in asks for offline access so Dropbox issues a refresh token.
+- **Azure Data Lake Storage Gen2** (`https://<account>.dfs.core.windows.net`) works on a file system (container) and a path. A file is created, appended in 8 MB chunks at increasing positions, then flushed. `If-None-Match: *` is sent when the file must not already exist.
+
+Each tool may send the token only to its vendor's own documented hosts. That list is fixed in Flowbench, never taken from a connection or a workflow.
 
 ## Amazon S3
 

@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 291,
-    "passing": 291,
+    "count": 294,
+    "passing": 294,
     "tests": [
       "test_batch10.APIOutputTests.test_quoted_csv_messages",
       "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
@@ -334,6 +334,9 @@
       "test_fe_tools_wave2.UserCodeTools.test_python_tool_requires_permission",
       "test_fe_tools_wave2.UserCodeTools.test_python_tool_runs_isolated_code_with_typed_exchange",
       "test_fe_tools_wave2.UserCodeTools.test_run_command",
+      "test_filestores.FileStoreTests.test_box_finds_by_name_downloads_without_the_token_and_uploads_versions",
+      "test_filestores.FileStoreTests.test_data_lake_creates_appends_flushes_and_reads",
+      "test_filestores.FileStoreTests.test_dropbox_round_trip_escapes_unicode_paths_and_uses_sessions_for_big_files",
       "test_fuzzy_match.FuzzyMatchTests.test_10k_records_use_indexed_candidates",
       "test_fuzzy_match.FuzzyMatchTests.test_cancellation_is_reported_without_partial_results",
       "test_fuzzy_match.FuzzyMatchTests.test_candidate_work_limit_fails_without_truncating",

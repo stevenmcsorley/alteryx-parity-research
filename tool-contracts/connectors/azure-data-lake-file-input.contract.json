@@ -6,31 +6,80 @@
   "xml_tool_name": "azure_data_lake_input",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/microsoft-azure-data-lake-file-input-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Authentication Methods",
-      "End-User (Basic) Authentication Type",
-      "End-User (Advanced) Authentication Type",
-      "Service-to-Service Authentication Type",
-      "Shared Key Authentication Type",
-      "Tool Configuration"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "file_system",
+      "path"
+    ],
+    "properties": {
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 3600,
+        "default": 300
+      },
+      "provider": {
+        "type": "string",
+        "enum": [
+          "azure-data-lake"
+        ]
+      },
+      "file_system": {
+        "type": "string",
+        "minLength": 3,
+        "description": "Container (file system) name"
+      },
+      "path": {
+        "type": "string",
+        "minLength": 1,
+        "description": "File path inside the file system, e.g. raw/2026/sales.parquet"
+      },
+      "read": {
+        "type": "object",
+        "default": {},
+        "description": "Input Data settings except path"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.azure_data_lake_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.filestores",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -49,9 +98,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_filestores.FileStoreTests.test_data_lake_creates_appends_flushes_and_reads"
+    ]
   },
   "sources": [
     {
@@ -67,8 +118,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider azure-data-lake: Checked against a controlled local fixture of the documented path operations. Live acceptance against an Azure storage account is pending (none available)."
   ]
 }
