@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 285,
-    "passing": 285,
+    "count": 288,
+    "passing": 288,
     "tests": [
       "test_batch10.APIOutputTests.test_quoted_csv_messages",
       "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
@@ -228,6 +228,9 @@
       "test_data_correctness.DataCorrectnessTests.test_sort_nan_and_join_key_types",
       "test_data_correctness.DataCorrectnessTests.test_union_decimal_integer_exact",
       "test_data_correctness.DataCorrectnessTests.test_union_rejects_lossy_numeric_promotions",
+      "test_dataverse_powerbi.DataverseTests.test_create_update_upsert_by_alternate_key_and_delete",
+      "test_dataverse_powerbi.PowerBITests.test_creates_the_dataset_then_appends_and_replaces_in_batches",
+      "test_dataverse_powerbi.PowerBITests.test_schema_changes_need_update_schema_and_limits_are_checked",
       "test_download.DownloadTests.test_binary_charset_and_size_limit",
       "test_download.DownloadTests.test_configuration_and_schema_are_validated",
       "test_download.DownloadTests.test_failures_stop_or_are_recorded",

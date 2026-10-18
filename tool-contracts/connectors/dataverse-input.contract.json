@@ -6,30 +6,105 @@
   "xml_tool_name": "DataverseInput_v1.1.1",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/dataverse-input-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Connector Version 1.0.1 and Later",
-      "Connector Version 1.0.0",
-      "Sign In to Dataverse",
-      "Select a Table and Columns",
-      "Filter the Data"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "table"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "microsoft-dataverse"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "Saved Dataverse connection (OAuth), base URL https://<org>.crm.dynamics.com/api/data/v9.2"
+      },
+      "table": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Entity set name, for example accounts or contacts"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 120
+      },
+      "columns": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true,
+        "default": []
+      },
+      "filter": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "OData $filter, e.g. statecode eq 0"
+      },
+      "order_by": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "OData $orderby, e.g. createdon desc"
+      },
+      "limit": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 0
+      },
+      "page_size": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5000,
+        "default": 5000
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.dataverse_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.dataverse",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -47,9 +122,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_dataverse_powerbi.DataverseTests.test_create_update_upsert_by_alternate_key_and_delete",
+      "test_dataverse_powerbi.DataverseTests.test_input_pages_with_maxpagesize_and_drops_annotations"
+    ]
   },
   "sources": [
     {
@@ -65,8 +143,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider microsoft-dataverse: Checked against a controlled local fixture of the documented Web API (paging, create, update, upsert by alternate key, delete). Live acceptance against a Dataverse environment is pending (none available)."
   ]
 }

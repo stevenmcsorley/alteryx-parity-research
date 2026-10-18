@@ -33,6 +33,8 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `amazon-s3` (vendor; any S3-compatible store) | Amazon S3 Download, Amazon S3 Upload | a Web/API connection with AWS Signature V4 (access key id as username, secret access key as secret) | Signer reproduces the AWS documentation example signature. Download, upload, multipart and a rejected wrong secret run live against SeaweedFS, which checks signatures, in the `service-integration` CI job. **Live acceptance against AWS is pending:** no AWS account is available |
 | `mongodb` (open source) | MongoDB Input, MongoDB Output | a database connection of type MongoDB; pymongo | Live against MongoDB 7.0 in the `service-integration` CI job |
 | `microsoft-graph` (vendor) | OneDrive Input/Output, SharePoint Files Input/Output, SharePoint List Input/Output, Outlook 365 Input | a Web/API connection with OAuth 2.0 (app secret, or device sign-in) | Controlled fixture of the documented identity platform and Graph endpoints. **Live acceptance against a Microsoft 365 tenant is pending:** no tenant is available |
+| `microsoft-dataverse` (vendor) | Dataverse Input/Output, Dynamics CRM Input/Output | a Web/API connection with OAuth 2.0 | Controlled fixture of the documented Web API. **Live acceptance against a Dataverse environment is pending** |
+| `microsoft-power-bi` (vendor) | Microsoft Power BI Output | a Web/API connection with OAuth 2.0 (device sign-in) | Controlled fixture of the documented push-dataset API. **Live acceptance against a Power BI workspace is pending** |
 
 Apache Spark Code runs PySpark in local mode. `read_input(n)` returns a Spark DataFrame whose types are mapped from Flowbench types. `write_output(n, df)` collects the DataFrame and maps its types back exactly; types Flowbench cannot hold are rejected with a message. Remote clusters (Livy, Databricks) are not served by this provider.
 
@@ -68,6 +70,25 @@ Access tokens are kept in memory only, and renewed once if a call returns 401. A
 - **SharePoint List Input:** returns the item id and the column values (internal names). System columns are dropped, and dates are read as UTC.
 - **SharePoint List Output:** appends, updates by item id, or deletes by item id (needs `confirm_delete`).
 - **Outlook 365 Input:** reads a folder newest first, with an OData filter or search text. Bodies are plain text.
+
+## Dataverse and Dynamics CRM
+
+Dynamics 365 apps (CRM) store their data in Dataverse. That's why both tool pairs use the Dataverse Web API, at `https://<org>.crm.dynamics.com/api/data/v9.2`.
+- **Input** reads an entity set (for example `accounts`), with optional columns, an OData filter and order, and a limit. It pages with `Prefer: odata.maxpagesize`, following `@odata.nextLink` unchanged as the documentation requires. Formatted-value annotations are dropped, lookups arrive as `_<name>_value` ids, and dates are in UTC.
+- **Output** has four modes:
+  - **create** (POST); the row URL comes from `OData-EntityId`;
+  - **update** (PATCH with `If-Match: *`, so it never creates a row);
+  - **upsert** (PATCH by the primary key or the columns of an alternate key; key values are kept out of the body);
+  - **delete** (needs `confirm_delete`).
+
+## Microsoft Power BI Output
+
+Writes to a push dataset, at `https://api.powerbi.com/v1.0/myorg`, in your workspace or the one named by `workspace_id`.
+- The dataset is found by name, or created with one table. The retention policy is None (up to 5,000,000 rows) or basicFIFO (the newest 200,000).
+- Rows are appended, or replaced (the table's rows are deleted first), in batches of at most 10,000.
+- A table whose columns differ is only changed with `update_schema`.
+- The 75-column and 4,000-character limits are checked before anything is sent.
+- Push datasets don't work with service principal profiles, so sign in as a user (device sign-in).
 
 ## Amazon S3
 

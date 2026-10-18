@@ -35,13 +35,16 @@ MAX_RETRIES = 4
 
 
 class Graph:
+    """A JSON API behind an OAuth connection with OData paging (Microsoft Graph, Dataverse, Power BI)."""
+    service = 'Microsoft Graph'
+
     def __init__(self, cfg):
         from ..oauth import OAuthSession
         from ..service_connections import ServiceConnectionStore
         store = ServiceConnectionStore()
         self.conn = store.get(cfg['connection_id'], kind='web')
         if self.conn.auth != 'oauth2':
-            raise ConfigError('Microsoft Graph connections use OAuth: an app secret or a device sign-in')
+            raise ConfigError(f'{self.service} connections use OAuth: an app secret or a device sign-in')
         self.oauth = OAuthSession(self.conn, store.secret(self.conn), store)
         self.base = self.conn.base_url.rstrip('/')
         self.timeout = cfg.get('timeout_seconds', 120)
@@ -50,7 +53,7 @@ class Graph:
     def url(self, path: str) -> str:
         return path if path.startswith('https://') or path.startswith('http://') else f'{self.base}/{path.lstrip("/")}'
 
-    def request(self, method, path, body=None, headers=None, raw=False):
+    def request(self, method, path, body=None, headers=None, raw=False, with_headers=False):
         url = self.url(path)
         if not self.conn.covers(url):
             raise ConfigError(f'{url} is outside the connection base URL')
@@ -66,7 +69,8 @@ class Graph:
             try:
                 with self.opener.open(req, timeout=self.timeout) as r:
                     content = r.read()
-                    return content if raw else (json.loads(content) if content.strip() else None)
+                    result = content if raw else (json.loads(content) if content.strip() else None)
+                    return (result, r.headers) if with_headers else result
             except urllib.error.HTTPError as e:
                 with e:
                     detail = e.read(64 * 1024)
@@ -77,18 +81,18 @@ class Graph:
                 if e.code in (429, 503) and attempt < MAX_RETRIES:
                     time.sleep(min(float(retry) if retry and retry.isdigit() else 2 ** attempt, 60))
                     continue
-                raise DataError(f'Microsoft Graph {method} {urllib.parse.urlsplit(url).path} returned {e.code}: '
+                raise DataError(f'{self.service} {method} {urllib.parse.urlsplit(url).path} returned {e.code}: '
                                 f'{_graph_error(detail)}') from None
             except (urllib.error.URLError, OSError) as e:
-                raise DataError(f'Could not reach Microsoft Graph: {getattr(e, "reason", None) or e}') from None
-        raise DataError('Microsoft Graph kept throttling the request')
+                raise DataError(f'Could not reach {self.service}: {getattr(e, "reason", None) or e}') from None
+        raise DataError(f'{self.service} kept throttling the request')
 
     def paged(self, path, ctx, limit=0, headers=None):
         url, count, seen = path, 0, set()
         while url:
             ctx.check_cancelled()
             if url in seen:
-                raise DataError('Microsoft Graph returned a next page that was already read; stopping to avoid a loop')
+                raise DataError(f'{self.service} returned a next page that was already read; stopping to avoid a loop')
             seen.add(url)
             page = self.request('GET', url, headers=headers) or {}
             for item in page.get('value', []):
