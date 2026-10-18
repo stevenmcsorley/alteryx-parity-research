@@ -192,11 +192,12 @@ class ServiceConnectionStore:
             items = self._load()
             if conn.id not in items and not secret and conn.auth not in ('none', 'oauth2'):
                 raise ConfigError('A new service connection needs its token or password')
+            previous = items.get(conn.id)
             items[conn.id] = conn.public()
             if secret and conn.auth != 'none':
                 vault().set(conn.id, conn.username or '', secret)
-            elif conn.auth == 'none':
-                vault().remove(conn.id)
+            elif conn.auth == 'none' and previous and previous.get('auth') != 'none':
+                vault().remove(conn.id)  # it used to hold a secret; an open connection keeps none
             self._save(items)
         return conn
 
