@@ -559,7 +559,7 @@ describe('task view', () => {
     await ready();
     useAiConversation.getState().setTask({ id: 'turn_t', objective: 'Average fuel price by year', kind: 'execution', phase: 'inspect', status: 'completed',
       verification: 'verified', actions: [
-        { at: 1, tool: 'agent.download_file', phase: 'acquire', ok: true, summary: 'ok' },
+        { at: 1, tool: 'agent.download_file', phase: 'acquire', ok: true, summary: 'ok', result_bytes: 3400000, model_bytes: 5800, result_ref: 'res_c1' },
         { at: 2, tool: 'workflow.request_run', phase: 'execute', ok: false, summary: 'failed: Unknown field [Pric]' },
         { at: 3, tool: 'workflow.propose_patch', phase: 'repair', ok: true, summary: 'approved' },
         { at: 4, tool: 'workflow.request_run', phase: 'execute', ok: true, summary: 'succeeded' }],
@@ -576,6 +576,7 @@ describe('task view', () => {
     expect(pane.textContent).toContain('/w/data/fuel.csv');
     expect(pane.textContent).toContain('Unknown field [Pric]');
     expect(pane.textContent).toContain('Backed by Flowbench execution (1 piece of evidence).');
+    expect(pane.textContent).toContain('3.2 MB kept · 5.7 kB sent');
   });
 });
 
