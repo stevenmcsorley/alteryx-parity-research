@@ -6,8 +6,8 @@
   "xml_tool_name": "AlteryxRPluginGui.R",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/developer/r-tool.html",
-  "status": "in-progress",
-  "implementation_status": "in-progress",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
@@ -114,9 +114,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_fe_tools_wave2.UserCodeTools.test_r_tool"
+    ]
   },
   "sources": [
     {
@@ -128,6 +130,11 @@
       "url": "https://help.alteryx.com/current/en/designer/tools/developer/r-tool.html",
       "evidence_type": "public-tool-help-page-metadata",
       "accessed_utc": "2026-10-13T09:33:23.919721+00:00"
+    },
+    {
+      "url": ".github/workflows/research-validation.yml#r-runtime",
+      "evidence_type": "runtime-gated-ci-job",
+      "accessed_utc": null
     }
   ],
   "cases": [],

@@ -10,9 +10,9 @@
 | Distinct tool names | 321 |
 | Public help URL resolved (official tool list sync) | 323 |
 | Machine-readable contracts generated | 323 |
-| Entries with known anchors (manifest, reference-observed or public-doc) | 247 |
+| Entries with known anchors (manifest, reference-observed or public-doc) | 248 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 226 |
+| Independent kernels implemented and passing tests | 228 |
 | Independently implemented application adapters (in progress) | 19 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -20,10 +20,10 @@
 | Reference cases passed / run — E2 (AMP profile) | 75 / 76 |
 | Holdout: shipped sample workflows fully matching — E1 | 15 / 31 (sinks 87 / 126) |
 | Holdout: shipped sample workflows fully matching — E2 | 16 / 31 (sinks 88 / 126) |
-| Kernels registered but without passing evidence (in-progress) | 1 |
+| Kernels registered but without passing evidence (in-progress) | 0 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 480 run, 0 failed |
+| Unit/integration tests in last ledger build | 488 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -186,6 +186,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `prescriptive:simulation-sampling` | `core.simulation_sampling` | 1 | 0/0 | not-tested |
 | `prescriptive:simulation-scoring` | `core.simulation_scoring` | 1 | 0/0 | not-tested |
 | `prescriptive:simulation-summary` | `core.simulation_summary` | 1 | 0/0 | not-tested |
+| `developer:apache-spark-code` | `core.spark_code` | 2 | 0/0 | not-tested |
 | `developer:api-output` | `core.api_output` | 1 | 0/0 | not-tested |
 | `developer:base64-encoder` | `core.base64_encoder` | 1 | 0/0 | not-tested |
 | `developer:blob-convert` | `core.blob_convert` | 3 | 0/0 | not-tested |
@@ -208,7 +209,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `developer:json-schema` | `core.json_schema` | 2 | 0/0 | not-tested |
 | `developer:message` | `core.message` | 1 | 0/0 | not-tested |
 | `developer:python` | `core.python` | 4 | 0/0 | not-tested |
-| `developer:r` | `core.r` | 0 | 0/0 | not-tested |
+| `developer:r` | `core.r` | 1 | 0/0 | not-tested |
 | `developer:run-command` | `core.run_command` | 1 | 0/0 | not-tested |
 | `developer:runner` | `core.runner` | 4 | 0/0 | not-tested |
 | `developer:test` | `core.test` | 1 | 0/0 | not-tested |
@@ -260,7 +261,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Connectors | 44 | 0 | 0 | 1 | 44 |
 | Data Investigation | 14 | 14 | 0 | 14 | 0 |
 | Demographic Analysis | 4 | 0 | 0 | 0 | 4 |
-| Developer | 30 | 27 | 4 | 29 | 0 |
+| Developer | 30 | 28 | 4 | 30 | 0 |
 | Documentation | 3 | 0 | 0 | 1 | 0 |
 | In-Database | 16 | 16 | 0 | 16 | 0 |
 | In/Out | 8 | 7 | 0 | 7 | 0 |

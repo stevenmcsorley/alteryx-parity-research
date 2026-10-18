@@ -440,3 +440,25 @@ table.grid td.chart-cell { max-width: none; padding: 6px 8px; white-space: norma
 .chart-viewer-stage { position: relative; flex: 1; overflow: hidden; cursor: grab; touch-action: none; }
 .chart-viewer-stage:active { cursor: grabbing; }
 .chart-viewer-stage img { background: #fff; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35); user-select: none; max-width: none; }
+
+.integrations-modal { width: min(920px, 96vw); }
+.integrations-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 16px; border-bottom: 1px solid var(--border); }
+.integrations-tabs button { border: 0; border-bottom: 2px solid transparent; background: transparent; padding: 8px 10px; color: var(--text-2); cursor: pointer; border-radius: 0; }
+.integrations-tabs button.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+.integrations-body { padding: 12px 16px; overflow: auto; max-height: 65vh; }
+.integrations-body h3 { margin: 14px 0 6px; font-size: 13px; }
+.integrations-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.integrations-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.integrations-card h3 { margin-top: 0; }
+.integrations-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 6px 0; }
+.integrations-table th, .integrations-table td { text-align: left; padding: 5px 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.integrations-table .muted, .integrations-provider .muted { color: var(--text-3); }
+.integrations-form { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.integrations-form input { flex: 1 1 160px; min-width: 0; }
+.integrations-provider { border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; margin: 6px 0; }
+.integrations-provider summary { cursor: pointer; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.integrations-provider ul { margin: 6px 0; padding-left: 18px; }
+.integrations-provider p { margin: 4px 0; font-size: 12px; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); display: inline-block; }
+.status-dot.ok { background: #38a169; }
+.status-dot.missing { background: #dd8a36; }
