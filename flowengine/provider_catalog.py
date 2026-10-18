@@ -203,3 +203,39 @@ register(Provider(
           'user) or OAuth (token URL https://<instance>.service-now.com/oauth_token.do).',
     verification='Checked against a controlled local fixture of the documented Table API. Live acceptance against a '
                  'ServiceNow instance is pending (none available).'))
+
+register(Provider(
+    id='marketo', family='marketo', name='Adobe Marketo Engage (REST API)', kind='vendor',
+    serves=('connectors:marketo-input', 'connectors:marketo-output', 'connectors:marketo-append'), needs=('connection:web',),
+    homepage='https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/rest/rest-api',
+    semantics={'reads': 'leads by filter (300 values per request) or activities since a date, every page',
+               'writes': 'leads.json createOrUpdate / createOnly / updateOnly / createDuplicate, 300 per request',
+               'errors': '601/602 renew the token once; 606 waits; other codes stop the run'},
+    setup='In Marketo Admin create a LaunchPoint custom service for an API user. Add a Web/API connection: base URL '
+          'https://<munchkin-id>.mktorest.com/rest, OAuth, token URL https://<munchkin-id>.mktorest.com/identity/oauth/token, '
+          'the client id, and the client secret.',
+    verification='Checked against a controlled local fixture of the documented identity and REST endpoints. Live acceptance '
+                 'against a Marketo instance is pending (none available).'))
+
+register(Provider(
+    id='azure-ai-language', family='azure-ai-language', name='Azure AI Language', kind='vendor',
+    serves=('connectors:cognitive-services-text-analytics',), needs=('connection:web',),
+    homepage='https://learn.microsoft.com/en-us/azure/ai-services/language-service/overview',
+    semantics={'api': 'analyze-text, api-version 2023-04-01 (synchronous)',
+               'limits': '5,120 characters per text; batches of 10 (sentiment, key phrases), 5 (entities), 1000 (language)'},
+    setup='Create a Language resource in Azure. Add a Web/API connection: base URL https://<resource>.cognitiveservices.azure.com, '
+          'authentication API key header with header name Ocp-Apim-Subscription-Key and the key as the secret (or OAuth with '
+          'scope https://cognitiveservices.azure.com/.default).',
+    verification='Checked against a controlled local fixture of the documented analyze-text request and responses. Live '
+                 'acceptance against an Azure Language resource is pending (none available).'))
+
+register(Provider(
+    id='power-automate', family='power-automate', name='Microsoft Power Automate (HTTP request trigger)', kind='vendor',
+    serves=('connectors:power-automate',), needs=('connection:web',),
+    homepage='https://learn.microsoft.com/en-us/power-automate/oauth-authentication',
+    semantics={'calls': 'JSON POST per record or one array per run', 'auth': 'signed trigger URL (sig) or Microsoft Entra OAuth'},
+    setup='In the flow add "When an HTTP request is received" and copy its URL. Add a Web/API connection: authentication '
+          'Signed URL, base URL the part before "?", and the part after "?" as the secret (or OAuth for flows restricted to '
+          'Microsoft Entra users).',
+    verification='Checked against a controlled local fixture of an HTTP request trigger. Live acceptance against a real flow '
+                 'is pending (no Power Automate environment available).'))

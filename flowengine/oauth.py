@@ -83,6 +83,27 @@ def _post(url: str, form: dict, timeout: float = 30) -> tuple[int, dict]:
         raise DataError(f'Could not reach the sign-in server: {getattr(e, "reason", None) or e}') from None
 
 
+def token_in_query(token_url: str) -> bool:
+    """Identity servers whose documented token request is a GET with the client credentials in the query (Marketo)."""
+    return (urllib.parse.urlsplit(token_url).hostname or '').endswith('.mktorest.com')
+
+
+def _get_token(url: str, params: dict, timeout: float = 30) -> tuple[int, dict]:
+    query = urllib.parse.urlencode({k: v for k, v in params.items() if v})
+    req = urllib.request.Request(f'{url}?{query}', method='GET', headers={'Accept': 'application/json'})
+    try:
+        with urllib.request.build_opener(_NoRedirect).open(req, timeout=timeout) as r:
+            return r.status, json.loads(r.read() or b'{}')
+    except urllib.error.HTTPError as e:
+        with e:
+            try:
+                return e.code, json.loads(e.read() or b'{}')
+            except ValueError:
+                return e.code, {}
+    except (urllib.error.URLError, OSError, ValueError) as e:
+        raise DataError(f'Could not reach the sign-in server: {getattr(e, "reason", None) or e}') from None
+
+
 def _secrets(raw: str) -> dict:
     if not raw:
         return {}
@@ -126,7 +147,10 @@ class OAuthSession:
                               'service account key')
         if not sa and not (self.conn.client_id or '').strip():
             raise ConfigError(f'Connection {self.conn.name!r} needs its client (application) id')
-        status, doc = _post(self.conn.token_url, form)
+        if token_in_query(self.conn.token_url) and form['grant_type'] == 'client_credentials':
+            status, doc = _get_token(self.conn.token_url, form)  # Marketo documents a GET with query parameters
+        else:
+            status, doc = _post(self.conn.token_url, form)
         if status != 200 or not doc.get('access_token'):
             reason = doc.get('error_description') or doc.get('error') or f'HTTP {status}'
             raise DataError(f'Sign-in for {self.conn.name!r} failed: {str(reason).splitlines()[0][:300]}. '

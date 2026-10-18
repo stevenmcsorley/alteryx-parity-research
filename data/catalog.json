@@ -2277,7 +2277,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/cognitive-services-text-analytics-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2457,7 +2457,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/marketo-append-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2469,7 +2469,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/marketo-input-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2481,7 +2481,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/marketo-output-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2565,7 +2565,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/power-automate-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

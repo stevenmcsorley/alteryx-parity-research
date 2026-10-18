@@ -30,7 +30,8 @@ from .runtimes import home
 KINDS = ('web', 'github', 'smtp')
 # none: an open service such as a self-hosted routing server; aws-sigv4: S3-compatible storage (username = access key id)
 # oauth2: tokens from token_url (client credentials, or a refresh token from device sign-in); see flowengine/oauth.py
-AUTH_MODES = ('bearer', 'basic', 'header', 'none', 'aws-sigv4', 'oauth2')
+# signed-url: the secret is the signed query string of a URL (Power Automate / Logic Apps HTTP triggers)
+AUTH_MODES = ('bearer', 'basic', 'header', 'none', 'aws-sigv4', 'oauth2', 'signed-url')
 _HEADER = re.compile(r"^[!#$%&'*+.^_`|~0-9A-Za-z-]{1,128}$")
 _LOOPBACK = ('localhost', '127.0.0.1', '::1')
 
@@ -133,6 +134,8 @@ class ServiceConnection:
             return {}
         if self.auth == 'aws-sigv4':
             raise ConfigError(f'Connection {self.name!r} signs each request (AWS Signature V4); use it with the Amazon S3 tools')
+        if self.auth == 'signed-url':
+            raise ConfigError(f'Connection {self.name!r} is a signed trigger URL; use it with the Power Automate tool')
         if self.auth == 'oauth2':
             from .oauth import OAuthSession
             return {'Authorization': f'Bearer {OAuthSession.for_connection(self, secret).access_token()}'}
