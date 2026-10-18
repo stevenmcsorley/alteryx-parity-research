@@ -1189,10 +1189,10 @@ def _read_exchange(path: Path, ctx) -> Table:
     return Table(Schema(fields), out_cols) if fields else Table([], [])
 
 
-def _run_process(ctx, argv, cwd, timeout):
+def _run_process(ctx, argv, cwd, timeout, env=None):
     from ..runtimes import clean_env
     try:
-        p = subprocess.Popen(argv, cwd=cwd, env=clean_env(), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        p = subprocess.Popen(argv, cwd=cwd, env=env or clean_env(), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              text=True, encoding='utf-8', errors='replace')
     except OSError as e:
         raise DataError(f'Could not start {argv[0]}: {e}', code='runtime-missing') from None

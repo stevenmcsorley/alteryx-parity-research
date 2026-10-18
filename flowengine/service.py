@@ -143,6 +143,8 @@ class EngineService:
             return self._database(method, params)
         if method.startswith('credentials.'):
             return self._credentials(method, params)
+        if method.startswith('integrations.'):
+            return self._integrations(method, params)
         if method == 'catalog.list':
             cmap = reg.catalog_map()
             status = _load_status()
@@ -285,6 +287,34 @@ class EngineService:
                 return d.tables(q.conn, params['schema'])
             if method == 'database.columns':
                 return [f.to_dict() for f in d.columns(q.conn, params.get('schema'), params['table'])]
+        raise KeyError(method)
+
+    def _integrations(self, method, params):
+        """Settings > Integrations & Licences: providers, declared licences, data packs, runtimes, tool availability."""
+        from . import providers
+        from .runtimes import find_rscript, list_envs
+        if method == 'integrations.providers':
+            return [providers.status(p) for p in providers.providers()]
+        if method == 'integrations.availability':
+            return providers.availability()
+        if method == 'integrations.entitlements.list':
+            return providers.EntitlementStore().list()
+        if method == 'integrations.entitlements.declare':
+            return providers.EntitlementStore().declare(params.get('product', ''), params.get('note', ''))
+        if method == 'integrations.entitlements.remove':
+            providers.EntitlementStore().remove(params['id'])
+            return {'removed': True}
+        if method == 'integrations.datapacks.list':
+            return providers.DataPackStore().list()
+        if method == 'integrations.datapacks.register':
+            return providers.DataPackStore().register(params.get('family', ''), params.get('path', ''),
+                                                      params.get('licence', ''), params.get('name', ''), params.get('source', ''))
+        if method == 'integrations.datapacks.remove':
+            providers.DataPackStore().remove(params['id'])
+            return {'removed': True}
+        if method == 'integrations.runtimes':
+            import shutil
+            return {'python_environments': list_envs(), 'rscript': find_rscript(), 'java': shutil.which('java')}
         raise KeyError(method)
 
     def _credentials(self, method, params):

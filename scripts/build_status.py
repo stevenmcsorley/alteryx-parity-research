@@ -289,13 +289,16 @@ CATEGORY_DEPENDENCIES = {
     'Laboratory': ['experimental-in-reference'], 'SDK Examples': ['sdk-runtime'],
 }
 BLOCKING = ('licensed-reference-dataset', 'external-service-account', 'vendor-cloud-service', 'llm-service')
-# This integration is executed only in the dedicated R-enabled CI job. Excluding
-# it from the generic tool-touch map keeps the generated ledger reproducible on
-# runners with and without a local R install; its conditional Text Input read
-# must not change Text Input's test count either.
-ENVIRONMENT_GATED_LEDGER_TESTS = {
-    'test_fe_tools_wave2.UserCodeTools.test_r_tool',
+# Tests that need a runtime the generic runners do not have (R, Spark with Java). Each runs in its
+# own CI job through scripts/run_gated_tests.py, which fails the job when a listed test fails *or is
+# skipped*, so every merged commit has passed them. The ledger build does not run them (the result
+# would depend on the machine), so the tools they exercise are declared here instead of recorded.
+RUNTIME_GATED_EVIDENCE = {
+    'test_fe_tools_wave2.UserCodeTools.test_r_tool': {'job': 'r-runtime', 'tools': ['core.r']},
+    'test_providers.SparkRuntimeTests.test_spark_code_transforms_typed_tables': {'job': 'spark-runtime',
+                                                                                 'tools': ['core.spark_code']},
 }
+ENVIRONMENT_GATED_LEDGER_TESTS = set(RUNTIME_GATED_EVIDENCE)
 # Replays outputs Flowbench itself recorded (data/tool-examples.json): a regression guard for the
 # AI's examples, not independent evidence that a tool behaves correctly.
 SELF_REFERENTIAL_LEDGER_TESTS = {
@@ -351,6 +354,18 @@ def run_tests_with_tool_map():
     return tests, result.testsRun, len(bad)
 
 
+def gated_evidence():
+    """Runtime-gated tests as evidence for their declared tools; a listed test that no longer exists is a failure."""
+    out = {}
+    for tid, info in RUNTIME_GATED_EVIDENCE.items():
+        try:
+            exists = unittest.defaultTestLoader.loadTestsFromName(tid).countTestCases() == 1
+        except (AttributeError, ImportError):
+            exists = False
+        out[tid] = {'ok': exists, 'tools': set(info['tools']), 'gated_job': info['job']}
+    return out
+
+
 # --------------------------------------------------------------------------- build
 
 def anchor_names_from_cases(cases):
@@ -376,6 +391,7 @@ def build(check=False):
         for cid in t.manifest.catalog_ids:
             impl[cid] = t
     tests, ran, failed = run_tests_with_tool_map()
+    tests.update(gated_evidence())
     tests_by_tool = defaultdict(list)
     for tid, info in sorted(tests.items()):
         for tool in info['tools']:
@@ -504,6 +520,9 @@ def build(check=False):
         if ref_obs:
             sources.append({'url': 'data/reference-observations.json', 'evidence_type': 'authorised-reference-structural-scan',
                             'accessed_utc': obs.get('scanned_utc')})
+        for job in sorted({RUNTIME_GATED_EVIDENCE[t]['job'] for t, _ in tool_tests if t in RUNTIME_GATED_EVIDENCE}):
+            sources.append({'url': f'.github/workflows/research-validation.yml#{job}', 'evidence_type': 'runtime-gated-ci-job',
+                            'accessed_utc': None})
         if adapter:
             sources.append({'url': adapter['evidence'], 'evidence_type': adapter.get('evidence_type', 'authorised-reference-observation-and-project-authored-execution'),
                             'accessed_utc': catalog_doc['metadata'].get('source_retrieved_at_utc')})
