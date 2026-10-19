@@ -6,26 +6,80 @@
   "xml_tool_name": "AlteryxCASSGui.ZIP9Coder.ZIP9Coder",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/address/us-zip9-coder-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "zip_field"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "zip4-data-pack"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "zip_field": {
+        "type": "string",
+        "minLength": 1,
+        "description": "ZIP or ZIP+4 (12345, 123456789 or 12345-6789)"
+      },
+      "plus4_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "data_pack_id": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Registered zip4-centroids pack; the only one if empty"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "licensed-reference-dataset (address/geocoding data)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.us_zip9_coder",
+    "version": "1.0.0",
+    "module": "flowengine.tools.address",
+    "side_effects": "reads-files"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -39,9 +93,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_address.AddressTests.test_zip9_coder_uses_the_registered_pack_and_falls_back_to_zip5"
+    ]
   },
   "sources": [
     {
@@ -57,8 +113,7 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet."
   ]
 }

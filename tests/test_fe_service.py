@@ -38,9 +38,9 @@ class ServiceTests(unittest.TestCase):
         self.assertEqual(len(cat), 323)
         flt = next(c for c in cat if c['id'] == 'preparation:filter')
         self.assertEqual((flt['kernel'], flt['unavailable_reason']), ('core.filter', None))
-        geo = next(c for c in cat if c['id'] == 'address:us-geocoder')
-        self.assertIsNone(geo['kernel'])
-        self.assertIn('licensed data', geo['unavailable_reason'])
+        # every catalogue entry without a kernel says why it is unavailable
+        missing = [c for c in cat if c['kernel'] is None]
+        self.assertTrue(missing and all(c['unavailable_reason'] for c in missing))
         self.assertEqual({p['name'] for p in call('profiles.list')['result']},
                          {'ayx-2026.2-e1', 'ayx-2026.2-e2', 'ayx-2026.1-e1'})
 
