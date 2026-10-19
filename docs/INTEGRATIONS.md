@@ -48,6 +48,8 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `zip4-data-pack` (your licensed data) | US ZIP9 Coder | a registered `zip4-centroids` data pack | Synthetic data pack |
 | `us-census-acs` (public data) | Allocate Input, Append, MetaInfo, Report | a free Census API key in a Signed URL connection (`key=…`) | Controlled fixture of the documented API. **Live acceptance is pending:** the data API now needs a key, and none is available here |
 | `segmentation-data-pack` (your data) | the 10 Behavior Analysis tools | a registered `segmentation` data pack, needed for geography-key profiles, Cluster Code and MetaInfo | Synthetic data pack, with the arithmetic checked by hand |
+| `openai-compatible` (OpenAI, Ollama, LM Studio, vLLM, …) | LLM Override, Prompt, Precision Match, Synthetic Input, Invoice Extractor, Schema Fit | a Web/API connection (None for a local Ollama; Bearer key for OpenAI) | Fixture, plus **live** against a local Ollama model in the `llm-runtime` CI job |
+| `anthropic` (vendor) | the same AI tools | a Web/API connection with the `x-api-key` header | Fixture of the documented Messages API. **Live acceptance is pending** (no API key here) |
 
 Parse Address runs locally with the open-source `usaddress` model, so it needs no provider.
 
@@ -209,6 +211,18 @@ The reference tools (deprecated since 2022.3) use a licensed segmentation system
 - **Compare Behavior** reports per cluster the target and base counts and shares, the **index** (100 × target share ÷ base share) and the **penetration** (target ÷ base).
 - **Detail Fields** expands a profile into count and percent fields. **Cluster Code** appends each geography's dominant cluster. **Behavior MetaInfo** lists the pack's clusters.
 - **Profile Comparison, Rank and Detail reports** produce report tables for the Render and Layout tools.
+
+## AI Tools
+
+The reference routes AI tools through an Alteryx One LLM connection. Flowbench uses **your** model service through a saved connection: any OpenAI-compatible server (a local Ollama or LM Studio, OpenAI, vLLM, and others) or Anthropic.
+- **LLM Override** passes the provider, connection id and model (never a key) to the other tools' **M** input. Without it, each tool takes its own provider, connection and model.
+- **Prompt** sends one prompt per record. `[Field]` inserts that record's value, and unknown fields are refused. It supports images and PDFs from Blob fields, temperature, max tokens and top-p.
+  - An optional **JSON schema** constrains the answer: Ollama and OpenAI enforce it, and Flowbench validates it either way. An answer that doesn't match becomes null, is kept as-is, or fails the run.
+  - **On error:** stop, warn, or ignore.
+- **Precision Match** sends each distinct value once (in batches) and standardises spelling variants, optionally only to the values of a reference list. A value the model maps outside the list stays unchanged. It returns the data and the mapping table.
+- **Synthetic Input** generates fictional records for a use case and columns in batches; the types are inferred.
+- **Invoice Extractor** reads invoice images or PDFs (rendered to page images for OpenAI-compatible servers; native PDF for Anthropic). It returns one record per line item and one per invoice, with the header fields you name, and nulls rather than guesses.
+- **Schema Fit** asks the model for pandas steps that reshape the source into the target's columns. It **runs that code only in the isolated Python process, with the run's process permission**, retries with the error when a step fails, and returns the steps and code for review.
 
 ## Amazon S3
 

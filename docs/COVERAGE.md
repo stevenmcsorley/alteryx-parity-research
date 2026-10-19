@@ -12,7 +12,7 @@
 | Machine-readable contracts generated | 323 |
 | Entries with known anchors (manifest, reference-observed or public-doc) | 308 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 298 |
+| Independent kernels implemented and passing tests | 304 |
 | Independently implemented application adapters (in progress) | 19 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 0 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 560 run, 0 failed |
+| Unit/integration tests in last ledger build | 567 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -37,7 +37,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:input-data` | `core.input_data` | 46 | 0/0 | not-tested |
 | `in-out:map-input` | `core.map_input` | 1 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 13 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 313 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 316 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 13 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 2 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -257,7 +257,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `developer:api-output` | `core.api_output` | 1 | 0/0 | not-tested |
 | `developer:base64-encoder` | `core.base64_encoder` | 1 | 0/0 | not-tested |
 | `developer:blob-convert` | `core.blob_convert` | 3 | 0/0 | not-tested |
-| `developer:blob-input` | `core.blob_input` | 2 | 0/0 | not-tested |
+| `developer:blob-input` | `core.blob_input` | 4 | 0/0 | not-tested |
 | `developer:blob-output` | `core.blob_output` | 6 | 0/0 | not-tested |
 | `developer:block-until-done` | `core.block_until_done` | 1 | 0/0 | not-tested |
 | `developer:control-container` | `core.control_container` | 6 | 0/0 | not-tested |
@@ -315,6 +315,12 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `computer-vision:image-template` | `core.image_template` | 3 | 0/0 | not-tested |
 | `computer-vision:image-to-text` | `core.image_to_text` | 3 | 0/0 | not-tested |
 | `computer-vision:pdf-to-text` | `core.pdf_to_text` | 3 | 0/0 | not-tested |
+| `ai-tools:invoice-extractor` | `core.invoice_extractor` | 1 | 0/0 | not-tested |
+| `ai-tools:llm-override` | `core.llm_override` | 5 | 0/0 | not-tested |
+| `ai-tools:precision-match` | `core.precision_match` | 1 | 0/0 | not-tested |
+| `ai-tools:prompt` | `core.prompt` | 3 | 0/0 | not-tested |
+| `ai-tools:schema-fit` | `core.schema_fit` | 1 | 0/0 | not-tested |
+| `ai-tools:synthetic-input` | `core.synthetic_input` | 2 | 0/0 | not-tested |
 | `connect:odbc-loader` | `core.odbc_loader` | 1 | 0/0 | not-tested |
 
 ## By category
@@ -322,7 +328,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Category | Entries | Registered kernels | Ref-partial | Anchors known | Blocked by external prerequisites |
 |---|---:|---:|---:|---:|---:|
 | AB Testing | 4 | 4 | 0 | 4 | 0 |
-| AI Tools | 6 | 0 | 0 | 6 | 6 |
+| AI Tools | 6 | 6 | 0 | 6 | 6 |
 | Address | 6 | 6 | 0 | 6 | 6 |
 | Behavior Analysis (Deprecated) | 10 | 10 | 0 | 10 | 10 |
 | Calgary | 5 | 5 | 0 | 5 | 5 |

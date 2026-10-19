@@ -128,9 +128,11 @@
     ]
   },
   "independent_tests": {
-    "count": 2,
-    "passing": 2,
+    "count": 4,
+    "passing": 4,
     "tests": [
+      "test_ai_tools.AiToolTests.test_invoice_extractor_returns_header_and_line_items",
+      "test_ai_tools.AiToolTests.test_prompt_attachments_schema_validation_and_unknown_fields",
       "test_blob_tools.BlobToolsTests.test_blob_input_pass_through_preserves_rows_and_reads_each_path",
       "test_blob_tools.BlobToolsTests.test_blob_input_reads_binary_and_emits_bounded_chunks"
     ]

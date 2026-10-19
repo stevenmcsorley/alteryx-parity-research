@@ -6,36 +6,159 @@
   "xml_tool_name": "Precision Match\\Precision_Match.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/ai-tools/precision-match-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "LLM Connection",
+      "name": "model",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     },
     {
-      "name": "Target Data",
+      "name": "data",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "reference",
+      "direction": "input",
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "mapping",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Value"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "field"
     ],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Output"
-    ]
+    "properties": {
+      "provider": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "openai-compatible",
+          "anthropic",
+          null
+        ],
+        "default": null
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "x-flowbench-connection": "web",
+        "description": "Model service connection (used when no LLM Override is connected)"
+      },
+      "model": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "temperature": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0,
+        "maximum": 2,
+        "default": null
+      },
+      "max_tokens": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 1,
+        "default": null
+      },
+      "top_p": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0,
+        "maximum": 1,
+        "default": null
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 1800,
+        "default": 180
+      },
+      "field": {
+        "type": "string",
+        "minLength": 1
+      },
+      "reference_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "strict": {
+        "type": "boolean",
+        "default": true,
+        "description": "Only use reference values (unmatched values stay unchanged)"
+      },
+      "output_mode": {
+        "enum": [
+          "replace",
+          "append"
+        ],
+        "default": "append"
+      },
+      "output_field": {
+        "type": "string",
+        "default": "Standardized"
+      },
+      "max_categories": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 2000
+      },
+      "batch_size": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 500,
+        "default": 100
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "llm-service (model provider credentials)",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -43,7 +166,13 @@
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.precision_match",
+    "version": "1.0.0",
+    "module": "flowengine.tools.ai_tools",
+    "side_effects": "network"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -95,9 +224,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_ai_tools.AiToolTests.test_precision_match_sends_each_value_once_and_respects_the_reference"
+    ]
   },
   "sources": [
     {
@@ -118,7 +249,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider anthropic: Checked against a controlled fixture of the documented Messages API. Live acceptance is pending (no API key here)."
   ]
 }

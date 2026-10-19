@@ -147,14 +147,17 @@
     ]
   },
   "independent_tests": {
-    "count": 313,
-    "passing": 313,
+    "count": 316,
+    "passing": 316,
     "tests": [
       "test_address.AddressTests.test_cass_standardises_in_batches_and_flags_unfound",
       "test_address.AddressTests.test_census_batch_geocoder_and_reverse_geographies",
       "test_address.AddressTests.test_nominatim_identifies_itself_caches_and_paces_the_public_server",
       "test_address.AddressTests.test_parse_address_fills_the_cassparse_fields",
       "test_address.AddressTests.test_zip9_coder_uses_the_registered_pack_and_falls_back_to_zip5",
+      "test_ai_tools.AiToolTests.test_precision_match_sends_each_value_once_and_respects_the_reference",
+      "test_ai_tools.AiToolTests.test_prompt_per_record_through_llm_override_on_both_apis",
+      "test_ai_tools.AiToolTests.test_schema_fit_runs_model_code_in_the_isolated_process_and_retries_on_failure",
       "test_batch10.APIOutputTests.test_quoted_csv_messages",
       "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
       "test_batch10.EmailTests.test_nothing_is_sent_when_any_record_is_invalid",
