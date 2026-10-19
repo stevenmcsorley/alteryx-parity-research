@@ -6,29 +6,84 @@
   "xml_tool_name": "AnaplanInput_1_1_0",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/anaplan-input-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Connector Version 1.0.0",
-      "Sign In to Anaplan",
-      "Select Data",
-      "Configure the Tool"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "workspace_id",
+      "model_id",
+      "export"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "anaplan"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "Saved Anaplan connection, base URL https://api.anaplan.com/2/0, basic authentication"
+      },
+      "workspace_id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "model_id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 3600,
+        "default": 300
+      },
+      "export": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Export action id or name"
+      },
+      "read": {
+        "type": "object",
+        "default": {}
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.anaplan_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.anaplan",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -45,9 +100,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_tableau_anaplan_odbc.AnaplanTests.test_export_runs_the_task_and_reads_the_chunks_in_order",
+      "test_tableau_anaplan_odbc.AnaplanTests.test_import_uploads_chunks_completes_and_reports_task_failures"
+    ]
   },
   "sources": [
     {
@@ -63,8 +121,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider anaplan: Checked against a controlled local fixture of the documented authentication, files, chunks, imports, exports and task endpoints. Live acceptance against an Anaplan model is pending (none available)."
   ]
 }

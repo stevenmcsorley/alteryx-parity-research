@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 298,
-    "passing": 298,
+    "count": 300,
+    "passing": 300,
     "tests": [
       "test_batch10.APIOutputTests.test_quoted_csv_messages",
       "test_batch10.EmailTests.test_needs_network_and_remote_write_permission_and_respects_disabled",
@@ -444,6 +444,8 @@
       "test_spatial.PointsDistanceTests.test_buffers_are_metric_not_degrees",
       "test_spatial.PointsDistanceTests.test_create_points_validates_and_reprojects",
       "test_spatial.PointsDistanceTests.test_geodesic_and_planar_distance",
+      "test_tableau_anaplan_odbc.AnaplanTests.test_import_uploads_chunks_completes_and_reports_task_failures",
+      "test_tableau_anaplan_odbc.TableauWithoutHyperTests.test_a_missing_hyper_api_is_explained",
       "test_tool_specs.SemanticsTests.test_filter_routes_null_to_false_and_union_fills_missing_fields",
       "test_tool_specs.SemanticsTests.test_formula_null_division_case_and_in",
       "test_tool_specs.SemanticsTests.test_join_nulls_match_and_unique_keeps_first",

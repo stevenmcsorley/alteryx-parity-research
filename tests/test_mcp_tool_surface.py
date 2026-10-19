@@ -37,7 +37,7 @@ class McpToolSurfaceTests(unittest.TestCase):
             ServiceConnectionStore(Path(home) / 'service_connections.json').save(
                 {'name': 'Routing', 'kind': 'web', 'base_url': 'http://localhost:8002', 'auth': 'none'})
             # small batches: a large answer is bounded (stored_result) by design, as for any MCP client
-            calls = [('describe_tool', {'tool_ids': tools[i:i + 3]}) for i in range(0, len(tools), 3)]
+            calls = [('describe_tool', {'tool_ids': [t]}) for t in tools]
             calls += [('find_tools', {'query': 'salesforce'}), ('list_connections', {}),
                       ('list_providers', {'tool_id': 'core.non_overlap_drivetime'})]
             *described, found, connections, providers = mcp(ws, home, calls)

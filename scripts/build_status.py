@@ -307,6 +307,12 @@ RUNTIME_GATED_EVIDENCE = {
                     'test_nested_documents_json_output_and_upsert',
                     'test_writes_need_permission_writable_connection_and_replace_confirmation',
                     'test_bad_password_and_bad_filter_fail_clearly')},
+    'test_tableau_anaplan_odbc.TableauTests.test_local_extract_holds_typed_and_spatial_columns':
+        {'job': 'service-integration', 'tools': ['core.tableau_output']},
+    'test_tableau_anaplan_odbc.TableauTests.test_publish_signs_in_with_a_token_publishes_and_signs_out':
+        {'job': 'service-integration', 'tools': ['core.tableau_output', 'core.publish_to_tableau_server']},
+    'test_tableau_anaplan_odbc.OdbcTests.test_metadata_of_tables_views_and_columns':
+        {'job': 'service-integration', 'tools': ['core.odbc_loader']},
 }
 ENVIRONMENT_GATED_LEDGER_TESTS = set(RUNTIME_GATED_EVIDENCE)
 # Replays outputs Flowbench itself recorded (data/tool-examples.json): a regression guard for the

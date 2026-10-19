@@ -43,8 +43,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install engine dependencies
-        run: python -m pip install -r requirements-dev.txt
+      - name: Install engine dependencies, the Hyper API, and ODBC with the SQLite driver
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q unixodbc libsqliteodbc
+          python -m pip install -r requirements-dev.txt pyodbc tableauhyperapi
       - name: Start an S3-compatible server that checks signatures (SeaweedFS) and MongoDB 7.0
         run: |
           mkdir -p "$RUNNER_TEMP/s3cfg"
@@ -63,6 +65,7 @@ jobs:
           FLOWBENCH_MONGO_PORT: '27018'
           FLOWBENCH_MONGO_USER: fbtest
           FLOWBENCH_MONGO_PASSWORD: fbtestsecret123
+          FLOWBENCH_ODBC_SQLITE_DRIVER: SQLite3
         run: python scripts/run_gated_tests.py service-integration
 
   database-integration:

@@ -6,17 +6,88 @@
   "xml_tool_name": "OdbcLoader_v2",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connect/odbc-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "columns",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "procedures",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": []
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "odbc"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "database:odbc",
+        "description": "Saved ODBC connection (Databases in the toolbar, type ODBC)"
+      },
+      "schema": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Schema name or ODBC pattern (%)"
+      },
+      "table": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Table name or ODBC pattern (%)"
+      },
+      "table_types": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": [
+          "TABLE",
+          "VIEW"
+        ]
+      },
+      "include_procedures": {
+        "type": "boolean",
+        "default": true
+      },
+      "timeout_seconds": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 600,
+        "default": 30
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "vendor-cloud-service",
     "database-driver (public-doc keyword signal; unreviewed)",
@@ -24,7 +95,13 @@
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.odbc_loader",
+    "version": "1.0.0",
+    "module": "flowengine.tools.odbc",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -36,9 +113,11 @@
     "section_headings": []
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_tableau_anaplan_odbc.OdbcTests.test_metadata_of_tables_views_and_columns"
+    ]
   },
   "sources": [
     {
@@ -50,12 +129,16 @@
       "url": "https://help.alteryx.com/current/en/designer/tools/connect/odbc-tool.html",
       "evidence_type": "public-tool-help-page-metadata",
       "accessed_utc": "2026-10-13T09:33:23.184408+00:00"
+    },
+    {
+      "url": ".github/workflows/research-validation.yml#service-integration",
+      "evidence_type": "runtime-gated-ci-job",
+      "accessed_utc": null
     }
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet."
   ]
 }
