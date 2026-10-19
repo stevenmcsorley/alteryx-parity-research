@@ -6,51 +6,95 @@
   "xml_tool_name": "LLMOverride_1_0",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/ai-tools/llm-override-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
   "outputs": [
     {
-      "name": "ModelConfig",
+      "name": "model",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Connection",
-      "Secrets",
-      "authServerDetails",
-      "authServerDetails/client_id",
-      "authServerDetails/token_endpoint",
-      "authServerDetails/url",
-      "inputUrl",
-      "keycloakRealm",
-      "llmConnectionId",
-      "platformPortalUrl",
-      "siteName",
-      "url",
-      "validCredentials"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "model"
     ],
-    "public_doc_sections": [
-      "Tool Components",
-      "Connect to the AI Model Service in Alteryx One",
-      "Select a Workspace in the Alteryx One App",
-      "Select an Alteryx Link in Designer",
-      "LLM Provider and Model Selection"
-    ]
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "openai-compatible",
+          "anthropic"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web"
+      },
+      "model": {
+        "type": "string",
+        "minLength": 1
+      },
+      "temperature": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0,
+        "maximum": 2,
+        "default": null
+      },
+      "max_tokens": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 1,
+        "default": null
+      },
+      "top_p": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0,
+        "maximum": 1,
+        "default": null
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 1800,
+        "default": 180
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "llm-service (model provider credentials)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.llm_override",
+    "version": "1.0.0",
+    "module": "flowengine.tools.ai_tools",
+    "side_effects": "none"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -100,9 +144,15 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 5,
+    "passing": 5,
+    "tests": [
+      "test_ai_tools.AiToolTests.test_invoice_extractor_returns_header_and_line_items",
+      "test_ai_tools.AiToolTests.test_precision_match_sends_each_value_once_and_respects_the_reference",
+      "test_ai_tools.AiToolTests.test_prompt_per_record_through_llm_override_on_both_apis",
+      "test_ai_tools.AiToolTests.test_schema_fit_runs_model_code_in_the_isolated_process_and_retries_on_failure",
+      "test_ai_tools.AiToolTests.test_synthetic_input_batches_and_types"
+    ]
   },
   "sources": [
     {
@@ -123,7 +173,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider anthropic: Checked against a controlled fixture of the documented Messages API. Live acceptance is pending (no API key here)."
   ]
 }

@@ -337,3 +337,24 @@ register(Provider(
     setup='Register a CSV with GeoKey, Cluster and Count columns (optionally ClusterName and Group) under Data packs as family '
           'segmentation. Cluster Code and geography-key profiles need it; profiles from cluster codes in your records do not.',
     verification='Checked with a synthetic segmentation data pack; index, share and penetration arithmetic asserted by hand.'))
+
+register(Provider(
+    id='openai-compatible', family='llm', name='OpenAI-compatible model service (OpenAI, Ollama, LM Studio, vLLM, ...)', kind='open-source',
+    serves=tuple(f'ai-tools:{t}' for t in ('llm-override', 'prompt', 'precision-match', 'synthetic-input', 'invoice-extractor', 'schema-fit')),
+    needs=('connection:web',), homepage='https://platform.openai.com/docs/api-reference/chat',
+    semantics={'api': 'Chat Completions; structured output with response_format json_schema, validated by Flowbench',
+               'attachments': 'images; PDFs rendered to page images', 'results': 'model output varies by model and run'},
+    setup='For a local model, run Ollama (or LM Studio) and add a Web/API connection: base URL http://localhost:11434/v1, '
+          'authentication None. For OpenAI: base URL https://api.openai.com/v1, Bearer token with your API key.',
+    verification='Checked against a controlled fixture, and live against a local Ollama model (qwen2.5) during development and '
+                 'in the llm-runtime CI job.'))
+
+register(Provider(
+    id='anthropic', family='llm', name='Anthropic (Messages API)', kind='vendor',
+    serves=tuple(f'ai-tools:{t}' for t in ('llm-override', 'prompt', 'precision-match', 'synthetic-input', 'invoice-extractor', 'schema-fit')),
+    needs=('connection:web',), homepage='https://docs.anthropic.com/en/api/messages',
+    semantics={'api': 'Messages API (anthropic-version 2023-06-01); JSON answers validated by Flowbench',
+               'attachments': 'images and PDFs (document blocks)'},
+    setup='Add a Web/API connection: base URL https://api.anthropic.com, authentication API key header with header name '
+          'x-api-key and your API key as the secret.',
+    verification='Checked against a controlled fixture of the documented Messages API. Live acceptance is pending (no API key here).'))

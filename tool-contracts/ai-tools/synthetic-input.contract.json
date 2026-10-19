@@ -6,42 +6,139 @@
   "xml_tool_name": "Synthetic Generate\\Synthetic_Generate.yxmc",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/ai-tools/synthetic-input-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "input",
+      "name": "model",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "zero-or-one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "outputs": [
     {
       "name": "output",
       "direction": "output",
-      "cardinality": "unknown",
-      "provenance": "public-doc-extracted"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Tool Components",
-      "Configure the Tool",
-      "Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "use_case",
+      "columns"
+    ],
+    "properties": {
+      "provider": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "openai-compatible",
+          "anthropic",
+          null
+        ],
+        "default": null
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "x-flowbench-connection": "web",
+        "description": "Model service connection (used when no LLM Override is connected)"
+      },
+      "model": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "temperature": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0,
+        "maximum": 2,
+        "default": null
+      },
+      "max_tokens": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "minimum": 1,
+        "default": null
+      },
+      "top_p": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "minimum": 0,
+        "maximum": 1,
+        "default": null
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 1800,
+        "default": 180
+      },
+      "use_case": {
+        "type": "string",
+        "minLength": 3
+      },
+      "columns": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "rows": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10000,
+        "default": 20
+      },
+      "batch_size": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 200,
+        "default": 25
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "llm-service (model provider credentials)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.synthetic_input",
+    "version": "1.0.0",
+    "module": "flowengine.tools.ai_tools",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -68,9 +165,12 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 2,
+    "passing": 2,
+    "tests": [
+      "test_ai_tools.AiToolTests.test_synthetic_input_batches_and_types",
+      "test_ai_tools.LiveOllamaTests.test_prompt_and_structured_synthetic_records_from_a_real_model"
+    ]
   },
   "sources": [
     {
@@ -82,11 +182,17 @@
       "url": "https://help.alteryx.com/current/en/designer/tools/ai-tools/synthetic-input-tool.html",
       "evidence_type": "public-tool-help-page-metadata",
       "accessed_utc": "2026-10-13T09:33:22.797336+00:00"
+    },
+    {
+      "url": ".github/workflows/research-validation.yml#llm-runtime",
+      "evidence_type": "runtime-gated-ci-job",
+      "accessed_utc": null
     }
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider anthropic: Checked against a controlled fixture of the documented Messages API. Live acceptance is pending (no API key here)."
   ]
 }

@@ -178,7 +178,7 @@ def contract(tool) -> dict:
 def provider_requirements(schema: dict) -> dict | None:
     """For provider-backed tools: which providers can serve the node, whether each is ready here, and how to set it up."""
     props = (schema or {}).get('properties', {})
-    allowed = (props.get('provider') or {}).get('enum')
+    allowed = [p for p in (props.get('provider') or {}).get('enum') or [] if p]  # null: taken from a connected LLM Override
     if not allowed:
         return None
     from . import providers

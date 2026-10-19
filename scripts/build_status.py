@@ -313,6 +313,8 @@ RUNTIME_GATED_EVIDENCE = {
         {'job': 'service-integration', 'tools': ['core.tableau_output', 'core.publish_to_tableau_server']},
     'test_tableau_anaplan_odbc.OdbcTests.test_metadata_of_tables_views_and_columns':
         {'job': 'service-integration', 'tools': ['core.odbc_loader']},
+    'test_ai_tools.LiveOllamaTests.test_prompt_and_structured_synthetic_records_from_a_real_model':
+        {'job': 'llm-runtime', 'tools': ['core.prompt', 'core.synthetic_input']},
 }
 ENVIRONMENT_GATED_LEDGER_TESTS = set(RUNTIME_GATED_EVIDENCE)
 # Replays outputs Flowbench itself recorded (data/tool-examples.json): a regression guard for the

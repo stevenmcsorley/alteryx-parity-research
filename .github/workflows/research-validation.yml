@@ -36,6 +36,32 @@ jobs:
       - name: Execute Apache Spark Code integration test (a skip fails the job)
         run: python scripts/run_gated_tests.py spark-runtime
 
+  llm-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install engine dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Cache the Ollama model
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-qwen2.5-0.5b
+      - name: Install Ollama and a small local model
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          (ollama serve > "$RUNNER_TEMP/ollama.log" 2>&1 &)
+          for i in $(seq 30); do curl -s http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
+          ollama pull qwen2.5:0.5b
+      - name: Execute the AI tools against the real local model (a skip fails the job)
+        env:
+          FLOWBENCH_OLLAMA_URL: http://127.0.0.1:11434/v1
+          FLOWBENCH_OLLAMA_MODEL: qwen2.5:0.5b
+        run: python scripts/run_gated_tests.py llm-runtime
+
   service-integration:
     runs-on: ubuntu-latest
     steps:
