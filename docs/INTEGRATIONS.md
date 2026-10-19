@@ -39,6 +39,9 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `box`, `dropbox`, `azure-data-lake` (vendor) | Box, Dropbox and Azure Data Lake File Input/Output | a Web/API connection with OAuth 2.0 | Controlled fixtures of the documented APIs. **Live acceptance is pending** for each: no Box, Dropbox or Azure storage account is available |
 | `salesforce`, `servicenow` (vendor) | Salesforce Input/Output, ServiceNow Input | a Web/API connection: OAuth for Salesforce; basic auth or OAuth for ServiceNow | Controlled fixtures of the documented REST APIs. **Live acceptance is pending:** no Salesforce org or ServiceNow instance is available |
 | `marketo`, `azure-ai-language`, `power-automate` (vendor) | Marketo Input/Output/Append, Cognitive Services Text Analytics, Power Automate | a Web/API connection: OAuth (Marketo), API key header or OAuth (Language), Signed URL or OAuth (Power Automate) | Controlled fixtures of the documented APIs. **Live acceptance is pending:** no instances are available |
+| `tableau` (vendor) | Tableau Output, Publish to Tableau Server | `tableauhyperapi` (install it yourself; Windows/Linux x86-64); a Web/API connection with a personal access token to publish | Hyper extracts written and read back with the real Hyper API in CI. Publishing checked against a fixture of the documented REST API. **Live publishing is pending:** no Tableau site is available |
+| `anaplan` (vendor) | Anaplan Input/Output | a Web/API connection with basic auth (Anaplan email and password) | Controlled fixture of the documented Integration API v2. **Live acceptance against an Anaplan model is pending** |
+| `odbc` (local runtime) | ODBC Loader | `pyodbc` plus a system ODBC driver; a database connection of type ODBC | Live against the SQLite ODBC driver through unixODBC in CI |
 
 Apache Spark Code runs PySpark in local mode. `read_input(n)` returns a Spark DataFrame whose types are mapped from Flowbench types. `write_output(n, df)` collects the DataFrame and maps its types back exactly; types Flowbench cannot hold are rejected with a message. Remote clusters (Livy, Databricks) are not served by this provider.
 
@@ -152,6 +155,18 @@ Each tool may send the token only to its vendor's own documented hosts. That lis
   - The trigger URL's signed query string is the secret (authentication **Signed URL**). Flows limited to Microsoft Entra users use OAuth instead.
   - Each call's status and response are returned. `fail_on_error` controls whether a rejected call fails the run.
 
+## Tableau, Anaplan and ODBC
+
+- **Tableau Output** writes a Hyper extract (`Extract.Extract`), publishes it as a data source, or both. **Publish to Tableau Server** publishes only.
+  - Fields named in `spatial_fields` (WKT or GeoJSON) become GEOGRAPHY.
+  - Publishing signs in with a personal access token: the token name as username and the secret as the secret. It finds the project, publishes (overwrite or append, using a chunked file upload above 64 MB) and signs out.
+  - The Hyper API isn't bundled. Without it, the tools say how to install it.
+- **Anaplan**
+  - **Auth:** signs in once per run at Anaplan's authentication host, then uses `AnaplanAuthToken`.
+  - **Input** runs an export action, waits for its task, and reads the export file's chunks in order.
+  - **Output** uploads the data file in chunks: chunk count `-1`, chunks from 0, then complete. It then runs the import action. A task that completes but doesn't succeed is reported with Anaplan's details, and notes when a failure dump is available.
+- **ODBC Loader** lists every table and view with its columns, plus stored procedures, as the driver reports them. Values in the connection string are braced only when ODBC needs it, because some drivers keep the braces.
+
 ## Amazon S3
 
 - Requests use path-style addresses (`<endpoint>/<bucket>/<key>`), so they stay inside the connection's base URL.
@@ -185,4 +200,5 @@ Each tool may send the token only to its vendor's own documented hosts. That lis
 |---|---|
 | Connectors: Google Analytics | It reads Universal Analytics, whose Reporting API Google shut down in 2024, so no service is left to call. Google Analytics 4 data is read by **Google Analytics 4 Input**. |
 | Connectors: Automation Anywhere 360 | The Bot Deploy API's request schema (bot input types, run-as users, device pools) is published only in each customer's Control Room Swagger (`https://<control-room>/swagger/`). The public documentation doesn't include it, and community examples disagree about versions and field types. Building against them would mean guessing an API, so it waits until the schema can be confirmed from an authoritative source. |
+| Connect: Connect JSON Builder, Connect Output; Laboratory: Connect JSON Builder, Connect Output | These write to the Alteryx Connect data catalog through its Connect API v2.0. Its JSON format and endpoints aren't publicly documented: the help pages only name the API, and the Laboratory tools were removed in 2025.2. They stay not-started until the API is published. (ODBC Loader, the third Connect tool, is implemented.) |
 | In/Out: Auto Insights Uploader | The upload protocol is not published. The public help documents only the tool's settings, and no Auto Insights API documentation exists, so an adapter would mean inventing an API. It will be added if Alteryx publishes the protocol. |

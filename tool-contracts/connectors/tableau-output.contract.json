@@ -6,23 +6,113 @@
   "xml_tool_name": "TableauOutput_1_4_0",
   "user_role": "Basic, Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/tableau-output-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "outputs": [],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Sign In to Tableau",
-      "Create Local Output",
-      "Select Data Source",
-      "Select Output Option",
-      "Select Spatial Columns"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "output"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "tableau"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "spatial_fields": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true,
+        "default": [],
+        "description": "Fields holding WKT or GeoJSON, written as GEOGRAPHY"
+      },
+      "table_name": {
+        "type": "string",
+        "minLength": 1,
+        "default": "Extract"
+      },
+      "connection_id": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "x-flowbench-connection": "web",
+        "description": "Saved Tableau connection (personal access token)"
+      },
+      "site": {
+        "type": "string",
+        "default": "",
+        "description": "Site content URL; empty for the Default site"
+      },
+      "project": {
+        "type": "string",
+        "default": "Default"
+      },
+      "datasource": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Published data source name"
+      },
+      "mode": {
+        "enum": [
+          "overwrite",
+          "append"
+        ],
+        "default": "overwrite"
+      },
+      "api_version": {
+        "type": "string",
+        "pattern": "^3\\.[0-9]{1,2}$",
+        "default": "3.21"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 3600,
+        "default": 600
+      },
+      "output": {
+        "enum": [
+          "local",
+          "publish",
+          "both"
+        ],
+        "description": "Write a .hyper file, publish it, or both"
+      },
+      "path": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Local .hyper file (local or both)"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "external-service-account (credentials/API access)",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -30,7 +120,13 @@
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.tableau_output",
+    "version": "1.0.0",
+    "module": "flowengine.tools.tableau",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -48,9 +144,13 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 3,
+    "passing": 3,
+    "tests": [
+      "test_tableau_anaplan_odbc.TableauTests.test_local_extract_holds_typed_and_spatial_columns",
+      "test_tableau_anaplan_odbc.TableauTests.test_publish_signs_in_with_a_token_publishes_and_signs_out",
+      "test_tableau_anaplan_odbc.TableauWithoutHyperTests.test_a_missing_hyper_api_is_explained"
+    ]
   },
   "sources": [
     {
@@ -62,12 +162,17 @@
       "url": "https://help.alteryx.com/current/en/designer/tools/connectors/tableau-output-tool.html",
       "evidence_type": "public-tool-help-page-metadata",
       "accessed_utc": "2026-10-13T09:33:23.531110+00:00"
+    },
+    {
+      "url": ".github/workflows/research-validation.yml#service-integration",
+      "evidence_type": "runtime-gated-ci-job",
+      "accessed_utc": null
     }
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider tableau: Hyper extracts written and read back with the real Hyper API in the service-integration CI job; publishing checked against a controlled fixture of the documented REST endpoints. Live publishing to Tableau Server or Cloud is pending (no site available)."
   ]
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { engine, describe } from '../state/engineActions';
 
-type Connection = { id: string; name: string; dialect: 'postgresql' | 'sqlserver' | 'mongodb'; host: string; port: number;
+type Connection = { id: string; name: string; dialect: 'postgresql' | 'sqlserver' | 'mongodb' | 'odbc'; options?: { driver?: string; dsn?: string; [key: string]: unknown }; host: string; port: number;
   database: string; user: string; tls: string; ca_file?: string | null; connect_timeout: number; query_timeout: number;
   allow_writes: boolean };
 const blank = (): Connection => ({ id: '', name: '', dialect: 'postgresql', host: 'localhost', port: 5432,
@@ -55,8 +55,15 @@ export function DatabaseConnections({ close }: { close: () => void }) {
           <label>Name<input value={form.name} onChange={(e) => set('name', e.target.value)} /></label>
           <label>Database type<select value={form.dialect} onChange={(e) => {
             const dialect = e.target.value as Connection['dialect'];
-            setForm((f) => ({ ...f, dialect, port: dialect === 'postgresql' ? 5432 : dialect === 'mongodb' ? 27017 : 1433 }));
-          }}><option value="postgresql">PostgreSQL</option><option value="sqlserver">Microsoft SQL Server</option><option value="mongodb">MongoDB</option></select></label>
+            setForm((f) => ({ ...f, dialect, port: dialect === 'postgresql' ? 5432 : dialect === 'mongodb' ? 27017 : dialect === 'odbc' ? 0 : 1433 }));
+          }}><option value="postgresql">PostgreSQL</option><option value="sqlserver">Microsoft SQL Server</option><option value="mongodb">MongoDB</option><option value="odbc">ODBC (any driver)</option></select></label>
+          {form.dialect === 'odbc' && <>
+            <label>ODBC driver<input aria-label="ODBC driver" placeholder="PostgreSQL Unicode, SQLite3, ..." value={form.options?.driver ?? ''}
+              onChange={(e) => setForm((f) => ({ ...f, options: { ...f.options, driver: e.target.value || undefined } }))} /></label>
+            <label>Or DSN<input aria-label="ODBC DSN" value={form.options?.dsn ?? ''}
+              onChange={(e) => setForm((f) => ({ ...f, options: { ...f.options, dsn: e.target.value || undefined } }))} /></label>
+            <p className="help">Host, port, database and user are passed to the driver when set; the password goes to the credential vault.</p>
+          </>}
           <label>Host<input value={form.host} onChange={(e) => set('host', e.target.value)} /></label>
           <label>Port<input type="number" min="1" max="65535" value={form.port} onChange={(e) => set('port', e.target.value)} /></label>
           <label>Database<input value={form.database} onChange={(e) => set('database', e.target.value)} /></label>

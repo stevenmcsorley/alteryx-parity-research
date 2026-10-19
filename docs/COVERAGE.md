@@ -10,9 +10,9 @@
 | Distinct tool names | 321 |
 | Public help URL resolved (official tool list sync) | 323 |
 | Machine-readable contracts generated | 323 |
-| Entries with known anchors (manifest, reference-observed or public-doc) | 286 |
+| Entries with known anchors (manifest, reference-observed or public-doc) | 291 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 268 |
+| Independent kernels implemented and passing tests | 273 |
 | Independently implemented application adapters (in progress) | 19 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 0 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 539 run, 0 failed |
+| Unit/integration tests in last ledger build | 545 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -37,7 +37,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:input-data` | `core.input_data` | 46 | 0/0 | not-tested |
 | `in-out:map-input` | `core.map_input` | 1 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 13 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 298 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 300 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 13 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 2 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -191,6 +191,8 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `connectors:azure-data-lake-file-output` | `core.azure_data_lake_output` | 1 | 0/0 | not-tested |
 | `connectors:amazon-s3-download` | `core.s3_download` | 5 | 0/0 | not-tested |
 | `connectors:amazon-s3-upload` | `core.s3_upload` | 5 | 0/0 | not-tested |
+| `connectors:anaplan-input` | `core.anaplan_input` | 2 | 0/0 | not-tested |
+| `connectors:anaplan-output` | `core.anaplan_output` | 1 | 0/0 | not-tested |
 | `connectors:box-input` | `core.box_input` | 1 | 0/0 | not-tested |
 | `connectors:box-output` | `core.box_output` | 1 | 0/0 | not-tested |
 | `connectors:cognitive-services-text-analytics` | `core.azure_text_analytics` | 1 | 0/0 | not-tested |
@@ -217,6 +219,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `connectors:onedrive-output` | `core.onedrive_output` | 2 | 0/0 | not-tested |
 | `connectors:outlook-365-input` | `core.outlook365_input` | 2 | 0/0 | not-tested |
 | `connectors:power-automate` | `core.power_automate` | 1 | 0/0 | not-tested |
+| `connectors:publish-to-tableau-server` | `core.publish_to_tableau_server` | 1 | 0/0 | not-tested |
 | `connectors:salesforce-input` | `core.salesforce_input` | 1 | 0/0 | not-tested |
 | `connectors:salesforce-output-new` | `core.salesforce_output` | 1 | 0/0 | not-tested |
 | `connectors:servicenow-input` | `core.servicenow_input` | 1 | 0/0 | not-tested |
@@ -224,6 +227,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `connectors:sharepoint-files-output` | `core.sharepoint_files_output` | 1 | 0/0 | not-tested |
 | `connectors:sharepoint-list-input` | `core.sharepoint_list_input` | 1 | 0/0 | not-tested |
 | `connectors:sharepoint-list-output` | `core.sharepoint_list_output` | 1 | 0/0 | not-tested |
+| `connectors:tableau-output` | `core.tableau_output` | 3 | 0/0 | not-tested |
 | `developer:apache-spark-code` | `core.spark_code` | 2 | 0/0 | not-tested |
 | `developer:api-output` | `core.api_output` | 1 | 0/0 | not-tested |
 | `developer:base64-encoder` | `core.base64_encoder` | 1 | 0/0 | not-tested |
@@ -286,6 +290,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `computer-vision:image-template` | `core.image_template` | 3 | 0/0 | not-tested |
 | `computer-vision:image-to-text` | `core.image_to_text` | 3 | 0/0 | not-tested |
 | `computer-vision:pdf-to-text` | `core.pdf_to_text` | 3 | 0/0 | not-tested |
+| `connect:odbc-loader` | `core.odbc_loader` | 1 | 0/0 | not-tested |
 
 ## By category
 
@@ -297,8 +302,8 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Behavior Analysis (Deprecated) | 10 | 0 | 0 | 0 | 10 |
 | Calgary | 5 | 0 | 0 | 5 | 5 |
 | Computer Vision | 9 | 9 | 0 | 9 | 0 |
-| Connect | 3 | 0 | 0 | 0 | 3 |
-| Connectors | 44 | 37 | 0 | 38 | 44 |
+| Connect | 3 | 1 | 0 | 1 | 3 |
+| Connectors | 44 | 41 | 0 | 42 | 44 |
 | Data Investigation | 14 | 14 | 0 | 14 | 0 |
 | Demographic Analysis | 4 | 0 | 0 | 0 | 4 |
 | Developer | 30 | 30 | 4 | 30 | 0 |

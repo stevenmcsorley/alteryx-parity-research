@@ -2217,7 +2217,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/anaplan-input-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2229,7 +2229,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/anaplan-output-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2577,7 +2577,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/publish-to-tableau-server-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2673,7 +2673,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connectors/tableau-output-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -3873,7 +3873,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/connect/odbc-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

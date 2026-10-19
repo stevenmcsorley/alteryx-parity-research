@@ -239,3 +239,38 @@ register(Provider(
           'Microsoft Entra users).',
     verification='Checked against a controlled local fixture of an HTTP request trigger. Live acceptance against a real flow '
                  'is pending (no Power Automate environment available).'))
+
+register(Provider(
+    id='odbc', family='odbc', name='ODBC (pyodbc and a system driver)', kind='local-runtime',
+    serves=('connect:odbc-loader',), licence='MIT (pyodbc)', needs=('python:pyodbc',),
+    homepage='https://github.com/mkleehammer/pyodbc',
+    semantics={'reads': 'catalog functions SQLTables, SQLColumns, SQLProcedures through the driver',
+               'types': 'type names, sizes and nullability as the driver reports them'},
+    setup='pip install pyodbc into the engine Python; install the ODBC driver manager (built into Windows; unixODBC on '
+          'Linux and macOS) and the database\'s ODBC driver. Add a database connection of type ODBC with options.driver '
+          '(or options.dsn).',
+    verification='Live against the SQLite ODBC driver through unixODBC in the service-integration CI job.'))
+
+register(Provider(
+    id='anaplan', family='anaplan', name='Anaplan (Integration API v2)', kind='vendor',
+    serves=('connectors:anaplan-input', 'connectors:anaplan-output'), needs=('connection:web',),
+    homepage='https://help.anaplan.com/',
+    semantics={'reads': 'export action, then the export file downloaded in chunks', 'writes': 'chunked file upload, then the import action',
+               'results': 'a COMPLETE task is checked for success; failure dumps are reported'},
+    setup='Add a Web/API connection: base URL https://api.anaplan.com/2/0, basic authentication with the Anaplan user '
+          'email and password (single sign-on users must be exception users).',
+    verification='Checked against a controlled local fixture of the documented authentication, files, chunks, imports, '
+                 'exports and task endpoints. Live acceptance against an Anaplan model is pending (none available).'))
+
+register(Provider(
+    id='tableau', family='tableau', name='Tableau (Hyper API and REST API)', kind='vendor',
+    serves=('connectors:tableau-output', 'connectors:publish-to-tableau-server'), licence='Apache-2.0 (tableauhyperapi)',
+    needs=('python:tableauhyperapi',), homepage='https://tableau.github.io/hyper-db/',
+    semantics={'extracts': 'one table Extract.Extract; WKT/GeoJSON fields as GEOGRAPHY',
+               'publishing': 'REST API data source publish (overwrite or append), chunked above 64 MB'},
+    setup='pip install tableauhyperapi into the engine Python (Windows or Linux x86-64). To publish, create a personal '
+          'access token and add a Web/API connection: base URL your Tableau Server or Tableau Cloud address, basic '
+          'authentication with the token name as username and the token secret as the secret.',
+    verification='Hyper extracts written and read back with the real Hyper API in the service-integration CI job; '
+                 'publishing checked against a controlled fixture of the documented REST endpoints. Live publishing to '
+                 'Tableau Server or Cloud is pending (no site available).'))

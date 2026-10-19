@@ -18,6 +18,7 @@ from ..runtimes import home
 
 DIALECTS = ('postgresql', 'sqlserver')       # SQL databases (Database Input/Output, In-Database tools)
 DOCUMENT_STORES = ('mongodb',)               # document databases (MongoDB Input/Output)
+GENERIC = ('odbc',)                          # any ODBC driver or DSN (ODBC Loader metadata)
 TLS_MODES = ('disable', 'prefer', 'require', 'verify-full')
 _SECRET_KEYS = re.compile(r'pass|secret|token|pwd', re.I)
 
@@ -56,13 +57,21 @@ class Connection:
     options: dict = field(default_factory=dict)
 
     def validate(self):
-        if self.dialect not in DIALECTS + DOCUMENT_STORES:
-            raise ConfigError(f'Unsupported database type {self.dialect!r}; supported: {DIALECTS + DOCUMENT_STORES}')
+        if self.dialect not in DIALECTS + DOCUMENT_STORES + GENERIC:
+            raise ConfigError(f'Unsupported database type {self.dialect!r}; supported: {DIALECTS + DOCUMENT_STORES + GENERIC}')
         if self.tls not in TLS_MODES:
             raise ConfigError(f'TLS mode must be one of {TLS_MODES}')
-        if not self.host or not self.database or not self.user:
-            raise ConfigError('host, database and user are required')
-        if not (0 < int(self.port) < 65536):
+        if self.dialect == 'odbc':
+            # An ODBC connection names its driver (or a DSN); host, port, database and user are passed when set.
+            if not (self.options.get('driver') or self.options.get('dsn')):
+                raise ConfigError('An ODBC connection needs options.driver (for example "PostgreSQL Unicode") or options.dsn')
+            if any(c in str(v) for v in (self.options.get('driver'), self.options.get('dsn'), self.host, self.database, self.user)
+                   for c in ';{}' if v):
+                raise ConfigError('ODBC settings may not contain ; { or }')
+        else:
+            if not self.host or not self.database or not self.user:
+                raise ConfigError('host, database and user are required')
+        if not (0 <= int(self.port) < 65536) or (self.dialect != 'odbc' and int(self.port) == 0):
             raise ConfigError('port must be 1-65535')
         secret_path = _secret_key_path(self.options)
         if secret_path:

@@ -357,9 +357,10 @@ def _ms_message(e) -> str:
 
 
 def dialect_for(conn_cfg, password) -> Dialect:
-    if conn_cfg.dialect == 'mongodb':
+    if conn_cfg.dialect in ('mongodb', 'odbc'):
         from ..errors import ConfigError
-        raise ConfigError(f'{conn_cfg.name!r} is a MongoDB connection; use the MongoDB Input and Output tools')
+        tools = 'the MongoDB Input and Output tools' if conn_cfg.dialect == 'mongodb' else 'the ODBC Loader'
+        raise ConfigError(f'{conn_cfg.name!r} is a {conn_cfg.dialect} connection; use {tools}')
     return {'postgresql': PostgreSQL, 'sqlserver': SQLServer}[conn_cfg.dialect](conn_cfg, password)
 
 
