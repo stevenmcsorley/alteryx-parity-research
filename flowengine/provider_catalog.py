@@ -324,3 +324,16 @@ register(Provider(
           'https://api.census.gov/data, authentication Signed URL, secret key=<your key>.',
     verification='Checked against a controlled fixture of the documented data, variables and groups endpoints. The data API now '
                  'requires a key; live acceptance is pending (no key available here; keys are free).'))
+
+register(Provider(
+    id='segmentation-data-pack', family='segmentation', name='Segmentation data pack (your licensed or own segmentation)',
+    kind='local-runtime',
+    serves=tuple(f'behavior-analysis-deprecated:{t}' for t in ('create-profile', 'profile-output', 'profile-input', 'compare-behavior',
+                                                              'detail-fields', 'cluster-code', 'behavior-metainfo',
+                                                              'profile-comparison-report', 'profile-rank-report', 'profile-detail-report')),
+    needs=('datapack:segmentation',),
+    semantics={'clusters': 'the codes, names and counts in the data pack you register (not the reference segmentation)',
+               'index': '100 x target share / base share; penetration = target count / base count'},
+    setup='Register a CSV with GeoKey, Cluster and Count columns (optionally ClusterName and Group) under Data packs as family '
+          'segmentation. Cluster Code and geography-key profiles need it; profiles from cluster codes in your records do not.',
+    verification='Checked with a synthetic segmentation data pack; index, share and penetration arithmetic asserted by hand.'))
