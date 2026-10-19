@@ -39,7 +39,7 @@ python -m pip install --only-binary=:all: --no-compile --disable-pip-version-che
 if ($LASTEXITCODE -ne 0) { throw 'Bundled Windows runtime dependency installation failed.' }
 Copy-Item -Path (Join-Path $Stage '*') -Destination $Runtime -Recurse -Force
 $BundledPython = Join-Path $Runtime 'python.exe'
-& $BundledPython -c "import ensurepip, jsonschema, numpy, pyarrow, psycopg, pymssql, scipy.stats, reportlab.platypus, PIL.Image, shapely, pyproj, sklearn.ensemble, statsmodels.api, skops.io, networkx, venv, yxdb, vaderSentiment.vaderSentiment, pypdfium2, zxingcpp, openpyxl; from metaphone import doublemetaphone; assert doublemetaphone('Smith')[0]; print('bundled runtime imports passed')"
+& $BundledPython -c "import ensurepip, jsonschema, numpy, pyarrow, psycopg, pymssql, scipy.stats, reportlab.platypus, PIL.Image, shapely, pyproj, sklearn.ensemble, statsmodels.api, skops.io, networkx, venv, yxdb, vaderSentiment.vaderSentiment, pypdfium2, zxingcpp, openpyxl, pymongo, cryptography.hazmat.primitives.asymmetric.padding, usaddress; from metaphone import doublemetaphone; assert doublemetaphone('Smith')[0]; print('bundled runtime imports passed')"
 if ($LASTEXITCODE -ne 0) { throw 'Bundled Python dependency smoke test failed.' }
 # A broken NumPy in the user's site-packages must not reach the engine as the desktop app starts it.
 $UserBase = Join-Path $env:RUNNER_TEMP 'flowbench-usersite'
