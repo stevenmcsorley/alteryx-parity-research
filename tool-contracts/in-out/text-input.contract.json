@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 316,
-    "passing": 316,
+    "count": 318,
+    "passing": 318,
     "tests": [
       "test_address.AddressTests.test_cass_standardises_in_batches_and_flags_unfound",
       "test_address.AddressTests.test_census_batch_geocoder_and_reverse_geographies",
@@ -240,6 +240,8 @@
       "test_data_correctness.DataCorrectnessTests.test_sort_nan_and_join_key_types",
       "test_data_correctness.DataCorrectnessTests.test_union_decimal_integer_exact",
       "test_data_correctness.DataCorrectnessTests.test_union_rejects_lossy_numeric_promotions",
+      "test_datarobot_adobe.Tests.test_automodel_uploads_creates_the_project_and_starts_autopilot",
+      "test_datarobot_adobe.Tests.test_predict_uses_the_recommended_model_and_joins_by_row",
       "test_dataverse_powerbi.DataverseTests.test_create_update_upsert_by_alternate_key_and_delete",
       "test_dataverse_powerbi.PowerBITests.test_creates_the_dataset_then_appends_and_replaces_in_batches",
       "test_dataverse_powerbi.PowerBITests.test_schema_changes_need_update_schema_and_limits_are_checked",

@@ -358,3 +358,24 @@ register(Provider(
     setup='Add a Web/API connection: base URL https://api.anthropic.com, authentication API key header with header name '
           'x-api-key and your API key as the secret.',
     verification='Checked against a controlled fixture of the documented Messages API. Live acceptance is pending (no API key here).'))
+
+register(Provider(
+    id='datarobot', family='datarobot', name='DataRobot (API v2)', kind='vendor',
+    serves=('predictive:datarobot-automodel', 'predictive:datarobot-predict'), needs=('connection:web',),
+    homepage='https://docs.datarobot.com/en/docs/api/reference/public-api/index.html',
+    semantics={'modelling': "DataRobot's Autopilot and models, not Flowbench's", 'async': 'polled through Location until redirected'},
+    setup='In DataRobot, create an API key (Developer Tools). Add a Web/API connection: base URL https://app.datarobot.com/api/v2 '
+          '(or your instance), Bearer token authentication with the API key.',
+    verification='Checked against a controlled fixture of the documented dataset, project, Autopilot and prediction endpoints. '
+                 'Live acceptance is pending (no DataRobot account available).'))
+
+register(Provider(
+    id='adobe-analytics', family='adobe-analytics', name='Adobe Analytics (Reporting API 2.0)', kind='vendor',
+    serves=('connectors:adobe-analytics',), needs=('connection:web',),
+    homepage='https://developer.adobe.com/analytics-apis/docs/2.0/',
+    semantics={'api': 'Reporting API 2.0 (the reference tool uses 1.4)', 'reports': 'metrics by one dimension or totals, paged'},
+    setup='Create an OAuth server-to-server (or user) credential in the Adobe Developer Console with the Analytics API. Add a '
+          'Web/API connection: base URL https://analytics.adobe.io/api/<global-company-id>, OAuth, token URL '
+          'https://ims-na1.adobelogin.com/ims/token/v3, the client id and secret, and the scopes from the console.',
+    verification='Checked against a controlled fixture of the documented reports endpoint. Live acceptance is pending '
+                 '(no Adobe Analytics account available).'))

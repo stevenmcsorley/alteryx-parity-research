@@ -50,6 +50,8 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `segmentation-data-pack` (your data) | the 10 Behavior Analysis tools | a registered `segmentation` data pack, needed for geography-key profiles, Cluster Code and MetaInfo | Synthetic data pack, with the arithmetic checked by hand |
 | `openai-compatible` (OpenAI, Ollama, LM Studio, vLLM, …) | LLM Override, Prompt, Precision Match, Synthetic Input, Invoice Extractor, Schema Fit | a Web/API connection (None for a local Ollama; Bearer key for OpenAI) | Fixture, plus **live** against a local Ollama model in the `llm-runtime` CI job |
 | `anthropic` (vendor) | the same AI tools | a Web/API connection with the `x-api-key` header | Fixture of the documented Messages API. **Live acceptance is pending** (no API key here) |
+| `datarobot` (vendor) | DataRobot AutoModel, DataRobot Predict | a Web/API connection with a Bearer API key | Controlled fixture. **Live acceptance is pending** |
+| `adobe-analytics` (vendor) | Adobe Analytics | a Web/API connection with OAuth (Adobe IMS) | Controlled fixture of the Reporting API 2.0. **Live acceptance is pending** |
 
 Parse Address runs locally with the open-source `usaddress` model, so it needs no provider.
 
@@ -224,6 +226,12 @@ The reference routes AI tools through an Alteryx One LLM connection. Flowbench u
 - **Invoice Extractor** reads invoice images or PDFs (rendered to page images for OpenAI-compatible servers; native PDF for Anthropic). It returns one record per line item and one per invoice, with the header fields you name, and nulls rather than guesses.
 - **Schema Fit** asks the model for pandas steps that reshape the source into the target's columns. It **runs that code only in the isolated Python process, with the run's process permission**, retries with the error when a step fails, and returns the steps and code for review.
 
+## DataRobot and Adobe Analytics
+
+- **DataRobot AutoModel** uploads the records as a dataset (`datasets/fromFile/`), creates a project from it and starts Autopilot on the target, in quick, auto, comprehensive or manual mode, with a worker count. Each asynchronous step is polled through the Location of its 202 answer until it redirects to the result. It returns the project id and a link to its models.
+- **DataRobot Predict** uploads the records as a prediction dataset, scores them with the named model (or the project's recommended one) and joins Prediction and the class probabilities back by row.
+- **Adobe Analytics** runs a Reporting API 2.0 report on a report suite: metrics by one dimension (all pages) or totals, for a date range, with optional segments. The reference tool uses the older 1.4 API with up to three nested elements; with 2.0, ask for one dimension per tool, as Adobe recommends.
+
 ## Amazon S3
 
 - Requests use path-style addresses (`<endpoint>/<bucket>/<key>`), so they stay inside the connection's base URL.
@@ -258,4 +266,6 @@ The reference routes AI tools through an Alteryx One LLM connection. Flowbench u
 | Connectors: Google Analytics | It reads Universal Analytics, whose Reporting API Google shut down in 2024, so no service is left to call. Google Analytics 4 data is read by **Google Analytics 4 Input**. |
 | Connectors: Automation Anywhere 360 | The Bot Deploy API's request schema (bot input types, run-as users, device pools) is published only in each customer's Control Room Swagger (`https://<control-room>/swagger/`). The public documentation doesn't include it, and community examples disagree about versions and field types. Building against them would mean guessing an API, so it waits until the schema can be confirmed from an authoritative source. |
 | Connect: Connect JSON Builder, Connect Output; Laboratory: Connect JSON Builder, Connect Output | These write to the Alteryx Connect data catalog through its Connect API v2.0. Its JSON format and endpoints aren't publicly documented: the help pages only name the API, and the Laboratory tools were removed in 2025.2. They stay not-started until the API is published. (ODBC Loader, the third Connect tool, is implemented.) |
+| Machine Learning: Machine Learning Send, Machine Learning Predict | These talk to Alteryx Machine Learning in Alteryx One through a sign-in flow (OIDC through the Data Connection Manager). No public API for creating projects or scoring is documented: the help pages give only a workspace base URL. They stay not-started. Flowbench's own machine-learning tools, DataRobot AutoModel/Predict and the AI tools cover the same work. |
+| SDK Examples: HTML GUI Library | A deprecated example tool (hidden from the 2026.1 palette) that showcases widgets of the proprietary Alteryx HTML GUI SDK. That JavaScript SDK can't be loaded, and building a showcase tool only to count it would be padding. Flowbench's equivalent is plugin tools, whose configuration forms are generated from their JSON schema. |
 | In/Out: Auto Insights Uploader | The upload protocol is not published. The public help documents only the tool's settings, and no Auto Insights API documentation exists, so an adapter would mean inventing an API. It will be added if Alteryx publishes the protocol. |

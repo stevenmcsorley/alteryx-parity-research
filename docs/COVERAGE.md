@@ -10,9 +10,9 @@
 | Distinct tool names | 321 |
 | Public help URL resolved (official tool list sync) | 323 |
 | Machine-readable contracts generated | 323 |
-| Entries with known anchors (manifest, reference-observed or public-doc) | 308 |
+| Entries with known anchors (manifest, reference-observed or public-doc) | 310 |
 | Entries observed in authorised reference workflows (structure only) | 127 |
-| Independent kernels implemented and passing tests | 304 |
+| Independent kernels implemented and passing tests | 307 |
 | Independently implemented application adapters (in progress) | 19 |
 | Entries with differential reference cases, all passing ("partial") | 32 |
 | Entries with failing reference cases | 1 |
@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 0 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 567 run, 0 failed |
+| Unit/integration tests in last ledger build | 570 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -37,7 +37,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `in-out:input-data` | `core.input_data` | 46 | 0/0 | not-tested |
 | `in-out:map-input` | `core.map_input` | 1 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 13 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 316 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 318 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 13 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 2 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -141,6 +141,8 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `predictive:boosted-model` | `core.boosted_model` | 2 | 0/0 | not-tested |
 | `predictive:count-regression` | `core.count_regression` | 1 | 0/0 | not-tested |
 | `predictive:cross-validation` | `core.cross_validation` | 2 | 0/0 | not-tested |
+| `predictive:datarobot-automodel` | `core.datarobot_automodel` | 1 | 0/0 | not-tested |
+| `predictive:datarobot-predict` | `core.datarobot_predict` | 1 | 0/0 | not-tested |
 | `predictive:decision-tree` | `core.decision_tree` | 4 | 0/0 | not-tested |
 | `predictive:forest-model` | `core.forest_model` | 2 | 0/0 | not-tested |
 | `predictive:gamma-regression` | `core.gamma_regression` | 1 | 0/0 | not-tested |
@@ -189,6 +191,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `prescriptive:simulation-summary` | `core.simulation_summary` | 1 | 0/0 | not-tested |
 | `connectors:azure-data-lake-file-input` | `core.azure_data_lake_input` | 1 | 0/0 | not-tested |
 | `connectors:azure-data-lake-file-output` | `core.azure_data_lake_output` | 1 | 0/0 | not-tested |
+| `connectors:adobe-analytics` | `core.adobe_analytics` | 1 | 0/0 | not-tested |
 | `connectors:amazon-s3-download` | `core.s3_download` | 5 | 0/0 | not-tested |
 | `connectors:amazon-s3-upload` | `core.s3_upload` | 5 | 0/0 | not-tested |
 | `connectors:anaplan-input` | `core.anaplan_input` | 2 | 0/0 | not-tested |
@@ -334,7 +337,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Calgary | 5 | 5 | 0 | 5 | 5 |
 | Computer Vision | 9 | 9 | 0 | 9 | 0 |
 | Connect | 3 | 1 | 0 | 1 | 3 |
-| Connectors | 44 | 41 | 0 | 42 | 44 |
+| Connectors | 44 | 42 | 0 | 42 | 44 |
 | Data Investigation | 14 | 14 | 0 | 14 | 0 |
 | Demographic Analysis | 4 | 4 | 0 | 4 | 4 |
 | Developer | 30 | 30 | 4 | 30 | 0 |
@@ -346,7 +349,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | Laboratory | 7 | 5 | 0 | 5 | 0 |
 | Machine Learning | 11 | 9 | 0 | 9 | 0 |
 | Parse | 4 | 4 | 4 | 4 | 0 |
-| Predictive | 25 | 23 | 0 | 23 | 0 |
+| Predictive | 25 | 25 | 0 | 25 | 0 |
 | Predictive Grouping | 9 | 9 | 0 | 9 | 0 |
 | Preparation | 21 | 21 | 12 | 21 | 0 |
 | Prescriptive | 4 | 4 | 0 | 4 | 0 |
