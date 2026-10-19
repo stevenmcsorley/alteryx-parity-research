@@ -274,3 +274,40 @@ register(Provider(
     verification='Hyper extracts written and read back with the real Hyper API in the service-integration CI job; '
                  'publishing checked against a controlled fixture of the documented REST endpoints. Live publishing to '
                  'Tableau Server or Cloud is pending (no site available).'))
+
+register(Provider(
+    id='us-census-geocoder', family='geocoding', name='US Census Bureau Geocoder', kind='open-source',
+    serves=('address:street-geocoder', 'address:us-geocoder', 'address:reverse-geocoder'), licence='Public domain (US Government data)',
+    needs=('connection:web',), homepage='https://geocoding.geo.census.gov/geocoder/',
+    semantics={'coverage': 'United States, Puerto Rico and island areas; TIGER/Line address ranges (interpolated)',
+               'batches': 'up to 10,000 addresses per request', 'reverse': 'census geographies (state, county, tract, block), not addresses'},
+    setup='Add a Web/API connection: base URL https://geocoding.geo.census.gov/geocoder, authentication None.',
+    verification='Checked against a controlled fixture of the documented batch and coordinates endpoints, and live against the '
+                 'public service during development.'))
+
+register(Provider(
+    id='nominatim', family='geocoding', name='Nominatim (OpenStreetMap)', kind='open-source',
+    serves=('address:street-geocoder', 'address:us-geocoder', 'address:reverse-geocoder'),
+    licence='GPL-2.0 (software); ODbL-1.0 (OpenStreetMap data)', needs=('connection:web',),
+    homepage='https://nominatim.org',
+    semantics={'coverage': 'worldwide, as complete as OpenStreetMap', 'public server': 'one request per second, no bulk geocoding'},
+    setup='Run your own Nominatim (recommended for more than a few hundred addresses), or use https://nominatim.openstreetmap.org '
+          'within its usage policy. Add a Web/API connection with that base URL and authentication None.',
+    verification='Checked against a controlled fixture of the documented search and reverse endpoints. Live acceptance against '
+                 'a Nominatim server is pending.'))
+
+register(Provider(
+    id='smarty', family='address-validation', name='Smarty US Street API (USPS CASS-certified)', kind='vendor',
+    serves=('address:cass',), needs=('connection:web',), homepage='https://www.smarty.com/docs/cloud/us-street-api',
+    semantics={'validation': 'USPS CASS-certified standardisation, ZIP+4, delivery point, DPV', 'batches': '100 addresses per request'},
+    setup='Create Smarty secret keys. Add a Web/API connection: base URL https://us-street.api.smarty.com, basic authentication '
+          'with the auth-id as username and the auth-token as the secret.',
+    verification='Checked against a controlled fixture of the documented API. Live acceptance is pending (no Smarty account available).'))
+
+register(Provider(
+    id='zip4-data-pack', family='zip4-centroids', name='ZIP+4 centroid data pack', kind='local-runtime',
+    serves=('address:us-zip9-coder',), needs=('datapack:zip4-centroids',),
+    semantics={'source': 'the licensed ZIP+4 centroid file you register; ZIP5 centroids used when the +4 is unknown'},
+    setup='Register your licensed ZIP+4 centroid CSV (columns Zip5, Plus4, Latitude, Longitude) under Data packs as family '
+          'zip4-centroids.',
+    verification='Checked with a synthetic data pack. Results depend on the data you supply.'))

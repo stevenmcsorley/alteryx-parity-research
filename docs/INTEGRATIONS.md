@@ -42,6 +42,12 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `tableau` (vendor) | Tableau Output, Publish to Tableau Server | `tableauhyperapi` (install it yourself; Windows/Linux x86-64); a Web/API connection with a personal access token to publish | Hyper extracts written and read back with the real Hyper API in CI. Publishing checked against a fixture of the documented REST API. **Live publishing is pending:** no Tableau site is available |
 | `anaplan` (vendor) | Anaplan Input/Output | a Web/API connection with basic auth (Anaplan email and password) | Controlled fixture of the documented Integration API v2. **Live acceptance against an Anaplan model is pending** |
 | `odbc` (local runtime) | ODBC Loader | `pyodbc` plus a system ODBC driver; a database connection of type ODBC | Live against the SQLite ODBC driver through unixODBC in CI |
+| `us-census-geocoder` (public service) | Street Geocoder, US Geocoder, Reverse Geocoder | a Web/API connection with authentication None | Fixture, plus **live** batch geocoding and reverse lookups against the public service during development (opt-in test `FLOWBENCH_LIVE_CENSUS=1`) |
+| `nominatim` (open source) | Street Geocoder, US Geocoder, Reverse Geocoder | a Web/API connection to a Nominatim server | Fixture. **Live acceptance is pending** |
+| `smarty` (vendor, USPS CASS-certified) | CASS | a Web/API connection (auth-id and auth-token) | Fixture. **Live acceptance is pending:** no Smarty account is available |
+| `zip4-data-pack` (your licensed data) | US ZIP9 Coder | a registered `zip4-centroids` data pack | Synthetic data pack |
+
+Parse Address runs locally with the open-source `usaddress` model, so it needs no provider.
 
 Apache Spark Code runs PySpark in local mode. `read_input(n)` returns a Spark DataFrame whose types are mapped from Flowbench types. `write_output(n, df)` collects the DataFrame and maps its types back exactly; types Flowbench cannot hold are rejected with a message. Remote clusters (Livy, Databricks) are not served by this provider.
 
@@ -166,6 +172,20 @@ Each tool may send the token only to its vendor's own documented hosts. That lis
   - **Input** runs an export action, waits for its task, and reads the export file's chunks in order.
   - **Output** uploads the data file in chunks: chunk count `-1`, chunks from 0, then complete. It then runs the import action. A task that completes but doesn't succeed is reported with Anaplan's details, and notes when a failure dump is available.
 - **ODBC Loader** lists every table and view with its columns, plus stored procedures, as the driver reports them. Values in the connection string are braced only when ODBC needs it, because some drivers keep the braces.
+
+## Address tools
+
+The reference's Address tools use its licensed CASS library and address data. Flowbench uses open, public or vendor alternatives instead, so **results will differ from the reference**.
+
+- **Parse Address** fills the reference's `CASSParse_*` fields using `usaddress`, a statistical model of US addresses. It parses addresses; it doesn't validate them. The Canada-only fields stay empty.
+- **Street Geocoder / US Geocoder** use the named provider:
+  - the **US Census Geocoder**: free, public domain, US only, interpolated along TIGER/Line address ranges, up to 10,000 addresses per request;
+  - **Nominatim** (OpenStreetMap, worldwide).
+
+  On the public Nominatim server Flowbench sends a real User-Agent and at most one request per second. It answers repeated addresses from a per-run cache and warns about large jobs, as that server's policy requires. Use a self-hosted Nominatim for bulk work.
+- **Reverse Geocoder** returns the nearest address with Nominatim. With the Census Geocoder it returns census geographies (state, county, tract, block), not an address.
+- **CASS** uses the Smarty US Street API, a USPS CASS-certified service: delivery line, ZIP+4, delivery point, county, DPV match code and coordinates, 100 addresses per request.
+- **US ZIP9 Coder** looks up each ZIP+4 (falling back to the ZIP centroid) in a ZIP+4 centroid data pack you register. ZIP+4 location data is licensed, and Flowbench ships none.
 
 ## Amazon S3
 

@@ -6,21 +6,100 @@
   "xml_tool_name": "PortfolioExplorer.yxmc",
   "user_role": "Full (Data Packages Add-on)",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/address/us-geocoder-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Input",
-      "View the Output"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "address_field"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "us-census-geocoder",
+          "nominatim"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "https://geocoding.geo.census.gov/geocoder or a Nominatim server, authentication None"
+      },
+      "address_field": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Street address, or the whole one-line address"
+      },
+      "city_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "state_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "zip_field": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      },
+      "country_codes": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Nominatim only, e.g. gb,ie"
+      },
+      "benchmark": {
+        "type": "string",
+        "default": "Public_AR_Current",
+        "description": "Census address range benchmark"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 600,
+        "default": 120
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "licensed-reference-dataset (address/geocoding data)",
     "licensed-dataset (public-doc keyword signal; unreviewed)",
@@ -28,7 +107,13 @@
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.us_geocoder",
+    "version": "1.0.0",
+    "module": "flowengine.tools.address",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -55,9 +140,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_address.AddressTests.test_nominatim_identifies_itself_caches_and_paces_the_public_server"
+    ]
   },
   "sources": [
     {
@@ -73,8 +160,8 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet.",
+    "Provider nominatim: Checked against a controlled fixture of the documented search and reverse endpoints. Live acceptance against a Nominatim server is pending."
   ]
 }
