@@ -6,20 +6,76 @@
   "xml_tool_name": "DataRobotEnhancedPredictions",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/predictive/datarobot-predict-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [],
-  "outputs": [],
+  "inputs": [
+    {
+      "name": "input",
+      "direction": "input",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Connect an Input",
-      "Configure the Tool"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider",
+      "connection_id",
+      "project_id"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "datarobot"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "connection_id": {
+        "type": "string",
+        "minLength": 1,
+        "x-flowbench-connection": "web",
+        "description": "https://app.datarobot.com/api/v2 (or your instance), Bearer API key"
+      },
+      "timeout_seconds": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 7200,
+        "default": 1800
+      },
+      "project_id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "model_id": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null,
+        "description": "Empty uses the recommended model"
+      },
+      "prefix": {
+        "type": "string",
+        "default": ""
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": false,
   "external_dependencies": [
     "r-runtime (statistical models; vendor ships R-based macros)",
     "alteryx-server (public-doc keyword signal; unreviewed)",
@@ -27,7 +83,13 @@
   ],
   "external_prerequisites_blocking": false,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.datarobot_predict",
+    "version": "1.0.0",
+    "module": "flowengine.tools.datarobot_adobe",
+    "side_effects": "network"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -42,9 +104,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_datarobot_adobe.Tests.test_predict_uses_the_recommended_model_and_joins_by_row"
+    ]
   },
   "sources": [
     {
@@ -60,7 +124,7 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows."
+    "No differential conformance case yet.",
+    "Provider datarobot: Checked against a controlled fixture of the documented dataset, project, Autopilot and prediction endpoints. Live acceptance is pending (no DataRobot account available)."
   ]
 }

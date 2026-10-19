@@ -32,10 +32,10 @@ class ValidationTests(unittest.TestCase):
     def test_unknown_and_unavailable_tools_are_explicit(self):
         p = problems_of(workflow([{'id': 'x', 'tool': 'core.nope', 'config': {}}], []))
         self.assertEqual(p[0]['code'], 'tool-unavailable')
-        # A catalogue entry that is deliberately not implemented (it needs a vendor service).
-        p = problems_of(workflow([{'id': 'x', 'tool': 'predictive:datarobot-automodel', 'config': {}}], []))
+        # A catalogue entry that is deliberately not implemented (its vendor protocol is not published).
+        p = problems_of(workflow([{'id': 'x', 'tool': 'in-out:auto-insights-uploader', 'config': {}}], []))
         self.assertEqual(p[0]['code'], 'tool-unavailable')
-        self.assertIn('DataRobot Automodel', p[0]['message'])
+        self.assertIn('Auto Insights', p[0]['message'])
         self.assertIn('no working implementation', p[0]['message'])
 
     def test_catalog_id_resolves_to_implementation(self):
