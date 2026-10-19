@@ -88,7 +88,9 @@ def write_hyper(table, path: Path, spatial_fields=(), table_name='Extract'):
     name = h.TableName('Extract', table_name)
     columns = [h.TableDefinition.Column(f.name, _sql_type(h, f, spatial)) for f in table.schema]
     definition = h.TableDefinition(name, columns)
-    with h.HyperProcess(telemetry=h.Telemetry.DO_NOT_SEND_USAGE_DATA_TO_TABLEAU) as process, \
+    # Hyper writes a server log; keep it in a temporary folder that is removed afterwards.
+    with tempfile.TemporaryDirectory(prefix='flowbench-hyperd-') as log_dir, \
+            h.HyperProcess(telemetry=h.Telemetry.DO_NOT_SEND_USAGE_DATA_TO_TABLEAU, parameters={'log_dir': log_dir}) as process, \
             h.Connection(process.endpoint, str(path), h.CreateMode.CREATE_AND_REPLACE) as conn:
         conn.catalog.create_schema_if_not_exists('Extract')
         conn.catalog.create_table(definition)

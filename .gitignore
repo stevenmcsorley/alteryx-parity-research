@@ -41,3 +41,6 @@ tests/integration/.db_env.json
 desktop/src-tauri/runtime/*
 !desktop/src-tauri/runtime/.gitkeep
 artifacts/linux-desktop-smoke/
+
+# Tableau Hyper server logs
+hyperd*.log
