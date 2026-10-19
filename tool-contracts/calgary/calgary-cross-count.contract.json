@@ -6,40 +6,93 @@
   "xml_tool_name": "CalgaryLoadersGui.CalgaryLoader.CalgaryLoader",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/calgary/calgary-cross-count-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
-  "inputs": [
+  "inputs": [],
+  "outputs": [
     {
-      "name": "Input",
-      "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
-  "outputs": [],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "Fields",
-      "Fields/Field",
-      "RootFileName",
-      "UseLicenseKey"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "path",
+      "fields"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Cross Count Fields Tab",
-      "Additional Query Criteria Tab"
-    ]
+    "properties": {
+      "path": {
+        "type": "string",
+        "minLength": 1,
+        "description": "The .fbcal database written by Calgary Loader"
+      },
+      "fields": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true,
+        "minItems": 1
+      },
+      "query": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "op"
+          ],
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "enum": [
+                "=",
+                "!=",
+                "<",
+                "<=",
+                ">",
+                ">=",
+                "in",
+                "between",
+                "starts_with",
+                "is_null",
+                "not_null"
+              ]
+            },
+            "value": {},
+            "values": {
+              "type": "array"
+            }
+          }
+        },
+        "default": []
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "licensed-reference-dataset (indexed Calgary data)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.calgary_cross_count",
+    "version": "1.0.0",
+    "module": "flowengine.tools.calgary",
+    "side_effects": "reads-files"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -72,9 +125,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_demographics_calgary.CalgaryTests.test_join_cross_count_and_append"
+    ]
   },
   "sources": [
     {
@@ -95,7 +150,7 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet."
   ]
 }

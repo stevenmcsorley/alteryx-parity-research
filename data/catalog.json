@@ -2757,7 +2757,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/demographic-analysis/allocate-append-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2769,7 +2769,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/demographic-analysis/allocate-input-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2781,7 +2781,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/demographic-analysis/allocate-metainfo-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2793,7 +2793,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/demographic-analysis/allocate-report-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2925,7 +2925,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/calgary/calgary-input-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2937,7 +2937,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/calgary/calgary-join-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2949,7 +2949,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/calgary/calgary-cross-count-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2961,7 +2961,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/calgary/calgary-cross-count-append-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2973,7 +2973,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/calgary/calgary-loader-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

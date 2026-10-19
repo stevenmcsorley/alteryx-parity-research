@@ -6,44 +6,64 @@
   "xml_tool_name": "CalgaryPluginsGui.CalgaryCrossCountAppend.CalgaryCrossCountAppend",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/calgary/calgary-loader-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "CrossCount",
-      "CrossCount/CrossCountFields",
-      "JoinFields",
-      "JoinFields/Field",
-      "JoinMode",
-      "LinkedTables",
-      "Query",
-      "RootFileName"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "path",
+      "index_fields"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "Load Base CalgaryDB and/or 1 or More Standard Indexes",
-      "Load a Single Advanced Index"
-    ]
+    "properties": {
+      "path": {
+        "type": "string",
+        "minLength": 1,
+        "description": "For example data/customers.fbcal"
+      },
+      "index_fields": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true,
+        "minItems": 1
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "licensed-reference-dataset (indexed Calgary data)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.calgary_loader",
+    "version": "1.0.0",
+    "module": "flowengine.tools.calgary",
+    "side_effects": "writes-files"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -80,9 +100,13 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 3,
+    "passing": 3,
+    "tests": [
+      "test_demographics_calgary.CalgaryTests.test_input_queries_with_conditions_and_keeps_types",
+      "test_demographics_calgary.CalgaryTests.test_join_cross_count_and_append",
+      "test_demographics_calgary.CalgaryTests.test_loader_builds_an_indexed_open_file"
+    ]
   },
   "sources": [
     {
@@ -103,7 +127,7 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet."
   ]
 }

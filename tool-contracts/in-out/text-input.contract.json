@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 305,
-    "passing": 305,
+    "count": 310,
+    "passing": 310,
     "tests": [
       "test_address.AddressTests.test_cass_standardises_in_batches_and_flags_unfound",
       "test_address.AddressTests.test_census_batch_geocoder_and_reverse_geographies",
@@ -237,6 +237,11 @@
       "test_dataverse_powerbi.DataverseTests.test_create_update_upsert_by_alternate_key_and_delete",
       "test_dataverse_powerbi.PowerBITests.test_creates_the_dataset_then_appends_and_replaces_in_batches",
       "test_dataverse_powerbi.PowerBITests.test_schema_changes_need_update_schema_and_limits_are_checked",
+      "test_demographics_calgary.AllocateTests.test_append_matches_geoids_one_request_per_state_and_chunks_variables",
+      "test_demographics_calgary.AllocateTests.test_metainfo_and_report",
+      "test_demographics_calgary.CalgaryTests.test_input_queries_with_conditions_and_keeps_types",
+      "test_demographics_calgary.CalgaryTests.test_join_cross_count_and_append",
+      "test_demographics_calgary.CalgaryTests.test_loader_builds_an_indexed_open_file",
       "test_download.DownloadTests.test_binary_charset_and_size_limit",
       "test_download.DownloadTests.test_configuration_and_schema_are_validated",
       "test_download.DownloadTests.test_failures_stop_or_are_recorded",
