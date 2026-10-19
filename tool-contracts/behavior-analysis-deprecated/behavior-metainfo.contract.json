@@ -6,19 +6,45 @@
   "xml_tool_name": "PortfolioPluginsGui.SolocastMetaInfo.SolocastMetaInfo",
   "user_role": "Full (Data Packages Add-on)",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/behavior-analysis/behavior-metainfo-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "output",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [],
-    "public_doc_sections": [
-      "Configure the Tool"
-    ]
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "provider"
+    ],
+    "properties": {
+      "provider": {
+        "type": "string",
+        "enum": [
+          "segmentation-data-pack"
+        ]
+      },
+      "provider_semantics": {
+        "type": "string"
+      },
+      "data_pack_id": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "default": null
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "licensed-reference-dataset (behaviour clusters)",
     "deprecated-in-reference",
@@ -26,7 +52,13 @@
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.behavior_metainfo",
+    "version": "1.0.0",
+    "module": "flowengine.tools.behavior",
+    "side_effects": "reads-files"
+  },
   "reference_observation": null,
   "public_doc": {
     "source": "data/public-doc-audit.json",
@@ -40,9 +72,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_behavior.BehaviorTests.test_profile_sets_detail_fields_cluster_codes_and_metainfo"
+    ]
   },
   "sources": [
     {
@@ -58,8 +92,7 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Anchors unknown: not described in public page text and not observed in shipped workflows.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet."
   ]
 }

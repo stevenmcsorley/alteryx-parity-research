@@ -2805,7 +2805,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/behavior-analysis/behavior-metainfo-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2817,7 +2817,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/behavior-analysis/cluster-code-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2829,7 +2829,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/behavior-analysis/compare-behavior-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2841,7 +2841,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/behavior-analysis/create-profile-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2853,7 +2853,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/behavior-analysis/detail-fields-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2865,7 +2865,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/behavior-analysis/profile-comparison-report-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2877,7 +2877,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/behavior-analysis/profile-detail-report-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2889,7 +2889,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/behavior-analysis/profile-input-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2901,7 +2901,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/behavior-analysis/profile-output-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {
@@ -2913,7 +2913,7 @@
       "documentation_url": "https://help.alteryx.com/current/en/designer/tools/behavior-analysis/profile-rank-report-tool.html",
       "source_url": "https://help.alteryx.com/current/en/designer/tools/designer-tools-list.html",
       "source_state": "official-catalog-verified",
-      "implementation_status": "not-started",
+      "implementation_status": "implemented",
       "verification_status": "not-tested"
     },
     {

@@ -47,6 +47,7 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `smarty` (vendor, USPS CASS-certified) | CASS | a Web/API connection (auth-id and auth-token) | Fixture. **Live acceptance is pending:** no Smarty account is available |
 | `zip4-data-pack` (your licensed data) | US ZIP9 Coder | a registered `zip4-centroids` data pack | Synthetic data pack |
 | `us-census-acs` (public data) | Allocate Input, Append, MetaInfo, Report | a free Census API key in a Signed URL connection (`key=…`) | Controlled fixture of the documented API. **Live acceptance is pending:** the data API now needs a key, and none is available here |
+| `segmentation-data-pack` (your data) | the 10 Behavior Analysis tools | a registered `segmentation` data pack, needed for geography-key profiles, Cluster Code and MetaInfo | Synthetic data pack, with the arithmetic checked by hand |
 
 Parse Address runs locally with the open-source `usaddress` model, so it needs no provider.
 
@@ -198,6 +199,16 @@ The reference's Address tools use its licensed CASS library and address data. Fl
   - The reference `.cydb` format can't be read or written, and linked household/individual files aren't supported.
   - Queries are conditions (`=`, `!=`, `<`, `<=`, `>`, `>=`, `in`, `between`, `starts_with`, `is_null`, `not_null`) that must all hold.
   - **Cross Count** counts every combination of fields. **Cross Count Append** counts per input record, split by a cross-count field with up to 1,000 values.
+
+## Behavior Analysis
+
+The reference tools (deprecated since 2022.3) use a licensed segmentation system. Flowbench uses the **segmentation data you register**: a CSV with `GeoKey`, `Cluster` and `Count` columns, optionally `ClusterName` and `Group`.
+
+- A **profile** is the count per cluster, held as JSON text in a field (`flowbench.profile.v1`). Profile sets are saved as `.fbprof` files (JSON Lines).
+- **Create Profile** builds profiles in one of three ways: from cluster codes in your records (weighted by a count field and a multiplier), from geography keys looked up in the pack, or by combining profiles. It makes one profile for all records, one per group, or one per record.
+- **Compare Behavior** reports per cluster the target and base counts and shares, the **index** (100 × target share ÷ base share) and the **penetration** (target ÷ base).
+- **Detail Fields** expands a profile into count and percent fields. **Cluster Code** appends each geography's dominant cluster. **Behavior MetaInfo** lists the pack's clusters.
+- **Profile Comparison, Rank and Detail reports** produce report tables for the Render and Layout tools.
 
 ## Amazon S3
 
