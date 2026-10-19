@@ -38,9 +38,12 @@ test('palette lists every catalogue entry with an honest status', async ({ page 
   await expect(items).toHaveCount(323);
   const available = await page.locator('.tool-item .badge.ready, .tool-item .badge.tested, .tool-item .badge.refdiff, .tool-item .badge.native').count();
   expect(available).toBeGreaterThanOrEqual(26);
-  await page.getByTestId('palette-address:us-geocoder').click();
-  await expect(page.getByTestId('tool-detail')).toContainText('licensed data');
-  await expect(page.getByTestId('palette-address:us-geocoder')).toHaveAttribute('draggable', 'false');
+  // An entry that is not implemented explains why and cannot be dragged (whichever entries remain, as coverage grows).
+  const blocked = page.locator('[data-testid^="palette-"].tool-item[draggable="false"]').first();
+  await blocked.click();
+  await expect(page.getByTestId('tool-detail')).toContainText(/licensed|vendor|service|not (yet )?implemented|Unavailable|Blocked/i);
+  // Implemented connectors are ready to drag.
+  await expect(page.getByTestId('palette-address:us-geocoder')).toHaveAttribute('draggable', 'true');
   await page.getByLabel('Search tools').fill('join');
   await expect(page.getByTestId('palette-join:join')).toBeVisible();
   await expect(page.getByTestId('palette-preparation:filter')).toHaveCount(0);
