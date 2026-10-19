@@ -311,3 +311,16 @@ register(Provider(
     setup='Register your licensed ZIP+4 centroid CSV (columns Zip5, Plus4, Latitude, Longitude) under Data packs as family '
           'zip4-centroids.',
     verification='Checked with a synthetic data pack. Results depend on the data you supply.'))
+
+register(Provider(
+    id='us-census-acs', family='demographics', name='US Census Bureau American Community Survey (API)', kind='open-source',
+    serves=('demographic-analysis:allocate-input', 'demographic-analysis:allocate-append', 'demographic-analysis:allocate-metainfo',
+            'demographic-analysis:allocate-report'),
+    licence='Public domain (US Government data)', needs=('connection:web',), homepage='https://www.census.gov/data/developers.html',
+    semantics={'data': "ACS estimates (not the reference's licensed demographic dataset); the vintage you choose",
+               'geographies': 'state, county, tract, block group, ZIP code tabulation area by GEOID; no custom polygons',
+               'nulls': "the Bureau's not-available codes become null"},
+    setup='Request a free key at https://api.census.gov/data/key_signup.html. Add a Web/API connection: base URL '
+          'https://api.census.gov/data, authentication Signed URL, secret key=<your key>.',
+    verification='Checked against a controlled fixture of the documented data, variables and groups endpoints. The data API now '
+                 'requires a key; live acceptance is pending (no key available here; keys are free).'))

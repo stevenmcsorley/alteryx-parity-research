@@ -6,44 +6,132 @@
   "xml_tool_name": "CalgaryPluginsGui.CalgaryJoin.CalgaryJoin",
   "user_role": "Full",
   "documentation_url": "https://help.alteryx.com/current/en/designer/tools/calgary/calgary-join-tool.html",
-  "status": "not-started",
-  "implementation_status": "not-started",
+  "status": "implemented",
+  "implementation_status": "implemented",
   "verification_status": "not-tested",
   "inputs": [
     {
-      "name": "Input",
+      "name": "input",
       "direction": "input",
-      "cardinality": "unknown",
-      "provenance": "reference-observed"
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
     }
   ],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "joined",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    },
+    {
+      "name": "unjoined",
+      "direction": "output",
+      "cardinality": "one",
+      "provenance": "flowengine-manifest",
+      "reference_name": null
+    }
+  ],
   "configuration_schema": {
-    "status": "not-yet-specified",
-    "reference_config_elements": [
-      "CountOnly",
-      "JoinFields",
-      "JoinFields/Field",
-      "JoinMode",
-      "LinkedTables",
-      "MatchAll",
-      "OutputUnjoined",
-      "Query",
-      "RootFileName"
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "path",
+      "on"
     ],
-    "public_doc_sections": [
-      "Configure the Tool",
-      "View the Output"
-    ]
+    "properties": {
+      "path": {
+        "type": "string",
+        "minLength": 1,
+        "description": "The .fbcal database written by Calgary Loader"
+      },
+      "on": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "input",
+            "database"
+          ],
+          "properties": {
+            "input": {
+              "type": "string"
+            },
+            "database": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "query": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "op"
+          ],
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1
+            },
+            "op": {
+              "enum": [
+                "=",
+                "!=",
+                "<",
+                "<=",
+                ">",
+                ">=",
+                "in",
+                "between",
+                "starts_with",
+                "is_null",
+                "not_null"
+              ]
+            },
+            "value": {},
+            "values": {
+              "type": "array"
+            }
+          }
+        },
+        "default": []
+      },
+      "fields": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true,
+        "default": []
+      },
+      "prefix": {
+        "type": "string",
+        "default": "DB_"
+      }
+    }
   },
-  "deterministic": null,
+  "deterministic": true,
   "external_dependencies": [
     "licensed-reference-dataset (indexed Calgary data)",
     "vendor-cloud-service (public-doc keyword signal; unreviewed)"
   ],
   "external_prerequisites_blocking": true,
   "license_notes": "Independent implementation; no vendor code, assets or documentation text copied.",
-  "implementation": null,
+  "implementation": {
+    "engine": "flowengine",
+    "tool_id": "core.calgary_join",
+    "version": "1.0.0",
+    "module": "flowengine.tools.calgary",
+    "side_effects": "reads-files"
+  },
   "reference_observation": {
     "source": "data/reference-observations.json",
     "build": "2026.2.0.8",
@@ -80,9 +168,11 @@
     ]
   },
   "independent_tests": {
-    "count": 0,
-    "passing": 0,
-    "tests": []
+    "count": 1,
+    "passing": 1,
+    "tests": [
+      "test_demographics_calgary.CalgaryTests.test_join_cross_count_and_append"
+    ]
   },
   "sources": [
     {
@@ -103,7 +193,7 @@
   ],
   "cases": [],
   "unresolved": [
-    "No independent kernel yet; configuration semantics not specified.",
-    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing."
+    "Exact behaviour needs separately licensed data/services; record authorised sandbox access before testing.",
+    "No differential conformance case yet."
   ]
 }

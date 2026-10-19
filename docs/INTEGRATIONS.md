@@ -46,6 +46,7 @@ All files live in the Flowbench home folder (`FLOWENGINE_HOME`, default `~/.flow
 | `nominatim` (open source) | Street Geocoder, US Geocoder, Reverse Geocoder | a Web/API connection to a Nominatim server | Fixture. **Live acceptance is pending** |
 | `smarty` (vendor, USPS CASS-certified) | CASS | a Web/API connection (auth-id and auth-token) | Fixture. **Live acceptance is pending:** no Smarty account is available |
 | `zip4-data-pack` (your licensed data) | US ZIP9 Coder | a registered `zip4-centroids` data pack | Synthetic data pack |
+| `us-census-acs` (public data) | Allocate Input, Append, MetaInfo, Report | a free Census API key in a Signed URL connection (`key=…`) | Controlled fixture of the documented API. **Live acceptance is pending:** the data API now needs a key, and none is available here |
 
 Parse Address runs locally with the open-source `usaddress` model, so it needs no provider.
 
@@ -186,6 +187,17 @@ The reference's Address tools use its licensed CASS library and address data. Fl
 - **Reverse Geocoder** returns the nearest address with Nominatim. With the Census Geocoder it returns census geographies (state, county, tract, block), not an address.
 - **CASS** uses the Smarty US Street API, a USPS CASS-certified service: delivery line, ZIP+4, delivery point, county, DPV match code and coordinates, 100 addresses per request.
 - **US ZIP9 Coder** looks up each ZIP+4 (falling back to the ZIP centroid) in a ZIP+4 centroid data pack you register. ZIP+4 location data is licensed, and Flowbench ships none.
+
+## Demographics (Allocate) and Calgary
+
+- **Allocate tools** read US Census Bureau **American Community Survey** estimates. These are public-domain, but they aren't the reference's licensed demographic dataset, so variables, vintages and values differ.
+  - Standard geographies only (state, county, tract, block group, ZCTA), keyed by GEOID. Custom polygons are refused, because ACS publishes no block-level estimates to allocate from.
+  - The Bureau's not-available codes become null.
+  - **Input** reads every geography of a level within a state and county. **Append** joins estimates onto records by GEOID, with one request per state or county and up to 49 variables per request. **MetaInfo** lists variables with labels and types. **Report** builds a report table with variables as rows and geographies as columns.
+- **Calgary tools** keep the workflow of the reference's Calgary database: load once with indexes, then query, join and cross-count quickly. They use an **open format**: a SQLite file (`.fbcal`) with the records, B-tree indexes on the chosen fields, and the Flowbench schema so types are kept.
+  - The reference `.cydb` format can't be read or written, and linked household/individual files aren't supported.
+  - Queries are conditions (`=`, `!=`, `<`, `<=`, `>`, `>=`, `in`, `between`, `starts_with`, `is_null`, `not_null`) that must all hold.
+  - **Cross Count** counts every combination of fields. **Cross Count Append** counts per input record, split by a cross-count field with up to 1,000 values.
 
 ## Amazon S3
 
