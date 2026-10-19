@@ -231,7 +231,7 @@ class TableauTests(Base):
         r = self.run_tool('core.tableau_output', {'provider': 'tableau', 'output': 'local', 'path': 'out/cities.hyper',
                                                    'spatial_fields': ['loc']}, {}, data)
         self.assertEqual(r.status, 'succeeded', r.error)
-        with h.HyperProcess(telemetry=h.Telemetry.DO_NOT_SEND_USAGE_DATA_TO_TABLEAU) as hp, \
+        with h.HyperProcess(telemetry=h.Telemetry.DO_NOT_SEND_USAGE_DATA_TO_TABLEAU, parameters={'log_dir': str(self.dir)}) as hp, \
                 h.Connection(hp.endpoint, str(self.dir / 'out/cities.hyper')) as c:
             rows = c.execute_list_query('SELECT id, city, CAST(loc AS TEXT) FROM "Extract"."Extract" ORDER BY id')
             types = [str(col.type) for col in c.catalog.get_table_definition(h.TableName('Extract', 'Extract')).columns]
