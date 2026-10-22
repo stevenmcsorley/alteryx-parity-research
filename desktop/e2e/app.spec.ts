@@ -310,14 +310,18 @@ test('configure Fuzzy Match through field selectors and execute indexed matching
   await page.getByTestId('run').click();
   await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
   await page.getByLabel('Output to display').selectOption('fuzzy_match_1::output');
+  await expect(page.getByLabel('Output to display')).toHaveValue('fuzzy_match_1::output');
   await expect(page.getByTestId('results-grid')).toContainText('1');
   await expect(page.getByTestId('results-grid')).toContainText('2');
   await page.getByLabel('Mode').selectOption('merge');
+  await expect(page.getByLabel('Mode')).toHaveValue('merge');
   await page.getByLabel('Source id field').selectOption('source');
+  await expect(page.getByLabel('Source id field')).toHaveValue('source');
   await expect(page.getByTestId('valid')).toBeVisible({ timeout: 10_000 });
   await page.getByTestId('run').click();
   await expect(page.getByTestId('run-status')).toContainText('succeeded', { timeout: 30_000 });
   await page.getByLabel('Output to display').selectOption('fuzzy_match_1::output');
+  await expect(page.getByLabel('Output to display')).toHaveValue('fuzzy_match_1::output');
   await expect(page.getByTestId('result-count')).toContainText('0 rows');
 });
 
