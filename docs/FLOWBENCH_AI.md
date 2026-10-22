@@ -8,17 +8,20 @@ Open the panel's settings (⚙) and pick a provider under **Model**.
 
 **ChatGPT** uses your ChatGPT plan through Sign in with ChatGPT. Prompts, and any workflow data the AI asks to read, are sent to OpenAI once you allow data sharing. Reasoning effort is chosen beside the model; *Low* is the default and uses the least of your plan.
 
-**Local model** uses a model server you run:
+**Model server / API** connects to a model server you run or an OpenAI-compatible hosted API:
 
 | Server | Default address | Notes |
 |---|---|---|
 | Ollama | `http://localhost:11434` | Flowbench uses Ollama's own chat API so it can set the context length (default 32k tokens). |
 | LM Studio | `http://localhost:1234/v1` | Start the server in LM Studio's Developer tab. Set the context length when you load the model. |
 | Other OpenAI-compatible | `http://localhost:8000/v1` | llama.cpp server, vLLM, Jan, LocalAI, or anything else with `/v1/chat/completions` and tool calling. An API key is optional; it is kept in memory until Flowbench closes. |
+| DeepSeek API | `https://api.deepseek.com` | Enter a DeepSeek API key. Available models are loaded from the account's model endpoint. DeepSeek receives prompts and permitted workflow context, and bills API usage separately from a ChatGPT subscription. The key stays in native memory for the current Flowbench session and must be entered again after restarting. |
+
+Flowbench uses DeepSeek's OpenAI-compatible Chat Completions API with streaming and native Flowbench function tools. It explicitly disables DeepSeek thinking mode for this provider because the current shared conversation format does not preserve the provider's private reasoning channel required for stateless tool-call continuations. This affects reasoning mode only; tool calls and ordinary assistant responses remain supported. See DeepSeek's [tool-calling guide](https://api-docs.deepseek.com/guides/tool_calls/) and [thinking-mode requirements](https://api-docs.deepseek.com/guides/thinking_mode/).
 
 **Connect** checks the server by listing its models before anything is saved. Switching provider starts a new conversation.
 
-When the server is on `localhost`, nothing leaves the computer and no data-sharing consent is asked for. A server elsewhere on the network needs the same consent as ChatGPT.
+When the server is on `localhost`, nothing leaves the computer and no data-sharing consent is asked for. A server elsewhere on the network, including DeepSeek, needs explicit data-routing consent. Flowbench does not silently switch between ChatGPT plan usage and a separately billed API provider.
 
 ### Which local model?
 

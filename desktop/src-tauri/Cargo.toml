@@ -1,6 +1,6 @@
 [package]
 name = "flowbench"
-version = "1.0.0-rc.1"
+version = "1.0.0-rc.2"
 description = "Flowbench desktop workflow editor (independent implementation)"
 authors = ["alteryx-parity-research contributors"]
 edition = "2021"

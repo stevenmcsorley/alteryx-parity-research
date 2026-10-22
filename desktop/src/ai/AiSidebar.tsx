@@ -554,7 +554,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   const providerName = providerLabel(local);
   const ready = connected && authorized;
   const turnTotal = turnUsage.input + turnUsage.output;
-  const nearContext = Boolean(local && lastInputTokens > local.context_tokens * 0.85);
+  // context_tokens is an enforced, user-configured limit only for Ollama. For
+  // hosted OpenAI-compatible APIs (including DeepSeek), it is merely the
+  // provider setup default and must not be presented as the model's real limit.
+  const nearContext = Boolean(local?.kind === 'ollama' && lastInputTokens > local.context_tokens * 0.85);
   const lastProblem = responseDiagnostics.length ? diagnosticSummary(responseDiagnostics[responseDiagnostics.length - 1]) : null;
   const examples = [
     'Explain what the open workflow does',
@@ -607,7 +610,8 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
         <h3>Usage</h3>
         {turnUsage.steps > 0 && <UsageBreakdown title="Last turn" usage={turnUsage} />}
         <UsageBreakdown title="This conversation" usage={sessionUsage} />
-        <small className="ai-menu-note">{local ? 'Local models cost nothing per token, but a long conversation can outgrow the context length.'
+        <small className="ai-menu-note">{local?.loopback ? 'Local models run on your computer; a long conversation can outgrow the context length.'
+          : local ? `${providerName} is a hosted API. Usage may be billed by that provider and is separate from ChatGPT plan usage.`
           : 'Each step of a turn resends the conversation, so long tasks add up. Lower reasoning effort and a new conversation per task keep usage down.'}</small>
       </section>
 
@@ -665,10 +669,10 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           <p>{fullControl ? 'Flowbench AI can build, validate and run workflows in this workspace.' : 'Flowbench AI can build and validate workflows, asking before each change. Turn on Full Control in settings to let it work without prompts.'}</p>
           <p className="ai-empty-note">Describe the analysis. Flowbench AI finds or downloads the data, builds the workflow on the canvas, runs it and reports what Flowbench computed. Use <b>Add files</b> to point it at your own data.</p>
           {!authorized && <div className="ai-connect-inline">
-            <span>{sessionRecovery ? 'Reconnect your protected ChatGPT session to continue.' : connected ? 'ChatGPT plan usage is not authorised yet.' : 'Connect a ChatGPT account, or use a local model with Ollama or LM Studio.'}</span>
+            <span>{sessionRecovery ? 'Reconnect your protected ChatGPT session to continue.' : connected ? 'ChatGPT plan usage is not authorised yet.' : 'Connect ChatGPT, or choose a model server/API such as Ollama, LM Studio or DeepSeek.'}</span>
             <div className="ai-settings-row center">
               <button className="primary" onClick={() => void signIn()} disabled={busy}>{busy ? 'Opening sign-in…' : 'Continue with ChatGPT'}</button>
-              <button onClick={() => setSettingsOpen(true)}>Use a local model</button>
+              <button onClick={() => setSettingsOpen(true)}>Choose model server or API</button>
             </div>
           </div>}
           {ready && !routingConsent && <div className="ai-connect-inline">

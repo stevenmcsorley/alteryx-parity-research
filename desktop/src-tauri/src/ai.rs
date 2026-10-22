@@ -279,7 +279,10 @@ fn clear_credentials(data_dir: &std::path::Path) -> Result<(), String> {
 pub async fn ai_status(state: tauri::State<'_, AiService>) -> Result<Value, String> {
     let chatgpt_connected = state.credentials.lock().await.is_some();
     if let Some(settings) = state.local.lock().await.as_ref() {
-        return Ok(json!({"provider":"local","local":settings.public(),"connected":true,"plan_usage_authorized":true,
+        let credential_present = state.local_key.lock().await.is_some();
+        let connected = !settings.is_deepseek() || credential_present;
+        return Ok(json!({"provider":"local","local":settings.public(),"connected":connected,"plan_usage_authorized":connected,
+            "credential_required":settings.is_deepseek() && !credential_present,
             "chatgpt_connected":chatgpt_connected,"data_routing_allowed":state.provider_consent.load(Ordering::SeqCst)}));
     }
     let mut status = chatgpt_status(&state).await;
@@ -309,12 +312,16 @@ pub async fn ai_set_provider(
             if key.as_ref().is_some_and(|k| k.len() > 4096 || k.chars().any(char::is_control)) {
                 return Err("The API key is not valid".into());
             }
+            if settings.is_deepseek() && key.is_none() {
+                return Err("Enter a DeepSeek API key to connect. DeepSeek API usage is billed separately from a ChatGPT subscription.".into());
+            }
             let models = local::list_models(&settings, key.as_deref()).await?;
             *state.local_key.lock().await = key;
             (Some(settings), models)
         }
         _ => return Err("Unknown AI provider".into()),
     };
+    if settings.is_none() { *state.local_key.lock().await = None; }
     local::save_settings(&state.data_dir, settings.as_ref())?;
     state.provider_consent.store(settings.as_ref().is_some_and(local::LocalSettings::is_loopback), Ordering::SeqCst);
     *state.model_slugs.lock().await = models.iter()
@@ -2014,6 +2021,9 @@ async fn access_token(state: &AiService) -> Result<String, String> {
 pub async fn ai_models(state: tauri::State<'_, AiService>) -> Result<Vec<Value>, String> {
     if let Some(settings) = state.local.lock().await.clone() {
         let key = state.local_key.lock().await.clone();
+        if settings.is_deepseek() && key.is_none() {
+            return Err("Reconnect to DeepSeek with an API key to refresh its model list".into());
+        }
         let models = local::list_models(&settings, key.as_deref()).await?;
         *state.model_slugs.lock().await = models.iter()
             .filter_map(|m| Some((m["slug"].as_str()?.to_owned(), Vec::new()))).collect();
@@ -2313,7 +2323,10 @@ pub async fn ai_respond(
     );
     let instructions = json!({"role":"developer","content":[{"type":"input_text","text":instructions_text}]});
     request_input.insert(0, instructions);
-    let limit = local_settings.as_ref().map_or(REQUEST_TOKEN_LIMIT, |l| (l.context_tokens as usize).saturating_mul(9) / 10);
+    // Only Ollama has a Flowbench-configured context budget. Hosted
+    // OpenAI-compatible providers report their own context errors; applying
+    // the local default (32k) to them incorrectly truncates valid requests.
+    let limit = request_context_limit(local_settings.as_ref());
     guard_request_size(&state, Some(&app), &mut request_input, limit).await?;
     if let Some(settings) = local_settings {
         return respond_local(&app, &state, settings, &model, &active_turn, &cycle_id, tools_enabled, request_input).await;
@@ -2706,6 +2719,13 @@ pub async fn ai_respond(
 
 /// A request this size is not sent: it would spend a large share of a plan's limits in one step.
 const REQUEST_TOKEN_LIMIT: usize = 150_000;
+fn request_context_limit(settings: Option<&local::LocalSettings>) -> usize {
+    settings
+        .filter(|settings| settings.kind == "ollama")
+        .map_or(REQUEST_TOKEN_LIMIT, |settings| {
+            (settings.context_tokens as usize).saturating_mul(9) / 10
+        })
+}
 /// Growth in one step beyond this means a tool result slipped through unbounded; compact before sending.
 const REQUEST_GROWTH_LIMIT: usize = 60_000;
 /// The tool definitions are sent with every request; their size is part of the estimate.
@@ -2851,6 +2871,9 @@ async fn respond_local(
     request_input: Vec<Value>,
 ) -> Result<Value, String> {
     let key = state.local_key.lock().await.clone();
+    if settings.is_deepseek() && key.is_none() {
+        return Err("Reconnect to DeepSeek with an API key before sending a message".into());
+    }
     let input_shape = request_history_shape(&request_input);
     let body = local::request_body(&settings, model, local::chat_messages(&settings.kind, &request_input), tools_enabled);
     let streamed = local::stream(app, state, &settings, key.as_deref(), body, |text| json!({"type":"delta",
@@ -2939,6 +2962,14 @@ async fn accept_tool_result(state: &AiService, app: Option<&tauri::AppHandle>, c
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn hosted_api_uses_general_request_budget_not_ollama_context_default() {
+        let ollama = local::LocalSettings::new("ollama", "http://localhost:11434", Some(32_768)).unwrap();
+        let deepseek = local::LocalSettings::new("openai", "https://api.deepseek.com", None).unwrap();
+        assert_eq!(request_context_limit(Some(&ollama)), 29_491);
+        assert_eq!(request_context_limit(Some(&deepseek)), REQUEST_TOKEN_LIMIT);
+        assert_eq!(request_context_limit(None), REQUEST_TOKEN_LIMIT);
+    }
     #[cfg(not(windows))]
     #[test]
     fn native_session_entry_supports_store_read_and_delete() {

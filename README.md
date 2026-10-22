@@ -1,137 +1,82 @@
-# Designer Parity Research
+# Flowbench
 
-**Full-catalogue functional alternative to Alteryx Designer Desktop — evidence-first engineering repository.**
+**Build visual data workflows, run them locally, and work with an AI assistant inside the same desktop app.**
 
-> Research baseline: 13 October 2026. Pinned reference release: **Designer 2026.1.4.126** (30 September 2026). The official `/current/` documentation is a moving target; contents need comparison with the actual pinned installation. This repository does **not** contain Alteryx software, private code, installation media, copied icons, customer datasets, credentials, licence circumvention instructions, or any completed tool implementations.
+Flowbench is a cross-platform desktop application for importing data, connecting processing tools, running workflows, inspecting results and exporting them. Its canvas, configuration inspector, results grid and Flowbench AI workspace are integrated with one execution engine.
 
-## What is here now (Milestone 2)
+![Flowbench workflow canvas with the tool palette, configuration inspector, results grid and AI dock](docs/images/flowbench-example.png)
 
-- **Flowbench desktop app** (`desktop/`): Tauri + React + TypeScript. Workflow canvas, palette for all 323
-  catalogue entries with evidence-based status, schema-driven configuration, live runs, results, history,
-  `.yxmd` import/export. See [docs/DESKTOP.md](docs/DESKTOP.md).
-- **flowengine**: typed columnar engine with Arrow/Parquet, streaming, spilling, parallel scheduling, run history,
-  E1/E2 compatibility profiles, isolated Python/R/command runtimes and a JSON-RPC service.
-- **213 catalogue kernels implemented and passing independent tests** (including 9 Computer Vision, Key-Value Pair Extraction, 9 Text Mining, 9 Machine Learning, Email, Jupyter Flow, 23 Predictive, 9 Predictive Grouping, 9 Time Series, 4 A/B Testing and 4 Prescriptive tools, 16 In-Database tools, 14 Spatial tools, 12 Reporting tools, JSON Build, all 14 Data Investigation tools, GitHub Commit and Get Last Commit, Download, Runner, Dynamic Input, Control Container, Pearson correlation and sample covariance);
-  every other entry fails validation with `tool-unavailable`, and nothing is stubbed.
-- **Conformance against Alteryx Designer 2026.2.0.8**: 74/75 differential cases in both E1 and E2; holdout runs
-  of the install's shipped sample workflows match on 15–16 of 31 workflows (87–88 of 126 outputs). 32 entries
-  pass all their reference cases; 0 are claimed fully verified.
-- 323 machine-readable contracts and an evidence ledger reproduced in CI.
+*A real Flowbench session showing a connected customer and orders workflow, its selected Join configuration, execution results and the AI dock.*
 
-Reports: [docs/COVERAGE.md](docs/COVERAGE.md), [docs/MILESTONE_2_REPORT.md](docs/MILESTONE_2_REPORT.md),
-[docs/MILESTONE_1_REPORT.md](docs/MILESTONE_1_REPORT.md). Design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md),
-[docs/ENGINE_SEMANTICS.md](docs/ENGINE_SEMANTICS.md), [docs/COMPATIBILITY_PROFILES.md](docs/COMPATIBILITY_PROFILES.md),
-[docs/INTEROP.md](docs/INTEROP.md), [docs/RUNTIMES.md](docs/RUNTIMES.md), [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
+## What you can do
 
-Linux/macOS desktop packaging and native verification: [docs/CROSS_PLATFORM_UPDATE.md](docs/CROSS_PLATFORM_UPDATE.md).
+- **Create visual workflows:** search the categorized tool catalogue, add nodes to the canvas, connect typed anchors and configure tools in the inspector.
+- **Work with real data:** read and write common file formats, connect to PostgreSQL and SQL Server, and inspect schemas and bounded previews.
+- **Run and troubleshoot:** validate a workflow, execute or cancel it, inspect node results and diagnostics, review performance and reopen prior runs.
+- **Inspect and export results:** view rows and field types in the results grid, then export complete outputs as CSV or typed Parquet.
+- **Use Flowbench AI:** connect ChatGPT or a supported local model. The assistant can discover installed tools, inspect workflow context, propose or apply workflow changes according to the selected permission mode, execute workflows, inspect actual results, and help recover from errors.
+- **Reuse existing work:** save native `.flow.json` workflows and import supported `.yxmd`, `.yxmc`, `.yxwz` and `.yxzp` documents. Import reports identify unsupported settings instead of silently treating them as equivalent.
+- **Extend analysis:** use the available macro runtimes, reporting, spatial, statistical, predictive, machine-learning and connector tools where their dependencies and configurations are supported.
 
-## Decisions
+Flowbench includes a searchable catalogue of **323 entries across 29 categories**. Catalogue presence does not by itself mean a tool is executable: the palette indicates tool availability, and [the coverage report](docs/COVERAGE.md) distinguishes implementations from reference evidence. Flowbench is actively developed and does not claim complete Alteryx parity.
 
-| Area | Decision |
+## Get Flowbench
+
+Download the latest Windows, macOS or Linux package from [GitHub Releases](https://github.com/stevenmcsorley/alteryx-parity-research/releases). The Windows installer includes its managed Python runtime; users do not need to install Python, Node.js or Rust separately. macOS and Linux builds include their own managed runtime as well.
+
+Installers are currently unsigned. Windows SmartScreen may show **More info → Run anyway**. On macOS, follow the release notes if Gatekeeper blocks the app. R is an optional external runtime for workflows that use R tools.
+
+## Try an example
+
+Open one of these example workflows from the repository, or use it as a starting point for your own data:
+
+| Example | What it demonstrates |
 |---|---|
-| Target | Desktop visual data-analysis workflow product with full functional tool-catalogue coverage |
-| Compatibility | Evaluate `.yxmd`, `.yxmc`, `.yxwz`, `.yxzp`, `.yxdb` independently; never claim compatibility before passing tests |
-| Data model | Typed Arrow-like tabular batches, pluggable scalar expressions, explicit nulls, deterministic error contracts |
-| Execution | Local engine first, supports batch + streams, DAG scheduling and explicit side-effect boundaries |
-| Plugin model | Tool plugin manifests with typed input/output anchors, config schemas and separately testable kernels |
-| Traceability | Evidence for every tool, specification, sample case, test result, assumptions and version-specific differences |
-| Provenance | No copied commercial code, protected artwork, unauthorised analysis, or restricted access |
-| Full catalogue | None silently removed; proprietary SaaS/data dependencies flagged and implemented using separately authorised adapters |
+| [Monthly sales](examples/sales/monthly_sales.flow.json) | Read customer and order data, join, summarize and inspect sales results |
+| [Customer reviews](examples/text_mining/customer_reviews.flow.json) | Text-processing workflow |
+| [Fuel forecast](examples/predictive/fuel_models.flow.json) | Predictive model workflow |
+| [Fuel investigation](examples/investigation/fuel_investigation.flow.json) | Data profiling and investigation |
+| [UK spatial analysis](examples/spatial/uk_spatial.flow.json) | Spatial processing with local sample data |
+| [Fuel report](examples/reporting/fuel_report.flow.json) | Reporting workflow |
 
-## Repository tour
+Workflow paths are resolved relative to the project. Keep each example's companion `data/` directory beside its workflow file.
 
-- [`data/catalog.json`](data/catalog.json) — offline catalogue with manually transcribed public XML names and roles; missing per-tool help links
-- [`data/catalog.csv`](data/catalog.csv) — same inventory in spreadsheet-friendly form
-- [`tool-contracts/`](tool-contracts/) — 323 tool-specific research records
-- [`docs/COVERAGE.md`](docs/COVERAGE.md) — actual implementation and research status
-- [`docs/ACQUISITION_AND_DEPS.md`](docs/ACQUISITION_AND_DEPS.md) — all assets, dependencies, and licensed blockers
-- [`docs/EXECUTION_PLAN_AND_GATES.md`](docs/EXECUTION_PLAN_AND_GATES.md) — full-scope programme and acceptance gates
-- [`docs/READY_FOR_AGENT.md`](docs/READY_FOR_AGENT.md) — immediate Codex/Claude handoff
-- [`engine/independent_engine/`](engine/independent_engine/) — independent five-operation DAG/CSV testbed (no vendor parity)
-- [`data/tool-list-seed.txt`](data/tool-list-seed.txt) — offline listing by category
-- [`data/test-matrix.json`](data/test-matrix.json) — work items for every tool entry
-- [`docs/PRODUCT_REQUIREMENTS.md`](docs/PRODUCT_REQUIREMENTS.md) — full-scope requirements
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — proposed components and compatibility contracts
-- [`docs/REA_RUNBOOK.md`](docs/REA_RUNBOOK.md) — installing REA and authorisation-based investigations
-- [`docs/REFERENCE_TESTING.md`](docs/REFERENCE_TESTING.md) — behavioural conformance and evidence rubric
-- [`docs/SOURCES.md`](docs/SOURCES.md) — official public references and retrieval status
-- [`docs/ACCESS_AND_INPUTS.md`](docs/ACCESS_AND_INPUTS.md) — what the operator must legally provide
-- [`docs/RIGHTS_AND_BOUNDARIES.md`](docs/RIGHTS_AND_BOUNDARIES.md) — restrictions, separation and review gates
-- [`docs/IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md) — delivery programme (full scope preserved)
+## Flowbench AI
 
-## Download the desktop app
+Open **Flowbench AI** from the right-side dock. Choose ChatGPT, a local model server such as Ollama or LM Studio, or the hosted DeepSeek API. ChatGPT sign-in uses the official account flow; Flowbench does not ask for your ChatGPT password. Local models keep prompts on your machine when the server runs locally. DeepSeek requires its own API key and bills separately from a ChatGPT subscription; Flowbench asks before routing data to it.
 
-Installers for each release are on the [Releases page](https://github.com/stevenmcsorley/alteryx-parity-research/releases):
-`Flowbench_*_x64-setup.exe` (Windows), `Flowbench_*_aarch64.dmg` (macOS on Apple silicon), and `.AppImage` or `.deb` (Linux x86-64).
-Each one bundles its own Python engine. The builds are not code-signed yet:
-- On Windows, choose *More info → Run anyway* when SmartScreen warns.
-- On macOS, run `xattr -dr com.apple.quarantine /Applications/Flowbench.app` after copying the app across.
+The AI uses Flowbench’s installed tool descriptions and the same workflow editor and engine as manual work. Depending on the selected permission mode, it can preview edits for review or make routine workspace changes directly. Workflow runs that invoke code, and operations with external effects, remain subject to their own permissions. Data sent to a remote provider is governed by the AI data-sharing setting; inspect that setting before including private records.
 
-The **Flowbench AI** panel works with ChatGPT or a local model (Ollama, LM Studio, or any OpenAI-compatible server); see [docs/FLOWBENCH_AI.md](docs/FLOWBENCH_AI.md).
+See [Flowbench AI usage and permissions](docs/FLOWBENCH_AI.md) for provider setup, workspace behavior, supported operations and privacy details.
 
-To cut a release, bump the version in `desktop/package.json`, `desktop/src-tauri/tauri.conf.json` and `desktop/src-tauri/Cargo.toml`. Next, create a draft release (`gh release create vX.Y.Z --draft`) and push the matching `vX.Y.Z` tag. CI attaches the installers to the draft; publish it once all three platforms have uploaded.
+## Build from source
 
-## Start here (Windows PowerShell)
+Development prerequisites: Python 3.12, Node.js 22, Rust stable and WebView2 on Windows. Platform-specific native libraries for Linux/macOS are listed in [the desktop build guide](docs/DESKTOP.md) and [cross-platform packaging notes](docs/CROSS_PLATFORM_UPDATE.md).
 
 ```powershell
 python -m pip install -r requirements-dev.txt
-python scripts/validate_repository.py
-python -m unittest discover -s tests -v
+python -m pip install -r requirements.txt
 python -m flowengine validate examples/sales/monthly_sales.flow.json
-python -m flowengine run examples/sales/monthly_sales.flow.json --log run.jsonl --manifest run.json
-python -m flowengine tools
-python -m flowengine import tests/fixtures/yxmd/regional_sales.yxmd -o imported.flow.json
-python scripts/build_status.py          # regenerate contracts + status ledger from evidence
-python scripts/full_acceptance.py       # acceptance suites; records blocked and not-run gates explicitly
+python -m flowengine run examples/sales/monthly_sales.flow.json
 
-# Desktop app (see docs/DESKTOP.md)
-cd desktop; npm ci; npx tauri dev
-python scripts/coverage_report.py
-python scripts/build_parity_roadmap.py --check
-
-# Online, metadata only:
-python scripts/sync_official_catalog.py
-python scripts/audit_public_sources.py --max-pages 400 --cache-dir $env:TEMP\doc-cache
-
-# With an authorised reference install (see docs/AUTHORISATION.md):
-python conformance/reference/scan_reference_workflows.py
-python conformance/harness.py --mode e1      # and --mode e2
-python conformance/reference/holdout_samples.py --mode e1
+cd desktop
+npm ci
+npx tauri dev
 ```
 
-**Do not extend reference investigation beyond the scope recorded in [`docs/AUTHORISATION.md`](docs/AUTHORISATION.md).** REA is a research tool; it does not confer rights to use the target software or reproduce copyrighted implementation.
+For installer creation, follow the platform-specific staging steps in [docs/DESKTOP.md](docs/DESKTOP.md). To run the existing application checks, see [docs/FULL_ACCEPTANCE.md](docs/FULL_ACCEPTANCE.md); external services and native installer checks are reported separately when unavailable.
 
-## Full parity is a contract, not a status
+## Project and compatibility
 
-[`docs/ALTERYX_PARITY_ROADMAP.md`](docs/ALTERYX_PARITY_ROADMAP.md) is the authoritative full-catalogue work queue. It
-is generated from the catalogue, per-tool contracts, and evidence-derived implementation/conformance ledger; rebuild
-it with `python scripts/build_parity_roadmap.py` after refreshing tool status.
+Flowbench maintains a **323-entry catalogue** and separate implementation and compatibility evidence. The current ledger records **307 implemented, 6 in progress and 10 not started**; those counts are generated from repository evidence and can change as development continues. Reference comparisons currently have one known failing Sort collation case; strict full-tool verification remains incomplete. See [coverage](docs/COVERAGE.md), [compatibility profiles](docs/COMPATIBILITY_PROFILES.md) and [known engine differences](docs/ENGINE_SEMANTICS.md) for current details.
 
-[`docs/FULL_ACCEPTANCE.md`](docs/FULL_ACCEPTANCE.md) describes the end-to-end verification entrypoint, report formats,
-optional isolated installer/performance runs, and how missing external prerequisites are recorded.
+The repository contains Flowbench’s independently written application and engine. It does not include Alteryx software, vendor source code, protected artwork, customer data or credentials. Reference investigation follows the scope recorded in [docs/AUTHORISATION.md](docs/AUTHORISATION.md).
 
-Track independent axes:
+## Useful links
 
-1. **Inventory coverage:** Every official category/tool entry exists in our matrix, including deprecated, optional and add-on entries.
-2. **Design coverage:** Each tool has a versioned, tested contract describing configuration, input/output anchors, errors, supported types and determinism.
-3. **Implementation coverage:** Each independently written kernel/adapter passes unit and integration checks.
-4. **Observed compatibility:** A permitted, repeatable reference comparison has passed with recorded engine/build/configuration; vendor differences are acknowledged.
-5. **Operational readiness:** Packaging, resilience, accessibility, security, CI, installer, diagnostics and performance satisfy release gates.
-
-No single percentage can honestly represent all five.
-
-## GitHub repository
-
-Published at **https://github.com/stevenmcsorley/alteryx-parity-research**.
-
-To check out this research foundation and run the baseline validation:
-
-```powershell
-git clone https://github.com/stevenmcsorley/alteryx-parity-research.git
-cd alteryx-parity-research
-python -m pip install -r requirements-dev.txt
-python scripts/validate_repository.py
-python -m unittest discover -s tests -v
-```
-
-The public repository intentionally excludes licensed software, binary dumps, protected assets, credentials, and unauthorised analysis. Research coverage does not establish Alteryx functional parity.
+- [Desktop guide](docs/DESKTOP.md)
+- [Flowbench AI](docs/FLOWBENCH_AI.md)
+- [Coverage and tool availability](docs/COVERAGE.md)
+- [Example workflows](examples/)
+- [Releases](https://github.com/stevenmcsorley/alteryx-parity-research/releases)
+- [Issues and product backlog](https://github.com/stevenmcsorley/alteryx-parity-research/issues)

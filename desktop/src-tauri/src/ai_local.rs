@@ -27,7 +27,13 @@ impl LocalSettings {
         Ok(Self { kind: kind.into(), base_url: normalize_base_url(kind, base_url)?, context_tokens })
     }
     pub fn label(&self) -> &'static str {
-        if self.kind == "ollama" { "Ollama" } else { "the local model server" }
+        if self.kind == "ollama" { "Ollama" }
+        else if self.is_deepseek() { "DeepSeek API" }
+        else { "the model server" }
+    }
+    pub fn is_deepseek(&self) -> bool {
+        Url::parse(&self.base_url).ok().and_then(|u| u.host_str().map(str::to_owned))
+            .is_some_and(|host| host.eq_ignore_ascii_case("api.deepseek.com"))
     }
     /// Whether requests stay on this computer.
     pub fn is_loopback(&self) -> bool {
@@ -190,6 +196,11 @@ pub(super) fn request_body(settings: &LocalSettings, model: &str, messages: Vec<
         body["options"] = json!({"num_ctx":settings.context_tokens});
     } else {
         body["stream_options"] = json!({"include_usage":true});
+        // DeepSeek's thinking-mode tool handoff requires preserving provider reasoning_content
+        // across every stateless turn. Flowbench's shared Responses-shaped transcript does not
+        // store that private channel, so explicitly use the documented non-thinking mode to keep
+        // multi-turn function calls valid and avoid dropping or exposing hidden reasoning.
+        if settings.is_deepseek() { body["thinking"] = json!({"type":"disabled"}); }
     }
     if tools_enabled { body["tools"] = chat_tools(); }
     body
@@ -370,6 +381,12 @@ mod tests {
         assert!(LocalSettings::new("ollama", "http://127.0.0.1:11434", None).unwrap().is_loopback());
         assert!(!LocalSettings::new("openai", "http://192.168.1.5:1234", None).unwrap().is_loopback());
         assert!(LocalSettings::new("other", "http://localhost", None).is_err());
+        let deepseek = LocalSettings::new("openai", "https://api.deepseek.com", None).unwrap();
+        assert_eq!(deepseek.base_url, "https://api.deepseek.com/v1");
+        assert!(deepseek.is_deepseek());
+        assert_eq!(deepseek.label(), "DeepSeek API");
+        let proxy = LocalSettings::new("openai", "https://models.example.test/v1", None).unwrap();
+        assert!(!proxy.is_deepseek());
     }
 
     #[test]
@@ -434,6 +451,19 @@ mod tests {
         let ollama = model_choices("ollama", &json!({"models":[{"name":"qwen2.5:3b"},{"name":"nomic-embed-text:v1.5"}]}));
         assert_eq!(ollama, vec![json!({"slug":"qwen2.5:3b","display_name":"qwen2.5:3b","supported_efforts":[],"default_effort":null})]);
         assert_eq!(model_choices("openai", &json!({"data":[{"id":"b"},{"id":"a"}]}))[0]["slug"], "a");
+    }
+
+    #[test]
+    fn deepseek_uses_documented_non_thinking_mode_for_tool_compatible_transcripts() {
+        let settings = LocalSettings::new("openai", "https://api.deepseek.com", None).unwrap();
+        let body = request_body(&settings, "deepseek-v4-pro", vec![json!({"role":"user","content":"hi"})], true);
+        assert_eq!(body["thinking"], json!({"type":"disabled"}));
+        assert_eq!(body["stream"], true);
+        assert_eq!(body["tools"][0]["type"], "function");
+
+        let local = LocalSettings::new("openai", "http://localhost:1234/v1", None).unwrap();
+        let local_body = request_body(&local, "test-model", vec![], true);
+        assert!(local_body.get("thinking").is_none());
     }
 }
 

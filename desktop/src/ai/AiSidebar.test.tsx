@@ -14,6 +14,7 @@ vi.mock('@tauri-apps/api/event', () => ({ listen: vi.fn(async (_name: string, ha
 
 beforeEach(() => {
   tauriMock.handler = null; tauriMock.listenerCalls = 0; resetListenerForTests(); useAiConversation.getState().reset(); useAiConversation.getState().setFullControl(null);
+  localStorage.removeItem('flowbench.ai.localServer');
   tauriMock.invoke.mockReset().mockImplementation(async (command: string) => {
     if (command === 'ai_status') return { connected: false, plan_usage_authorized: false };
     if (command === 'ai_sign_in') return undefined;
@@ -465,8 +466,8 @@ describe('local model provider', () => {
       return undefined;
     });
     render(<AiSidebar close={() => undefined} />);
-    fireEvent.click(await screen.findByRole('button', { name: 'Use a local model' }));
-    fireEvent.click(screen.getByRole('radio', { name: 'Local model' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Choose model server or API' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Model server / API' }));
     fireEvent.click(screen.getByRole('button', { name: 'Connect' }));
     expect(await screen.findByRole('option', { name: 'qwen2.5:7b' })).toBeTruthy();
     expect(tauriMock.invoke.mock.calls.find(([c]) => c === 'ai_set_provider')?.[1]).toMatchObject({ provider: 'local', kind: 'ollama', baseUrl: 'http://localhost:11434', contextTokens: 32768 });
@@ -480,6 +481,33 @@ describe('local model provider', () => {
     expect(tauriMock.invoke.mock.calls.find(([c]) => c === 'ai_respond')?.[1]).toMatchObject({ model: 'qwen2.5:7b', effort: null });
     expect(screen.getByText(/6\.4k this turn · 6\.4k total/)).toBeTruthy();
     expect(screen.getByRole('img', { name: /New input 6\.4k/ })).toBeTruthy();
+  });
+
+  it('connects to DeepSeek only with an API key and requires external data-routing consent', async () => {
+    let active = false;
+    tauriMock.invoke.mockImplementation(async (command: string) => {
+      if (command === 'ai_status') return active
+        ? { provider: 'local', local: { kind: 'openai', base_url: 'https://api.deepseek.com/v1', context_tokens: 32768, loopback: false }, connected: true, plan_usage_authorized: true, data_routing_allowed: false }
+        : { provider: 'chatgpt', connected: false, plan_usage_authorized: false };
+      if (command === 'ai_set_provider') { active = true; return [{ slug: 'deepseek-v4-pro', display_name: 'deepseek-v4-pro' }]; }
+      if (command === 'ai_models') return active ? [{ slug: 'deepseek-v4-pro', display_name: 'deepseek-v4-pro', supported_efforts: [] }] : [];
+      return undefined;
+    });
+    render(<AiSidebar close={() => undefined} />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Choose model server or API' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Model server / API' }));
+    fireEvent.change(screen.getByLabelText('Server'), { target: { value: 'deepseek' } });
+    expect((screen.getByLabelText('Address') as HTMLInputElement).value).toBe('https://api.deepseek.com');
+    expect((screen.getByRole('button', { name: 'Connect' }) as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.change(screen.getByLabelText(/DeepSeek API key/), { target: { value: 'sk-private-test' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Connect' }));
+    expect(await screen.findByRole('option', { name: 'deepseek-v4-pro' })).toBeTruthy();
+    expect(tauriMock.invoke.mock.calls.find(([c]) => c === 'ai_set_provider')?.[1]).toMatchObject({
+      provider: 'local', kind: 'openai', baseUrl: 'https://api.deepseek.com', apiKey: 'sk-private-test',
+    });
+    expect((screen.getByLabelText(/DeepSeek API key/) as HTMLInputElement).value).toBe('');
+    expect(screen.getByLabelText(/Allow prompts, workflow context and requested data results to be sent to the model server at https:\/\/api\.deepseek\.com\/v1/)).toBeTruthy();
+    expect(screen.getByText(/billed by that provider and is separate from ChatGPT plan usage/)).toBeTruthy();
   });
 });
 
