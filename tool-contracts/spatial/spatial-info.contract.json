@@ -111,9 +111,10 @@
     ]
   },
   "independent_tests": {
-    "count": 2,
-    "passing": 2,
+    "count": 3,
+    "passing": 3,
     "tests": [
+      "test_geojson_input.GeoJsonInputTests.test_feature_collection_runs_through_spatial_info_without_manual_conversion",
       "test_spatial.ExampleTests.test_uk_spatial_example",
       "test_spatial.InfoGridTests.test_spatial_info_geodesic_and_planar_measures"
     ]

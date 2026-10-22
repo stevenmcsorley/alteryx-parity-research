@@ -14,6 +14,9 @@ Flowbench is a cross-platform desktop application for importing data, connecting
 - **Work with real data:** read and write common file formats, connect to PostgreSQL and SQL Server, and inspect schemas and bounded previews.
 - **Run and troubleshoot:** validate a workflow, execute or cancel it, inspect node results and diagnostics, review performance and reopen prior runs.
 - **Inspect and export results:** view rows and field types in the results grid, then export complete outputs as CSV or typed Parquet.
+- **Create shareable reports:** export a selected run output as a styled, paginated HTML or PDF report with its schema and a clearly labelled first-page row sample; use CSV or Parquet for the complete dataset.
+- **Organise and debug workflows:** auto-layout connected tools by dependency depth, inspect field types and output schemas, and jump from execution errors to the affected node. Layout changes support undo.
+- **Open more source data:** import legacy `.xls` workbooks and GeoJSON Feature collections alongside CSV, modern Excel, ODS, JSON, JSON Lines, Parquet and Arrow. GeoJSON properties retain inferred value types and geometry is available to Spatial tools.
 - **Use Flowbench AI:** connect ChatGPT or a supported local model. The assistant can discover installed tools, inspect workflow context, propose or apply workflow changes according to the selected permission mode, execute workflows, inspect actual results, and help recover from errors.
 - **Reuse existing work:** save native `.flow.json` workflows and import supported `.yxmd`, `.yxmc`, `.yxwz` and `.yxzp` documents. Import reports identify unsupported settings instead of silently treating them as equivalent.
 - **Extend analysis:** use the available macro runtimes, reporting, spatial, statistical, predictive, machine-learning and connector tools where their dependencies and configurations are supported.
@@ -22,7 +25,7 @@ Flowbench includes a searchable catalogue of **323 entries across 29 categories*
 
 ## Get Flowbench
 
-Download the latest Windows, macOS or Linux package from [GitHub Releases](https://github.com/stevenmcsorley/alteryx-parity-research/releases). The Windows installer includes its managed Python runtime; users do not need to install Python, Node.js or Rust separately. macOS and Linux builds include their own managed runtime as well.
+Download the latest Windows, macOS or Linux package from [GitHub Releases](https://github.com/stevenmcsorley/flowbench/releases). The Windows installer includes its managed Python runtime; users do not need to install Python, Node.js or Rust separately. macOS and Linux builds include their own managed runtime as well.
 
 Installers are currently unsigned. Windows SmartScreen may show **More info → Run anyway**. On macOS, follow the release notes if Gatekeeper blocks the app. R is an optional external runtime for workflows that use R tools.
 
@@ -48,6 +51,10 @@ Open **Flowbench AI** from the right-side dock. Choose ChatGPT, a local model se
 The AI uses Flowbench’s installed tool descriptions and the same workflow editor and engine as manual work. Depending on the selected permission mode, it can preview edits for review or make routine workspace changes directly. Workflow runs that invoke code, and operations with external effects, remain subject to their own permissions. Data sent to a remote provider is governed by the AI data-sharing setting; inspect that setting before including private records.
 
 See [Flowbench AI usage and permissions](docs/FLOWBENCH_AI.md) for provider setup, workspace behavior, supported operations and privacy details.
+
+See the [Workflow, data and reporting guide](docs/WORKFLOW_REPORTS_GUIDE.md) for step-by-step examples of these workflows and exports.
+
+See the [1.0.0-rc.3 release notes](docs/RELEASE_NOTES_1.0.0-rc.3.md) for this release's changes and limits.
 
 ## Build from source
 
@@ -78,5 +85,5 @@ The repository contains Flowbench’s independently written application and engi
 - [Flowbench AI](docs/FLOWBENCH_AI.md)
 - [Coverage and tool availability](docs/COVERAGE.md)
 - [Example workflows](examples/)
-- [Releases](https://github.com/stevenmcsorley/alteryx-parity-research/releases)
-- [Issues and product backlog](https://github.com/stevenmcsorley/alteryx-parity-research/issues)
+- [Releases](https://github.com/stevenmcsorley/flowbench/releases)
+- [Issues and product backlog](https://github.com/stevenmcsorley/flowbench/issues)

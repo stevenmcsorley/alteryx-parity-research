@@ -497,7 +497,13 @@ class DistributionAnalysis(Tool):
             ks = stats.kstest(x, dist(*fitted).cdf)
             ad = None  # scipy provides Anderson-Darling critical tables for these families only
             if key in ('normal', 'exponential'):
-                ad = _finite(float(stats.anderson(x, dist={'normal': 'norm', 'exponential': 'expon'}[key], method='interpolate').statistic))
+                # ``method`` was added to SciPy's anderson API after older supported
+                # releases. The statistic itself is available in both signatures.
+                import inspect
+                anderson_kwargs = {'dist': {'normal': 'norm', 'exponential': 'expon'}[key]}
+                if 'method' in inspect.signature(stats.anderson).parameters:
+                    anderson_kwargs['method'] = 'interpolate'
+                ad = _finite(float(stats.anderson(x, **anderson_kwargs).statistic))
             p1 = (params[0], _finite(named[0]))
             p2 = (params[1], _finite(named[1])) if len(params) > 1 else (None, None)
             fits.append([None, display, 'fitted', p1[0], p1[1], p2[0], p2[1], _finite(loglik),

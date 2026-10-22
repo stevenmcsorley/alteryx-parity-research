@@ -39,10 +39,7 @@
           "json",
           "jsonl",
           "parquet",
-          "arrow",
-          "yxdb",
-          "xlsx",
-          "ods"
+          "arrow"
         ],
         "default": "auto"
       },

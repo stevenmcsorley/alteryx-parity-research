@@ -49,6 +49,7 @@ export type EditorState = {
   selectedResult: { node: string; anchor: string } | null;
   bottomTab: 'results' | 'fields' | 'messages' | 'performance' | 'history';
   loadVersion: number; // increments when a document is loaded/created (canvas re-fits)
+  layoutVersion: number;
   importReport: any | null; // report from importing a .yxmd/.yxmc/.yxwz/.yxzp document
 
   // actions
@@ -58,6 +59,7 @@ export type EditorState = {
   checkpoint(): void;
   undo(): void;
   redo(): void;
+  autoLayout(): void;
   onNodesChange(changes: NodeChange<CanvasNode>[]): void;
   onEdgesChange(changes: EdgeChange<CanvasEdge>[]): void;
   connect(c: Connection): string | null;
@@ -130,6 +132,7 @@ export const useEditor = create<EditorState>((set, get) => ({
   selectedResult: null,
   bottomTab: 'results',
   loadVersion: 0,
+  layoutVersion: 0,
   importReport: null,
 
   setEngineMeta: (m) => set(m as any),
@@ -160,6 +163,72 @@ export const useEditor = create<EditorState>((set, get) => ({
     const next = s.future[0];
     if (!next) return;
     set({ ...structuredClone(next), past: [...s.past, snap(s)], future: s.future.slice(1), dirty: true });
+  },
+
+  autoLayout: () => {
+    const s = get();
+    const nodes = s.nodes.map((node) => ({ ...node }));
+    const movable = nodes.filter((node) => !['container', 'comment', 'explorer'].includes(node.data.kind));
+    if (movable.length < 2) return;
+    const byId = new Map(nodes.map((node) => [node.id, node]));
+    const groups = new Map<string, CanvasNode[]>();
+    for (const node of movable) {
+      const key = node.parentId ?? '';
+      groups.set(key, [...(groups.get(key) ?? []), node]);
+    }
+    let changed = false;
+    for (const [parentId, group] of groups) {
+      if (group.length < 2) continue;
+      const ids = new Set(group.map((node) => node.id));
+      const outgoing = new Map(group.map((node) => [node.id, [] as string[]]));
+      const indegree = new Map(group.map((node) => [node.id, 0]));
+      for (const edge of s.edges) {
+        if (!ids.has(edge.source) || !ids.has(edge.target) || edge.source === edge.target) continue;
+        outgoing.get(edge.source)!.push(edge.target);
+        indegree.set(edge.target, indegree.get(edge.target)! + 1);
+      }
+      const orderByPosition = (a: string, b: string) => {
+        const an = byId.get(a)!, bn = byId.get(b)!;
+        return an.position.y - bn.position.y || an.position.x - bn.position.x || a.localeCompare(b);
+      };
+      const compareNodes = (an: CanvasNode, bn: CanvasNode) =>
+        an.position.y - bn.position.y || an.position.x - bn.position.x || an.id.localeCompare(bn.id);
+      let ready = group.filter((node) => indegree.get(node.id) === 0).map((node) => node.id).sort(orderByPosition);
+      const depth = new Map(group.map((node) => [node.id, 0]));
+      const visited = new Set<string>();
+      while (ready.length) {
+        const id = ready.shift()!;
+        visited.add(id);
+        for (const target of outgoing.get(id)!) {
+          depth.set(target, Math.max(depth.get(target)!, depth.get(id)! + 1));
+          const remaining = indegree.get(target)! - 1;
+          indegree.set(target, remaining);
+          if (!remaining) { ready.push(target); ready.sort(orderByPosition); }
+        }
+      }
+      // A malformed cyclic subgraph is left in place instead of being rearranged misleadingly.
+      const columns = new Map<number, CanvasNode[]>();
+      for (const node of group) {
+        if (!visited.has(node.id)) continue;
+        const col = depth.get(node.id)!;
+        columns.set(col, [...(columns.get(col) ?? []), node]);
+      }
+      for (const column of columns.values()) column.sort(compareNodes);
+      const yBase = parentId ? 45 : 60;
+      for (const col of [...columns.keys()].sort((a, b) => a - b)) {
+        const column = columns.get(col)!;
+        for (const [row, node] of column.entries()) {
+          const x = 70 + col * 300;
+          const y = yBase + row * 150;
+          const current = node.position;
+          if (current.x !== x || current.y !== y) changed = true;
+          node.position = { x, y };
+        }
+      }
+    }
+    if (!changed) return;
+    get().checkpoint();
+    set({ nodes, dirty: true, layoutVersion: s.layoutVersion + 1 });
   },
 
   onNodesChange: (changes) => {

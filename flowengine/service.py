@@ -450,17 +450,17 @@ class EngineService:
         if source is None:
             raise EngineError('Full result data is unavailable for this output', code='result-unavailable')
         fmt = str(params.get('format', '')).lower()
-        suffix = {'csv': '.csv', 'parquet': '.parquet'}.get(fmt)
+        suffix = {'csv': '.csv', 'parquet': '.parquet', 'html': '.html', 'pdf': '.pdf'}.get(fmt)
         target = Path(params.get('path', '')).expanduser().resolve()
         if not suffix or target.suffix.lower() != suffix:
-            raise EngineError('Export format and file extension must be CSV/.csv or Parquet/.parquet',
+            raise EngineError('Export format and file extension must match CSV, Parquet, HTML report or PDF report',
                               code='bad-request')
         target.parent.mkdir(parents=True, exist_ok=True)
         temp = target.with_name(f'.{target.name}.{uuid.uuid4().hex}.tmp')
         try:
             if fmt == 'parquet':
                 shutil.copyfile(source, temp)
-            else:
+            elif fmt == 'csv':
                 import pyarrow.parquet as pq
                 from .types import format_value
                 with temp.open('w', encoding='utf-8-sig', newline='') as f:
@@ -471,6 +471,52 @@ class EngineService:
                         table = arrow.from_arrow(pa.Table.from_batches([batch]))
                         for row in table.rows():
                             writer.writerow(['' if value is None else format_value(value) for value in row])
+            else:
+                import pyarrow.parquet as pq
+                from . import reports
+                from .types import format_value
+                parquet = pq.ParquetFile(source)
+                total = parquet.metadata.num_rows
+                fields = parquet.schema_arrow
+                limit, max_fields, max_cell_chars = 500, 12, 500
+                report_fields = list(fields)[:max_fields]
+                batch = next(parquet.iter_batches(batch_size=limit, columns=[field.name for field in report_fields]), None)
+                records = batch.to_pylist() if batch is not None else []
+                def report_value(value):
+                    if value is None:
+                        return '—'
+                    text = format_value(value)
+                    return text if len(text) <= max_cell_chars else text[:max_cell_chars] + '… [truncated]'
+                rows = [[report_value(record.get(field.name)) for field in report_fields] for record in records]
+                columns = [{'label': field.name, 'align': 'right' if
+                            (pa.types.is_integer(field.type) or pa.types.is_floating(field.type) or pa.types.is_decimal(field.type))
+                            else 'left'} for field in report_fields]
+                workflow = run.get('workflow') or {}
+                workflow_name = str(workflow.get('name') or 'Untitled workflow')
+                anchor_name = 'Browse' if anchor == '(browse)' else anchor
+                elements = [
+                    {'format': reports.FORMAT, 'kind': 'text', 'style': 'title', 'text': workflow_name},
+                    {'format': reports.FORMAT, 'kind': 'text', 'style': 'body',
+                     'text': f'Result from {node} · {anchor_name} · {total:,} records · {len(fields)} fields'},
+                    {'format': reports.FORMAT, 'kind': 'text', 'style': 'caption',
+                     'text': f'Generated {_dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}. '
+                             f'Showing up to {limit} rows and {max_fields} fields; cells over {max_cell_chars} characters are shortened. '
+                             'Export CSV or Parquet for complete data.'},
+                    {'format': reports.FORMAT, 'kind': 'table', 'title': 'Output schema',
+                     'columns': [{'label': 'Field', 'align': 'left'}, {'label': 'Type', 'align': 'left'}],
+                     'rows': [[field.name, str(field.type)] for field in list(fields)[:200]]},
+                    {'format': reports.FORMAT, 'kind': 'table', 'title': 'Workflow results', 'columns': columns, 'rows': rows},
+                ]
+                if len(fields) > 200:
+                    elements.insert(3, {'format': reports.FORMAT, 'kind': 'text', 'style': 'caption',
+                                        'text': f'Schema table shows the first 200 of {len(fields)} fields.'})
+                if fmt == 'html':
+                    reports.render_html(elements, temp, title=workflow_name, page_size='A4', orientation='landscape',
+                                        margin_mm=12, page_breaks=False)
+                else:
+                    reports.render_pdf(elements, temp, title=workflow_name, page_size='A4', orientation='landscape',
+                                       margin_mm=12, page_breaks=False, font='auto', font_path=None,
+                                       warn=lambda *_a, **_k: None)
             os.replace(temp, target)
         except BaseException:
             temp.unlink(missing_ok=True)

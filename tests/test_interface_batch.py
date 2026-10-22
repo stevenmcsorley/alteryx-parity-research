@@ -129,7 +129,7 @@ class ExplorerTests(unittest.TestCase):
         folder = explore('docs', self.dir)
         self.assertEqual([(e['name'], e['folder']) for e in folder['entries']], [('img', True), ('readme.txt', False)])
         self.assertEqual(explore('docs/readme.txt', self.dir)['text'], 'How this workflow works')
-        self.assertEqual(explore(f'file://{self.dir}/docs/readme.txt')['kind'], 'file')
+        self.assertEqual(explore((self.dir / 'docs' / 'readme.txt').as_uri())['kind'], 'file')
         self.assertEqual(explore('https://example.com/help'), {'kind': 'web', 'url': 'https://example.com/help'})
         for bad in ('', 'ftp://host/x', 'docs/missing.txt'):
             with self.assertRaises(EngineError):

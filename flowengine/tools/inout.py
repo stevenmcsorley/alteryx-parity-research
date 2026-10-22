@@ -21,7 +21,8 @@ from ._common import FIELD_SPEC, ON_ERROR, cast_column, field_from_spec
 
 UNBOUNDED_TEXT = 2**30 - 1  # declared size for untyped text fields: never truncates
 
-_FORMATS = ['auto', 'csv', 'tsv', 'delimited', 'json', 'jsonl', 'parquet', 'arrow', 'yxdb', 'xlsx', 'ods']
+_INPUT_FORMATS = ['auto', 'csv', 'tsv', 'delimited', 'json', 'jsonl', 'geojson', 'parquet', 'arrow', 'yxdb', 'xls', 'xlsx', 'ods']
+_OUTPUT_FORMATS = ['auto', 'csv', 'tsv', 'delimited', 'json', 'jsonl', 'parquet', 'arrow']
 _BINARY = ('parquet', 'arrow')
 _INTEGER_TEXT = re.compile(r'^[+-]?(?:0|[1-9][0-9]*)$')
 _DECIMAL_TEXT = re.compile(r'^[+-]?(?:(?:[0-9]+(?:\.[0-9]*)?)|(?:\.[0-9]+))(?:[eE][+-]?[0-9]+)?$')
@@ -136,8 +137,8 @@ def _resolve_format(fmt: str, path: Path) -> str:
         return fmt
     ext = path.suffix.lower()
     return {'.csv': 'csv', '.tsv': 'tsv', '.tab': 'tsv', '.txt': 'delimited', '.json': 'json',
-            '.jsonl': 'jsonl', '.ndjson': 'jsonl', '.parquet': 'parquet', '.arrow': 'arrow',
-            '.feather': 'arrow', '.ipc': 'arrow', '.yxdb': 'yxdb', '.xlsx': 'xlsx', '.xlsm': 'xlsx',
+            '.jsonl': 'jsonl', '.ndjson': 'jsonl', '.geojson': 'geojson', '.parquet': 'parquet', '.arrow': 'arrow',
+            '.feather': 'arrow', '.ipc': 'arrow', '.yxdb': 'yxdb', '.xls': 'xls', '.xlsx': 'xlsx', '.xlsm': 'xlsx',
             '.ods': 'ods'}.get(ext) or _unsupported(ext)
 
 
@@ -158,15 +159,15 @@ class InputData(Tool):
         inputs=(),
         outputs=(Anchor('output', 'O', description='Records read from the file'),),
         side_effects='reads-files', deterministic=True,
-        description='Read delimited text (CSV/TSV/custom), JSON/JSON Lines, Parquet, Arrow IPC, Alteryx .yxdb, or an '
-                    'Excel (.xlsx/.xlsm) or OpenDocument (.ods) worksheet. For worksheets choose the sheet, skip_rows '
+        description='Read delimited text (CSV/TSV/custom), JSON/JSON Lines, GeoJSON Feature collections, Parquet, Arrow IPC, Alteryx .yxdb, or an '
+                    'Excel (.xls/.xlsx/.xlsm) or OpenDocument (.ods) worksheet. For worksheets choose the sheet, skip_rows '
                     '(rows above the header) or a cell range; cells keep their spreadsheet types. Databases are a '
                     'separate tool.',
         config_schema={
             'type': 'object', 'additionalProperties': False, 'required': ['path'],
             'properties': {
                 'path': {'type': 'string', 'minLength': 1},
-                'format': {'enum': _FORMATS, 'default': 'auto'},
+                'format': {'enum': _INPUT_FORMATS, 'default': 'auto'},
                 'delimiter': {'type': 'string', 'minLength': 1, 'maxLength': 1, 'default': ','},
                 'quote_char': {'type': 'string', 'minLength': 1, 'maxLength': 1, 'default': '"'},
                 'has_header': {'type': 'boolean', 'default': True},
@@ -183,9 +184,9 @@ class InputData(Tool):
                                   'description': 'Treat empty delimited values as null instead of empty string'},
                 'add_file_name_field': {'type': ['string', 'null'], 'default': None},
                 'sheet': {'type': ['string', 'null'], 'default': None,
-                          'description': 'Worksheet name for .xlsx/.ods files; null reads the first sheet.'},
+                          'description': 'Worksheet name for spreadsheet files; null reads the first sheet.'},
                 'range': {'type': ['string', 'null'], 'default': None, 'pattern': '^[A-Za-z]{1,3}[0-9]+(:[A-Za-z]{1,3}[0-9]+)?$',
-                          'description': 'Cell range for .xlsx/.ods files, such as A5:H200, or A5 to read from A5 to the end.'},
+                          'description': 'Cell range for spreadsheet files, such as A5:H200, or A5 to read from A5 to the end.'},
             },
         })
 
@@ -362,12 +363,70 @@ class InputData(Tool):
             cols.append(col)
         return names, cols
 
+    def _read_geojson(self, path, cfg):
+        """Flatten GeoJSON properties and preserve each geometry as GeoJSON text."""
+        try:
+            document = json.loads(path.read_text(encoding=cfg['encoding']))
+        except FileNotFoundError:
+            raise DataError(f'Input file not found: {path}') from None
+        except (UnicodeError, json.JSONDecodeError) as e:
+            raise DataError(f'{path.name}: invalid GeoJSON: {e}') from None
+        if not isinstance(document, dict):
+            raise DataError(f'{path.name}: GeoJSON input must be a Feature or FeatureCollection')
+        if document.get('type') == 'Feature':
+            features = [document]
+        elif document.get('type') == 'FeatureCollection' and isinstance(document.get('features'), list):
+            features = document['features']
+        else:
+            raise DataError(f'{path.name}: expected a GeoJSON Feature or FeatureCollection')
+        names, records, geometries = [], [], []
+        limit = cfg.get('max_records')
+        for index, feature in enumerate(features):
+            if limit is not None and index >= limit:
+                break
+            if not isinstance(feature, dict) or feature.get('type') != 'Feature':
+                raise DataError(f'{path.name}: feature {index + 1} is not a GeoJSON Feature')
+            props = feature.get('properties')
+            if props is None:
+                props = {}
+            if not isinstance(props, dict):
+                raise DataError(f'{path.name}: feature {index + 1} properties must be an object or null')
+            property_names = set(props)
+            if 'geometry' in property_names or '_feature_id' in property_names:
+                reserved = 'geometry' if 'geometry' in property_names else '_feature_id'
+                raise DataError(f'{path.name}: property {reserved!r} is reserved for GeoJSON geometry/feature id')
+            props = dict(props)
+            if 'id' in feature:
+                props['_feature_id'] = feature['id']
+            geometry = feature.get('geometry')
+            if geometry is not None and (not isinstance(geometry, dict) or not isinstance(geometry.get('type'), str)):
+                raise DataError(f'{path.name}: feature {index + 1} has an invalid geometry object')
+            for name in props:
+                if not isinstance(name, str) or not name:
+                    raise DataError(f'{path.name}: feature {index + 1} has an empty or non-text property name')
+                if name == 'geometry' or (name == '_feature_id' and name in property_names):
+                    raise DataError(f'{path.name}: property {name!r} is reserved for GeoJSON geometry/feature id')
+                if name not in names:
+                    names.append(name)
+            records.append(props)
+            geometries.append(None if geometry is None else json.dumps(geometry, ensure_ascii=False, separators=(',', ':')))
+        cols = []
+        for name in names:
+            col = []
+            for props in records:
+                value = props.get(name)
+                col.append(json.dumps(value, ensure_ascii=False, sort_keys=True) if isinstance(value, (dict, list)) else value)
+            cols.append(col)
+        names.append('geometry')
+        cols.append(geometries)
+        return names, cols
+
     def _schema_and_columns(self, ctx, cfg, header_only=False):
         path = ctx.resolve_path(cfg['path'])
         fmt = _resolve_format(cfg['format'], path)
         if fmt == 'yxdb':
             names, cols, natural = _read_yxdb(path, cfg['max_records'], ctx)
-        elif fmt in ('xlsx', 'ods'):
+        elif fmt in ('xls', 'xlsx', 'ods'):
             from ..spreadsheet import read_table
             if not path.is_file():
                 raise DataError(f'Input file not found: {path}')
@@ -385,10 +444,13 @@ class InputData(Tool):
             if cfg['max_records'] is not None:
                 t = t.take(range(min(cfg['max_records'], len(t))))
             names, cols, natural = t.schema.names, [list(c) for c in t.columns], list(t.schema)
-        elif fmt in ('json', 'jsonl'):
-            names, cols = self._read_json(ctx, cfg, path, fmt)
+        elif fmt in ('json', 'jsonl', 'geojson'):
+            names, cols = self._read_geojson(path, cfg) if fmt == 'geojson' else self._read_json(ctx, cfg, path, fmt)
             natural = []
             for n, col in zip(names, cols):
+                if fmt == 'geojson' and n == 'geometry':
+                    natural.append(Field(n, FieldType.V_WSTRING, UNBOUNDED_TEXT))
+                    continue
                 kinds = {infer_type(v) for v in col if v is not None}
                 if kinds <= {FieldType.INT64}:
                     t = FieldType.INT64 if kinds else FieldType.V_WSTRING
@@ -576,7 +638,7 @@ class OutputData(Tool):
             'type': 'object', 'additionalProperties': False, 'required': ['path'],
             'properties': {
                 'path': {'type': 'string', 'minLength': 1},
-                'format': {'enum': _FORMATS, 'default': 'auto'},
+                'format': {'enum': _OUTPUT_FORMATS, 'default': 'auto'},
                 'delimiter': {'type': 'string', 'minLength': 1, 'maxLength': 1, 'default': ','},
                 'write_header': {'type': 'boolean', 'default': True},
                 'encoding': {'type': 'string', 'default': 'utf-8'},

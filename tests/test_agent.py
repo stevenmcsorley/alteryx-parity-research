@@ -20,7 +20,7 @@ class AgentCase(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.dir = Path(self.tmp.name)
-        (self.dir / 'sales.csv').write_text(CSV)
+        (self.dir / 'sales.csv').write_bytes(CSV.encode('utf-8'))
         self.service = EngineService()
 
     def tearDown(self):
@@ -111,7 +111,7 @@ class DownloadTests(AgentCase):
     def test_download_needs_permission_and_records_provenance(self):
         served = self.dir / 'site'
         served.mkdir()
-        (served / 'fuel.csv').write_text('week,price\n1,140.2\n')
+        (served / 'fuel.csv').write_bytes(b'week,price\n1,140.2\n')
         server = ThreadingHTTPServer(('127.0.0.1', 0), partial(_Quiet, directory=str(served)))
         threading.Thread(target=server.serve_forever, daemon=True).start()
         url = f'http://127.0.0.1:{server.server_address[1]}/fuel.csv'

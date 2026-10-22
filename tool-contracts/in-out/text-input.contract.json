@@ -147,8 +147,8 @@
     ]
   },
   "independent_tests": {
-    "count": 318,
-    "passing": 318,
+    "count": 319,
+    "passing": 319,
     "tests": [
       "test_address.AddressTests.test_cass_standardises_in_batches_and_flags_unfound",
       "test_address.AddressTests.test_census_batch_geocoder_and_reverse_geographies",
@@ -294,6 +294,7 @@
       "test_fe_service.ServiceTests.test_application_values_are_not_persisted_in_run_history",
       "test_fe_service.ServiceTests.test_async_run_streams_events_and_finishes",
       "test_fe_service.ServiceTests.test_history_through_service",
+      "test_fe_service.ServiceTests.test_run_export_creates_html_and_pdf_reports_from_real_output_artifact",
       "test_fe_service.ServiceTests.test_run_previews_and_errors",
       "test_fe_service.ServiceTests.test_typed_application_answers_bind_actions_for_real_execution",
       "test_fe_service.ServiceTests.test_validate_returns_schemas_and_problems",

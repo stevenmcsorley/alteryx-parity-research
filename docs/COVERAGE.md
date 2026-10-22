@@ -23,7 +23,7 @@
 | Kernels registered but without passing evidence (in-progress) | 0 |
 | Entries whose exact behaviour needs licensed data/services (blocked until authorised access) | 78 |
 | Entries fully verified against the reference | 0 |
-| Unit/integration tests in last ledger build | 572 run, 0 failed |
+| Unit/integration tests in last ledger build | 575 run, 0 failed |
 
 Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635b4a89…`). Conformance reference build(s): 2026.2.0.8/e1, 2026.2.0.8/e2.
 
@@ -31,13 +31,13 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 
 | Catalogue id | Kernel | Tests | Reference cases (passed/run) | Verification |
 |---|---|---:|---:|---|
-| `in-out:browse` | `core.browse` | 32 | 0/0 | not-tested |
+| `in-out:browse` | `core.browse` | 33 | 0/0 | not-tested |
 | `in-out:date-time-now` | `core.date_time_now` | 1 | 0/0 | not-tested |
 | `in-out:directory` | `core.directory` | 3 | 0/0 | not-tested |
-| `in-out:input-data` | `core.input_data` | 46 | 0/0 | not-tested |
+| `in-out:input-data` | `core.input_data` | 48 | 0/0 | not-tested |
 | `in-out:map-input` | `core.map_input` | 1 | 0/0 | not-tested |
 | `in-out:output-data` | `core.output_data` | 13 | 0/0 | not-tested |
-| `in-out:text-input` | `core.text_input` | 318 | 0/0 | not-tested |
+| `in-out:text-input` | `core.text_input` | 319 | 0/0 | not-tested |
 | `preparation:auto-field` | `core.auto_field` | 13 | 1/1 | partial |
 | `preparation:create-samples` | `core.create_samples` | 2 | 0/0 | not-tested |
 | `preparation:data-cleanse-pro` | `core.data_cleanse_pro` | 3 | 0/0 | not-tested |
@@ -118,7 +118,7 @@ Catalogue source retrieved 2026-10-13T09:15:04.301501+00:00 (sha256 `98b3e1db635
 | `spatial:poly-build` | `core.poly_build` | 1 | 0/0 | not-tested |
 | `spatial:poly-split` | `core.poly_split` | 1 | 0/0 | not-tested |
 | `spatial:smooth` | `core.smooth` | 1 | 0/0 | not-tested |
-| `spatial:spatial-info` | `core.spatial_info` | 2 | 0/0 | not-tested |
+| `spatial:spatial-info` | `core.spatial_info` | 3 | 0/0 | not-tested |
 | `spatial:spatial-match` | `core.spatial_match` | 2 | 0/0 | not-tested |
 | `spatial:spatial-process` | `core.spatial_process` | 1 | 0/0 | not-tested |
 | `spatial:trade-area` | `core.trade_area` | 2 | 0/0 | not-tested |

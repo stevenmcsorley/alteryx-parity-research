@@ -353,6 +353,8 @@ function ToolInspector({ node }: { node: CanvasNode }) {
             onBeginEdit={beginEdit} onChange={(config) => update(node.id, { config }, false)} />}
         {manifest.tool_id === 'core.input_data' && ['csv', 'tsv', 'delimited', 'auto'].includes(String(d.config.format ?? 'auto')) &&
           <p className="help" role="note">Flowbench mode infers types across the complete file and keeps identifier fields (such as IDs and postcodes) as text. Use Fields to override a type, or choose Alteryx compatibility to read delimited values as text.</p>}
+        {manifest.tool_id === 'core.input_data' && (d.config.format === 'geojson' || String(d.config.path ?? '').toLowerCase().endsWith('.geojson')) &&
+          <p className="help" role="note">GeoJSON properties are imported as typed columns. Feature geometry is preserved as GeoJSON text in the geometry field for use with Spatial tools.</p>}
         {manifest.tool_id === 'core.filter' && (() => {
           const fieldName = typeof d.config.field === 'string' ? d.config.field : '';
           const selectedField = fields.all.find((f) => f.name === fieldName);

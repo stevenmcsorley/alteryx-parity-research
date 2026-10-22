@@ -56,6 +56,7 @@ export function useShortcuts() {
       if (mod && e.key.toLowerCase() === 'v') { s.paste(); return; }
       if (mod && e.key.toLowerCase() === 'd') { e.preventDefault(); s.duplicateSelected(); return; }
       if (mod && e.key.toLowerCase() === 'g') { e.preventDefault(); s.groupSelected(); return; }
+      if (mod && e.shiftKey && e.key.toLowerCase() === 'l') { e.preventDefault(); s.autoLayout(); return; }
       if (e.key === 'Delete' || e.key === 'Backspace') { s.deleteSelected(); }
     };
     window.addEventListener('keydown', onKey);

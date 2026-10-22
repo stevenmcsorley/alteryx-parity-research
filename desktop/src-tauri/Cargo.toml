@@ -1,8 +1,8 @@
 [package]
 name = "flowbench"
-version = "1.0.0-rc.2"
+version = "1.0.0-rc.3"
 description = "Flowbench desktop workflow editor (independent implementation)"
-authors = ["alteryx-parity-research contributors"]
+authors = ["Flowbench contributors"]
 edition = "2021"
 rust-version = "1.77"
 

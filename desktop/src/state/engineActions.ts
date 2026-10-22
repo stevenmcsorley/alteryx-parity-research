@@ -259,7 +259,7 @@ export async function exportText(path: string, text: string): Promise<string> {
 }
 
 export async function exportRunResult(runId: string, node: string, anchor: string,
-  path: string, format: 'csv' | 'parquet'): Promise<string> {
+  path: string, format: 'csv' | 'parquet' | 'html' | 'pdf'): Promise<string> {
   const res = await engine().request<{ path: string }>('run.export', {
     run_id: runId, node_id: node, anchor, path, format });
   return res.path;

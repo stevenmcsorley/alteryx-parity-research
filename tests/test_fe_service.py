@@ -30,6 +30,32 @@ def slow_workflow(n=60000):
 
 
 class ServiceTests(unittest.TestCase):
+    def test_run_export_creates_html_and_pdf_reports_from_real_output_artifact(self):
+        with tempfile.TemporaryDirectory() as d:
+            service = EngineService()
+            doc = workflow([
+                text_input('source', [('Product', 'v_wstring'), ('Sales', 'fixed_decimal')],
+                           [['A & B', '125.50'], ['C', '90.00']]),
+                {'id': 'browse', 'tool': 'core.browse', 'config': {}}],
+                [edge('source', 'output', 'browse', 'input')])
+            run_id = service.handle('run.start', {'workflow': doc, 'base_dir': d})['run_id']
+            deadline = time.monotonic() + 10
+            while service.handle('run.result', {'run_id': run_id})['status'] == 'running':
+                if time.monotonic() > deadline:
+                    self.fail('report source workflow did not finish')
+                time.sleep(.02)
+            html_path, pdf_path = Path(d) / 'sales.html', Path(d) / 'sales.pdf'
+            for path, fmt in ((html_path, 'html'), (pdf_path, 'pdf')):
+                exported = service.handle('run.export', {'run_id': run_id, 'node_id': 'browse',
+                    'anchor': '(browse)', 'path': str(path), 'format': fmt})
+                self.assertEqual(exported['format'], fmt)
+                self.assertGreater(path.stat().st_size, 500)
+            html = html_path.read_text(encoding='utf-8')
+            self.assertIn('A &amp; B', html)
+            self.assertIn('125.50', html)
+            self.assertIn('2 records', html)
+            self.assertTrue(pdf_path.read_bytes().startswith(b'%PDF-'))
+
     def test_info_tools_catalog_profiles(self):
         self.assertEqual(call('engine.info')['result']['protocol'], 2)
         tools = call('tools.list')['result']

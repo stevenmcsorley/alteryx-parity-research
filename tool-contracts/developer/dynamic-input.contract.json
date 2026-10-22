@@ -53,9 +53,11 @@
           "delimited",
           "json",
           "jsonl",
+          "geojson",
           "parquet",
           "arrow",
           "yxdb",
+          "xls",
           "xlsx",
           "ods"
         ],
@@ -181,7 +183,7 @@
           "null"
         ],
         "default": null,
-        "description": "Worksheet name for .xlsx/.ods files; null reads the first sheet."
+        "description": "Worksheet name for spreadsheet files; null reads the first sheet."
       },
       "range": {
         "type": [
@@ -190,7 +192,7 @@
         ],
         "default": null,
         "pattern": "^[A-Za-z]{1,3}[0-9]+(:[A-Za-z]{1,3}[0-9]+)?$",
-        "description": "Cell range for .xlsx/.ods files, such as A5:H200, or A5 to read from A5 to the end."
+        "description": "Cell range for spreadsheet files, such as A5:H200, or A5 to read from A5 to the end."
       }
     }
   },
