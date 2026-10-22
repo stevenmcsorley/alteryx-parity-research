@@ -43,7 +43,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 32,
+      "independent_tests": 33,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:browse)"
@@ -115,7 +115,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 46,
+      "independent_tests": 48,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:input-data)"
@@ -187,7 +187,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 318,
+      "independent_tests": 319,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for in-out:text-input)"
@@ -2203,7 +2203,7 @@
       "oracle_status": "missing",
       "implementation_status": "implemented",
       "verification_status": "not-tested",
-      "independent_tests": 2,
+      "independent_tests": 3,
       "reference_cases": 0,
       "evidence_refs": [
         "tool-contracts (contract JSON for spatial:spatial-info)"
