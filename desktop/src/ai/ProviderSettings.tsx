@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 export type LocalProvider = { kind: 'ollama' | 'openai'; base_url: string; context_tokens: number; loopback: boolean };
-type Server = 'ollama' | 'lmstudio' | 'openai';
+type Server = 'ollama' | 'lmstudio' | 'openai' | 'deepseek';
 
 const SERVER_KEY = 'flowbench.ai.localServer';
 export const SERVERS: Record<Server, { label: string; kind: 'ollama' | 'openai'; url: string; help: string }> = {
@@ -11,10 +11,13 @@ export const SERVERS: Record<Server, { label: string; kind: 'ollama' | 'openai';
     help: 'In LM Studio, load a model that supports tool use and start the local server (Developer tab). Set the context length when loading the model.' },
   openai: { label: 'Other OpenAI-compatible server', kind: 'openai', url: 'http://localhost:8000/v1',
     help: 'Any server with /v1/chat/completions and tool calling: llama.cpp server, vLLM, Jan or LocalAI.' },
+  deepseek: { label: 'DeepSeek API', kind: 'openai', url: 'https://api.deepseek.com',
+    help: 'Uses the DeepSeek API. Create an API key in your DeepSeek account. API usage is billed by DeepSeek and is separate from a ChatGPT subscription.' },
 };
 
 export function storedServer(local: LocalProvider | null): Server {
   try {
+    if (local?.base_url && new URL(local.base_url).hostname.toLowerCase() === 'api.deepseek.com') return 'deepseek';
     const saved = localStorage.getItem(SERVER_KEY) as Server | null;
     if (saved && SERVERS[saved] && (!local || SERVERS[saved].kind === local.kind)) return saved;
   } catch { /* fall through to the server kind */ }
@@ -52,7 +55,8 @@ export function ProviderSettings({ local, disabled, chatgptAccount, chatgptConne
 
   function chooseServer(next: Server) {
     setServer(next);
-    if (Object.values(SERVERS).some((s) => s.url === address) || !address) setAddress(SERVERS[next].url);
+    if (next === 'deepseek' || server === 'deepseek' || Object.values(SERVERS).some((s) => s.url === address) || !address)
+      setAddress(SERVERS[next].url);
     setNote(null);
   }
   async function connectLocal() {
@@ -60,6 +64,7 @@ export function ProviderSettings({ local, disabled, chatgptAccount, chatgptConne
     try {
       const models = await native<unknown[]>('ai_set_provider', { provider: 'local', kind: SERVERS[server].kind, baseUrl: address,
         contextTokens: Number(context) || undefined, apiKey: apiKey || undefined });
+      setApiKey('');
       try { localStorage.setItem(SERVER_KEY, server); } catch { /* label only */ }
       setNote(models.length
         ? { text: `Connected · ${models.length} model${models.length === 1 ? '' : 's'} available`, ok: true }
@@ -82,7 +87,7 @@ export function ProviderSettings({ local, disabled, chatgptAccount, chatgptConne
     <h3>Model</h3>
     <div className="ai-segmented" role="radiogroup" aria-label="Model provider">
       <button role="radio" aria-checked={mode === 'chatgpt'} disabled={busy} onClick={() => void useChatgpt()}>ChatGPT</button>
-      <button role="radio" aria-checked={mode === 'local'} disabled={busy} onClick={() => setMode('local')}>Local model</button>
+      <button role="radio" aria-checked={mode === 'local'} disabled={busy} onClick={() => setMode('local')}>Model server / API</button>
     </div>
     {mode === 'chatgpt' ? <div className="ai-settings-body">
       <p className="ai-menu-note">Uses your ChatGPT plan. Prompts and the workflow data the AI asks for are sent to OpenAI.</p>
@@ -90,20 +95,20 @@ export function ProviderSettings({ local, disabled, chatgptAccount, chatgptConne
         ? <div className="ai-settings-row"><span>{chatgptAccount || 'Connected'}</span><button onClick={onSignOut} disabled={busy}>Disconnect</button></div>
         : <button className="primary" onClick={onSignIn} disabled={busy}>Continue with ChatGPT</button>}
     </div> : <div className="ai-settings-body">
-      <p className="ai-menu-note">Runs on a model server you control. Nothing leaves this computer when the server is on localhost.</p>
+      <p className="ai-menu-note">Connect to a local model server or a hosted OpenAI-compatible API. Hosted providers receive the prompt and permitted workflow context.</p>
       <label>Server
         <select value={server} onChange={(e) => chooseServer(e.target.value as Server)} disabled={busy}>
           {(Object.keys(SERVERS) as Server[]).map((key) => <option key={key} value={key}>{SERVERS[key].label}</option>)}
         </select></label>
-      <label>Address<input value={address} onChange={(e) => setAddress(e.target.value)} disabled={busy} spellCheck={false} /></label>
+      <label>Address<input value={address} onChange={(e) => setAddress(e.target.value)} disabled={busy || server === 'deepseek'} spellCheck={false} /></label>
       {SERVERS[server].kind === 'ollama' && <label>Context length (tokens)
         <input type="number" min={2048} step={1024} value={context} onChange={(e) => setContext(e.target.value)} disabled={busy} />
         <small className="ai-menu-note">Flowbench’s tool descriptions alone take about 6k tokens; 32k or more works best. Larger values use more memory.</small></label>}
-      {server === 'openai' && <label>API key (optional)
+      {(server === 'openai' || server === 'deepseek') && <label>{server === 'deepseek' ? 'DeepSeek API key' : 'API key (optional)'}
         <input type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} disabled={busy} autoComplete="off" />
-        <small className="ai-menu-note">Kept in memory until Flowbench closes.</small></label>}
+        <small className="ai-menu-note">Kept in native memory for this session only; never saved in workflow files or browser storage. Re-enter it after restarting Flowbench.</small></label>}
       <small className="ai-menu-note">{SERVERS[server].help}</small>
-      <button className="primary" onClick={() => void connectLocal()} disabled={busy || !address.trim()}>{working ? 'Connecting…' : local ? 'Reconnect' : 'Connect'}</button>
+      <button className="primary" onClick={() => void connectLocal()} disabled={busy || !address.trim() || (server === 'deepseek' && !apiKey.trim())}>{working ? 'Connecting…' : local ? 'Reconnect' : 'Connect'}</button>
     </div>}
     {note && <p className={`ai-settings-note ${note.ok ? 'ok' : 'err'}`} role={note.ok ? 'status' : 'alert'}>{note.text}</p>}
   </section>;
