@@ -43,11 +43,17 @@ export function Canvas() {
   const flow = useReactFlow();
   const wrapper = useRef<HTMLDivElement>(null);
   const loadVersion = useEditor((s) => s.loadVersion);
+  const layoutVersion = useEditor((s) => s.layoutVersion);
   useEffect(() => {
     if (!loadVersion) return;
     const t = setTimeout(() => flow.fitView({ padding: 0.15, maxZoom: 1.1, duration: 0 }), 30);
     return () => clearTimeout(t);
   }, [loadVersion, flow]);
+  useEffect(() => {
+    if (!layoutVersion) return;
+    const t = setTimeout(() => flow.fitView({ padding: 0.15, maxZoom: 1.1, duration: 250 }), 30);
+    return () => clearTimeout(t);
+  }, [layoutVersion, flow]);
 
   const decoratedEdges: Edge[] = useMemo(() => edges.map((e) => {
     const rows = nodeRows[e.source]?.[e.sourceHandle ?? 'output'];

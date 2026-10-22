@@ -49,6 +49,23 @@ describe('editor store', () => {
     expect(useEditor.getState().dirty).toBe(true);
   });
 
+  it('auto layouts a connected workflow by dependency depth and keeps the change undoable', () => {
+    const s = useEditor.getState();
+    const input = s.addTool('core.text_input', { x: 480, y: 300 });
+    const left = useEditor.getState().addTool('core.filter', { x: 40, y: 40 });
+    const right = useEditor.getState().addTool('core.filter', { x: 40, y: 180 });
+    expect(useEditor.getState().connect({ source: input, sourceHandle: 'output', target: left, targetHandle: 'input' })).toBeNull();
+    expect(useEditor.getState().connect({ source: input, sourceHandle: 'output', target: right, targetHandle: 'input' })).toBeNull();
+    const before = Object.fromEntries(useEditor.getState().nodes.map((n) => [n.id, n.position]));
+    useEditor.getState().autoLayout();
+    const after = Object.fromEntries(useEditor.getState().nodes.map((n) => [n.id, n.position]));
+    expect(after[input].x).toBeLessThan(after[left].x);
+    expect(after[left].x).toBe(after[right].x);
+    expect(after[left].y).not.toBe(after[right].y);
+    useEditor.getState().undo();
+    expect(Object.fromEntries(useEditor.getState().nodes.map((n) => [n.id, n.position]))).toEqual(before);
+  });
+
   it('preserves Date and List Box application question types in workflow metadata', () => {
     const date = useEditor.getState().addApplicationAction({ x: 0, y: 0 }, 'date', 'Start date');
     const list = useEditor.getState().addApplicationAction({ x: 0, y: 160 }, 'list-box', 'Regions');

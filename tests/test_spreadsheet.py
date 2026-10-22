@@ -73,6 +73,16 @@ class SpreadsheetCase(unittest.TestCase):
 
 
 class ExcelTests(SpreadsheetCase):
+    def test_legacy_xls_preserves_identifier_numeric_and_date_types(self):
+        import shutil
+        fixture = Path(__file__).parent / 'fixtures' / 'legacy_input.xls'
+        shutil.copyfile(fixture, self.dir / 'legacy.xls')
+        fields, rows, _ = self.read(path='legacy.xls')
+        self.assertEqual(fields, [('Account Code', 'v_wstring'), ('Quantity', 'int64'),
+                                  ('Sales', 'double'), ('Sale Date', 'date')])
+        self.assertEqual(rows[0], ('00123', 2.0, 5.0, dt.date(2026, 1, 2)))
+        self.assertEqual(rows[1], ('00456', 12.0, 100.25, dt.date(2026, 1, 3)))
+
     def test_sheet_and_skip_rows_select_the_table_with_cell_types(self):
         self.published_table()
         fields, rows, r = self.read(path='la.xlsx', sheet='A1', skip_rows=2)

@@ -7,7 +7,7 @@ name = "flowengine"
 version = "0.1.0"
 description = "Independent typed workflow execution engine (research project; no vendor code)"
 requires-python = ">=3.11"
-dependencies = ["jsonschema>=4.20,<5", "pyarrow>=14", "Metaphone==0.6"]
+dependencies = ["jsonschema>=4.20,<5", "pyarrow>=14", "Metaphone==0.6", "xlrd>=2.0.2,<3"]
 
 [project.scripts]
 flowengine = "flowengine.__main__:main"

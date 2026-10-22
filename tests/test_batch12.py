@@ -175,13 +175,13 @@ class ProcessingTests(ImageCase):
 
 class BarcodeTests(ImageCase):
     def test_generate_then_read_round_trip(self):
-        import zxingcpp
         gen, _ = run_tool('core.barcode', {'mode': 'generate', 'text_field': 'text', 'types': ['qr', 'code128']},
                           {'input': ([('text', 'v_wstring')], [['HELLO-42']])})
         row = gen['output'].to_dicts()[0]
         qr, c128 = (Image.open(io.BytesIO(row[k])) for k in ('QR', 'Code128'))
-        ean = Image.fromarray(np.asarray(zxingcpp.write_barcode_to_image(
-            zxingcpp.create_barcode('9780306406157', zxingcpp.BarcodeFormat.EAN13), scale=3)))
+        # Keep native barcode generation in a clean process; zxing-cpp's Windows
+        # writer can access-violate after other imaging extensions are loaded.
+        ean = Image.open(Path(__file__).parent / 'fixtures' / 'barcode_ean13.png')
         blank = Image.new('L', (200, 200), 255)
         rows = self.run_on('core.barcode', {'mode': 'read', 'image_field': 'Image', 'cropped': True, 'bounded': True},
                            qr, c128, ean, blank)

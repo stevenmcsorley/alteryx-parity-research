@@ -13,7 +13,10 @@ from __future__ import annotations
 import io
 import json
 import math
+import os
 from pathlib import Path
+import subprocess
+import sys
 
 from ..errors import ConfigError, DataError, EngineError, SchemaError
 from ..modeling import missing
@@ -51,6 +54,50 @@ def png_bytes(img):
     buf = io.BytesIO()
     img.save(buf, 'PNG')
     return buf.getvalue()
+
+
+def _generate_barcodes(texts, kinds, scale, check_cancelled=None):
+    """Run native ZXing bitmap generation in a short-lived child process.
+
+    The Windows zxing-cpp extension can access-violate after unrelated image and
+    ML native libraries have run in the long-lived workflow engine process.
+    Isolating only its encoder protects the desktop process and returns real PNGs.
+    """
+    root = Path(__file__).resolve().parents[2]
+    env = {'PATH': os.environ.get('PATH', ''), 'PYTHONPATH': str(root), 'PYTHONNOUSERSITE': '1'}
+    for name in ('SYSTEMROOT', 'WINDIR', 'TEMP', 'TMP'):
+        if os.environ.get(name):
+            env[name] = os.environ[name]
+    encoded = []
+    for start in range(0, len(texts), 32):
+        if check_cancelled:
+            check_cancelled()
+        payload = {'texts': texts[start:start + 32], 'types': kinds, 'scale': scale}
+        try:
+            proc = subprocess.run([sys.executable, '-m', 'flowengine.barcode_worker'], cwd=root, env=env,
+                                  input=json.dumps(payload, ensure_ascii=False), text=True,
+                                  capture_output=True, timeout=90, check=False)
+        except subprocess.TimeoutExpired:
+            raise DataError('Barcode generation exceeded its 90 second execution limit') from None
+        if proc.returncode != 0:
+            try:
+                detail = json.loads(proc.stdout).get('error', 'native worker failed')
+            except (json.JSONDecodeError, AttributeError):
+                detail = f'native worker exited with code {proc.returncode}'
+            raise DataError(f'Barcode generation failed safely ({detail})')
+        try:
+            response = json.loads(proc.stdout)
+            if response.get('ok') is not True or not isinstance(response.get('codes'), list):
+                raise ValueError('invalid worker response')
+            encoded.extend(response['codes'])
+        except (json.JSONDecodeError, ValueError, TypeError):
+            raise DataError('Barcode generation worker returned an invalid result') from None
+    import base64
+    try:
+        return [[None if value is None else base64.b64decode(value, validate=True) for value in row]
+                for row in encoded]
+    except (ValueError, TypeError):
+        raise DataError('Barcode generation worker returned invalid image data') from None
 
 
 def _path(ctx, value):
@@ -620,31 +667,33 @@ class Barcode(Tool):
 
     def run(self, ctx, cfg, inputs):
         import numpy as np
-        import zxingcpp
-        from PIL import Image, ImageDraw
         table = inputs['input']
         schema = self.infer(ctx, cfg, {'input': table.schema})['output']
         rows = []
         if cfg['mode'] == 'generate':
-            for i, (row, text) in enumerate(zip(table.rows(), table.column(cfg['text_field'])), 1):
-                blobs = []
-                for t in cfg['types']:
-                    if missing(text) or not str(text):
-                        blobs.append(None)
-                        continue
-                    text_s = str(text)
-                    if t == 'code128' and (len(text_s) > 253 or not text_s.isascii()):
-                        raise DataError(f'Record {i}: Code 128 takes ASCII text of at most 253 characters')
-                    fmt = zxingcpp.BarcodeFormat.QRCode if t == 'qr' else zxingcpp.BarcodeFormat.Code128
-                    img = zxingcpp.write_barcode_to_image(zxingcpp.create_barcode(text_s, fmt), scale=cfg['scale'])
-                    blobs.append(png_bytes(Image.fromarray(np.asarray(img))))
+            text_values = list(table.column(cfg['text_field']))
+            for i, value in enumerate(text_values, 1):
+                if missing(value):
+                    continue
+                text = str(value)
+                if 'code128' in cfg['types'] and (len(text) > 253 or not text.isascii()):
+                    raise DataError(f'Record {i}: Code 128 takes ASCII text of at most 253 characters')
+            generated = _generate_barcodes([None if missing(v) else str(v) for v in text_values],
+                                           cfg['types'], cfg['scale'], ctx.check_cancelled)
+            for row, blobs in zip(table.rows(), generated):
                 rows.append((*row, *blobs))
             return {'output': Table.from_rows(schema, rows)}
+        import zxingcpp
+        from PIL import Image, ImageDraw
         formats = [getattr(zxingcpp.BarcodeFormat, name) for name in _READ_FORMATS.values()]
         for i, (row, value) in enumerate(zip(table.rows(), table.column(cfg['image_field'])), 1):
             ctx.check_cancelled()
             img = open_image(value, f' in record {i}')
-            found = zxingcpp.read_barcodes(img.convert('RGB'), formats=formats) if img is not None else []
+            # Give the native decoder an owned, contiguous buffer. Passing a PIL
+            # view can retain a borrowed buffer whose lifetime varies with other
+            # imaging extensions loaded by the application.
+            pixels = np.array(img.convert('RGB'), dtype=np.uint8, copy=True) if img is not None else None
+            found = zxingcpp.read_barcodes(pixels, formats=formats) if pixels is not None else []
             if not found:
                 rows.append((*row, *([None] * (len(schema) - len(row)))))
                 continue

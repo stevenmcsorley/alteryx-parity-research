@@ -133,7 +133,8 @@ class EmailTests(unittest.TestCase):
         self.assertEqual(msg.get_body(('html',)).get_content().strip(), '<p>Hello <b>Ben</b></p>')
         self.assertEqual(msg.get_body(('plain',)).get_content().strip(), 'Hello Ben')
         attachment = next(msg.iter_attachments())
-        self.assertEqual((attachment.get_filename(), attachment.get_content()), ('report.csv', 'a,b\n1,2\n'))
+        self.assertEqual(attachment.get_filename(), 'report.csv')
+        self.assertEqual(attachment.get_content().replace('\r\n', '\n'), 'a,b\n1,2\n')
         self.assertEqual(r.output('e').column('MessageID')[1], msg['Message-ID'])
 
     def test_text_templates_keep_unknown_placeholders(self):

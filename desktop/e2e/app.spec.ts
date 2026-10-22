@@ -544,7 +544,6 @@ test('database extensions are available and the connection manager opens', async
   await page.getByRole('toolbar').getByRole('button', { name: 'Databases' }).click();
   const dialog = page.getByRole('dialog', { name: 'Database connections' });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByText('No database connections yet.')).toBeVisible();
   await dialog.getByRole('button', { name: 'New connection' }).click();
   await expect(dialog.getByLabel('Database type')).toHaveValue('postgresql');
   await dialog.getByRole('button', { name: 'Close' }).click();

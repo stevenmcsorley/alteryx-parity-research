@@ -38,9 +38,11 @@
           "delimited",
           "json",
           "jsonl",
+          "geojson",
           "parquet",
           "arrow",
           "yxdb",
+          "xls",
           "xlsx",
           "ods"
         ],
@@ -166,7 +168,7 @@
           "null"
         ],
         "default": null,
-        "description": "Worksheet name for .xlsx/.ods files; null reads the first sheet."
+        "description": "Worksheet name for spreadsheet files; null reads the first sheet."
       },
       "range": {
         "type": [
@@ -175,7 +177,7 @@
         ],
         "default": null,
         "pattern": "^[A-Za-z]{1,3}[0-9]+(:[A-Za-z]{1,3}[0-9]+)?$",
-        "description": "Cell range for .xlsx/.ods files, such as A5:H200, or A5 to read from A5 to the end."
+        "description": "Cell range for spreadsheet files, such as A5:H200, or A5 to read from A5 to the end."
       }
     }
   },
@@ -259,8 +261,8 @@
     ]
   },
   "independent_tests": {
-    "count": 46,
-    "passing": 46,
+    "count": 48,
+    "passing": 48,
     "tests": [
       "test_acceptance.AcquisitionTests.test_download_build_run_and_cite_evidence",
       "test_acceptance.EarthquakeRegressionTests.test_large_catalogue_is_kept_as_a_file_and_only_bounded_results_reach_the_model",
@@ -293,6 +295,7 @@
       "test_fe_tools.InOutTests.test_csv_untyped_reads_text_and_preserves_unicode",
       "test_fe_tools.InOutTests.test_json_input_types_and_nested",
       "test_fe_tools.InOutTests.test_ragged_pad_and_no_header_and_limits",
+      "test_geojson_input.GeoJsonInputTests.test_feature_collection_runs_through_spatial_info_without_manual_conversion",
       "test_interface_batch.ActionTests.test_input_action_points_input_data_at_the_chosen_file",
       "test_interface_batch.QuestionTests.test_options_come_from_a_data_file_and_follow_its_changes",
       "test_investigation.ExampleWorkflowTests.test_fuel_investigation_example_runs_every_tool",
@@ -304,6 +307,7 @@
       "test_runner.RunnerTests.test_stop_on_failure_marks_remaining_workflows_not_run",
       "test_spatial.ExampleTests.test_uk_spatial_example",
       "test_spreadsheet.ExcelTests.test_first_sheet_is_the_default",
+      "test_spreadsheet.ExcelTests.test_legacy_xls_preserves_identifier_numeric_and_date_types",
       "test_spreadsheet.ExcelTests.test_range_without_header_and_missing_sheet",
       "test_spreadsheet.ExcelTests.test_sheet_and_skip_rows_select_the_table_with_cell_types",
       "test_spreadsheet.OdsTests.test_inspect_lists_sheets_with_first_rows",

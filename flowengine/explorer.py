@@ -7,7 +7,8 @@ and web pages are handed back as a URL for the editor to open (Flowbench does no
 from __future__ import annotations
 
 from pathlib import Path
-from urllib.parse import unquote, urlparse
+from urllib.parse import urlparse
+from urllib.request import url2pathname
 
 from .errors import EngineError
 
@@ -23,7 +24,11 @@ def explore(url: str, base_dir=None) -> dict:
     if scheme in ('http', 'https'):
         return {'kind': 'web', 'url': target}
     if scheme == 'file':
-        target = unquote(urlparse(target).path)
+        parsed = urlparse(target)
+        local_path = url2pathname(parsed.path)
+        if parsed.netloc and parsed.netloc.lower() != 'localhost':
+            local_path = f'//{parsed.netloc}{local_path}'
+        target = local_path
     elif scheme and len(scheme) > 1:  # one letter is a Windows drive
         raise EngineError(f'Explorer Box cannot show {scheme}: addresses', code='explorer-invalid')
     path = Path(target).expanduser()

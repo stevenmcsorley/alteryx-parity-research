@@ -62,6 +62,7 @@ export function Toolbar({ onToggleAi, aiOpen }: { onToggleAi: () => void; aiOpen
   const dirty = useEditor((s) => s.dirty);
   const canUndo = useEditor((s) => s.past.length > 0);
   const canRedo = useEditor((s) => s.future.length > 0);
+  const canLayout = useEditor((s) => s.nodes.filter((n) => !['container', 'comment', 'explorer'].includes(n.data.kind)).length > 1);
   const status = useEditor((s) => s.run.status);
   const problems = useEditor((s) => s.problems.length);
   const validating = useEditor((s) => s.validating);
@@ -86,6 +87,7 @@ export function Toolbar({ onToggleAi, aiOpen }: { onToggleAi: () => void; aiOpen
       <span className="sep" />
       <button className="icon" onClick={() => useEditor.getState().undo()} disabled={!canUndo} title="Undo (Ctrl+Z)" aria-label="Undo">↶</button>
       <button className="icon" onClick={() => useEditor.getState().redo()} disabled={!canRedo} title="Redo (Ctrl+Y)" aria-label="Redo">↷</button>
+      <button onClick={() => useEditor.getState().autoLayout()} disabled={!canLayout} title="Arrange connected tools left to right (Ctrl+Shift+L); undo restores the previous layout">Auto layout</button>
       <button onClick={() => useEditor.getState().addComment({ x: 40, y: 40 })} title="Add comment">Comment</button>
       <button onClick={() => useEditor.getState().groupSelected()} title="Group selection in a container (Ctrl+G)">Group</button>
       <span className="sep" />

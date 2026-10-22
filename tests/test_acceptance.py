@@ -54,7 +54,8 @@ class AcquisitionTests(Scenario):
     """A: find and download a public CSV, import it, and produce a verified summary with provenance."""
 
     def test_download_build_run_and_cite_evidence(self):
-        (self.site / 'weekly_fuel_prices.csv').write_text(FUEL)
+        # Keep the downloaded bytes deterministic across Windows' text newline translation.
+        (self.site / 'weekly_fuel_prices.csv').write_bytes(FUEL.encode())
         s = self.session
         got = s.ok('download_file', url=self.web.url('weekly_fuel_prices.csv'))
         source = json.loads(Path(got['path'] + '.source.json').read_text())

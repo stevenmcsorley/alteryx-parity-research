@@ -18,6 +18,7 @@ vaderSentiment>=3.3,<4
 pypdfium2>=5.9,<6
 zxing-cpp>=2.2,<4
 openpyxl>=3.1,<4
+xlrd>=2.0.2,<3
 pymongo>=4.8,<5
 cryptography>=43,<47
 usaddress>=0.5.10,<1

@@ -1,4 +1,4 @@
-"""Excel (.xlsx/.xlsm) and OpenDocument (.ods) worksheets for Input Data.
+"""Excel (.xls/.xlsx/.xlsm) and OpenDocument (.ods) worksheets for Input Data.
 
 Excel is read with openpyxl (cached formula values, not formulas). ODS is parsed directly from the
 file's content.xml, streaming, so the large "repeated empty row" runs spreadsheet programs write at
@@ -16,7 +16,7 @@ from xml.etree import ElementTree as ET
 from .errors import ConfigError, DataError
 from .types import Field, FieldType, format_value
 
-SPREADSHEET_FORMATS = ('xlsx', 'ods')
+SPREADSHEET_FORMATS = ('xls', 'xlsx', 'ods')
 UNBOUNDED_TEXT = 1073741823
 _NS = {'table': 'urn:oasis:names:tc:opendocument:xmlns:table:1.0',
        'office': 'urn:oasis:names:tc:opendocument:xmlns:office:1.0',
@@ -69,6 +69,45 @@ def _xlsx_rows(path: Path, sheet: str | None):
             yield list(row)
     finally:
         wb.close()
+
+
+def _xls_rows(path: Path, sheet: str | None):
+    """Read legacy BIFF workbooks with xlrd, preserving typed cell values."""
+    try:
+        import xlrd
+    except ImportError:  # pragma: no cover - dependency is bundled with the engine
+        raise DataError('Reading legacy .xls files needs the bundled xlrd dependency') from None
+    try:
+        book = xlrd.open_workbook(filename=str(path), on_demand=True)
+    except FileNotFoundError:
+        raise DataError(f'Input file not found: {path}') from None
+    except Exception as e:
+        raise DataError(f'{path.name}: cannot read as a legacy Excel workbook: {e}') from None
+    try:
+        ws = book.sheet_by_name(_pick(book.sheet_names(), sheet, path))
+        for row_index in range(ws.nrows):
+            values = []
+            for col_index in range(ws.ncols):
+                cell = ws.cell(row_index, col_index)
+                if cell.ctype in (xlrd.XL_CELL_EMPTY, xlrd.XL_CELL_BLANK):
+                    value = None
+                elif cell.ctype == xlrd.XL_CELL_DATE:
+                    value = xlrd.xldate_as_datetime(cell.value, book.datemode)
+                    if value.time() == _dt.time():
+                        value = value.date()
+                elif cell.ctype == xlrd.XL_CELL_BOOLEAN:
+                    value = bool(cell.value)
+                elif cell.ctype == xlrd.XL_CELL_ERROR:
+                    raise DataError(f'{path.name}: Excel error at row {row_index + 1}, column {col_index + 1}')
+                elif cell.ctype == xlrd.XL_CELL_NUMBER:
+                    number = float(cell.value)
+                    value = int(number) if number.is_integer() and abs(number) < 2 ** 53 else number
+                else:
+                    value = cell.value
+                values.append(value)
+            yield values
+    finally:
+        book.release_resources()
 
 
 def _pick(names, sheet, path):
@@ -165,6 +204,20 @@ def list_sheet_names(path: Path) -> list[str]:
         z = _ods_sheets(path)
         with z, z.open('content.xml') as fh:
             return [el.get(_T + 'name') for ev, el in ET.iterparse(fh, events=('start',)) if el.tag == _T + 'table']
+    if path.suffix.lower() == '.xls':
+        try:
+            import xlrd
+            book = xlrd.open_workbook(filename=str(path), on_demand=True)
+        except FileNotFoundError:
+            raise DataError(f'Input file not found: {path}') from None
+        except ImportError:
+            raise DataError('Reading legacy .xls files needs the bundled xlrd dependency') from None
+        except Exception as e:
+            raise DataError(f'{path.name}: cannot read as a legacy Excel workbook: {e}') from None
+        try:
+            return book.sheet_names()
+        finally:
+            book.release_resources()
     import openpyxl
     wb = openpyxl.load_workbook(path, read_only=True)
     try:
@@ -175,7 +228,7 @@ def list_sheet_names(path: Path) -> list[str]:
 
 def grid(path: Path, fmt: str, sheet: str | None, cell_range: str | None, limit_rows: int | None = None) -> list[list]:
     """The selected cells as rows of Python values, with trailing empty rows and columns removed."""
-    rows_iter = _xlsx_rows(path, sheet) if fmt == 'xlsx' else _ods_rows(path, sheet)
+    rows_iter = _xls_rows(path, sheet) if fmt == 'xls' else _xlsx_rows(path, sheet) if fmt == 'xlsx' else _ods_rows(path, sheet)
     bounds = parse_range(cell_range)
     r1, c1, r2, c2 = bounds if bounds else (1, 1, None, None)
     out = []
@@ -274,7 +327,7 @@ def read_table(path: Path, fmt: str, cfg: dict, warn=None):
 
 def describe(path: Path, preview_rows: int = 12) -> list[dict]:
     """Every sheet with its used size and first rows as text, to choose sheet, skip_rows and range."""
-    fmt = 'ods' if path.suffix.lower() == '.ods' else 'xlsx'
+    fmt = {'.ods': 'ods', '.xls': 'xls'}.get(path.suffix.lower(), 'xlsx')
     by_sheet = {name: [] for name in list_sheet_names(path)}
     if fmt == 'ods':
         for name, row in _ods_iter(path):

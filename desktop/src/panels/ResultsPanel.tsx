@@ -96,17 +96,19 @@ function ResultsGrid() {
   if (!p) return <div className="results-bar"><OutputPicker /><span style={{ color: 'var(--text-3)' }}>No retained output (streamed or failed before producing data).</span></div>;
   const needle = filter.toLowerCase();
   const rows = needle ? p.rows.filter((r) => r.some((v) => v !== null && v.toLowerCase().includes(needle))) : p.rows;
-  const doExport = async (format: 'csv' | 'parquet') => {
+  const doExport = async (format: 'csv' | 'parquet' | 'html' | 'pdf') => {
     const sel = useEditor.getState().selectedResult!;
     const anchor = sel.anchor === '(browse)' ? '(browse)' : sel.anchor;
-    const ext = format === 'csv' ? 'csv' : 'parquet';
-    const path = await promptPath(`Export complete result as ${ext.toUpperCase()}`,
+    const ext = format;
+    const path = await promptPath(format === 'html' || format === 'pdf' ? `Create ${ext.toUpperCase()} report` : `Export complete result as ${ext.toUpperCase()}`,
       `${useEditor.getState().baseDir}${sep()}${sel.node}_${anchor.replace(/[()]/g, '')}.${ext}`, ext);
     if (!path) return;
     try {
       const runId = useEditor.getState().run.runId;
       if (!runId) throw new Error('No completed run is selected.');
-      notify(`Exported ${p.total_rows.toLocaleString()} rows to ${await exportRunResult(runId, sel.node, anchor, path, format)}`);
+      const written = await exportRunResult(runId, sel.node, anchor, path, format);
+      notify(format === 'html' || format === 'pdf' ? `Created ${format.toUpperCase()} report at ${written}`
+        : `Exported ${p.total_rows.toLocaleString()} rows to ${written}`);
     } catch (e: any) {
       notify(e.message);
     }
@@ -120,6 +122,8 @@ function ResultsGrid() {
         <span style={{ flex: 1 }} />
         <button onClick={() => void doExport('csv')} data-testid="export-csv">Export CSV…</button>
         <button onClick={() => void doExport('parquet')} data-testid="export-parquet">Export Parquet…</button>
+        <button onClick={() => void doExport('html')} data-testid="export-report-html">Report HTML…</button>
+        <button onClick={() => void doExport('pdf')} data-testid="export-report-pdf">Report PDF…</button>
       </div>
       <div className="grid-wrap">
         <table className="grid" data-testid="results-grid">
