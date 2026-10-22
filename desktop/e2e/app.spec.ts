@@ -563,12 +563,12 @@ test('Flowbench AI workspace exposes bounded local tools and honest provider sta
   const sidebar = page.getByTestId('ai-sidebar');
   await expect(sidebar).toBeVisible();
   await expect(sidebar.getByRole('heading', { name: 'What would you like to analyse?' })).toBeVisible();
-  await expect(sidebar.getByRole('button', { name: 'Use a local model' })).toBeVisible();
+  await expect(sidebar.getByRole('button', { name: 'Choose model server or API' })).toBeVisible();
   await sidebar.getByRole('button', { name: 'AI settings' }).click();
   const settings = sidebar.getByRole('region', { name: 'AI settings panel' });
   await expect(settings.getByRole('radio', { name: 'ChatGPT' })).toHaveAttribute('aria-checked', 'true');
   await expect(sidebar.getByRole('button', { name: 'Continue with ChatGPT' }).first()).toBeEnabled();
-  await settings.getByRole('radio', { name: 'Local model' }).click();
+  await settings.getByRole('radio', { name: 'Model server / API' }).click();
   await expect(settings.getByLabel('Address', { exact: true })).toHaveValue('http://localhost:11434');
   await page.getByRole('tab', { name: 'Inspector' }).click();
   await expect(page.getByTestId('inspector')).toBeVisible();
