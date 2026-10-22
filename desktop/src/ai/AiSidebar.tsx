@@ -42,6 +42,11 @@ class StreamInterruption extends Error {
     super('The connection to the model was interrupted after two automatic retries. Completed workflow actions were kept. Retry to continue from the current state.');
   }
 }
+class ContinuationBudgetReached extends Error {
+  constructor() {
+    super('Flowbench paused after repeated internal-only steps without a user-facing action. Your original request and completed tool results are preserved. Retry to continue this same task.');
+  }
+}
 const quickActions: Entry[] = [
   { label: 'Inspect this workflow', tool: 'workflow.get_snapshot' },
   { label: 'Check validation', tool: 'workflow.validate' },
@@ -439,7 +444,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
           continue;
         }
         if (response.continue) {
-          if (++internalSteps > 5) throw new Error('The model kept reclassifying the task without acting. Retry to continue.');
+          if (++internalSteps > 5) throw new ContinuationBudgetReached();
           continue;
         }
         if (response.needs_execution) {
@@ -484,7 +489,7 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
     } catch (e) {
       const message = messageOf(e);
       if (turnId) {
-        const canContinue = (e instanceof StreamInterruption || e instanceof ToolCorrectionFailure) && !cancelled.current;
+        const canContinue = (e instanceof StreamInterruption || e instanceof ToolCorrectionFailure || e instanceof ContinuationBudgetReached) && !cancelled.current;
         await native(canContinue ? 'ai_finish_turn' : 'ai_abort_turn', { turnId }).catch(() => undefined);
         useAiConversation.getState().finish(turnId, cancelled.current ? 'cancelled' : 'failed', cancelled.current ? undefined : message, canContinue ? 'continue' : undefined);
       } else if (!cancelled.current) {
@@ -521,7 +526,14 @@ export function AiSidebar({ close, embedded = false }: { close: () => void; embe
   }
   async function retry(message: ChatMessage) {
     if (message.retryMode === 'continue') {
-      await send('Continue my interrupted request from the current workflow and the completed tool results already in this conversation. Inspect the current state first and carry out only the remaining work; do not repeat successful changes or claim unverified results.');
+      const s = useAiConversation.getState();
+      const index = s.messages.findIndex((m) => m.id === message.id);
+      const original = s.messages.slice(0, index).reverse().find((m) => m.role === 'user')?.text;
+      await send([
+        'Resume the SAME task from this conversation. Do not choose a different research question, restart discovery, or repeat completed work.',
+        original ? `Original request: ${original}` : '',
+        'First inspect the existing task actions, completed tool results, chosen hypothesis, sources, downloaded files, and current Flowbench state. Continue from the last unfinished step. Preserve the selected hypothesis and reuse acquired data unless evidence shows it is unusable. If blocked, state the exact blocker instead of silently switching topics. Only report operations and results verified by Flowbench.'
+      ].filter(Boolean).join('\n\n'));
       return;
     }
     const s = useAiConversation.getState();

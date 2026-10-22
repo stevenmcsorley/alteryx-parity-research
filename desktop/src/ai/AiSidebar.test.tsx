@@ -337,7 +337,7 @@ describe('Flowbench AI conversation', () => {
     await screen.findByText('Remaining work verified.');
     const prompts = tauriMock.invoke.mock.calls.filter(([cmd]) => cmd === 'ai_begin').map(([, args]) => args.prompt);
     expect(prompts).toHaveLength(2);
-    expect(prompts[1]).toContain('Continue my interrupted request');
+    expect(prompts[1]).toContain('Resume the SAME task');
     expect(useAiConversation.getState().messages[0].text).toBe('Build a difficult workflow.');
   });
 
@@ -388,6 +388,36 @@ describe('Flowbench AI conversation', () => {
     expect(tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_abort_turn' || cmd === 'ai_submit_tool_result')).toBe(false);
     expect(tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_finish_turn')).toBe(true);
     expect(useAiConversation.getState().messages.slice(-1)[0]?.retryMode).toBe('continue');
+  });
+
+  it('pauses planning-only loops as resumable and retries the same research objective', async () => {
+    let turn = 0;
+    let firstTurnCycles = 0;
+    await ready();
+    tauriMock.invoke.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      if (command === 'ai_begin') { turn++; return { turn_id: `turn_${turn}`, assistant_message_id: `msg_${turn}` }; }
+      if (command === 'ai_respond') {
+        const identity = { turn_id: args?.turnId, message_id: `msg_${turn}`, cycle_id: args?.cycleId };
+        if (turn === 1) { firstTurnCycles++; return { ...identity, text: '', calls: [], continue: true }; }
+        return { ...identity, text: 'The same investigation is complete.', calls: [] };
+      }
+      return undefined;
+    });
+    const objective = 'Investigate whether unusual rainfall precedes local rail disruption.';
+    fireEvent.change(screen.getByLabelText('Message Flowbench AI'), { target: { value: objective } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    expect(await screen.findByText(/paused after repeated internal-only steps/i)).toBeTruthy();
+    expect(firstTurnCycles).toBe(6);
+    expect(tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_finish_turn')).toBe(true);
+    expect(tauriMock.invoke.mock.calls.some(([cmd]) => cmd === 'ai_abort_turn')).toBe(false);
+    expect(useAiConversation.getState().messages[0]?.text).toBe(objective);
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    expect(await screen.findByText('The same investigation is complete.')).toBeTruthy();
+    const prompts = tauriMock.invoke.mock.calls.filter(([cmd]) => cmd === 'ai_begin').map(([, args]) => String(args?.prompt ?? ''));
+    expect(prompts).toHaveLength(2);
+    expect(prompts[1]).toContain('Do not choose a different research question');
+    expect(prompts[1]).toContain(objective);
+    expect(useAiConversation.getState().messages[0]?.text).toBe(objective);
   });
 
   it('can stop during reconnect backoff without starting another response', async () => {
