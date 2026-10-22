@@ -22,7 +22,7 @@ Flowbench includes a searchable catalogue of **323 entries across 29 categories*
 
 ## Get Flowbench
 
-Download the latest Windows, macOS or Linux package from [GitHub Releases](https://github.com/stevenmcsorley/alteryx-parity-research/releases). The Windows installer includes its managed Python runtime; users do not need to install Python, Node.js or Rust separately. macOS and Linux builds include their own managed runtime as well.
+Download the latest Windows, macOS or Linux package from [GitHub Releases](https://github.com/stevenmcsorley/flowbench/releases). The Windows installer includes its managed Python runtime; users do not need to install Python, Node.js or Rust separately. macOS and Linux builds include their own managed runtime as well.
 
 Installers are currently unsigned. Windows SmartScreen may show **More info → Run anyway**. On macOS, follow the release notes if Gatekeeper blocks the app. R is an optional external runtime for workflows that use R tools.
 
@@ -78,5 +78,5 @@ The repository contains Flowbench’s independently written application and engi
 - [Flowbench AI](docs/FLOWBENCH_AI.md)
 - [Coverage and tool availability](docs/COVERAGE.md)
 - [Example workflows](examples/)
-- [Releases](https://github.com/stevenmcsorley/alteryx-parity-research/releases)
-- [Issues and product backlog](https://github.com/stevenmcsorley/alteryx-parity-research/issues)
+- [Releases](https://github.com/stevenmcsorley/flowbench/releases)
+- [Issues and product backlog](https://github.com/stevenmcsorley/flowbench/issues)
