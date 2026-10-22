@@ -54,7 +54,7 @@ See [Flowbench AI usage and permissions](docs/FLOWBENCH_AI.md) for provider setu
 
 See the [Workflow, data and reporting guide](docs/WORKFLOW_REPORTS_GUIDE.md) for step-by-step examples of these workflows and exports.
 
-See the [1.0.0-rc.3 release notes](docs/RELEASE_NOTES_1.0.0-rc.3.md) for this release's changes and limits.
+See the [1.0.0-rc.4 release notes](docs/RELEASE_NOTES_1.0.0-rc.4.md) for this release's changes and limits.
 
 ## Build from source
 
